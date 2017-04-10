@@ -1,0 +1,25 @@
+Number of devices: 3
+***********************
+Device Name: \\?\HID#ATK4002#3&34245a86&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:0
+Product Id:0
+Version No:1
+Usage for the device: 12
+Usage Page for the device: 1
+***********************
+
+Device Name: \\?\ACPI#ATK3001#4&1af60297&0#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 101
+Type of the keyboard: 7
+Subtype of the keyboard: 0
+***********************
+
+Device Name: \\?\ACPI#ETD0108#4&1af60297&0#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:2
+Number of Buttons:2
+Sample rate(Number of data points):100
+***********************
+

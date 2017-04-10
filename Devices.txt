@@ -1,0 +1,95 @@
+Number of devices: 12
+***********************
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col01#7&362e5ea4&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:256
+Number of Buttons:5
+Sample rate(Number of data points):0
+***********************
+
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_00#7&3d12709&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 173
+Type of the keyboard: 81
+Subtype of the keyboard: 0
+***********************
+
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col05#7&362e5ea4&0&0004#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:6785
+Product Id:4100
+Version No:1
+Usage for the device: 136
+Usage Page for the device: 65468
+***********************
+
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col03#7&362e5ea4&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:6785
+Product Id:4100
+Version No:1
+Usage for the device: 1
+Usage Page for the device: 12
+***********************
+
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col02#7&362e5ea4&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:6785
+Product Id:4100
+Version No:1
+Usage for the device: 0
+Usage Page for the device: 65281
+***********************
+
+Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col01#7&1cf61754&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:256
+Number of Buttons:5
+Sample rate(Number of data points):0
+***********************
+
+Device Name: \\?\HID#VID_062A&PID_4182&MI_00#7&5328b0f&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 264
+Type of the keyboard: 81
+Subtype of the keyboard: 0
+***********************
+
+Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col04#7&1cf61754&0&0003#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1578
+Product Id:16770
+Version No:259
+Usage for the device: 61938
+Usage Page for the device: 61938
+***********************
+
+Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col02#7&1cf61754&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1578
+Product Id:16770
+Version No:259
+Usage for the device: 1
+Usage Page for the device: 12
+***********************
+
+Device Name: \\?\HID#ATK4002#3&34245a86&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:0
+Product Id:0
+Version No:1
+Usage for the device: 12
+Usage Page for the device: 1
+***********************
+
+Device Name: \\?\ACPI#ATK3001#4&1af60297&0#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 101
+Type of the keyboard: 7
+Subtype of the keyboard: 0
+***********************
+
+Device Name: \\?\ACPI#ETD0108#4&1af60297&0#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:2
+Number of Buttons:2
+Sample rate(Number of data points):100
+***********************
+

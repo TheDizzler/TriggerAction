@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root game="Trigger Action RPG" xml="Map Legend" dir="assets/maps/">
+	<map name="Test Square" file="Test Square.tmx" />
+</root>

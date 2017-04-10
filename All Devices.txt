@@ -1,0 +1,141 @@
+Number of devices: 14
+***********************
+Device Name: \\?\HID#VID_0583&PID_2060#7&2413a56c&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1411
+Product Id:8288
+Version No:256
+Usage for the device: 4
+Usage Page for the device: 1
+
+Controller (iBuffalo SNES)
+
+***********************
+Device Name: \\?\HID#VID_F766&PID_0001#7&2117624a&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:63334
+Product Id:1
+Version No:263
+Usage for the device: 4
+Usage Page for the device: 1
+
+Controller (Elecom)
+
+***********************
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col01#7&1f523d84&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:256
+Number of Buttons:5
+Sample rate(Number of data points):0
+
+Mouse (IntelLink?)
+
+***********************
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_00#7&78eb13f&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 173
+Type of the keyboard: 81
+Subtype of the keyboard: 0
+
+Keyboard (iBuffalo USB Keyboard)
+
+***********************
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col05#7&1f523d84&0&0004#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:6785 (iBuffalo)
+Product Id:4100
+Version No:1
+Usage for the device: 136
+Usage Page for the device: 65468
+
+(iBuffalo USB Keykoard) 
+
+***********************
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col03#7&1f523d84&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:6785 (iBuffalo)
+Product Id:4100
+Version No:1
+Usage for the device: 1
+Usage Page for the device: 12
+
+reserved usage(iBuffalo USB Keykoard)
+
+
+***********************
+Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col02#7&1f523d84&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:6785 (iBuffalo)
+Product Id:4100
+Version No:1
+Usage for the device: 0
+Usage Page for the device: 65281
+
+(???) (Appears when iBuffalo USB connected)
+
+***********************
+Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col04#7&2fb43fbd&0&0003#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1578
+Product Id:16770
+Version No:259
+Usage for the device: 61938
+Usage Page for the device: 61938
+
+(???)
+
+***********************
+Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col02#7&2fb43fbd&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1578
+Product Id:16770
+Version No:259
+Usage for the device: 1
+Usage Page for the device: 12 (Consumer)
+
+(Appears when intelLink USB connected)
+reserved usage(Monitor? Bluetooth Adapter?)
+
+***********************
+Device Name: \\?\HID#ATK4002#3&34245a86&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:0
+Product Id:0
+Version No:1
+Usage for the device: 12 (Reserved)
+Usage Page for the device: 1
+
+???(built-in) display? USB Bridge?
+
+
+***********************
+Device Name: \\?\ACPI#ATK3001#4&1af60297&0#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 101
+Type of the keyboard: 7
+Subtype of the keyboard: 0
+
+Keyboard(built-in)
+
+***********************
+Device Name: \\?\HID#VID_062A&PID_4182&MI_00#7&74991f4&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
+Keyboard Mode:1
+Number of function keys:12
+Number of indicators:3
+Number of keys total: 264
+Type of the keyboard: 81
+Subtype of the keyboard: 0
+
+Keyboard??? (Appears when intelLink USB connected - even without iBuffulo USB)
+
+***********************
+Device Name: \\?\ACPI#ETD0108#4&1af60297&0#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:2
+Number of Buttons:2
+Sample rate(Number of data points):100
+
+Mouse (Built-in)
+
+***********************
+Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col01#7&2fb43fbd&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
+ID for Mouse:256
+Number of Buttons:5
+Sample rate(Number of data points):0
+
+Mouse (???) (Appears when iBuffalo USB connected!)
+***********************
