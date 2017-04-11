@@ -43,6 +43,7 @@ void LevelScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 		game->confirmExit();
 	}
 
+	map->update(deltaTime);
 
 	for (const auto& pc : pcs)
 		pc->update(deltaTime);

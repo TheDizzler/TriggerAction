@@ -34,7 +34,8 @@ public:
 	GraphicsAsset();
 	~GraphicsAsset();
 
-	bool load(ComPtr<ID3D11Device> device, const wchar_t* file, const Vector2& origin = Vector2(-1000, -1000));
+	bool load(ComPtr<ID3D11Device> device, const wchar_t* file, const Vector2& origin = Vector2(-1000, -1000),
+		bool showMessageBox = true);
 	void loadAsPartOfSheet(ComPtr<ID3D11ShaderResourceView> spriteSheetTexture,
 		const Vector2& locationInSheet, const Vector2& size, const Vector2& origin = Vector2(-1000, -1000));
 

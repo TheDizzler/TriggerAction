@@ -31,9 +31,22 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{abb53764-42dc-4602-93c1-b1d8f8dd0cad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameObjects">
+      <UniqueIdentifier>{f006691e-c06d-4013-9802-ae9e1ccfc79a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjects">
+      <UniqueIdentifier>{79428844-38a4-45b0-8f32-2fee2d189b02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Screens">
+      <UniqueIdentifier>{9c701706-44e2-4070-b5cf-e3a438019ff3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Screens">
+      <UniqueIdentifier>{8b5fe32c-b654-42f9-8f1b-6be6da3c7a3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="assets\maps\Test Square.tmx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DXTKGui\Controls\Button.cpp">
@@ -120,14 +133,20 @@
     <ClCompile Include="Source\Managers\GameManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Screens\LevelScreen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Joystick.cpp">
       <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Managers\MapParser.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\AnimatedSprite.cpp">
+      <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp">
+      <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Screens\LevelScreen.cpp">
+      <Filter>Source Files\Screens</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,17 +246,24 @@
     <ClInclude Include="Source\Managers\GameManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Screens\LevelScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameObjects\PlayerCharacter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Joystick.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Managers\MapParser.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Screens\LevelScreen.h">
+      <Filter>Header Files\Screens</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\PlayerCharacter.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\AnimatedSprite.h">
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="assets\AssetManifest.xml" />
+    <Xml Include="assets\MapManifest.xml" />
   </ItemGroup>
 </Project>

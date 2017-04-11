@@ -51,7 +51,9 @@ public:
 	has not already beeen created for it. */
 	void setCancelOnClickListener(Button::OnClickListener* iOnClickListener);
 
+	/* Dialog checks to see if it's open before performing an logic. */
 	virtual void update(double deltaTime);
+	/* Dialog checks to see if it's open before performing an logic. */
 	virtual void draw(SpriteBatch* batch);
 
 	/* Add other GUIControls to dialog. Control position should be relative to Dialog.

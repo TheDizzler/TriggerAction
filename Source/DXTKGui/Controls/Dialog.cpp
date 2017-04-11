@@ -394,7 +394,7 @@ bool Dialog::calculateButtonPosition(Vector2& buttonPos) {
 	return true;
 }
 
-
+/* Dialog checks to see if it's open before performing an logic. */
 void Dialog::update(double deltaTime) {
 
 	if (!isOpen)
@@ -439,7 +439,7 @@ void Dialog::update(double deltaTime) {
 	}
 }
 
-
+/* Dialog checks to see if it's open before performing an logic. */
 void Dialog::draw(SpriteBatch* batch) {
 
 	if (!isOpen)

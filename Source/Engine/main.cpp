@@ -51,13 +51,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	gameEngine.reset(new GameEngine());
 
 	if (!initWindow(hInstance, nShowCmd)) {
-		MessageBox(0, TEXT("Window Initialization - Failed"), L"Error", MB_OK);
+		MessageBox(0, L"Window Initialization - Failed", L"Error", MB_OK);
 		releaseResources();
 		return 0;
 	}
 
 	if (!gameEngine->initEngine(hwnd, hInstance)) {
-		MessageBox(0, L"Game Engine Initialization Failed", L"Error", MB_OK);
+		GameEngine::errorMessage(L"Game Engine Initialization Failed", L"Error", true);
 		releaseResources();
 		return 0;
 	}
@@ -114,7 +114,7 @@ int messageLoop() {
 int Globals::WINDOW_WIDTH = 800;
 int Globals::WINDOW_HEIGHT = 600;
 int Globals::vsync_enabled = 1;
-bool Globals::FULL_SCREEN = true;
+bool Globals::FULL_SCREEN = false;
 // SNES resolution 512x448 max
 
 bool initWindow(HINSTANCE hInstance, int showWnd) {

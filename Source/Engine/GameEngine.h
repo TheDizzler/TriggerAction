@@ -33,31 +33,48 @@ public:
 
 	static inline bool reportError(HRESULT hr,
 		wstring failMessage = L"This is SRS Error",
-		wstring failTitle = L"Fatal Error", bool dontUseGUI = false) {
+		wstring failTitle = L"Fatal Error",
+		bool showMessageBox = false, bool dontUseGUI = false) {
 
 		if (FAILED(hr)) {
 
 			_com_error err(hr);
 			wostringstream wss;
 			wss << failMessage;
-			wss << "\nHRESULT: " << err.ErrorMessage();
+			wss << "\nHRESULT: " << err.ErrorMessage() << endl;
 			if (GUIFactory::initialized && !dontUseGUI)
 				GameEngine::showWarningDialog(wss.str(), failTitle);
-			else if (!Globals::FULL_SCREEN)
+			else if (!Globals::FULL_SCREEN && showMessageBox)
 				MessageBox(NULL, wss.str().c_str(), failTitle.c_str(), MB_OK | MB_ICONERROR);
-			else
-				OutputDebugString(wss.str().c_str());
+
+			OutputDebugString(wss.str().c_str()); // always output debug just in case
 			return true;
 		}
 
 		return false;
 	}
 
-	static void showErrorDialog(wstring message, wstring title) {
+
+	static void errorMessage(wstring message, wstring title = L"Fatal Error",
+		bool showMessageBox = false) {
+
+		message += L"\n";
+		if (!Globals::FULL_SCREEN && showMessageBox)
+			MessageBox(NULL, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+
+		OutputDebugString(message.c_str()); // always output debug just in case
+	}
+
+
+	static void showErrorDialog(wstring message, wstring title, bool outputDebug = true) {
 		errorDialog->open();
 		errorDialog->setTitle(title);
 		errorDialog->setText(message);
 		showDialog = errorDialog.get();
+		if (outputDebug) {
+			message += L"\n";
+			OutputDebugString(message.c_str());
+		}
 	}
 
 	static void showWarningDialog(wstring message, wstring title) {
@@ -67,7 +84,7 @@ public:
 		warningDialog->setTextTint(Color(1, 0, 0, 1));
 		showDialog = warningDialog.get();
 	}
-
+	static Dialog* showDialog;
 private:
 
 	unique_ptr<AudioEngine> audioEngine;
@@ -90,6 +107,16 @@ private:
 	static unique_ptr<Dialog> errorDialog;
 	/* Minor error dialog. Choice between exit game and continue. */
 	static unique_ptr<Dialog> warningDialog;
-	static Dialog* showDialog;
+	
 };
 
+class QuitButtonListener : public Button::OnClickListener {
+public:
+	QuitButtonListener(GameEngine* eng) : engine(eng) {
+	}
+	virtual void onClick(Button * button) override {
+		engine->exit();
+	}
+
+	GameEngine* engine;
+};

@@ -24,12 +24,12 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 	hwnd = hw;
 
 	if (!initD3D(hwnd)) {
-		MessageBox(0, L"Direct3D Initialization Failed", L"Error", MB_OK);
+		GameEngine::errorMessage(L"Direct3D Initialization Failed", L"Error");
 		return false;
 	}
 
 	if (!initRawInput(hwnd)) {
-		MessageBox(0, L"Raw Input Init failed", L"Error", MB_OK);
+		GameEngine::errorMessage(L"Raw Input Init failed", L"Error");
 		return false;
 	}
 
@@ -48,12 +48,15 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 	}
 
 	if (!initGFXAssets()) {
+		GameEngine::errorMessage(L"GFX Assets Initialization Failed");
+
 		return false;
 	}
 
 
 	if (!initStage()) {
-		MessageBox(0, L"Stage Initialization Failed", L"Error", MB_OK);
+		//MessageBox(0, L"Stage Initialization Failed", L"Error", MB_OK);
+		GameEngine::errorMessage(L"Stage Initialization Failed");
 		return false;
 	}
 
@@ -66,25 +69,16 @@ void GameEngine::onAudioDeviceChange() {
 }
 
 
-class QuitButtonListener : public Button::OnClickListener {
-public:
-	QuitButtonListener(GameEngine* eng) : engine(eng) {
-	}
-	virtual void onClick(Button * button) override {
-		engine->exit();
-	}
-
-	GameEngine* engine;
-};
-
 #include "../DXTKGui/GuiAssets.h"
 bool GameEngine::initGFXAssets() {
 
 	// get graphical assets from xml file
 	docAssMan.reset(new pugi::xml_document());
 	if (!docAssMan->load_file(GUIAssets::assetManifestFile)) {
-		MessageBox(0, L"Could not read AssetManifest file!",
-			L"Fatal Read Error!", MB_OK);
+		/*MessageBox(0, L"Could not read AssetManifest file!",
+			L"Fatal Read Error!", MB_OK);*/
+		GameEngine::errorMessage(L"Could not read AssetManifest file!",
+			L"Fatal Read Error!");
 		return false;
 	}
 
@@ -93,7 +87,8 @@ bool GameEngine::initGFXAssets() {
 	if (!guiFactory->initialize(device, deviceContext,
 		swapChain, batch.get(), mouse)) {
 
-		MessageBox(0, L"Failed to load GUIFactory", L"Fatal Error", MB_OK);
+		//MessageBox(0, L"Failed to load GUIFactory", L"Fatal Error", MB_OK);
+		GameEngine::errorMessage(L"Failed to load GUIFactory", L"Fatal Error");
 		return false;
 	}
 
@@ -113,7 +108,7 @@ bool GameEngine::initStage() {
 
 	game.reset(new GameManager(this));
 	if (!game->initializeGame(hwnd, device, mouse, joysticks)) {
-		MessageBox(0, L"Game Manager failed to load.", L"Critical Failure", MB_OK);
+		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;
 	}
 	return true;
@@ -188,9 +183,15 @@ void GameEngine::update(double deltaTime) {
 	mouse->saveMouseState();
 	keys->saveKeyboardState();
 
-	if (showDialog->isOpen)
+	if (showDialog->isOpen) {
+		auto state = Keyboard::Get().GetState();
+		keyTracker.Update(state);
+		if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+			showDialog->close();
+			return;
+		}
 		showDialog->update(deltaTime);
-	else
+	} else
 		game->update(deltaTime, mouse);
 }
 
@@ -200,7 +201,7 @@ void GameEngine::render(double deltaTime) {
 
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::GhostWhite);
 	CommonStates blendState(device.Get());
-	batch->Begin(SpriteSortMode_Deferred/*, NULL, NULL, NULL, NULL, NULL, camera->translationMatrix()*/);
+	batch->Begin(SpriteSortMode_FrontToBack/*, NULL, NULL, NULL, NULL, NULL, camera->translationMatrix()*/);
 	{
 		game->draw(batch.get());
 	}

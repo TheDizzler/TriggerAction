@@ -4,6 +4,7 @@
 class AnimatedSprite : public IElement2D {
 public:
 	
+	AnimatedSprite();
 	AnimatedSprite(const Vector2& position);
 	~AnimatedSprite();
 
@@ -33,8 +34,11 @@ public:
 	virtual void setScale(const Vector2 & scale) override;
 	virtual void setRotation(const float rotation) override;
 	virtual void setTint(const XMFLOAT4 color) override;
+	virtual void setTint(const Color & color) override;
+	virtual void setTint(const XMVECTORF32 color) override;
 	virtual void setAlpha(const float alpha) override;
 	virtual void setLayerDepth(const float depth) override;
+	
 
 	void reset();
 	bool repeats = true;

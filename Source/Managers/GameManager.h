@@ -28,7 +28,7 @@ public:
 	void draw(SpriteBatch* batch);
 
 	void startGame();
-	bool loadLevel(const wchar_t* file);
+	bool loadLevel(const pugi::char_t* file);
 	void loadMainMenu();
 
 	void pause();
@@ -53,12 +53,16 @@ public:
 
 
 private:
+	unique_ptr<xml_document> mapManifest;
 	unique_ptr<xml_document> mapDoc;
 	unique_ptr<MapParser> mapParser;
 
+	string mapsDir;
+	map<string, string> mapFiles;
 
 	Screen* currentScreen = 0;
 	Screen* lastScreen = 0;
+
 	//unique_ptr<MenuManager> menuScreen;
 	unique_ptr<LevelScreen> levelScreen;
 

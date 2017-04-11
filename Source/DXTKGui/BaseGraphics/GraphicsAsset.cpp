@@ -12,7 +12,8 @@ GraphicsAsset::~GraphicsAsset() {
 
 #include "../StringHelper.h"
 #include <DDSTextureLoader.h>
-bool GraphicsAsset::load(ComPtr<ID3D11Device> device, const wchar_t* textureFile, const Vector2& org) {
+bool GraphicsAsset::load(ComPtr<ID3D11Device> device, const wchar_t* textureFile, const Vector2& org,
+	bool showMessageBox) {
 
 	wostringstream wss;
 	wss << L"Unable to load texture file: " << textureFile;
@@ -20,7 +21,7 @@ bool GraphicsAsset::load(ComPtr<ID3D11Device> device, const wchar_t* textureFile
 	if (StringHelper::reportError(
 		CreateDDSTextureFromFile(device.Get(), textureFile,
 			resource.GetAddressOf(), texture.GetAddressOf()),
-		wss.str(), L"ERROR"))
+		wss.str(), L"ERROR", showMessageBox))
 		return false;
 
 

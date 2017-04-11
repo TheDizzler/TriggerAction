@@ -31,14 +31,22 @@ struct Map {
 		vector<unique_ptr<Sprite> > tiles;
 		vector<unique_ptr<AnimatedSprite> > animations;
 
+		void update(double deltaTime);
 		void draw(SpriteBatch* batch);
 
+		/* Depth ranges from 0.0f to 1.0f. One tile will be equal to 0.1f
+			and will cycle between 0.1f and 0.9f (lower number is further back). This should
+			create the effect of 3D and still be manageable.
+			Reserved layer depths:
+				0.0f background images
+				0.01f ground tiles
+				1.0f foreground images. */
 		void setLayerDepth();
 	};
 
 	~Map();
 
-
+	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
 
 
@@ -61,10 +69,10 @@ struct Map {
 class MapParser {
 public:
 	MapParser(ComPtr<ID3D11Device> device);
-	~MapParser();
+	//~MapParser();
 
 
-	bool parseMap(xml_node mapRoot);
+	bool parseMap(xml_node mapRoot, string mapsDir);
 
 	unique_ptr<Map> getMap();
 private:
@@ -72,7 +80,7 @@ private:
 	unique_ptr<Map> map;
 
 
-	bool loadTileset(xml_node mapRoot);
+	bool loadTileset(xml_node mapRoot, string mapsDir);
 	// Currently only parses CSV encoded tmx files
 	bool loadLayerData(xml_node mapRoot);
 

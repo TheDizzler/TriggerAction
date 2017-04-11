@@ -75,8 +75,8 @@ public:
 
 	virtual void moveBy(const Vector2& moveVector);
 	virtual void rotateBy(float rotateAmount);
-
-	virtual void update(double deltaTime);
+	/* This only needs to be called when the sprites moves to update the hitbox location. */
+	//virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch) override;
 
 	ComPtr<ID3D11ShaderResourceView> getTexture();

@@ -151,6 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="assets\maps\Test Square.tmx">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -180,9 +183,11 @@
     <ClCompile Include="Source\Engine\Input.cpp" />
     <ClCompile Include="Source\Engine\Joystick.cpp" />
     <ClCompile Include="Source\Engine\main.cpp" />
+    <ClCompile Include="Source\GameObjects\AnimatedSprite.cpp" />
     <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
+    <ClCompile Include="Source\Managers\MapParser.cpp" />
     <ClCompile Include="Source\pch.cpp" />
     <ClCompile Include="Source\Screens\LevelScreen.cpp" />
   </ItemGroup>
@@ -216,15 +221,20 @@
     <ClInclude Include="Source\Engine\GraphicsEngine.h" />
     <ClInclude Include="Source\Engine\Input.h" />
     <ClInclude Include="Source\Engine\Joystick.h" />
+    <ClInclude Include="Source\GameObjects\AnimatedSprite.h" />
     <ClInclude Include="Source\GameObjects\PlayerCharacter.h" />
     <ClInclude Include="Source\globals.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
+    <ClInclude Include="Source\Managers\MapParser.h" />
     <ClInclude Include="Source\pch.h" />
     <ClInclude Include="Source\Screens\LevelScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="assets\AssetManifest.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="assets\MapManifest.xml">
       <SubType>Designer</SubType>
     </Xml>
   </ItemGroup>

@@ -2,7 +2,7 @@
 #include "GameManager.h"
 
 Keyboard::KeyboardStateTracker keyTracker;
-//GamePad::State gamePad0;
+
 
 GameManager::GameManager(GameEngine* gmngn) {
 
@@ -10,6 +10,7 @@ GameManager::GameManager(GameEngine* gmngn) {
 }
 
 GameManager::~GameManager() {
+	mapFiles.clear();
 }
 
 #include "../Engine/GameEngine.h"
@@ -64,14 +65,37 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 	//if (!menuScreen->initialize(device, mouse))
 	//	return false;
 
-	mapParser = make_unique<MapParser>();
+	mapManifest = make_unique<xml_document>();
+	if (!mapManifest->load_file(Globals::mapManifestFile)) {
+		wostringstream wss;
+		wss << "Error trying to read " << Globals::mapManifestFile << ".";
+		GameEngine::showErrorDialog(wss.str(), L"Error reading Map Manifest");
+		return false;
+	}
+
+	xml_node mapRoot = mapManifest->child("root");
+
+	mapsDir = mapRoot.attribute("dir").as_string();
+	for (xml_node mapNode : mapRoot.children("map")) {
+		string name = mapNode.attribute("name").as_string();
+		string file = mapsDir + mapNode.attribute("file").as_string();
+		mapFiles[name] = (file);
+	}
+
+	mapParser = make_unique<MapParser>(device);
 
 	levelScreen = make_unique<LevelScreen>(joysticks);
 	levelScreen->setGameManager(this);
-	if (!levelScreen->initialize(device, mouse))
+	if (!levelScreen->initialize(device, mouse)) {
+		GameEngine::showErrorDialog(L"Level Screen failed to initialize", L"Error initializing level");
 		return false;
+	}
 
-
+	string mFile = mapFiles["Test Square"];
+	if (!loadLevel(mFile.c_str())) {
+		GameEngine::showErrorDialog(L"Map failed to load", L"Error loading map");
+		return false;
+	}
 	currentScreen = levelScreen.get();
 	mouse->loadMouseIcon(guiFactory.get(), "Mouse Icon");
 	ShowCursor(false);
@@ -84,19 +108,15 @@ void GameManager::update(double deltaTime, shared_ptr<MouseController> mouse) {
 
 	auto state = Keyboard::Get().GetState();
 	keyTracker.Update(state);
-	//gamePad0 = gamePad->GetState(0);
+
 	currentScreen->update(deltaTime, mouse);
-	if (exitDialog->isOpen)
-		exitDialog->update(deltaTime);
+
 }
 
 
 void GameManager::draw(SpriteBatch * batch) {
 
 	currentScreen->draw(batch);
-
-
-	exitDialog->draw(batch);
 
 }
 
@@ -111,17 +131,21 @@ void GameManager::startGame() {
 }
 
 
-bool GameManager::loadLevel(const wchar_t* file) {
+bool GameManager::loadLevel(const pugi::char_t* file) {
 
 	mapDoc.reset(new pugi::xml_document());
 	if (!mapDoc->load_file(file)) {
 		wostringstream wss;
 		wss << "Error trying to read " << file << ".";
 		GameEngine::showErrorDialog(wss.str(), L"Error reading map file");
-		OutputDebugString(wss.str().c_str());
 		return false;
 	}
 
+	if (!mapParser->parseMap(mapDoc->child("map"), mapsDir)) {
+		return false;
+	}
+	levelScreen->loadMap(mapParser->getMap());
+	return true;
 }
 
 
@@ -143,10 +167,13 @@ void GameManager::pause() {
 }
 
 void GameManager::confirmExit() {
-	if (!exitDialog->isOpen)
+
+	if (!exitDialog->isOpen) {
+		GameEngine::showDialog = exitDialog.get();
 		exitDialog->open();
-	else
-		exitDialog->close();
+	} else {
+		exitDialog->close(); // this will never get called, btw
+	}
 }
 
 

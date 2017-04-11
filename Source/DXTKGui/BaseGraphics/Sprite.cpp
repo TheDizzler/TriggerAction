@@ -50,12 +50,12 @@ void Sprite::load(GraphicsAsset* const graphicsAsset) {
 		Vector2(width, height)));
 }
 
-
-void Sprite::update(double deltaTime) {
-
-	hitArea->position = Vector2(position.x - origin.x, position.y - origin.y);
-
-}
+/* This only needs to be called when the sprites moves to update the hitbox location */
+//void Sprite::update(double deltaTime) {
+//
+//	hitArea->position = Vector2(position.x - origin.x, position.y - origin.y);
+//
+//}
 
 
 void Sprite::draw(SpriteBatch* batch) {
@@ -151,7 +151,7 @@ void Sprite::setPosition(const Vector2& pos) {
 	position = pos;
 	hitArea->position = Vector2(position.x - origin.x*scale.x,
 		position.y - origin.y*scale.y);
-	hitArea->size = Vector2(width*scale.x, height*scale.y);
+	//hitArea->size = Vector2(width*scale.x, height*scale.y);
 }
 
 

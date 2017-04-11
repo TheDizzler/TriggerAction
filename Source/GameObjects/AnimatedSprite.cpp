@@ -2,6 +2,10 @@
 #include "AnimatedSprite.h"
 
 
+AnimatedSprite::AnimatedSprite() {
+	hitArea.reset(new HitArea(position, Vector2(0, 0)));
+}
+
 AnimatedSprite::AnimatedSprite(const Vector2& pos) {
 	position = pos;
 	hitArea.reset(new HitArea(position, Vector2(0, 0)));
@@ -118,6 +122,14 @@ void AnimatedSprite::setTint(const XMFLOAT4 colr) {
 	tint = colr;
 }
 
+void AnimatedSprite::setTint(const Color& color) {
+	tint = color;
+}
+
+void AnimatedSprite::setTint(const XMVECTORF32 color) {
+	tint = color;
+}
+
 void AnimatedSprite::setAlpha(const float alpha) {
 	tint.w = alpha;
 }
@@ -134,4 +146,3 @@ void AnimatedSprite::reset() {
 	isAlive = true;
 	currentFrameIndex = 0;
 }
-

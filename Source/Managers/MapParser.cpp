@@ -6,11 +6,11 @@ MapParser::MapParser(ComPtr<ID3D11Device> dev) {
 	device = dev;
 }
 
-bool MapParser::parseMap(xml_node mapRoot) {
+bool MapParser::parseMap(xml_node mapRoot, string mapsDir) {
 
 	map = make_unique<Map>();
 	map->loadMapDescription(mapRoot);
-	if (!loadTileset(mapRoot))
+	if (!loadTileset(mapRoot, mapsDir))
 		return false;
 	if (!loadLayerData(mapRoot))
 		return false;
@@ -30,9 +30,24 @@ Map::~Map() {
 	layerMap.clear();
 }
 
+
+void Map::update(double deltaTime) {
+	layerMap["animated layer"]->update(deltaTime);
+}
+
+
 void Map::draw(SpriteBatch* batch) {
 
 	layerMap["ground"]->draw(batch);
+	layerMap["far field"]->draw(batch);
+	layerMap["collision objects"]->draw(batch);
+	layerMap["useable objects"]->draw(batch);
+	layerMap["collision objects 2"]->draw(batch);
+	layerMap["cover objects 2"]->draw(batch);
+	layerMap["cover objects"]->draw(batch);
+	layerMap["near field"]->draw(batch);
+	layerMap["animated layer"]->draw(batch);
+
 
 }
 
@@ -48,17 +63,23 @@ void Map::loadMapDescription(xml_node mapRoot) {
 }
 
 #include "../DXTKGui/StringHelper.h"
-bool MapParser::loadTileset(xml_node mapRoot) {
+#include "../Engine/GameEngine.h"
+bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
-	for (xml_node tilesetNode : mapRoot.children()) {
+	for (xml_node tilesetNode : mapRoot.children("tileset")) {
 
-		const char_t* file = tilesetNode.child("image").attribute("source").as_string();
+		//const char_t* file = tilesetNode.child("image").attribute("source").as_string();
+
+		string fileStr = mapsDir + tilesetNode.child("image").attribute("source").as_string();
+
+		const wchar_t* file = StringHelper::convertCharStarToWCharT(fileStr.c_str());
 
 		unique_ptr<GraphicsAsset> mapAsset = make_unique<GraphicsAsset>();
-		if (!mapAsset->load(device, StringHelper::convertCharStarToWCharT(file))) {
+		if (!mapAsset->load(device, file)) {
 			wstringstream wss;
 			wss << "Unable to load map texture file: " << file;
-			MessageBox(0, wss.str().c_str(), L"Critical error", MB_OK);
+			//MessageBox(0, wss.str().c_str(), L"Critical error", MB_OK);
+			GameEngine::showErrorDialog(wss.str(), L"Critical error");
 			return false;
 		}
 
@@ -71,12 +92,14 @@ bool MapParser::loadTileset(xml_node mapRoot) {
 
 		size_t rows = tilesetNode.attribute("tilecount").as_int() / columns;
 		USHORT gid = firstGid;
-		for (size_t i = 0; i < columns * map->tileWidth; i += map->tileWidth) {
-			for (size_t j = 0; j < rows * map->tileHeight; j += map->tileHeight) {
+
+		for (size_t j = 0; j < rows * map->tileHeight; j += map->tileHeight) {
+			for (size_t i = 0; i < columns * map->tileWidth; i += map->tileWidth) {
+
 
 				shared_ptr<Map::TileAsset> spriteAsset;
 				spriteAsset.reset(new Map::TileAsset());
-				spriteAsset->loadAsPartOfSheet(mapAsset->getTexture(), Vector2(j, i), size, origin);
+				spriteAsset->loadAsPartOfSheet(mapAsset->getTexture(), Vector2(i, j), size, origin);
 
 				map->assetMap[gid++] = move(spriteAsset);
 			}
@@ -84,7 +107,7 @@ bool MapParser::loadTileset(xml_node mapRoot) {
 
 		for (xml_node tileNode : tilesetNode.children("tile")) {
 
-			gid = tileNode.attribute("id").as_int();
+			gid = tileNode.attribute("id").as_int() + firstGid;
 			shared_ptr<Map::TileAsset> tile = map->assetMap[gid];
 			xml_node propertiesNode = tileNode.child("properties");
 			if (propertiesNode) {
@@ -98,9 +121,10 @@ bool MapParser::loadTileset(xml_node mapRoot) {
 			xml_node animNode = tileNode.child("animation");
 			if (animNode) {
 				vector<shared_ptr<Frame>> frames;
+				float frameTime;
 				for (xml_node frameNode : animNode.children("frame")) {
 
-					USHORT frameID = frameNode.attribute("tileid").as_int();
+					USHORT frameID = frameNode.attribute("tileid").as_int() + firstGid;
 					shared_ptr<Map::TileAsset> frameTile = map->assetMap[frameID];
 					RECT rect;
 					rect.left = frameTile->getPosition().x;
@@ -110,12 +134,12 @@ bool MapParser::loadTileset(xml_node mapRoot) {
 					shared_ptr<Frame> frame;
 					frame.reset(new Frame(rect));
 					frames.push_back(move(frame));
-
+					frameTime = frameNode.attribute("duration").as_float() / 1000;
 					// remove from assets (?)
 					map->assetMap.erase(frameID); // (???) if there are any properties they will be lost!
 				}
 
-				float frameTime = animNode.attribute("duration").as_float();
+				
 				shared_ptr<Animation> animationAsset;
 				animationAsset.reset(new Animation(mapAsset->getTexture(), frames, frameTime));
 				// store animation in map then remove from assets(?)
@@ -127,16 +151,19 @@ bool MapParser::loadTileset(xml_node mapRoot) {
 	return true;
 }
 
-#include "../Engine/GameEngine.h"
+
 bool MapParser::loadLayerData(xml_node mapRoot) {
 
 	// will approx layerdepth by parsing order
-	float layerDepth = -1;
+	float layerDepth = 0;
 
 	for (xml_node layerNode : mapRoot.children("layer")) {
 
 		xml_node dataNode = layerNode.child("data");
-		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>();
+		string name = layerNode.attribute("name").as_string();
+
+		layerDepth = layerNode.child("properties").child("property").attribute("value").as_float();
+		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>(name);
 
 		string str = dataNode.text().as_string();
 
@@ -153,8 +180,10 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 		for (int row = 0; row < map->mapHeight; ++row) {
 			for (int col = 0; col < map->mapWidth; ++col) {
 
-				int gid = data[col][row];
-				Vector2 position = Vector2(row*map->tileWidth, col*map->tileHeight);
+				int gid = data[row][col];
+				if (gid <= 0)
+					continue;
+				Vector2 position = Vector2(col*map->tileHeight, row*map->tileWidth);
 				// look in animation map first for ID
 				if (!map->animationMap[gid]) {
 					if (!map->assetMap[gid]) {
@@ -166,6 +195,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 
 					unique_ptr<Sprite> sprite = make_unique<Sprite>();
 					sprite->load(map->assetMap[gid].get());
+					sprite->setPosition(position);
 					sprite->setLayerDepth(layerDepth);
 					layer->tiles.push_back(move(sprite));
 				} else {
@@ -173,14 +203,16 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 					unique_ptr<AnimatedSprite> anim = make_unique<AnimatedSprite>();
 					anim->load(map->animationMap[gid]);
 					anim->setLayerDepth(layerDepth);
+					anim->setOrigin(Vector2::Zero);
+					anim->setPosition(position);
 					layer->animations.push_back(move(anim));
 				}
 
 			}
 		}
 
-		map->layerMap[layerNode.attribute("name").as_string()] = move(layer);
-		layerDepth += .1; // more than 20 (20!) layers will cause problems...should be ok
+		map->layerMap[name] = move(layer);
+		//layerDepth += .05; // more than 20 (20!) layers will cause problems...should be ok
 	}
 
 	return true;
@@ -211,6 +243,11 @@ Map::TileAsset::~TileAsset() {
 Map::Layer::~Layer() {
 	tiles.clear();
 	animations.clear();
+}
+
+void Map::Layer::update(double deltaTime) {
+	for (const auto& anim : animations)
+		anim->update(deltaTime);
 }
 
 void Map::Layer::draw(SpriteBatch* batch) {

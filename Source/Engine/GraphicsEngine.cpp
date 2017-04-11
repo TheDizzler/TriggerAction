@@ -18,24 +18,28 @@ GraphicsEngine::~GraphicsEngine() {
 
 }
 
-
+#include "../Engine/GameEngine.h"
 bool GraphicsEngine::initD3D(HWND h) {
 
 	hwnd = h;
 	if (!getDisplayAdapters()) {
-		MessageBox(NULL, L"Error gathering display info", L"ERROR", MB_OK);
+		//MessageBox(NULL, L"Error gathering display info", L"ERROR", MB_OK);
+		OutputDebugString(L"Error gathering display info");
 		return false;
 	}
 
 
 	if (!initializeAdapter(selectedAdapterIndex)) {
-		MessageBox(NULL, L"Error initializing Adapter", L"ERROR", MB_OK);
+		//MessageBox(NULL, L"Error initializing Adapter", L"ERROR", MB_OK);
+		OutputDebugString(L"Error initializing Adapter");
 		return false;
 	}
 
 
-	if (!initializeRenderTarget())
+	if (!initializeRenderTarget()) {
+		OutputDebugString(L"Error initializing Render Target");
 		return false;
+	}
 
 	initializeViewport();
 
@@ -51,7 +55,6 @@ bool GraphicsEngine::initD3D(HWND h) {
 }
 
 #include <sstream>
-#include "../Engine/GameEngine.h"
 bool GraphicsEngine::getDisplayAdapters() {
 
 
