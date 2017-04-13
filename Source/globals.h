@@ -13,7 +13,6 @@ namespace Globals {
 	extern bool FULL_SCREEN;
 
 	const static char* mapManifestFile = "assets/MapManifest.xml";
-	//const static char* testDungeon = "assets/TestDungeon.xml";
 
 	/* For reference purposes. */
 	/*wostringstream ws;

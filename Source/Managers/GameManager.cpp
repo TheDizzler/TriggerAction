@@ -91,9 +91,9 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		return false;
 	}
 
-	string mFile = mapFiles["Test Square"];
+	string mFile = mapFiles["Test Square C"];
 	if (!loadLevel(mFile.c_str())) {
-		GameEngine::showErrorDialog(L"Map failed to load", L"Error loading map");
+		GameEngine::showErrorDialog(L"Map failed to load", L"Error in GameManager::initializeGame()");
 		return false;
 	}
 	currentScreen = levelScreen.get();

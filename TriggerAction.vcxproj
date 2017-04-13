@@ -151,6 +151,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="assets\maps\Test Square B.tmx">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="assets\maps\Test Square C.tmx" />
     <None Include="assets\maps\Test Square.tmx">
       <SubType>Designer</SubType>
     </None>
@@ -183,11 +187,14 @@
     <ClCompile Include="Source\Engine\Input.cpp" />
     <ClCompile Include="Source\Engine\Joystick.cpp" />
     <ClCompile Include="Source\Engine\main.cpp" />
-    <ClCompile Include="Source\GameObjects\AnimatedSprite.cpp" />
+    <ClCompile Include="Source\GameObjects\AnimatedTile.cpp" />
+    <ClCompile Include="Source\GameObjects\IElement3D.cpp" />
     <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp" />
+    <ClCompile Include="Source\GameObjects\Tangible.cpp" />
+    <ClCompile Include="Source\GameObjects\Tile.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
-    <ClCompile Include="Source\Managers\MapParser.cpp" />
+    <ClCompile Include="Source\Managers\MapManager.cpp" />
     <ClCompile Include="Source\pch.cpp" />
     <ClCompile Include="Source\Screens\LevelScreen.cpp" />
   </ItemGroup>
@@ -221,12 +228,15 @@
     <ClInclude Include="Source\Engine\GraphicsEngine.h" />
     <ClInclude Include="Source\Engine\Input.h" />
     <ClInclude Include="Source\Engine\Joystick.h" />
-    <ClInclude Include="Source\GameObjects\AnimatedSprite.h" />
+    <ClInclude Include="Source\GameObjects\AnimatedTile.h" />
+    <ClInclude Include="Source\GameObjects\IElement3D.h" />
     <ClInclude Include="Source\GameObjects\PlayerCharacter.h" />
+    <ClInclude Include="Source\GameObjects\Tangible.h" />
+    <ClInclude Include="Source\GameObjects\Tile.h" />
     <ClInclude Include="Source\globals.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
-    <ClInclude Include="Source\Managers\MapParser.h" />
+    <ClInclude Include="Source\Managers\MapManager.h" />
     <ClInclude Include="Source\pch.h" />
     <ClInclude Include="Source\Screens\LevelScreen.h" />
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 #include "../DXTKGui/BaseGraphics/screen.h"
 #include "../GameObjects/PlayerCharacter.h"
-#include "../Managers/MapParser.h"
+#include "../Managers/MapManager.h"
 
 static const char_t* characters[] = {"Marle", "Frog"};
 

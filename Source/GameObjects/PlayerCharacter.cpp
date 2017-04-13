@@ -19,57 +19,16 @@ void PlayerCharacter::initialize(const shared_ptr<AssetSet> characterAssetSet, i
 }
 
 
-
+#include "../Managers/MapManager.h"
 void PlayerCharacter::update(double deltaTime) {
 
-	bool moved = getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY);
-	//if (joystick->lAxisY < -10) {
-	//	// moving up
-	//	position.y -= moveDownSpeed*deltaTime;
-	//	if (!moving || facing != Facing::UP) {
-	//		loadAnimation("walk up");
-	//		moving = true;
-	//		facing = Facing::UP;
-	//	}
-	//	moved = true;
-	//	waiting = false;
-	//} else if (joystick->lAxisY > 10) {
-	//	// moving down
-	//	position.y += moveDownSpeed*deltaTime;
-	//	if (!moving || facing != Facing::DOWN) {
-	//		loadAnimation("walk down");
-	//		moving = true;
-	//		facing = Facing::DOWN;
-	//	}
-	//	moved = true;
-	//	waiting = false;
-	//}
+	if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
 
-	//if (joystick->lAxisX < -10) {
-	//	// moving left
-	//	position.x -= moveRightSpeed*deltaTime;
-	//	if (!moving || facing != Facing::LEFT) {
-	//		loadAnimation("walk right");
-	//		moving = true;
-	//		facing = Facing::LEFT;
-	//	}
-	//	spriteEffects = SpriteEffects_FlipHorizontally;
-	//	moved = true;
-	//	waiting = false;
-	//} else if (joystick->lAxisX > 10) {
-	//	// moving right
-	//	position.x += moveRightSpeed*deltaTime;
-	//	if (!moving || facing != Facing::RIGHT) {
-	//		loadAnimation("walk right");
-	//		moving = true;
-	//		facing = Facing::RIGHT;
-	//	}
-	//	spriteEffects = SpriteEffects_None;
-	//	moved = true;
-	//	waiting = false;
-	//}
+		//int size = currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
+		//	- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
+		layerDepth = Map::getLayerDepth(position.y);
 
-	if (!moved && !waiting) {
+	} else if (!waiting) {
 		waiting = true;
 		moving = false;
 		switch (facing) {
@@ -91,6 +50,9 @@ void PlayerCharacter::update(double deltaTime) {
 		if (++currentFrameIndex >= currentAnimation->animationFrames.size())
 			currentFrameIndex = 0;
 		currentFrameTime = 0;
+		drawPosition = position;
+		drawPosition.y -= currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
+			- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
 	}
 }
 
@@ -103,18 +65,28 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 		if (vertDirection < -10) {
 			// moving right & up
-			position.x += moveDiagonalRight*deltaTime;
-			position.y -= moveDiagonalDown*deltaTime;
+			float moveByX = moveDiagonalRight*deltaTime;
+			float moveByY = moveDiagonalDown*deltaTime;
+			position.x += moveByX;
+			position.y -= moveByY;
+			drawPosition.x += moveByX;
+			drawPosition.y += moveByY;
 		} else if (vertDirection > 10) {
 			// moving right & down
-			position.x += moveDiagonalRight*deltaTime;
-			position.y += moveDiagonalDown*deltaTime;
+			float moveByX = moveDiagonalRight*deltaTime;
+			float moveByY = moveDiagonalDown*deltaTime;
+			position.x += moveByX;
+			position.y += moveByY;
+			drawPosition.x += moveByX;
+			drawPosition.y += moveByY;
 		/*	wostringstream wss;
 			wss << "moveRightSpeed: " << moveRightSpeed << " moveDownSpeed: " << moveDownSpeed << endl;
 			wss << "moveDiagonalRight: " << moveDiagonalRight << " moveDiagonalDown: " << moveDiagonalDown << endl;
 			OutputDebugString(wss.str().c_str());*/
 		} else {
-			position.x += moveRightSpeed*deltaTime;
+			float moveByX = moveRightSpeed*deltaTime;
+			position.x += moveByX;
+			drawPosition.x += moveByX;
 		}
 
 		if (!moving || facing != Facing::RIGHT) {
@@ -132,14 +104,24 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 		if (vertDirection < -10) {
 		// moving left & up
-			position.x -= moveDiagonalRight*deltaTime;
-			position.y -= moveDiagonalDown*deltaTime;
+			float moveByX = moveDiagonalRight*deltaTime;
+			float moveByY = moveDiagonalDown*deltaTime;
+			position.x -= moveByX;
+			position.y -= moveByY;
+			drawPosition.x -= moveByX;
+			drawPosition.y -= moveByY;
 		} else if (vertDirection > 10) {
 			// moving left & down
-			position.x -= moveDiagonalRight*deltaTime;
-			position.y += moveDiagonalDown*deltaTime;
+			float moveByX = moveDiagonalRight*deltaTime;
+			float moveByY = moveDiagonalDown*deltaTime;
+			position.x -= moveByX;
+			position.y += moveByY;
+			drawPosition.x -= moveByX;
+			drawPosition.y += moveByY;
 		} else {
-			position.x -= moveRightSpeed*deltaTime;
+			float moveByX = moveRightSpeed*deltaTime;
+			position.x -= moveByX;
+			drawPosition.x -= moveByX;
 		}
 
 		if (!moving || facing != Facing::LEFT) {
@@ -148,6 +130,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			facing = Facing::LEFT;
 			spriteEffects = SpriteEffects_FlipHorizontally;
 		}
+
 		waiting = false;
 		return true;
 	}
@@ -155,7 +138,9 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 	if (vertDirection < -10) {
 		// moving up
-		position.y -= moveDownSpeed*deltaTime;
+		float moveByY = moveDownSpeed*deltaTime;
+		position.y -= moveByY;
+		drawPosition.y -= moveByY;
 		if (!moving || facing != Facing::UP) {
 			loadAnimation("walk up");
 			moving = true;
@@ -167,7 +152,9 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 	if (vertDirection > 10) {
 	   // moving down
-		position.y += moveDownSpeed*deltaTime;
+		float moveByY = moveDownSpeed*deltaTime;
+		position.y += moveByY;
+		drawPosition.y += moveByY;
 		if (!moving || facing != Facing::DOWN) {
 			loadAnimation("walk down");
 			moving = true;
@@ -180,17 +167,22 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	return false;
 }
 
+
 void PlayerCharacter::loadAnimation(const pugi::char_t* name) {
 
 	currentAnimation = assetSet->getAnimation(name);
 	currentFrameIndex = 0;
 	currentFrameTime = 0;
+
+	drawPosition = position;
+	drawPosition.y -= currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
+		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
 }
 
 
 void PlayerCharacter::draw(SpriteBatch* batch) {
 
-	batch->Draw(currentAnimation->texture.Get(), position,
+	batch->Draw(currentAnimation->texture.Get(), drawPosition,
 		&currentAnimation->animationFrames[currentFrameIndex]->sourceRect, tint, rotation,
 		origin, scale, spriteEffects, layerDepth);
 }

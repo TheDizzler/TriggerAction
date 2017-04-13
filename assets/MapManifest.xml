@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Map Legend" dir="assets/maps/">
 	<map name="Test Square" file="Test Square.tmx" />
+	<map name="Test Square B" file="Test Square B.tmx" />
+	<map name="Test Square C" file="Test Square C.tmx" />
 </root>

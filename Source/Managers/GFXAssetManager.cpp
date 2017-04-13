@@ -92,6 +92,7 @@ shared_ptr<AssetSet> const GFXAssetManager::getAssetSet(const char_t* setName) {
 
 
 #include "../DXTKGui/StringHelper.h"
+#include "../Engine/GameEngine.h"
 bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 	string assetsDir =
@@ -120,8 +121,9 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 		gfxAsset.reset(new GraphicsAsset());
 		if (!gfxAsset->load(device, StringHelper::convertCharStarToWCharT(file), origin)) {
 			wstringstream wss;
-			wss << "Unable to load texture file: " << file;
-			MessageBox(0, wss.str().c_str(), L"Critical error", MB_OK);
+			wss << "Unable to load texture file: " << file << " in GFX Asset Manager.";
+			//MessageBox(0, wss.str().c_str(), L"Critical error", MB_OK);
+			GameEngine::errorMessage(wss.str(), L"Critical error");
 			return false;
 		}
 

@@ -47,7 +47,8 @@ public:
 			else if (!Globals::FULL_SCREEN && showMessageBox)
 				MessageBox(NULL, wss.str().c_str(), failTitle.c_str(), MB_OK | MB_ICONERROR);
 
-			OutputDebugString(wss.str().c_str()); // always output debug just in case
+			failTitle += L" >> " + failMessage + L"\n\tHRESULT: " + err.ErrorMessage() + L"\n";
+			OutputDebugString(failTitle.c_str()); // always output debug just in case
 			return true;
 		}
 
@@ -62,7 +63,8 @@ public:
 		if (!Globals::FULL_SCREEN && showMessageBox)
 			MessageBox(NULL, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 
-		OutputDebugString(message.c_str()); // always output debug just in case
+		title += L" >> " + message;
+		OutputDebugString(title.c_str()); // always output debug just in case
 	}
 
 
@@ -72,8 +74,8 @@ public:
 		errorDialog->setText(message);
 		showDialog = errorDialog.get();
 		if (outputDebug) {
-			message += L"\n";
-			OutputDebugString(message.c_str());
+			title += L" >> " + message = L"\n";
+			OutputDebugString(title.c_str());
 		}
 	}
 
@@ -107,7 +109,7 @@ private:
 	static unique_ptr<Dialog> errorDialog;
 	/* Minor error dialog. Choice between exit game and continue. */
 	static unique_ptr<Dialog> warningDialog;
-	
+
 };
 
 class QuitButtonListener : public Button::OnClickListener {

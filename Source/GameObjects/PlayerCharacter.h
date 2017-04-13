@@ -33,11 +33,14 @@ private:
 	double currentFrameTime = -1;
 	int currentFrameIndex = 0;
 
+	/* Top-left corner of current sprite. */
+	Vector2 drawPosition;
+	/* Position is bottom-left corner of sprite. */
 	Vector2 position;
 	Vector2 origin;
 	Color tint = DirectX::Colors::White.v;
 	float rotation = 0.0f;
-	float layerDepth = 0.0f;
+	float layerDepth = 0.1f;
 	Vector2 scale = Vector2(1, 1);
 	SpriteEffects spriteEffects = SpriteEffects_None;
 

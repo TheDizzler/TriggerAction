@@ -16,7 +16,7 @@ bool GraphicsAsset::load(ComPtr<ID3D11Device> device, const wchar_t* textureFile
 	bool showMessageBox) {
 
 	wostringstream wss;
-	wss << L"Unable to load texture file: " << textureFile;
+	wss << L"Unable to load texture file: " << textureFile << " in GraphicsAsset::load().";
 
 	if (StringHelper::reportError(
 		CreateDDSTextureFromFile(device.Get(), textureFile,
