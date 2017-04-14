@@ -159,6 +159,9 @@
     <ClCompile Include="Source\GameObjects\Tangible.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GameObjects\CharacterData.cpp">
+      <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controls\Button.h">
@@ -281,9 +284,16 @@
     <ClInclude Include="Source\GameObjects\Tangible.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GameObjects\CharacterData.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="assets\AssetManifest.xml" />
     <Xml Include="assets\MapManifest.xml" />
+    <Xml Include="assets\Character Data - Frog.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="assets\Character Data - Marle.xml" />
   </ItemGroup>
 </Project>

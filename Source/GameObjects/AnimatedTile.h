@@ -30,7 +30,7 @@ public:
 protected:
 	shared_ptr<Animation> animation;
 	int currentFrameIndex = -1;
-
+	float currentFrameDuration = 0;
 	double currentFrameTime = 0;
 
 

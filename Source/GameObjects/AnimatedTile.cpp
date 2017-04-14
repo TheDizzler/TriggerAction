@@ -34,13 +34,14 @@ void AnimatedTile::load(shared_ptr<AnimationAsset> animAsset) {
 void AnimatedTile::update(double deltaTime) {
 
 	currentFrameTime += deltaTime;
-	if (currentFrameTime >= animation->timePerFrame) {
+	if (currentFrameTime >= currentFrameDuration) {
 		if (++currentFrameIndex >= animation->animationFrames.size())
 			if (repeats)
 				currentFrameIndex = 0;
 			else
 				isAlive = false;
 		currentFrameTime = 0;
+		currentFrameDuration = animation->animationFrames[currentFrameIndex]->frameTime;
 	}
 }
 

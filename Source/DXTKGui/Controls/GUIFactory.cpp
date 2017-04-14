@@ -694,6 +694,8 @@ bool GUIFactory::getGUIAssetsFromXML() {
 
 			const char_t* name = animationNode.attribute("name").as_string();
 
+			float timePerFrame = animationNode.attribute("timePerFrame").as_float();
+
 			vector<shared_ptr<Frame>> frames;
 			for (xml_node spriteNode = animationNode.child("sprite"); spriteNode;
 				spriteNode = spriteNode.next_sibling("sprite")) {
@@ -705,13 +707,16 @@ bool GUIFactory::getGUIAssetsFromXML() {
 				rect.right = rect.left + spriteNode.attribute("width").as_int();
 				rect.bottom = rect.top + spriteNode.attribute("height").as_int();
 				shared_ptr<Frame> frame;
-				frame.reset(new Frame(rect));
+				if (spriteNode.attribute("frameTime"))
+					frame.reset(new Frame(rect, spriteNode.attribute("frameTime").as_float()));
+				else
+					frame.reset(new Frame(rect, timePerFrame));
 				frames.push_back(move(frame));
 
 			}
-			float frameTime = animationNode.attribute("timePerFrame").as_float();
+			
 			shared_ptr<Animation> animationAsset;
-			animationAsset.reset(new Animation(masterAsset->getTexture(), frames, frameTime));
+			animationAsset.reset(new Animation(masterAsset->getTexture(), frames));
 			animationMap[name] = animationAsset;
 		}
 

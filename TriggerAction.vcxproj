@@ -188,6 +188,7 @@
     <ClCompile Include="Source\Engine\Joystick.cpp" />
     <ClCompile Include="Source\Engine\main.cpp" />
     <ClCompile Include="Source\GameObjects\AnimatedTile.cpp" />
+    <ClCompile Include="Source\GameObjects\CharacterData.cpp" />
     <ClCompile Include="Source\GameObjects\IElement3D.cpp" />
     <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp" />
     <ClCompile Include="Source\GameObjects\Tangible.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="Source\Engine\Input.h" />
     <ClInclude Include="Source\Engine\Joystick.h" />
     <ClInclude Include="Source\GameObjects\AnimatedTile.h" />
+    <ClInclude Include="Source\GameObjects\CharacterData.h" />
     <ClInclude Include="Source\GameObjects\IElement3D.h" />
     <ClInclude Include="Source\GameObjects\PlayerCharacter.h" />
     <ClInclude Include="Source\GameObjects\Tangible.h" />
@@ -244,9 +246,13 @@
     <Xml Include="assets\AssetManifest.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="assets\Character Data - Frog.xml" />
     <Xml Include="assets\MapManifest.xml">
       <SubType>Designer</SubType>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="assets\Character Data - Marle.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

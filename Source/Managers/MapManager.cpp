@@ -69,7 +69,7 @@ TileAsset::~TileAsset() {
 }
 
 AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
-	vector<shared_ptr<Frame>> frames, float frameTime) :Animation(tex, frames, frameTime) {
+	vector<shared_ptr<Frame>> frames) :Animation(tex, frames) {
 }
 
 AnimationAsset::~AnimationAsset() {
@@ -264,7 +264,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 			xml_node animNode = tileNode.child("animation");
 			if (animNode) {
 				vector<shared_ptr<Frame>> frames;
-				float frameTime;
+				
 				for (xml_node frameNode : animNode.children("frame")) {
 
 					USHORT frameID = frameNode.attribute("tileid").as_int() + firstGid;
@@ -275,16 +275,17 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 					rect.right = rect.left + frameTile->getWidth();
 					rect.bottom = rect.top + frameTile->getHeight();
 					shared_ptr<Frame> frame;
-					frame.reset(new Frame(rect));
+					float frameTime = frameNode.attribute("duration").as_float() / 1000;
+					frame.reset(new Frame(rect, frameTime));
 					frames.push_back(move(frame));
-					frameTime = frameNode.attribute("duration").as_float() / 1000;
+					
 					// remove from assets (?)
 					map->assetMap.erase(frameID); // (???) if there are any properties they will be lost!
 				}
 
 
 				shared_ptr<AnimationAsset> animationAsset;
-				animationAsset.reset(new AnimationAsset(mapAsset->getTexture(), frames, frameTime));
+				animationAsset.reset(new AnimationAsset(mapAsset->getTexture(), frames));
 				animationAsset->mask = tile->mask;
 				for (auto& hb : tile->hitboxes)
 					animationAsset->hitboxes.push_back(move(hb));

@@ -4,16 +4,18 @@
 
 
 struct Frame {
-	Frame(RECT srcRect) : sourceRect(srcRect) {
+	Frame(RECT srcRect, float timeForFrame) : sourceRect(srcRect), frameTime(timeForFrame) {
 	}
 	/* Rectangle which contains sprite in spritesheet. */
 	RECT sourceRect;
+
+	float frameTime;
 };
 
 struct Animation {
 
-	Animation(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames, float frameTime)
-		: texture(tex), animationFrames(frames), timePerFrame(frameTime) {
+	Animation(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames/*, float frameTime*/)
+		: texture(tex), animationFrames(frames)/*, timePerFrame(frameTime)*/ {
 	}
 	~Animation() {
 		animationFrames.clear();
@@ -21,7 +23,7 @@ struct Animation {
 
 	vector<shared_ptr<Frame>> animationFrames;
 	ComPtr<ID3D11ShaderResourceView> texture;
-	float timePerFrame;
+	//float timePerFrame;
 
 };
 

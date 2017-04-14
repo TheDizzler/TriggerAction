@@ -75,8 +75,6 @@ bool GameEngine::initGFXAssets() {
 	// get graphical assets from xml file
 	docAssMan.reset(new pugi::xml_document());
 	if (!docAssMan->load_file(GUIAssets::assetManifestFile)) {
-		/*MessageBox(0, L"Could not read AssetManifest file!",
-			L"Fatal Read Error!", MB_OK);*/
 		GameEngine::errorMessage(L"Could not read AssetManifest file!",
 			L"Fatal Read Error!");
 		return false;
@@ -94,8 +92,8 @@ bool GameEngine::initGFXAssets() {
 
 	initErrorDialogs();
 
-	xml_node gfxAssetsNode = docAssMan->child("root").child("gfx");
-	gfxAssets = make_unique<GFXAssetManager>(gfxAssetsNode);
+	
+	gfxAssets = make_unique<GFXAssetManager>(docAssMan->child("root"));
 	if (!gfxAssets->initialize(device)) {
 		showErrorDialog(L"Failed to load GFXAssets Manager", L"Fatal Error");
 		return false;

@@ -1,6 +1,8 @@
 #include "../pch.h"
 #include "LevelScreen.h"
 
+vector<const Hitbox*> hitboxesAll;
+
 
 LevelScreen::LevelScreen(vector<shared_ptr<Joystick>> joys) {
 	joysticks = joys;
@@ -15,11 +17,12 @@ bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 
 	for (int i = 0; i < joysticks.size(); ++i) {
 		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(joysticks[i]);
-		shared_ptr<AssetSet> assetSet = gfxAssets->getAssetSet(characters[i]);
-		if (!assetSet)
+		const CharacterData* dataSet = gfxAssets->getPlayerData(characters[i]);
+		if (!dataSet)
 			return false;
+		newPC->initialize(dataSet, i);
 
-		newPC->initialize(assetSet, i);
+		hitboxesAll.push_back(newPC->getHitbox());
 		pcs.push_back(move(newPC));
 	}
 	return true;
@@ -34,6 +37,9 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	map.reset();
 	map = move(newMap);
+
+	for (const auto& pc : pcs)
+		pc->setInitialPosition();
 }
 
 
@@ -58,4 +64,5 @@ void LevelScreen::draw(SpriteBatch * batch) {
 }
 
 void LevelScreen::pause() {
+	game->confirmExit();
 }

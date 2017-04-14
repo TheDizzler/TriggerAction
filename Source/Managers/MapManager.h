@@ -21,7 +21,7 @@ public:
 class AnimationAsset : public Animation {
 public:
 
-	AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames, float frameTime);
+	AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames);
 	~AnimationAsset();
 
 	map<string, string> properties;

@@ -9,7 +9,7 @@ Hitbox::Hitbox(int rowdata[5]) {
 
 }
 
-Hitbox::Hitbox(_In_ Hitbox* copybox) {
+Hitbox::Hitbox(const Hitbox* copybox) {
 
 	position = copybox->position;
 	size = copybox->size;
@@ -62,4 +62,22 @@ bool Hitbox::contains(const Vector2 & point) const {
 
 Tangible::~Tangible() {
 	subHitboxes.clear();
+}
+
+#include "../Engine/GameEngine.h"
+void Tangible::debugUpdate(Vector2 moveAmount) {
+
+	if (!testFrame.get())
+		testFrame.reset(guiFactory->createRectangleFrame(
+			Vector2(hitbox->position.x, hitbox->position.y), Vector2(hitbox->size.x, hitbox->size.y)));
+
+	testFrame->moveBy(moveAmount);
+}
+void Tangible::debugDraw(SpriteBatch* batch) {
+
+	if (!testFrame.get())
+		testFrame.reset(guiFactory->createRectangleFrame(
+			Vector2(hitbox->position.x, hitbox->position.y), Vector2(hitbox->size.x, hitbox->size.y)));
+
+	testFrame->draw(batch);
 }

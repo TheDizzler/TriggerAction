@@ -1,21 +1,31 @@
 #include "../pch.h"
 #include "GFXAssetManager.h"
 
-GFXAssetManager::GFXAssetManager(xml_node gfxAN) {
-	gfxAssetsNode = gfxAN;
+GFXAssetManager::GFXAssetManager(xml_node assetManifestRoot) {
+
+	characterDataNode = assetManifestRoot.child("characterData");
+	gfxAssetsNode = assetManifestRoot.child("gfx");
 }
 
 GFXAssetManager::~GFXAssetManager() {
 	assetMap.clear();
 	animationMap.clear();
 	setMap.clear();
+	characterDataMap.clear();
 }
 
+#include "../Engine/GameEngine.h"
 bool GFXAssetManager::initialize(ComPtr<ID3D11Device> device) {
 
 	if (!getGFXAssetsFromXML(device)) {
-		MessageBox(0, L"Sprite retrieval from Asset Manifest failed.",
-			L"Epic failure", MB_OK);
+		GameEngine::showErrorDialog(
+			L"Sprite retrieval from Asset Manifest failed.", L"Epic failure");
+		return false;
+	}
+
+	if (!getCharacterDataFromXML(device)) {
+		GameEngine::showErrorDialog(
+			L"Character gfx retrieval from Asset Manifest failed.", L"Epic failure");
 		return false;
 	}
 	return true;
@@ -54,10 +64,10 @@ shared_ptr<Animation> GFXAssetManager::getAnimation(const char_t* animationName)
 		rect.right = gfxAsset->getWidth();
 		rect.bottom = gfxAsset->getHeight();
 		shared_ptr<Frame> frame;
-		frame.reset(new Frame(rect));
+		frame.reset(new Frame(rect, frameTime));
 		frames.push_back(move(frame));
 		shared_ptr<Animation> animationAsset;
-		animationAsset.reset(new Animation(gfxAsset->getTexture(), frames, frameTime));
+		animationAsset.reset(new Animation(gfxAsset->getTexture(), frames));
 		animationMap[animationName] = animationAsset;
 
 	}
@@ -91,8 +101,9 @@ shared_ptr<AssetSet> const GFXAssetManager::getAssetSet(const char_t* setName) {
 }
 
 
+
+
 #include "../DXTKGui/StringHelper.h"
-#include "../Engine/GameEngine.h"
 bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 	string assetsDir =
@@ -139,23 +150,78 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 			assetMap[check] = move(gfxAsset);
 	}
 
+	if (!getSpriteSheetData(device, gfxAssetsNode, gfxDir)) {
+		wostringstream wss;
+		wss << L"Could not read spritesheet data " << gfxDir.c_str() << L"!";
+		GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
+		return false;
 
-	for (xml_node spritesheetNode = gfxAssetsNode.child("spritesheet");
+	}
+
+
+
+	return true;
+}
+
+
+const CharacterData* GFXAssetManager::getPlayerData(string characterName) {
+	return characterDataMap[characterName].get();
+}
+
+bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
+
+	string assetsDir = gfxAssetsNode.parent().attribute("dir").as_string();
+
+	for (xml_node characterNode : characterDataNode.children()) {
+
+		string name = characterNode.attribute("name").as_string();
+
+		unique_ptr<xml_document> charDoc = make_unique<xml_document>();
+		string file = assetsDir + characterNode.attribute("file").as_string();
+		if (!charDoc->load_file(file.c_str())) {
+			wostringstream wss;
+			wss << L"Could not read " << file.c_str() << L" file!";
+			GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
+			return false;
+		}
+
+		xml_node characterDataRoot = charDoc->child("root");
+		string assetsDir = characterDataRoot.attribute("dir").as_string();
+
+
+		if (!getSpriteSheetData(device, characterDataRoot, assetsDir)) {
+			wostringstream wss;
+			wss << L"Could not read spritesheet data in " << file.c_str() << L" file!";
+			GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
+			return false;
+		}
+
+		unique_ptr<CharacterData> characterData = make_unique<CharacterData>(name);
+		characterData->loadData(characterDataRoot, getAssetSet(characterNode.attribute("name").as_string()));
+		characterDataMap[name] = move(characterData);
+	}
+	return true;
+}
+
+
+bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node gfxNode, string assetDir) {
+
+
+	for (xml_node spritesheetNode = gfxNode.child("spritesheet");
 		spritesheetNode; spritesheetNode = spritesheetNode.next_sibling("spritesheet")) {
 
-		string file_s = gfxDir + spritesheetNode.attribute("file").as_string();
+		string file_s = assetDir + spritesheetNode.attribute("file").as_string();
 		const char_t* file = file_s.c_str();
 
 		// the spritesheet itself is never saved into the map
 		unique_ptr<GraphicsAsset> masterAsset;
 		masterAsset.reset(new GraphicsAsset());
 		if (!masterAsset->load(device, StringHelper::convertCharStarToWCharT(file))) {
-			//MessageBox(0, L"Failed", L"Failed", MB_OK);
 			return false;
 		}
 
 
-	// parse all animations from spritesheet
+		// parse all animations from spritesheet
 		for (xml_node animationNode = spritesheetNode.child("animation");
 			animationNode; animationNode = animationNode.next_sibling("animation")) {
 
@@ -163,12 +229,13 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 			vector<shared_ptr<Frame>> frames;
 
+			float timePerFrame = animationNode.attribute("timePerFrame").as_float();
 
 			if (animationNode.attribute("interval")) {
 				int interval = animationNode.attribute("interval").as_int();
 				xml_node spriteNode = animationNode.child("sprite");
 
-				for (int i = 1; i < animationNode.attribute("num").as_int(); ++i) {
+				for (int i = 0; i < animationNode.attribute("num").as_int(); ++i) {
 					RECT rect;
 					rect.left = spriteNode.attribute("x").as_int()
 						+ (spriteNode.attribute("width").as_int() + interval) * i;
@@ -176,13 +243,9 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 					rect.right = rect.left + spriteNode.attribute("width").as_int();
 					rect.bottom = rect.top + spriteNode.attribute("height").as_int();
 					shared_ptr<Frame> frame;
-					frame.reset(new Frame(rect));
+					frame.reset(new Frame(rect, timePerFrame));
 					frames.push_back(move(frame));
-					//for (int i = 1; i < animationNode.attribute("num").as_int(); ++i) {
-					//rect.left = rect.right + interval*i;
-					//rect.right = rect.left + spriteNode.attribute("width").as_int();
-					//frame.reset(new Frame(rect));
-					//frames.push_back(move(frame));
+
 				}
 
 			} else {
@@ -194,16 +257,20 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 					rect.top = spriteNode.attribute("y").as_int();
 					rect.right = rect.left + spriteNode.attribute("width").as_int();
 					rect.bottom = rect.top + spriteNode.attribute("height").as_int();
+
 					shared_ptr<Frame> frame;
-					frame.reset(new Frame(rect));
+					if (spriteNode.attribute("frameTime"))
+						frame.reset(new Frame(rect, spriteNode.attribute("frameTime").as_float()));
+					else
+						frame.reset(new Frame(rect, timePerFrame));
 					frames.push_back(move(frame));
 
 				}
 			}
 
-			float frameTime = animationNode.attribute("timePerFrame").as_float();
+			//float frameTime = animationNode.attribute("timePerFrame").as_float();
 			shared_ptr<Animation> animationAsset;
-			animationAsset.reset(new Animation(masterAsset->getTexture(), frames, frameTime));
+			animationAsset.reset(new Animation(masterAsset->getTexture(), frames));
 			if (animationNode.attribute("set")) {
 				string setName = animationNode.attribute("set").as_string();
 				if (setMap.find(setName) == setMap.end()) {
@@ -215,7 +282,6 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 			} else
 				animationMap[name] = animationAsset;
 		}
-
 		// parse all single sprites from spritesheet
 		for (xml_node spriteNode = spritesheetNode.child("sprite"); spriteNode;
 			spriteNode = spriteNode.next_sibling("sprite")) {
@@ -252,7 +318,6 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 		}
 
 	}
-
 	return true;
 }
 /**** ***** GFXAssetManager END ***** ****/

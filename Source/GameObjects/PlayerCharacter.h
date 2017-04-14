@@ -2,22 +2,33 @@
 
 #include "../Managers/GFXAssetManager.h"
 #include "../Engine/Joystick.h"
+#include "Tangible.h"
 
 
 static enum Facing {
 	RIGHT, DOWN, LEFT, UP
 };
 
-class PlayerCharacter {
+class PlayerCharacter : public Tangible {
 public:
 	PlayerCharacter(shared_ptr<Joystick> joystick);
 	~PlayerCharacter();
 
-	virtual void initialize(const shared_ptr<AssetSet> characterAssetSet, int startingPosition);
+	virtual void initialize(const CharacterData* characterData, int startingPosition);
+	void setInitialPosition();
 
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
 
+	virtual bool checkCollisionWith(const Hitbox * hitbox) const override;
+
+	int getHeight() const;
+	virtual const Hitbox* getHitbox() const override;
+	virtual void moveBy(const Vector3 & moveVector) override;
+	virtual void setPosition(const Vector3 & position) override;
+
+	string name;
+	size_t playerNumber = -1;
 private:
 
 	shared_ptr<Joystick> joystick;
@@ -30,13 +41,14 @@ private:
 
 	int facing = RIGHT;
 
+	float currentFrameDuration = 0;
 	double currentFrameTime = -1;
 	int currentFrameIndex = 0;
 
 	/* Top-left corner of current sprite. */
 	Vector2 drawPosition;
 	/* Position is bottom-left corner of sprite. */
-	Vector2 position;
+	Vector3 position;
 	Vector2 origin;
 	Color tint = DirectX::Colors::White.v;
 	float rotation = 0.0f;
@@ -59,6 +71,8 @@ private:
 	float moveDiagonalRight = radius * cos(Q);
 	float moveDiagonalDown = radius * sin(Q);
 	float runRightSpeed = 100;
+
+
 
 
 };

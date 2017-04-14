@@ -6,6 +6,9 @@
 
 static const char_t* characters[] = {"Marle", "Frog"};
 
+extern vector<const Hitbox*> hitboxesAll;
+
+
 class LevelScreen : public Screen {
 public:
 
