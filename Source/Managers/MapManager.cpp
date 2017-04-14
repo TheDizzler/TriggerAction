@@ -59,30 +59,32 @@ void Map::loadMapDescription(xml_node mapRoot) {
 
 	depthPerTile = (NEAREST_DEPTH - FURTHEST_DEPTH) / mapHeight;
 	depthPerPixel = (NEAREST_DEPTH - FURTHEST_DEPTH) / trueMapHeight;
-	//double depth = .9;
-	//for (int row = mapHeight - 1; row >= 0; --row) {
-		//layerDepthMap[row] = depth;
-		//wostringstream wss;
-		//wss << "row " << row << " has depth of " << depth << endl;
-		//OutputDebugString(wss.str().c_str());
-		//depth -= .1;
-		//if (depth < .1)
-			//depth = .9;
-//}
 }
+
+
 
 TileAsset::~TileAsset() {
 	properties.clear();
+	hitboxes.clear();
+}
+
+AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
+	vector<shared_ptr<Frame>> frames, float frameTime) :Animation(tex, frames, frameTime) {
+}
+
+AnimationAsset::~AnimationAsset() {
+	properties.clear();
+	hitboxes.clear();
 }
 
 Map::Layer::~Layer() {
 	tiles.clear();
-	animations.clear();
+	//animations.clear();
 }
 
 void Map::Layer::update(double deltaTime) {
-	for (const auto& anim : animations)
-		anim->update(deltaTime);
+	for (const auto& tile : tiles)
+		tile->update(deltaTime);
 }
 
 
@@ -90,9 +92,6 @@ void Map::Layer::draw(SpriteBatch* batch) {
 
 	for (const auto& tile : tiles)
 		tile->draw(batch);
-	for (const auto& anim : animations)
-		anim->draw(batch);
-
 }
 
 
@@ -172,7 +171,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 			shared_ptr<TileAsset> tile = map->assetMap[gid];
 			xml_node propertiesNode = tileNode.child("properties");
 			if (propertiesNode) {
-				// get propertie info
+
 				for (xml_node propertyNode : propertiesNode.children("property")) {
 					string propertyname = propertyNode.attribute("name").as_string();
 
@@ -204,16 +203,12 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							//int x; int y; int width; int height; int z;
 							string substr = line.substr(xloc);
 							istringstream(substr) >> rowdata[0];
-
 							substr = line.substr(yloc);
 							istringstream(substr) >> rowdata[1];
-
 							substr = line.substr(widthloc);
 							istringstream(substr) >> rowdata[2];
-
 							substr = line.substr(heightloc);
 							istringstream(substr) >> rowdata[3];
-
 							substr = line.substr(zloc);
 							istringstream(substr) >> rowdata[4];
 
@@ -227,8 +222,35 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 						}
 
+					} else if (propertyname.compare("mask") == 0) {
+
+						Vector2 mask;
+
+
+						string str = propertyNode.attribute("value").as_string();
+
+						istringstream datastream(str);
+						string line;
+						vector<vector<int>> data;
+						while (getline(datastream, line)) {
+							line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+							if (line.length() <= 0)
+								continue;
+
+							size_t xloc = line.find("x=") + 2;
+							size_t yloc = line.find("y=") + 2;
+
+							string substr = line.substr(xloc);
+							istringstream(substr) >> mask.x;
+							substr = line.substr(yloc);
+							istringstream(substr) >> mask.y;
+
+							mask.y *= -1;
+							tile->mask = mask;
+
+						}
 					} else {
-						// generic (not yet uses?) properties
+						// generic (not yet used?) properties
 						if (propertyNode.attribute("value"))
 							tile->properties[propertyNode.attribute("name").as_string()]
 							= propertyNode.attribute("value").as_string();
@@ -261,12 +283,16 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 				}
 
 
-				shared_ptr<Animation> animationAsset;
-				animationAsset.reset(new Animation(mapAsset->getTexture(), frames, frameTime));
-				//animationAsset->
-				// store animation in map then remove from assets(?)
+				shared_ptr<AnimationAsset> animationAsset;
+				animationAsset.reset(new AnimationAsset(mapAsset->getTexture(), frames, frameTime));
+				animationAsset->mask = tile->mask;
+				for (auto& hb : tile->hitboxes)
+					animationAsset->hitboxes.push_back(move(hb));
+				animationAsset->properties = tile->properties;
+
+				// store animation in map then remove from assets
 				map->animationMap[gid] = animationAsset;
-				//map->assetMap.erase(gid); //(??) if there are any properties they will be lost!
+				map->assetMap.erase(gid);  // no point in keeping it since the hitboxes are gone
 			}
 		}
 	}
@@ -276,17 +302,18 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 bool MapParser::loadLayerData(xml_node mapRoot) {
 
-	// will approx layerdepth by parsing order
-	
+
+	float layerDepthNudge = .01 * Map::depthPerPixel;
 
 	for (xml_node layerNode : mapRoot.children("layer")) {
 
+		layerDepthNudge += layerDepthNudge;
 		xml_node dataNode = layerNode.child("data");
 		string layerName = layerNode.attribute("name").as_string();
 
 
 		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>(layerName);
-		
+
 
 		string str = dataNode.text().as_string();
 
@@ -310,7 +337,11 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 
 				float layerDepth = 0;
 				if (layerName.compare("ground") == 0)
+					layerDepth = 0.06;
+				else if (layerName.compare("background") == 0)
 					layerDepth = 0;
+				else if (layerName.compare("foreground") == 0)
+					layerDepth = .91;
 				else
 					layerDepth = map->getLayerDepth(position.y);
 
@@ -329,25 +360,25 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						unique_ptr<Tile> tile = make_unique<Tile>();
 						tile->load(tileAsset);
 						tile->setOrigin(Vector2(0, tile->getHeight()));
-						tile->setPosition(position);
 						tile->setLayerDepth(layerDepth);
+						tile->setPosition(position);
 						layer->tiles.push_back(move(tile));
 					} else {
 						unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
 						tile->load(tileAsset);
 						tile->setOrigin(Vector2(0, tile->getHeight()));
-						tile->setPosition(position);
 						tile->setLayerDepth(layerDepth);
+						tile->setPosition(position);
 						layer->tiles.push_back(move(tile));
 					}
 				} else {
 
 					unique_ptr<AnimatedTile> anim = make_unique<AnimatedTile>();
 					anim->load(map->animationMap[gid]);
-					anim->setLayerDepth(layerDepth);
+					anim->setLayerDepth(layerDepth, layerDepthNudge);
 					anim->setOrigin(Vector2(0, anim->getHeight()));
 					anim->setPosition(position);
-					layer->animations.push_back(move(anim));
+					layer->tiles.push_back(move(anim));
 				}
 
 			}

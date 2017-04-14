@@ -70,7 +70,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			position.x += moveByX;
 			position.y -= moveByY;
 			drawPosition.x += moveByX;
-			drawPosition.y += moveByY;
+			drawPosition.y -= moveByY;
 		} else if (vertDirection > 10) {
 			// moving right & down
 			float moveByX = moveDiagonalRight*deltaTime;

@@ -46,7 +46,7 @@ private:
 
 	bool moving = false;
 	bool waiting = false;
-	float moveRightSpeed = 50;
+	float moveRightSpeed = 75;
 	float moveDownSpeed = moveRightSpeed * 2 / 3;
 	/* Precalculate diagonal radius (at 45 degree) since it will always be the same
 		(speed and direction don't change).

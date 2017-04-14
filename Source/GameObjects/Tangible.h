@@ -15,8 +15,9 @@ struct Hitbox {
 	/* !! Does not account for z height !! */
 	bool contains(const Vector2& point) const;
 
-	/* Position relative to bottom-left of sprite containing this hotbox. */
-	Vector3 position; // (x, y, height above y)
+	/* Position relative to bottom-left of sprite containing this hotbox.
+		position(x, y, height above y)*/
+	Vector3 position;
 	Vector3 size; // (width, height, z)
 };
 
@@ -27,9 +28,9 @@ public:
 
 	~Tangible();
 
+	virtual bool checkCollisionWith(const Hitbox* hitbox) const = 0;
 
 	virtual const Hitbox* getHitbox() const = 0;
-
 	virtual void moveBy(const Vector3& moveVector) = 0;
 	virtual void setPosition(const Vector3& position) = 0;
 protected:
@@ -37,5 +38,18 @@ protected:
 	/** Hit tests should check if objects collide in x and y axii of main hitbox before
 	checking any other hitboxes. */
 	vector<unique_ptr<Hitbox> > subHitboxes;
+
+};
+
+
+class Maskable {
+public:
+
+	virtual void moveBy(const Vector3& moveVector) = 0;
+	virtual void setPosition(const Vector3& position) = 0;
+
+protected:
+/** Position of mask relative to bottom-left of containing IElement. */
+	Vector2 maskPosition = Vector2::Zero;
 
 };

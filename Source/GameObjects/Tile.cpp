@@ -2,6 +2,33 @@
 #include "Tile.h"
 
 
+#include "../Managers/MapManager.h"
+void TileBase::moveBy(const Vector3 & moveVector) {
+
+	position += moveVector;
+	drawPosition.x += moveVector.x;
+	drawPosition.y += moveVector.y - moveVector.z;
+
+	if (layerDepth >= FURTHEST_DEPTH && layerDepth <= NEAREST_DEPTH)
+		setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
+}
+
+void TileBase::setPosition(const Vector3& newpos) {
+
+	position = newpos;
+	drawPosition.x = position.x;
+	drawPosition.y = (position.y - position.z);
+
+	if (layerDepth >= FURTHEST_DEPTH && layerDepth <= NEAREST_DEPTH)
+		setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
+}
+
+void TileBase::update(double deltaTime) {
+}
+
+
+
+
 Tile::Tile() {
 
 	rotation = 0.0f;
@@ -15,7 +42,7 @@ Tile::Tile() {
 
 
 
-#include "../Managers/MapManager.h"
+
 void Tile::load(TileAsset* const tileAsset) {
 
 	texture.Reset();
@@ -28,7 +55,10 @@ void Tile::load(TileAsset* const tileAsset) {
 
 	sourceRect = tileAsset->getSourceRect();
 
-
+	position = Vector3(0, 0, 0);
+	drawPosition.x = position.x;
+	drawPosition.y = position.y/* - height*/;
+	maskPosition = tileAsset->mask;
 }
 
 
@@ -38,6 +68,7 @@ void Tile::draw(SpriteBatch* batch) {
 }
 
 
+
 const int Tile::getWidth() const {
 	return width * scale.x;
 }
@@ -45,6 +76,8 @@ const int Tile::getWidth() const {
 const int Tile::getHeight() const {
 	return height * scale.y;
 }
+
+
 
 
 
@@ -78,30 +111,30 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 
 	position += moveVector;
 	drawPosition.x += moveVector.x;
-	drawPosition.y += moveVector.y + moveVector.z;
+	drawPosition.y += moveVector.y - moveVector.z;
+	
 	hitbox->position += moveVector;
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
+
+	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
 
 void TangibleTile::setPosition(const Vector3& newpos) {
 
-	Vector3 moveBy = position - newpos;
+	Vector3 moveBy = newpos - position;
 	position = newpos;
 	drawPosition.x = position.x;
-	drawPosition.y = position.y + position.z;
-
+	drawPosition.y = position.y - position.z;
 
 	hitbox->position += moveBy;
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveBy;
+
+	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
 
 const Hitbox* TangibleTile::getHitbox() const {
 	return hitbox.get();
 }
-
-
-
-
 

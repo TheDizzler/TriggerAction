@@ -4,7 +4,7 @@
 
 Hitbox::Hitbox(int rowdata[5]) {
 
-	position = Vector3(rowdata[0], rowdata[1], 0);
+	position = Vector3(rowdata[0], -rowdata[1], 0);
 	size = Vector3(rowdata[2], rowdata[3], rowdata[4]);
 
 }
@@ -60,31 +60,6 @@ bool Hitbox::contains(const Vector2 & point) const {
 
 
 
-
-
 Tangible::~Tangible() {
 	subHitboxes.clear();
 }
-
-//void Tangible::moveBy(const Vector3 & moveVector) {
-//
-//	position += moveVector;
-//	drawPosition.x += moveVector.x;
-//	drawPosition.y += moveVector.y + moveVector.z;
-//	hitbox->position += moveVector;
-//	for (const auto& subHB : subHitboxes)
-//		subHB->position += moveVector;
-//}
-//
-//void Tangible::setPosition(const Vector3& newpos) {
-//
-//	Vector3 moveBy = position - newpos;
-//	position = newpos;
-//	drawPosition.x = position.x;
-//	drawPosition.y = position.y + position.z;
-//
-//
-//	hitbox->position += moveBy;
-//	for (const auto& subHB : subHitboxes)
-//		subHB->position += moveBy;
-//}

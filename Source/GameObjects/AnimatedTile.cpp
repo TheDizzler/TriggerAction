@@ -16,14 +16,18 @@ AnimatedTile::AnimatedTile() {
 AnimatedTile::~AnimatedTile() {
 }
 
-void AnimatedTile::load(shared_ptr<Animation> anim) {
+#include "../Managers/MapManager.h"
+void AnimatedTile::load(shared_ptr<AnimationAsset> animAsset) {
 
-	animation = anim;
+	animation = animAsset;
 
 	if (animation->animationFrames.size() > 0)
 		currentFrameIndex = 0;
 
-
+	position = Vector3(0, 0, 0);
+	drawPosition.x = position.x;
+	drawPosition.y = position.y/* - getHeight()*/;
+	maskPosition = animAsset->mask;
 }
 
 
@@ -68,3 +72,4 @@ void AnimatedTile::reset() {
 	isAlive = true;
 	currentFrameIndex = 0;
 }
+

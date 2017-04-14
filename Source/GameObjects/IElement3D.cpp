@@ -9,21 +9,26 @@ const Vector3& IElement3D::getPosition() const {
 	return position;
 }
 
+#include "../Managers/MapManager.h"
 void IElement3D::moveBy(const Vector3& moveVector) {
 
 	position += moveVector;
 	drawPosition.x += moveVector.x;
 	drawPosition.y += moveVector.y + moveVector.z;
 
+	/*if (layerDepth >= .1 && layerDepth <= .9)
+		setLayerDepth(Map::getLayerDepth(position.y));*/
 }
+
 
 void IElement3D::setPosition(const Vector3& newpos) {
 
-	//Vector3 moveBy = position - newpos;
 	position = newpos;
 	drawPosition.x = position.x;
 	drawPosition.y = (position.y - position.z);
-	
+
+	/*if (layerDepth >= .1 && layerDepth <= .9)
+		setLayerDepth(Map::getLayerDepth(position.y));*/
 }
 
 
@@ -34,9 +39,15 @@ void IElement3D::setRotation(const float rot) {
 const float IElement3D::getLayerDepth() const {
 	return layerDepth;
 }
-void IElement3D::setLayerDepth(const float depth) {
-	layerDepth = depth;
+void IElement3D::setLayerDepth(const float depth, const float nudge) {
+	depthNudge = nudge;
+	layerDepth = depth + depthNudge;
 }
+
+void IElement3D::setLayerDepth(const float depth) {
+	layerDepth = depth + depthNudge;
+}
+
 const float IElement3D::getRotation() const {
 	return rotation;
 }

@@ -28,14 +28,17 @@ public:
 	//virtual void setTint(const XMVECTORF32 color);
 	//virtual void setAlpha(const float alpha);
 	virtual void setLayerDepth(const float depth);
-
+	/** Sometimes overlapping tiles have the same y-coord but one should always be on top.
+		Depth nudge makes sure this happens. */
+	virtual void setLayerDepth(const float depth, const float depthNudge);
+	
 protected:
 	Vector2 origin;
 	Color tint;
 	float rotation;
 	Vector2 scale;
 	float layerDepth;
-
+	float depthNudge = 0;
 	
 	/* Position is bottom left of sprite! 
 		x, y, and height above y (z). */

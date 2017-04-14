@@ -1,29 +1,25 @@
 #pragma once
 
-#include "IElement3D.h"
+#include "Tile.h"
 
-/** Animated Tiles have no hitbox. Required? */
-class AnimatedTile : public IElement3D {
+class AnimationAsset;
+
+/** Animated Tiles have no hitbox.  */
+class AnimatedTile : public TileBase {
 public:
 	
 	AnimatedTile();
 	~AnimatedTile();
 
-	void load(shared_ptr<Animation> animation);
+	void load(shared_ptr<AnimationAsset> animation);
 
-	virtual void update(double deltaTime);
+	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch * batch) override;
 
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
 	const RECT getRect() const;
-	//const Hitbox* getHitbox() const;
-	
 
-	
-
-	//virtual void moveBy(const Vector2 & moveVector) override;
-	//virtual void setPosition(const Vector2 & position) override;
 
 	
 
@@ -37,10 +33,5 @@ protected:
 
 	double currentFrameTime = 0;
 
-
-	Vector2 position;
-
-	Vector2 scale = Vector2(1, 1);
-	//unique_ptr<Hitbox> hitbox;
 
 };
