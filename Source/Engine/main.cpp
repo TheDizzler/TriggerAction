@@ -1,6 +1,13 @@
 #include "../pch.h"
 #pragma once
 
+#include <guiddef.h>
+//DEFINE_GUID(GUID_HID, 0x4D1E55B2L, 0xF16F, 0x11CF, 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30);
+//#define GUID_CLASS_INPUT GUID_HID
+
+#include <Mmsystem.h>
+#include <Setupapi.h>
+
 
 #include "GameEngine.h"
 
@@ -9,7 +16,7 @@ LPCTSTR wndClassName = L"Trigger Action";
 HWND hwnd;
 
 unique_ptr<GameEngine> gameEngine;
-HDEVNOTIFY newAudio = NULL;
+HDEVNOTIFY newInterface = NULL;
 
 double countsPerSecond = 0.0;
 __int64 counterStart = 0;
@@ -29,7 +36,9 @@ double getFrameTime();
 bool initWindow(HINSTANCE hInstance, int showWnd);
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+void updateDevice(PDEV_BROADCAST_DEVICEINTERFACE pDevInf, WPARAM wParam);
 
+GUID guidHid;
 
 
 void releaseResources() {
@@ -37,8 +46,8 @@ void releaseResources() {
 	if (Globals::FULL_SCREEN)
 		ChangeDisplaySettings(NULL, 0);
 
-	if (newAudio)
-		UnregisterDeviceNotification(newAudio);
+	if (newInterface)
+		UnregisterDeviceNotification(newInterface);
 
 	CoUninitialize();
 }
@@ -47,6 +56,20 @@ void releaseResources() {
 /** Main windows function.
 @nShowWnd how window should be displayed. Examples: SW_SHOWMAXIMIZED, SW_SHOW, SW_SHOWMINIMIZED. */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+	//DEFINE_GUID(GUID_HID, 0x4D1E55B2L, 0xF16F, 0x11CF, 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30);
+	//#define GUID_CLASS_INPUT GUID_HID
+	guidHid = GUID();
+	guidHid.Data1 = 0x4D1E55B2L;
+	guidHid.Data2 = 0xF16F;
+	guidHid.Data3 = 0x11CF;
+	guidHid.Data4[0] = 0x88;
+	guidHid.Data4[1] = 0xCB;
+	guidHid.Data4[2] = 0x00;
+	guidHid.Data4[3] = 0x11;
+	guidHid.Data4[4] = 0x11;
+	guidHid.Data4[5] = 0x00;
+	guidHid.Data4[6] = 0x00;
+	guidHid.Data4[7] = 0x30;
 
 	gameEngine.reset(new GameEngine());
 
@@ -62,13 +85,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 0;
 	}
 
-	// listen for new audio devices
-	DEV_BROADCAST_DEVICEINTERFACE filter = {0};
-	filter.dbcc_size = sizeof(filter);
-	filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-	filter.dbcc_classguid = KSCATEGORY_AUDIO;
+	// listen for new devices
+	DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
+	ZeroMemory(&NotificationFilter, sizeof(NotificationFilter));
+	NotificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+	NotificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+	//NotificationFilter.dbcc_classguid = KSCATEGORY_AUDIO;
+	newInterface = RegisterDeviceNotification(hwnd, &NotificationFilter,
+		DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
+	//if (dev_notify == NULL) {
+		//OutputDebugString(L"Could not register for devicenotifications!");
+	//}
 
-	newAudio = RegisterDeviceNotification(hwnd, &filter, DEVICE_NOTIFY_WINDOW_HANDLE);
 
 	messageLoop(); /* Main program loop */
 	releaseResources();
@@ -115,7 +143,7 @@ int Globals::WINDOW_WIDTH = 800;
 int Globals::WINDOW_HEIGHT = 600;
 int Globals::vsync_enabled = 1;
 bool Globals::FULL_SCREEN = false;
-// SNES resolution 512x448 max
+// SNES resolution 512x448 max (256x224 normally)
 
 bool initWindow(HINSTANCE hInstance, int showWnd) {
 
@@ -206,11 +234,11 @@ bool initWindow(HINSTANCE hInstance, int showWnd) {
 
 }
 
-#include <Mmsystem.h>
+
+
+
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
-	LPBYTE lpb;
-	UINT dwSize;
 
 	switch (msg) {
 		case WM_ACTIVATEAPP:
@@ -237,6 +265,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			registerControllers();
 
 			return 0;
+
 		case WM_INPUT:
 		{
 			PRAWINPUT pRawInput;
@@ -257,7 +286,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		}
 		return 0;
-		case MIM_DATA:
+		/*case MIM_DATA:
 		case 	MIM_ERROR:
 		case 	MIM_LONGDATA:
 		case 	MIM_LONGERROR:
@@ -269,7 +298,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case 	MM_MOM_OPEN:
 		case 	MM_MOM_POSITIONCB:
 			OutputDebugString(L"Ayy lmao!");
-			return 0;
+			return 0;*/
 		case WM_MOUSEMOVE:
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONUP:
@@ -293,19 +322,60 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 
 		case WM_DEVICECHANGE:
-			if (wParam == DBT_DEVICEARRIVAL) {
-				auto pDev = reinterpret_cast<PDEV_BROADCAST_HDR>(lParam);
-				if (pDev) {
-					if (pDev->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE) {
-						auto pInter = reinterpret_cast<const PDEV_BROADCAST_DEVICEINTERFACE>(pDev);
-						if (pInter->dbcc_classguid == KSCATEGORY_AUDIO) {
+		{
+
+			PDEV_BROADCAST_HDR pDev = reinterpret_cast<PDEV_BROADCAST_HDR>(lParam);
+
+			if (!pDev)
+				break;
+
+
+			if (pDev->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE) {
+				PDEV_BROADCAST_DEVICEINTERFACE deviceInterface
+					= reinterpret_cast<const PDEV_BROADCAST_DEVICEINTERFACE>(pDev);
+				switch (wParam) {
+					case DBT_DEVICEARRIVAL:
+					{
+
+
+						if (deviceInterface->dbcc_classguid == KSCATEGORY_AUDIO) {
+							//OutputDebugString(L"Audio interface added!\n");
 							if (gameEngine)
 								gameEngine->onAudioDeviceChange();
+							return 0;
+						}
+
+
+						if (deviceInterface->dbcc_classguid == guidHid) {
+							registerControllers();
+								//OutputDebugString(L"Found a controller!\n");
+							return 0;
 						}
 					}
+					break;
+
+					case DBT_DEVICEREMOVECOMPLETE:
+
+						if (deviceInterface->dbcc_classguid == KSCATEGORY_AUDIO) {
+
+							OutputDebugString(L"Audio interface removed!\n");
+							return 0;
+						}
+						if (deviceInterface->dbcc_classguid == guidHid) {
+						// remove joysticks
+							OutputDebugString(L"Joystick removed\n");
+							//gameEngine->controllerRemoved(deviceInterface);
+							registerControllers();
+							gameEngine->controllerRemoved();
+							return 0;
+						}
+						break;
+
 				}
+
 			}
-			return 0;
+		}
+		return 0;
 
 		case WM_NCLBUTTONDOWN:
 			gameEngine->suspend();
@@ -329,7 +399,80 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+//#include <afx.h>
+//void updateDevice(PDEV_BROADCAST_DEVICEINTERFACE pDevInf, WPARAM wParam) {
+//	// dbcc_name:
+//	// \\?\USB#Vid_04e8&Pid_503b#0002F9A9828E0F06#{a5dcbf10-6530-11d2-901f-00c04fb951ed}
+//	// convert to
+//	// USB\Vid_04e8&Pid_503b\0002F9A9828E0F06
+//	ASSERT(lstrlen(pDevInf->dbcc_name) > 4);
+//	CString szDevId = pDevInf->dbcc_name + 4;
+//	int idx = szDevId.ReverseFind(_T('#'));
+//	ASSERT(-1 != idx);
+//	szDevId.Truncate(idx);
+//	szDevId.Replace(_T('#'), _T('\\'));
+//	szDevId.MakeUpper();
+//
+//	CString szClass;
+//	idx = szDevId.Find(_T('\\'));
+//	ASSERT(-1 != idx);
+//	szClass = szDevId.Left(idx);
+//
+//	// if we are adding device, we only need present devices
+//	// otherwise, we need all devices
+//	DWORD dwFlag = DBT_DEVICEARRIVAL != wParam
+//		? DIGCF_ALLCLASSES : (DIGCF_ALLCLASSES | DIGCF_PRESENT);
+//	HDEVINFO hDevInfo = SetupDiGetClassDevs(NULL, szClass, NULL, dwFlag);
+//	if (hDevInfo == INVALID_HANDLE_VALUE) {
+//		//AfxMessageBox(CString("SetupDiGetClassDevs(): ")
+//			//+ _com_error(GetLastError()).ErrorMessage(), MB_ICONEXCLAMATION);
+//		OutputDebugString(L"SetupDiGetClassDevs() failed");
+//		return;
+//	}
+//	
+//
+//	SP_DEVINFO_DATA* pspDevInfoData =
+//		(SP_DEVINFO_DATA*) HeapAlloc(GetProcessHeap(), 0, sizeof(SP_DEVINFO_DATA));
+//	pspDevInfoData->cbSize = sizeof(SP_DEVINFO_DATA);
+//	for (int i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, pspDevInfoData); i++) {
+//		DWORD DataT;
+//		DWORD nSize = 0;
+//		TCHAR buf[MAX_PATH];
+//
+//		if (!SetupDiGetDeviceInstanceId(hDevInfo, pspDevInfoData, buf, sizeof(buf), &nSize)) {
+//			//AfxMessageBox(CString("SetupDiGetDeviceInstanceId(): ")
+//				//+ _com_error(GetLastError()).ErrorMessage(), MB_ICONEXCLAMATION);
+//			OutputDebugString(L"SetupDiGetDeviceInstanceId() failed");
+//			break;
+//		}
+//
+//		if (szDevId == buf) {
+//			// device found
+//			if (SetupDiGetDeviceRegistryProperty(hDevInfo, pspDevInfoData,
+//				SPDRP_FRIENDLYNAME, &DataT, (PBYTE) buf, sizeof(buf), &nSize)) {
+//				// do nothing
+//			} else if (SetupDiGetDeviceRegistryProperty(hDevInfo, pspDevInfoData,
+//				SPDRP_DEVICEDESC, &DataT, (PBYTE) buf, sizeof(buf), &nSize)) {
+//				// do nothing
+//			} else {
+//				lstrcpy(buf, _T("Unknown"));
+//			}
+//			// update UI
+//			// .....
+//			// .....
+//			break;
+//		}
+//	}
+//
+//
+//	if (pspDevInfoData)
+//		HeapFree(GetProcessHeap(), 0, pspDevInfoData);
+//	SetupDiDestroyDeviceInfoList(hDevInfo);
+//}
+
+
 int registerControllers() {
+
 	UINT nDevices;
 	PRAWINPUTDEVICELIST pRawInputDeviceList;
 	if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) {
@@ -343,15 +486,19 @@ int registerControllers() {
 	}
 
 	int nNoOfDevices = 0;
-	if ((nNoOfDevices = GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST))) == ((UINT) -1)) {
+	if ((nNoOfDevices = GetRawInputDeviceList(
+		pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST))) == ((UINT) -1)) {
 		OutputDebugString(L"No devices found");
 		return -1;
 	}
 
 	RID_DEVICE_INFO rdi;
 	rdi.cbSize = sizeof(RID_DEVICE_INFO);
-	RAWINPUTDEVICE* rid;
+	//RAWINPUTDEVICE* rid;
 	int numControllersFound = 0;
+
+	//vector<int> controllerIndices;
+	vector<HANDLE> controllerRawDevices;
 
 	for (int i = 0; i < nNoOfDevices; i++) {
 		UINT size = 256;
@@ -373,19 +520,23 @@ int registerControllers() {
 		}
 
 
-
 		if (rdi.dwType == RIM_TYPEHID) {
 
 			if (rdi.hid.usUsage == 4 && rdi.hid.usUsagePage == 1) {
-				++numControllersFound;
-				HANDLE handle = pRawInputDeviceList[i].hDevice;
-				gameEngine->addJoystick(handle);
+				controllerRawDevices.push_back(pRawInputDeviceList[i].hDevice);
+					/*++numControllersFound;
+					HANDLE handle = pRawInputDeviceList[i].hDevice;
+					gameEngine->addJoystick(handle);*/
+
 			}
 
 		}
 
 
 	}
+
+	gameEngine->addJoysticks(controllerRawDevices);
+
 
 	free(pRawInputDeviceList);
 	return 1;

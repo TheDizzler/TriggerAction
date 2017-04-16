@@ -92,7 +92,7 @@ bool GameEngine::initGFXAssets() {
 
 	initErrorDialogs();
 
-	
+
 	gfxAssets = make_unique<GFXAssetManager>(docAssMan->child("root"));
 	if (!gfxAssets->initialize(device)) {
 		showErrorDialog(L"Failed to load GFXAssets Manager", L"Fatal Error");
@@ -115,13 +115,15 @@ bool GameEngine::initStage() {
 
 void GameEngine::initErrorDialogs() {
 
-	errorDialog.reset(guiFactory->createDialog(false, true));
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
 	dialogPos = dialogSize;
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	errorDialog->setDimensions(dialogPos, dialogSize);
+	errorDialog = guiFactory->createDialog(dialogSize, dialogPos, 5, false, true);
+	
+	
+	//errorDialog->setDimensions(dialogPos, dialogSize);
 	errorDialog->setTint(Color(0, 120, 207));
 	unique_ptr<Button> quitButton;
 	quitButton.reset(guiFactory->createButton());
@@ -135,9 +137,9 @@ void GameEngine::initErrorDialogs() {
 	scrollBarDesc.upPressedButtonImage = "ScrollBar Up Pressed Custom";
 	scrollBarDesc.trackImage = "ScrollBar Track Custom";
 	scrollBarDesc.scrubberImage = "Scrubber Custom";
-	warningDialog.reset(guiFactory->createDialog(true, true));
+	warningDialog = guiFactory->createDialog(dialogPos, dialogSize, 3, false, true);
 
-	warningDialog->setDimensions(dialogPos, dialogSize);
+	//warningDialog->setDimensions(dialogPos, dialogSize);
 	warningDialog->setScrollBar(scrollBarDesc);
 	//warningDialog->setMatrixFunction([&]()-> Matrix { return camera->translationMatrix(); });
 	warningDialog->setTint(Color(0, 120, 207));
@@ -176,6 +178,13 @@ void GameEngine::run(double deltaTime, int fps) {
 	}
 }
 
+
+void GameEngine::controllerRemoved() {
+
+	game->controllerRemoved();
+}
+
+
 void GameEngine::update(double deltaTime) {
 
 	mouse->saveMouseState();
@@ -191,6 +200,8 @@ void GameEngine::update(double deltaTime) {
 		showDialog->update(deltaTime);
 	} else
 		game->update(deltaTime, mouse);
+
+	guiOverlay->update(deltaTime, mouse);
 }
 
 
@@ -207,6 +218,7 @@ void GameEngine::render(double deltaTime) {
 
 	batch->Begin(SpriteSortMode_Deferred, blendState.NonPremultiplied());
 	{
+		guiOverlay->draw(batch.get());
 		showDialog->draw(batch.get());
 		mouse->draw(batch.get());
 	}

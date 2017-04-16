@@ -31,6 +31,7 @@ public:
 	virtual void setPosition(const Vector2& position) override;
 	virtual const Vector2& getPosition() const override;
 
+	virtual void setLayerDepth(float newDepth, bool frontToBack = true);
 	virtual void setScale(const Vector2& scale) override;
 	/** NOTE: This DOES NOT return scaled width!
 		Use getScaledWidth(). */

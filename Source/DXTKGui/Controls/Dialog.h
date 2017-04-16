@@ -69,11 +69,14 @@ public:
 	virtual void setTint(const XMFLOAT4 color) override;
 	virtual void setScale(const Vector2& newScale) override;
 	virtual void setPosition(const Vector2& newPosition) override;
+	virtual void setLayerDepth(const float depth, bool frontToBack = true);
 
 	const Color& getPanelTint() const;
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
+	/** Returns non-formatted text. */
+	virtual const wchar_t* getText() override;
 
 	virtual const vector<IElement2D*> getElements() const;
 
@@ -93,6 +96,7 @@ public:
 	bool isOpening = false;
 	bool isClosing = false;
 
+	/** Could make this adaptable? */
 	Vector2 dialogTextMargin = Vector2(10, 10);
 	int titleTextMargin = 10;
 private:
@@ -121,7 +125,8 @@ private:
 	Vector2 cancelButtonPosition;
 	Vector2 neutralButtonPosition;
 
-	//bool textFormated = false;
+	//float minDialogTextSize;
+	void testMinimumSize();
 
 	void calculateTitlePos();
 	void calculateDialogTextPos();

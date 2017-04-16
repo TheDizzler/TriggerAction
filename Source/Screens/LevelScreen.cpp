@@ -66,3 +66,8 @@ void LevelScreen::draw(SpriteBatch * batch) {
 void LevelScreen::pause() {
 	game->confirmExit();
 }
+
+
+void LevelScreen::controllerRemoved() {
+	
+}

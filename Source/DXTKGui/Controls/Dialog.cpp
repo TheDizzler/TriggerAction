@@ -38,7 +38,7 @@ void Dialog::initialize(GraphicsAsset* pixelAsset, const pugi::char_t* font) {
 	dialogText.reset(new TextLabel(guiFactory->getFont(font)));
 	dialogText->setTint(Color(0, 0, 0, 1));
 
-
+	setLayerDepth(.95);
 }
 
 void Dialog::setDimensions(const Vector2& pos, const Vector2& sz,
@@ -46,6 +46,7 @@ void Dialog::setDimensions(const Vector2& pos, const Vector2& sz,
 
 	frameThickness = frmThcknss;
 	size = sz;
+
 
 	GUIControl::setPosition(pos);
 
@@ -69,6 +70,8 @@ void Dialog::setDimensions(const Vector2& pos, const Vector2& sz,
 			calculateTitlePos();
 		}
 	}
+
+	testMinimumSize();
 
 	calculateDialogTextPos();
 }
@@ -94,6 +97,28 @@ void Dialog::setCloseTransition(TransitionEffects::TransitionEffect* effect) {
 		drawTransition = &TransitionEffects::TransitionEffect::draw;
 	}
 	closeTransition = effect;
+}
+
+
+
+void Dialog::testMinimumSize() {
+
+	Vector2 mindialogtextSize = dialogText->measureString(L"Min accept");
+	int maxLineLength = dialogFrameSize.x - (dialogTextMargin.x * 2);
+	Vector2 newSize = size;
+	bool changed = false;
+	if (maxLineLength < mindialogtextSize.x) {
+		newSize.x = mindialogtextSize.x + (dialogTextMargin.x * 2);
+		changed = true;
+	}
+
+	if (size.y < mindialogtextSize.y) {
+		newSize.y = mindialogtextSize.y;
+		changed = true;
+	}
+
+	if (changed)
+		setDimensions(position, newSize);
 }
 
 
@@ -155,7 +180,10 @@ void Dialog::calculateDialogTextPos() {
 
 		// how long line length?
 		int maxLineLength = dialogFrameSize.x - scrollBarBuffer - (dialogTextMargin.x * 2);
-
+		/*if (maxLineLength <= minDialogTextSize) {
+			setDimensions(position, Vector2(maxLineLength + 50, size.y));
+			return;
+		}*/
 
 		int i = 0;
 		int textLength = wcslen(dialogText->getText());
@@ -285,7 +313,7 @@ void Dialog::setConfirmButton(unique_ptr<Button> okButton,
 
 	controls[ButtonOK]->setPosition(okButtonPosition);
 
-	
+
 }
 
 void Dialog::setConfirmButton(wstring text, const pugi::char_t* font) {
@@ -568,6 +596,38 @@ void Dialog::setPosition(const Vector2& newPosition) {
 	}
 }
 
+
+void Dialog::setLayerDepth(const float newDepth, bool frontToBack) {
+
+	layerDepth = newDepth - .00001;
+	if (layerDepth < 0) {
+		if (!frontToBack)
+			layerDepth = .00001;
+		else
+			layerDepth = 0;
+	}
+	float nudge = .00000001;
+	if (!frontToBack)
+		nudge *= -1;
+	float ld = layerDepth + nudge;
+	bgSprite->setLayerDepth(layerDepth + nudge);
+	panel->setLayerDepth(layerDepth + nudge * 2);
+	titleSprite->setLayerDepth(layerDepth + nudge * 3);
+	buttonFrameSprite->setLayerDepth(layerDepth + nudge * 4);
+
+	nudge *= 4;
+	for (auto const& control : controls) {
+		if (control == NULL)
+			continue;
+		nudge += nudge;
+		control->setLayerDepth(layerDepth + nudge);
+	}
+	nudge += nudge;
+
+	frame->setLayerDepth(layerDepth + nudge);
+}
+
+
 const Color& Dialog::getPanelTint() const {
 	return panel->getTint();
 }
@@ -582,6 +642,10 @@ const int Dialog::getWidth() const {
 
 const int Dialog::getHeight() const {
 	return size.y;
+}
+
+const wchar_t* Dialog::getText() {
+	return dialogText->getText();
 }
 
 const vector<IElement2D*> Dialog::getElements() const {

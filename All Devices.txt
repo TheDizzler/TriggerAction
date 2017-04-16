@@ -1,3 +1,19 @@
+***********************
+GUIDs
+***********************
+{F18A0E88-C30C-11D0-8815-00A0C906BED8} - USB Digio2 HUB
+{A5DCBF10-6530-11D2-901F-00C04FB951ED} - most devices seem to hit this first
+{4D1E55B2-F16F-11CF-88CB-001111000030} - controllers
+
+M-audio Keystation
+{6994AD04-93EF-11D0-A3CC-00A0C9223196} (KSCATEGORY_AUDIO - All audio devices register with this)
+{65E8773E-8F56-11D0-A3B9-00A0C9223196} (KSCATEGORY_RENDER - An audio device that can render a data stream)
+{65E8773D-8F56-11D0-A3B9-00A0C9223196} (KSCATEGORY_CAPTURE - An audio device that can capture a data stream)
+{6DC23320-AB33-4CE4-80D4-BBB3EBBF2814} (Seems to be MIDI related; MIDIOutPort? MicrosoftGSWavetableSynth?)
+{504BE32C-CCF6-4D2C-B73F-6F8B3747E22B} (More MIDI stuff)
+
+
+***********************
 Number of devices: 14
 ***********************
 Device Name: \\?\HID#VID_0583&PID_2060#7&2413a56c&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
@@ -88,7 +104,7 @@ Usage for the device: 1
 Usage Page for the device: 12 (Consumer)
 
 (Appears when intelLink USB connected)
-reserved usage(Monitor? Bluetooth Adapter?)
+reserved usage(Bluetooth Adapter?)
 
 ***********************
 Device Name: \\?\HID#ATK4002#3&34245a86&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}

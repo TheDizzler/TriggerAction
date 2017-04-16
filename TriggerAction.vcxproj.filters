@@ -162,6 +162,12 @@
     <ClCompile Include="Source\GameObjects\CharacterData.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Screens\GUIOverlay.cpp">
+      <Filter>Source Files\Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Screens\TitleScreen.cpp">
+      <Filter>Source Files\Screens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controls\Button.h">
@@ -286,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="Source\GameObjects\CharacterData.h">
       <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Screens\GUIOverlay.h">
+      <Filter>Header Files\Screens</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Screens\TitleScreen.h">
+      <Filter>Header Files\Screens</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

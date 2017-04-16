@@ -26,6 +26,7 @@ public:
 	virtual void setFont(shared_ptr<FontSet> newFont);
 	virtual void setTint(const XMFLOAT4 color) override;
 	virtual void setScale(const Vector2& scl) override;
+	virtual void setLayerDepth(const float newDepth) override;
 
 	void setText(string text);
 	void setText(wostringstream& text);

@@ -89,7 +89,9 @@ public:
 		bool enumerateList = false, const char_t* buttonAsset = "Combo Button Closed",
 		const char_t* fontName = "Default Font");
 
-	Dialog* createDialog(bool movable = false, bool centerText = false, const char_t* fontName = "Default Font");
+	unique_ptr<Dialog> createDialog(const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
+		int frameThickness = 2, bool movable = false, bool centerText = false,
+		const char_t* fontName = "Default Font");
 
 	ScrollBar* createScrollBar(const Vector2& position, size_t barHeight);
 	ScrollBar* createScrollBar(const Vector2& position, size_t barHeight,

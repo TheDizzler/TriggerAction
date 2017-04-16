@@ -197,7 +197,9 @@
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
     <ClCompile Include="Source\Managers\MapManager.cpp" />
     <ClCompile Include="Source\pch.cpp" />
+    <ClCompile Include="Source\Screens\GUIOverlay.cpp" />
     <ClCompile Include="Source\Screens\LevelScreen.cpp" />
+    <ClCompile Include="Source\Screens\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\BaseGraphics\FontSet.h" />
@@ -240,7 +242,9 @@
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
     <ClInclude Include="Source\Managers\MapManager.h" />
     <ClInclude Include="Source\pch.h" />
+    <ClInclude Include="Source\Screens\GUIOverlay.h" />
     <ClInclude Include="Source\Screens\LevelScreen.h" />
+    <ClInclude Include="Source\Screens\TitleScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="assets\AssetManifest.xml">

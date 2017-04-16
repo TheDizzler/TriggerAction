@@ -2,7 +2,7 @@
 #include "GameManager.h"
 
 Keyboard::KeyboardStateTracker keyTracker;
-
+unique_ptr<GUIOverlay> guiOverlay;
 
 GameManager::GameManager(GameEngine* gmngn) {
 
@@ -21,13 +21,14 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 	mouse = ms;
 
 	{
-		exitDialog.reset(guiFactory->createDialog(true, true));
 		Vector2 dialogPos, dialogSize;
 		dialogSize = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
 		dialogPos = dialogSize;
 		dialogPos.x -= dialogSize.x / 2;
 		dialogPos.y -= dialogSize.y / 2;
-		exitDialog->setDimensions(dialogPos, dialogSize);
+		
+		exitDialog = guiFactory->createDialog(dialogPos, dialogSize, 4, true, true);
+		//exitDialog->setDimensions(dialogPos, dialogSize);
 		exitDialog->setTint(Color(0, .5, 1, 1));
 		exitDialog->setTitle(L"Exit Test?", Vector2(1, 1), "BlackCloak");
 		//exitDialog->setTitleAreaDimensions(Vector2(0, 150));
@@ -60,6 +61,8 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		//exitDialog->close();
 	}
 
+
+	guiOverlay = make_unique<GUIOverlay>(joysticks);
 	//menuScreen.reset(new MenuManager());
 	//menuScreen->setGameManager(this);
 	//if (!menuScreen->initialize(device, mouse))
@@ -77,9 +80,9 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 
 	mapsDir = mapRoot.attribute("dir").as_string();
 	for (xml_node mapNode : mapRoot.children("map")) {
-		string name = mapNode.attribute("name").as_string();
+		const pugi::char_t* name = mapNode.attribute("name").as_string();
 		string file = mapsDir + mapNode.attribute("file").as_string();
-		mapFiles[name] = (file);
+		mapFiles[name] = file;
 	}
 
 	mapParser = make_unique<MapParser>(device);
@@ -91,12 +94,25 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		return false;
 	}
 
-	string mFile = mapFiles["Test Square C"];
-	if (!loadLevel(mFile.c_str())) {
-		GameEngine::showErrorDialog(L"Map failed to load", L"Error in GameManager::initializeGame()");
-		return false;
+	// check if no controllers set up
+	if (joysticks.size() <= 0) {
+
+		titleScreen = make_unique<TitleScreen>(joysticks);
+		titleScreen->setGameManager(this);
+		titleScreen->initialize(device, mouse);
+		currentScreen = titleScreen.get();
+	} else {
+
+
+		string level = "Test Square C";
+		string mFile = mapFiles[level];
+		if (!loadLevel(mFile.c_str())) {
+			GameEngine::showErrorDialog(L"Map failed to load", L"Error in GameManager::initializeGame()");
+			return false;
+		}
+		currentScreen = levelScreen.get();
+
 	}
-	currentScreen = levelScreen.get();
 	mouse->loadMouseIcon(guiFactory.get(), "Mouse Icon");
 	ShowCursor(false);
 
@@ -159,6 +175,10 @@ void GameManager::loadMainMenu() {
 
 }
 
+void GameManager::controllerRemoved() {
+	currentScreen->controllerRemoved();
+}
+
 
 void GameManager::pause() {
 
@@ -171,8 +191,6 @@ void GameManager::confirmExit() {
 	if (!exitDialog->isOpen) {
 		GameEngine::showDialog = exitDialog.get();
 		exitDialog->open();
-	} else {
-		exitDialog->close(); // this will never get called, btw
 	}
 }
 

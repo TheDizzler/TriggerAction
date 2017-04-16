@@ -2,14 +2,16 @@
 
 
 //#include "MenuManager.h"
+#include "../Screens/TitleScreen.h"
 #include "../DXTKGui/Controls/GUIFactory.h"
 #include "../Screens/LevelScreen.h"
-
+#include "../Screens/GUIOverlay.h"
 
 class GameEngine;
 
 extern Keyboard::KeyboardStateTracker keyTracker;
-//extern GamePad::State gamePad0;
+extern unique_ptr<GUIOverlay> guiOverlay;
+
 
 /** The lowest level of class where game code should be included.
 	Everything below this (GameEngine downward) should generally go unmodified. */
@@ -30,6 +32,8 @@ public:
 	void startGame();
 	bool loadLevel(const pugi::char_t* file);
 	void loadMainMenu();
+
+	void controllerRemoved();
 
 	void pause();
 	void confirmExit();
@@ -63,7 +67,7 @@ private:
 	Screen* currentScreen = 0;
 	Screen* lastScreen = 0;
 
-	//unique_ptr<MenuManager> menuScreen;
+	unique_ptr<TitleScreen> titleScreen;
 	unique_ptr<LevelScreen> levelScreen;
 
 	GameEngine* gameEngine;

@@ -92,7 +92,7 @@ protected:
 	Vector2 origin;
 	Color tint;
 	float rotation;
-	float layerDepth = 0.0f;
+	float layerDepth;
 
 	UINT width;
 	UINT height;

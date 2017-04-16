@@ -64,12 +64,12 @@ void TextLabel::update(double deltaTime) {
 void TextLabel::draw(SpriteBatch* batch) {
 
 	font->draw(batch, label.c_str(), position, tint,
-		rotation, origin, scale);
+		rotation, origin, scale, layerDepth);
 }
 
 void TextLabel::draw(SpriteBatch* batch, Color color) {
 	font->draw(batch, label.c_str(), position, color,
-		rotation, origin, scale);
+		rotation, origin, scale, layerDepth);
 }
 
 #include <sstream>
@@ -132,15 +132,15 @@ void TextLabel::setHoverable(bool hoverable) {
 }
 
 void TextLabel::setToUnpressedState() {
-	font->setTint(normalColorText);
+	//font->setTint(normalColorText);
 }
 
 void TextLabel::setToHoverState() {
-	font->setTint(hoverColorText);
+	//font->setTint(hoverColorText);
 }
 
 void TextLabel::setToSelectedState() {
-	font->setTint(selectedColorText);
+	//font->setTint(selectedColorText);
 }
 
 #include "GUIFactory.h"
@@ -162,6 +162,10 @@ void TextLabel::setScale(const Vector2 & scl) {
 	size *= scale;
 	hitArea->position = position;
 	hitArea->size = size;
+}
+
+void TextLabel::setLayerDepth(const float newDepth) {
+	layerDepth = newDepth;
 }
 
 const Vector2& TextLabel::getPosition() const {

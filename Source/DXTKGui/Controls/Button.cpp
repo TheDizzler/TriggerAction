@@ -53,7 +53,7 @@ void Button::setDimensions(const Vector2& pos, const Vector2& size,
 	height = newSize.y;
 
 	setPosition(pos);
-
+	setLayerDepth(.9);
 }
 
 
@@ -197,6 +197,23 @@ void Button::positionText() {
 
 const Vector2& Button::getPosition() const {
 	return position;
+}
+
+void Button::setLayerDepth(float newDepth, bool frontToBack) {
+
+	layerDepth = newDepth - .00001;
+	if (layerDepth < 0) {
+		if (!frontToBack)
+			layerDepth = .00001;
+		else
+			layerDepth = 0;
+	}
+	float nudge = .00000001;
+	if (!frontToBack)
+		nudge *= -1;
+	rectSprite->setLayerDepth(layerDepth + nudge);
+	frame->setLayerDepth(layerDepth + nudge * 2);
+	buttonLabel->setLayerDepth(layerDepth + nudge * 3);
 }
 
 void Button::setScale(const Vector2& scl) {

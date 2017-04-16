@@ -30,7 +30,7 @@ public:
 	void resume();
 	void exit();
 
-
+	/** Returns true when HRESULT failed. */
 	static inline bool reportError(HRESULT hr,
 		wstring failMessage = L"This is SRS Error",
 		wstring failTitle = L"Fatal Error",
@@ -87,6 +87,8 @@ public:
 		showDialog = warningDialog.get();
 	}
 	static Dialog* showDialog;
+
+	void controllerRemoved();
 private:
 
 	unique_ptr<AudioEngine> audioEngine;

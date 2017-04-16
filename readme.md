@@ -8,3 +8,13 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- added ability to disable pop-up message in hrReporter in StringHelper (changes also made in GraphicsAsset)
 >- made changes to AssetSet: can add animations
 >- changed Animations: frametime is now held by individual frame
+>- added prototype function to Screen for actions to take when a joystick is removed
+>- added functional getText() to Dialog
+>- made Dialog conform to a minimum size
+>- updates to GUIFactory to create Dialog with possibilities of errors
+>- Dialog, Buttons, TextLabels can change layerdepth accurately
+	(layering gets wonky when less than 0.00001002f difference between Dialog and Button)
+>- layerDepth default in GUIControl was set to .9f for more flexibility
+>- FontSet default layerDepth set to .91f when no layerDepth called
+>- realized most of FontSet doesn't do anything, making the class basically redundant
+>- set Sprite default layerDepth .1f;

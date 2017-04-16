@@ -1,12 +1,17 @@
 #include "../pch.h"
 #include "Joystick.h"
 
-Joystick::Joystick(USHORT controllerSlot) {
+Joystick::Joystick(HANDLE hndl, USHORT controllerSlot) {
 
+	handle = hndl;
 	slot = controllerSlot;
 }
 
 Joystick::~Joystick() {
+}
+
+void Joystick::registerNewHandle(HANDLE hndl) {
+	handle = hndl;
 }
 
 void Joystick::parseRawInput(PRAWINPUT pRawInput) {

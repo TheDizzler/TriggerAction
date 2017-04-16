@@ -3,16 +3,20 @@
 #define MAX_BUTTONS		24
 #include <hidsdi.h>
 
+class PlayerCharacter;
+
 class Joystick {
 public:
 
-	static enum dpad {
+	/*static enum dpad {
 		RIGHT, DOWN, LEFT, UP
-	};
+	};*/
 
-
-	Joystick(USHORT controllerSlot);
+	Joystick(HANDLE handle, USHORT controllerSlot);
 	~Joystick();
+
+	void registerNewHandle(HANDLE handle);
+
 
 	BOOL bButtonStates[MAX_BUTTONS];
 	LONG lAxisX;
@@ -26,6 +30,8 @@ public:
 	void parseRawInput(PRAWINPUT pRawInput);
 
 	USHORT slot = -1;
+	PlayerCharacter* pc;
+	HANDLE handle;
 private:
 
 

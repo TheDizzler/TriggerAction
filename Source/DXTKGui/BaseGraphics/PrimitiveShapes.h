@@ -73,7 +73,7 @@ private:
 	float rotation = 0.0f;
 	Color tint = Colors::Black;
 	int frameThickness;
-	float layerDepth = 1.0f;
+	float layerDepth = .9f;
 	unique_ptr<HitArea> hitArea;
 };
 
@@ -125,7 +125,7 @@ private:
 
 	float rotation = 0.0f;
 	int lengthBuffer;
-	float layerDepth = 1.0;
+	float layerDepth = .9f;
 	Vector2 scale = Vector2(1, 1);
 	Color tint;
 };
@@ -156,6 +156,6 @@ private:
 	Vector2 position;
 	Vector2 scale = Vector2(1, 1);
 	float rotation = 0.0f;
-	float layerDepth = 1;
+	float layerDepth = .9f;
 	Color tint;
 };

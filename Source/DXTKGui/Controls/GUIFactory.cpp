@@ -78,7 +78,7 @@ unique_ptr<FontSet> GUIFactory::getFont(const char_t* fontName) {
 	unique_ptr<FontSet> font;
 	font.reset(new FontSet());
 	font->load(device, StringHelper::convertCharStarToWCharT(fontFile));
-	font->setTint(Color(1, 1, 1, 1));
+	//font->setTint(Color(1, 1, 1, 1));
 	return move(font);
 }
 
@@ -408,12 +408,14 @@ ComboBox* GUIFactory::createComboBox(const Vector2& position,
 	return combobox;
 }
 
-Dialog* GUIFactory::createDialog(bool movable, bool centerText, const char_t* fontName) {
+unique_ptr<Dialog> GUIFactory::createDialog(const Vector2& position, const Vector2& size, int frameThickness,
+	bool movable, bool centerText, const char_t* fontName) {
 
-	Dialog* dialog = new Dialog(hwnd, movable, centerText);
+	unique_ptr<Dialog> dialog = make_unique<Dialog>(hwnd, movable, centerText);
 	dialog->initializeControl(this, mouseController);
 	dialog->initialize(getAsset("White Pixel"), fontName);
-	return dialog;
+	dialog->setDimensions(position, size, frameThickness);
+	return move(dialog);
 }
 
 
@@ -599,9 +601,9 @@ GraphicsAsset* GUIFactory::createTextureFromScreen(Screen* screen, Color bgColor
 
 	/*batch->Begin(SpriteSortMode_Immediate);
 	{*/
-		screen->draw(batch);
-	/*}
-	batch->End();*/
+	screen->draw(batch);
+/*}
+batch->End();*/
 
 
 	deviceContext->OMSetRenderTargets(1, oldRenderTargetView.GetAddressOf(), nullptr);
@@ -714,7 +716,7 @@ bool GUIFactory::getGUIAssetsFromXML() {
 				frames.push_back(move(frame));
 
 			}
-			
+
 			shared_ptr<Animation> animationAsset;
 			animationAsset.reset(new Animation(masterAsset->getTexture(), frames));
 			animationMap[name] = animationAsset;

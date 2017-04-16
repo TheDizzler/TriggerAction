@@ -102,7 +102,7 @@ protected:
 	Vector2 origin = Vector2(0, 0);
 	Color tint = DirectX::Colors::White;
 	float rotation = 0.0f;
-	float layerDepth = 1.0f;
+	float layerDepth = 0.9f;
 
 	bool isHover = false;
 	/** Button is held down over control but has not been released. */

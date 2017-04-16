@@ -24,13 +24,61 @@ bool Input::initRawInput(HWND hwnd) {
 }
 
 
-void Input::addJoystick(HANDLE handle) {
+//void Input::addJoystick(HANDLE handle) {
+//
+//
+//	if (joystickMap[handle]) {
+//		OutputDebugString(L"That joystick already registered.\n");
+//	} else {
+//		shared_ptr<Joystick> newStick = make_shared<Joystick>(handle, ++numSticks);
+//		joystickMap[handle] = newStick;
+//		joysticks.push_back(newStick);
+//		OutputDebugString(L"New joystick found!\n");
+//	}
+//
+//}
 
-	shared_ptr<Joystick> newStick = make_shared<Joystick>(++numSticks);
-	joysticks.push_back(newStick);
-	joystickMap[handle] = newStick;
+void Input::addJoysticks(vector<HANDLE> handles) {
+
+	if (handles.size() < joystickMap.size()) {
+		// joystick was removed it - find it!
+		for (const auto& joyDev : joystickMap) {
+			if (matchFound(handles, joyDev.first))
+				continue;
+			//OutputDebugString(L"Found removed joystick\n");
+			deviceLost.push_back(joyDev.second);
+
+		}
+	} else if (handles.size() > joystickMap.size()) {
+		for (const auto& newHandle : handles) {
+			if (joystickMap[newHandle]) {
+				OutputDebugString(L"That joystick already registered.\n");
+			} else if (deviceLost.size() > 0) {
+				// create joystick and wait for 
+			
+			
+			}else {
+				shared_ptr<Joystick> newStick = make_shared<Joystick>(newHandle, ++numSticks);
+				joystickMap[newHandle] = newStick;
+				joysticks.push_back(newStick);
+				OutputDebugString(L"New joystick found!\n");
+			}
+		}
+	}
+}
+
+
+void Input::controllerRemoved(PDEV_BROADCAST_DEVICEINTERFACE removedDevice) {
+
+	/*for (const auto& joy : joystickDeviceMap) {
+		if (joy.first->dwType == removedDevice->dbcc_devicetype) {
+			OutputDebugString(L"Found removed joystick");
+		}
+	}*/
+
 
 }
+
 
 void Input::parseRawInput(PRAWINPUT pRawInput) {
 
@@ -41,4 +89,13 @@ void Input::parseRawInput(PRAWINPUT pRawInput) {
 		//OutputDebugString(wss.str().c_str());
 		joystick->parseRawInput(pRawInput);
 	}
+}
+
+bool Input::matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle) {
+
+
+for (HANDLE newHandle : newHandles)
+		if (newHandle == joystickHandle)
+			return true;
+	return false;
 }

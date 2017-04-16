@@ -1,40 +1,31 @@
 #pragma once
-
 #include "../DXTKGui/BaseGraphics/screen.h"
-#include "../GameObjects/PlayerCharacter.h"
-#include "../Managers/MapManager.h"
-
-static const char_t* characters[] = {"Marle", "Frog"};
-
-extern vector<const Hitbox*> hitboxesAll;
+#include "../Engine/Joystick.h"
 
 
-class LevelScreen : public Screen {
+class TitleScreen : public Screen {
 public:
+	TitleScreen(vector<shared_ptr<Joystick>> joysticks);
+	~TitleScreen();
 
-
-
-	LevelScreen(vector<shared_ptr<Joystick>> joysticks);
-	~LevelScreen();
 
 	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
 	virtual void setGameManager(GameManager* game) override;
 
-	void loadMap(unique_ptr<Map> map);
-
 	virtual void update(double deltaTime, shared_ptr<MouseController> mouse) override;
-	virtual void draw(SpriteBatch* batch) override;
+	virtual void draw(SpriteBatch * batch) override;
 
 	virtual void pause() override;
 	virtual void controllerRemoved() override;
 
 private:
 	GameManager* game;
-
-	unique_ptr<Map> map;
-
 	vector<shared_ptr<Joystick>> joysticks;
-	vector<unique_ptr<PlayerCharacter>> pcs;
+	unique_ptr<Dialog> noControllerDialog;
 
+	unique_ptr<Button> quitButton;
+
+	
+	unique_ptr<Sprite> pendulum;
 
 };
