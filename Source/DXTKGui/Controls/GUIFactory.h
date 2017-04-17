@@ -22,6 +22,11 @@ public:
 	GUIFactory(HWND hwnd, xml_node guiAssetsNode);
 	~GUIFactory();
 
+	/** Required if a user wants to create their own controls. */
+	HWND getHWND();
+	/** Required if a user wants to create their own controls. */
+	shared_ptr<MouseController> getMouseController();
+
 	/** DeviceContext and SpriteBatch references are required
 		to create textures from a GUIControl (will probably refactor this). */
 	bool initialize(ComPtr<ID3D11Device> device,

@@ -20,3 +20,6 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- set Sprite default layerDepth .1f;
 >- changed order of createDialog params
 >- changed dialog->open() to show() because that seems more common
+>- deleted superfluous KeyboardController
+>- dialog is responsive to frame thickness now
+>- removed useless functions in TextLabel: setToUnpressedState(), setToHoverState(), setToSelectedState()

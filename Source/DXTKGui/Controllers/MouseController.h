@@ -13,7 +13,7 @@ class GUIFactory;
 /** A mouse controller that gets rawinput from WM_INPUT in the windows
 		message pump. Because the message pump doesn't send mouse rawinput
 		when there is no mouse action, the current and last button states
-		will freeze in that state. */
+		will freeze in that state (not true any more??). */
 class MouseController : public Sprite {
 public:
 

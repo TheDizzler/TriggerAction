@@ -19,6 +19,14 @@ GUIFactory::~GUIFactory() {
 	animationMap.clear();
 }
 
+HWND GUIFactory::getHWND() {
+	return hwnd;
+}
+
+shared_ptr<MouseController> GUIFactory::getMouseController() {
+	return mouseController;
+}
+
 #include "../GuiAssets.h"
 bool GUIFactory::initialize(ComPtr<ID3D11Device> dev,
 	ComPtr<ID3D11DeviceContext> devCon, ComPtr<IDXGISwapChain> sChain,
@@ -48,6 +56,10 @@ bool GUIFactory::initialize(ComPtr<ID3D11Device> dev,
 		return false;
 	}
 
+	if (mouse.get() == NULL) {
+		mouse = make_shared<MouseController>(hwnd); // for some reason hwnd is unusable here!
+		mouse->loadMouseIcon(this, "Mouse Icon");
+	}
 	mouseController = mouse;
 
 	initialized = true;

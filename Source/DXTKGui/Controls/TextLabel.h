@@ -90,9 +90,6 @@ private:
 	wstring label;
 	shared_ptr<FontSet> font;
 
-	/*virtual void setToUnpressedState();
-	virtual void setToHoverState();
-	virtual void setToSelectedState();*/
 
 	/* Sometimes a TextLabel is just a TextLabel. */
 	bool isHoverable = false;

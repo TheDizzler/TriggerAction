@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Keyboard.h>
 
 #include "../DXTKGui/Controllers/MouseController.h"
-#include "../DXTKGui/Controllers/KeyboardController.h"
 #include "Joystick.h"
 
 
@@ -13,7 +13,7 @@ public:
 
 	bool initRawInput(HWND hwnd);
 
-	//void addJoystick(HANDLE handle);
+	
 	void addJoysticks(vector<HANDLE> handles);
 	void controllerRemoved(PDEV_BROADCAST_DEVICEINTERFACE removedDevice);
 
@@ -24,7 +24,7 @@ public:
 
 protected:
 
-	unique_ptr<KeyboardController> keys;
+	unique_ptr<Keyboard> keys;
 	shared_ptr<MouseController> mouse;
 
 	USHORT numSticks = -1;

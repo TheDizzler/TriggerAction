@@ -362,9 +362,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 							return 0;
 						}
 						if (deviceInterface->dbcc_classguid == guidHid) {
-						// remove joysticks
-							//OutputDebugString(L"Joystick removed\n");
-							//gameEngine->controllerRemoved(deviceInterface);
+							// remove joysticks
 							registerControllers();
 							gameEngine->controllerRemoved();
 							return 0;

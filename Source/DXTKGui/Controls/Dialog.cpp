@@ -52,14 +52,18 @@ void Dialog::setDimensions(const Vector2& pos, const Vector2& sz,
 
 	bgSprite->setDimensions(position, size);
 	frame->setDimensions(position, size, frameThickness);
-	titleFrameSize.x = size.x;
-	titleFramePosition = Vector2(position.x, position.y);
+	titleFrameSize.x = size.x - frameThickness * 2;
+	titleFrameSize.y -= frameThickness;
+	titleFramePosition = Vector2(position.x + frameThickness, position.y + frameThickness);
 	titleSprite->setDimensions(titleFramePosition, titleFrameSize);
-	dialogFramePosition = Vector2(position.x, position.y + titleFrameSize.y);
-	dialogFrameSize = Vector2(size.x, size.y - titleFrameSize.y - buttonFrameSize.y);
+	dialogFramePosition = Vector2(position.x + frameThickness, position.y + titleFrameSize.y);
+	//buttonFrameSize.y += frameThickness/2;
+	dialogFrameSize =
+		Vector2(size.x - frameThickness * 2, size.y - titleFrameSize.y - buttonFrameSize.y);
 	buttonFramePosition =
-		Vector2(position.x, dialogFramePosition.y + dialogFrameSize.y);
-	buttonFrameSize.x = size.x;
+		Vector2(position.x + frameThickness, dialogFramePosition.y + dialogFrameSize.y);
+	buttonFrameSize.x = size.x - frameThickness * 2;
+	
 	buttonFrameSprite->setDimensions(buttonFramePosition, buttonFrameSize);
 
 	panel->setDimensions(dialogFramePosition, dialogFrameSize);
@@ -102,7 +106,7 @@ void Dialog::setCloseTransition(TransitionEffects::TransitionEffect* effect) {
 
 
 wstring Dialog::reformatText(size_t* scrollBarBuffer) {
-	
+
 	// if the text is longer than the dialog box
 	//		break the text down into multiple lines
 	wstring newText = L"";
@@ -209,11 +213,11 @@ void Dialog::calculateTitlePos() {
 		Vector2 newSize = size;
 		Vector2 newPos = position;
 		if (titlesize.x > titleFrameSize.x) {
-			newSize.x = titlesize.x + titleTextMargin;
-			newPos.x -= (newSize.x - size.x) / 2;
+			newSize.x = titlesize.x + titleTextMargin + frameThickness * 2;
+			newPos.x -= (newSize.x - size.x) / 2 - frameThickness;
 		}
 		if (titlesize.y > titleFrameSize.y) {
-			titleFrameSize.y += titleTextMargin;
+			titleFrameSize.y += titleTextMargin + frameThickness;
 			// might have to do somethin here
 			//newPos.y -= titleTextMargin;
 		}
@@ -223,8 +227,8 @@ void Dialog::calculateTitlePos() {
 		// not sure if this is necessary, but it was a fun excersize :O
 	}
 	Vector2 titlePos = Vector2(
-		titleFramePosition.x + (titleFrameSize.x - titlesize.x) / 2,
-		titleFramePosition.y + (titleFrameSize.y - titlesize.y) / 2);
+		titleFramePosition.x + (titleFrameSize.x - titlesize.x) / 2 /*+ frameThickness * 2*/,
+		titleFramePosition.y + (titleFrameSize.y - titlesize.y) / 2 /*+ frameThickness*/);
 	controls[TitleText]->setPosition(titlePos);
 }
 
@@ -251,13 +255,13 @@ void Dialog::calculateDialogTextPos() {
 	size_t scrollBarBuffer = 0;
 
 	if (dialogtextsize.x + dialogTextMargin.x * 2 > dialogFrameSize.x) {
-	
+
 	// if the text is longer than the dialog box
 	//		break the text down into multiple lines
 		formattedText.setText(reformatText(&scrollBarBuffer));
 		dialogtextsize = formattedText.measureString();
 	} else if (dialogtextsize.y /*+ dialogTextMargin.y * 2*/ > dialogFrameSize.y) {
-		
+
 		// width is fine but text is getting long
 		scrollBarBuffer = panel->getScrollBarSize().x;
 		formattedText.setText(reformatText(&scrollBarBuffer));
@@ -314,7 +318,7 @@ void Dialog::setConfirmButton(unique_ptr<Button> okButton,
 	controls[ButtonOK] = move(okButton);
 
 	if (autoPosition) {
-		okButtonPosition.x = position.x + buttonMargin;
+		okButtonPosition.x = position.x + buttonMargin + frameThickness;
 		if (calculateButtonPosition(okButtonPosition))
 			okButtonPosition.y -= controls[ButtonOK]->getHeight() / 2;
 	} else {
@@ -336,7 +340,7 @@ void Dialog::setConfirmButton(wstring text, const pugi::char_t* font) {
 	controls[ButtonOK].reset();
 	controls[ButtonOK] = move(okButton);
 	controls[ButtonOK]->setText(text);
-	okButtonPosition.x = position.x + buttonMargin;
+	okButtonPosition.x = position.x + buttonMargin + frameThickness;
 	if (calculateButtonPosition(okButtonPosition))
 		okButtonPosition.y -= controls[ButtonOK]->getHeight() / 2;
 	controls[ButtonOK]->setPosition(okButtonPosition);
@@ -363,7 +367,7 @@ void Dialog::setCancelButton(unique_ptr<Button> cancelButton,
 
 	if (autoPosition) {
 		cancelButtonPosition.x =
-			position.x + size.x - controls[ButtonCancel]->getWidth() - buttonMargin;
+			position.x + (size.x - controls[ButtonCancel]->getWidth()) - (buttonMargin + frameThickness);
 		if (calculateButtonPosition(cancelButtonPosition))
 			cancelButtonPosition.y -= controls[ButtonCancel]->getHeight() / 2;
 	} else {
@@ -386,7 +390,7 @@ void Dialog::setCancelButton(wstring text, const pugi::char_t * font) {
 	controls[ButtonCancel]->action = ClickAction::CANCEL;
 	controls[ButtonCancel]->setText(text);
 	cancelButtonPosition.x =
-		position.x + size.x - controls[ButtonCancel]->getWidth() - buttonMargin;
+		position.x + size.x - controls[ButtonCancel]->getWidth() - buttonMargin - frameThickness;
 	if (calculateButtonPosition(cancelButtonPosition))
 		cancelButtonPosition.y -= controls[ButtonCancel]->getHeight() / 2;
 	controls[ButtonCancel]->setPosition(cancelButtonPosition);
@@ -406,29 +410,29 @@ bool Dialog::calculateButtonPosition(Vector2& buttonPos) {
 	int buttonheight = getMaxButtonHeight();
 	if (buttonheight + buttonMargin * 2 > buttonFrameSize.y) {
 		// this will shrink the dialog text
-		buttonFrameSize.y = buttonheight + buttonMargin * 2;
+		buttonFrameSize.y = buttonheight + buttonMargin * 2 + frameThickness;
 		setDimensions(position, size, frameThickness);
 
 		// recalculate all button y positions
 		if (controls[ButtonOK] != NULL) {
 			okButtonPosition.y = buttonFramePosition.y
-				+ (buttonFrameSize.y - controls[ButtonOK]->getHeight()) / 2;
+				+ (buttonFrameSize.y - controls[ButtonOK]->getHeight() - frameThickness) / 2 ;
 			controls[ButtonOK]->setPosition(okButtonPosition);
 		}
 		if (controls[ButtonCancel] != NULL) {
 			cancelButtonPosition.y = buttonFramePosition.y
-				+ (buttonFrameSize.y - controls[ButtonCancel]->getHeight()) / 2;
+				+ (buttonFrameSize.y - controls[ButtonCancel]->getHeight() - frameThickness) / 2;
 			controls[ButtonCancel]->setPosition(cancelButtonPosition);
 
 		}
 		if (controls[ButtonNeutral] != NULL) {
 			neutralButtonPosition.y = buttonFramePosition.y
-				+ (buttonFrameSize.y - controls[ButtonNeutral]->getHeight()) / 2;
+				+ (buttonFrameSize.y - controls[ButtonNeutral]->getHeight() - frameThickness) / 2;
 			controls[ButtonNeutral]->setPosition(neutralButtonPosition);
 		}
 		return false;
 	} else
-		buttonPos.y = buttonFramePosition.y + buttonFrameSize.y / 2;
+		buttonPos.y = buttonFramePosition.y + (buttonFrameSize.y - frameThickness )/ 2;
 
 	return true;
 }

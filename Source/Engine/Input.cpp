@@ -15,7 +15,7 @@ Input::~Input() {
 #include "../Engine/GameEngine.h"
 bool Input::initRawInput(HWND hwnd) {
 
-	keys.reset(new KeyboardController());
+	keys = make_unique<Keyboard>();
 	mouse = make_shared<MouseController>(hwnd);
 	if (guiFactory != NULL)
 		mouse->loadMouseIcon(guiFactory.get(), "Mouse Icon");
@@ -23,20 +23,6 @@ bool Input::initRawInput(HWND hwnd) {
 	return true;
 }
 
-
-//void Input::addJoystick(HANDLE handle) {
-//
-//
-//	if (joystickMap[handle]) {
-//		OutputDebugString(L"That joystick already registered.\n");
-//	} else {
-//		shared_ptr<Joystick> newStick = make_shared<Joystick>(handle, ++numSticks);
-//		joystickMap[handle] = newStick;
-//		joysticks.push_back(newStick);
-//		OutputDebugString(L"New joystick found!\n");
-//	}
-//
-//}
 
 void Input::addJoysticks(vector<HANDLE> handles) {
 

@@ -188,7 +188,7 @@ void GameEngine::controllerRemoved() {
 void GameEngine::update(double deltaTime) {
 
 	mouse->saveMouseState();
-	keys->saveKeyboardState();
+	//keys->saveKeyboardState();
 
 	if (paused) {
 		auto state = Keyboard::Get().GetState();

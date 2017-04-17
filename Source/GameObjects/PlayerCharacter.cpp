@@ -98,22 +98,13 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
 			moveBy(Vector3(moveByX, -moveByY, 0));
-
-			/*position.x += moveByX;
-			position.y -= moveByY;
-			drawPosition.x += moveByX;
-			drawPosition.y -= moveByY;
-			layerDepth = Map::getLayerDepth(position.y);*/
+			layerDepth = Map::getLayerDepth(position.y);
 		} else if (vertDirection > 10) {
 			// moving right & down
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
 			moveBy(Vector3(moveByX, moveByY, 0));
-			/*position.x += moveByX;
-			position.y += moveByY;
-			drawPosition.x += moveByX;
-			drawPosition.y += moveByY;
-			layerDepth = Map::getLayerDepth(position.y);*/
+			layerDepth = Map::getLayerDepth(position.y);
 		/*	wostringstream wss;
 			wss << "moveRightSpeed: " << moveRightSpeed << " moveDownSpeed: " << moveDownSpeed << endl;
 			wss << "moveDiagonalRight: " << moveDiagonalRight << " moveDiagonalDown: " << moveDiagonalDown << endl;
@@ -121,8 +112,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		} else {
 			float moveByX = moveRightSpeed*deltaTime;
 			moveBy(Vector3(moveByX, 0, 0));
-			/*position.x += moveByX;
-			drawPosition.x += moveByX;*/
+
 		}
 
 		if (!moving || facing != Facing::RIGHT) {
@@ -143,26 +133,17 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
 			moveBy(Vector3(-moveByX, -moveByY, 0));
-			/*position.x -= moveByX;
-			position.y -= moveByY;
-			drawPosition.x -= moveByX;
-			drawPosition.y -= moveByY;
-			layerDepth = Map::getLayerDepth(position.y);*/
+			layerDepth = Map::getLayerDepth(position.y);
 		} else if (vertDirection > 10) {
 			// moving left & down
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
-			moveBy(Vector3(moveByX, -moveByY, 0));
-			/*position.x -= moveByX;
-			position.y += moveByY;
-			drawPosition.x -= moveByX;
-			drawPosition.y += moveByY;
-			layerDepth = Map::getLayerDepth(position.y);*/
+			moveBy(Vector3(-moveByX, moveByY, 0));
+			layerDepth = Map::getLayerDepth(position.y);
 		} else {
 			float moveByX = moveRightSpeed*deltaTime;
 			moveBy(Vector3(-moveByX, 0, 0));
-			/*position.x -= moveByX;
-			drawPosition.x -= moveByX;*/
+
 		}
 
 		if (!moving || facing != Facing::LEFT) {
@@ -181,9 +162,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		// moving up
 		float moveByY = moveDownSpeed*deltaTime;
 		moveBy(Vector3(0, -moveByY, 0));
-		/*position.y -= moveByY;
-		drawPosition.y -= moveByY;
-		layerDepth = Map::getLayerDepth(position.y);*/
+		layerDepth = Map::getLayerDepth(position.y);
 		if (!moving || facing != Facing::UP) {
 			loadAnimation("walk up");
 			moving = true;
@@ -197,9 +176,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	   // moving down
 		float moveByY = moveDownSpeed*deltaTime;
 		moveBy(Vector3(0, moveByY, 0));
-		/*position.y += moveByY;
-		drawPosition.y += moveByY;
-		layerDepth = Map::getLayerDepth(position.y);*/
+		layerDepth = Map::getLayerDepth(position.y);
 		if (!moving || facing != Facing::DOWN) {
 			loadAnimation("walk down");
 			moving = true;
@@ -248,7 +225,7 @@ void PlayerCharacter::moveBy(const Vector3& moveVector) {
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
 
-	layerDepth = Map::getLayerDepth(position.y);
+	//layerDepth = Map::getLayerDepth(position.y);
 
 	debugUpdate(Vector2(moveVector.x, moveVector.y));
 }

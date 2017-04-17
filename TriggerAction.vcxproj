@@ -165,7 +165,6 @@
     <ClCompile Include="Source\DXTKGui\BaseGraphics\GraphicsAsset.cpp" />
     <ClCompile Include="Source\DXTKGui\BaseGraphics\PrimitiveShapes.cpp" />
     <ClCompile Include="Source\DXTKGui\BaseGraphics\Sprite.cpp" />
-    <ClCompile Include="Source\DXTKGui\Controllers\KeyboardController.cpp" />
     <ClCompile Include="Source\DXTKGui\Controllers\MouseController.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\Button.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\CheckBox.cpp" />
@@ -208,7 +207,6 @@
     <ClInclude Include="Source\DXTKGui\BaseGraphics\PrimitiveShapes.h" />
     <ClInclude Include="Source\DXTKGui\BaseGraphics\screen.h" />
     <ClInclude Include="Source\DXTKGui\BaseGraphics\Sprite.h" />
-    <ClInclude Include="Source\DXTKGui\Controllers\KeyboardController.h" />
     <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h" />
     <ClInclude Include="Source\DXTKGui\Controls\Button.h" />
     <ClInclude Include="Source\DXTKGui\Controls\CheckBox.h" />

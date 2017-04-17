@@ -27,7 +27,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		dialogPos.x -= dialogSize.x / 2;
 		dialogPos.y -= dialogSize.y / 2;
 
-		exitDialog = guiFactory->createDialog(dialogPos, dialogSize, 4, true, true);
+		exitDialog = guiFactory->createDialog(dialogPos, dialogSize, true, true, 10);
 		//exitDialog->setDimensions(dialogPos, dialogSize);
 		exitDialog->setTint(Color(0, .5, 1, 1));
 		exitDialog->setTitle(L"Exit Test?", Vector2(1, 1), "BlackCloak");

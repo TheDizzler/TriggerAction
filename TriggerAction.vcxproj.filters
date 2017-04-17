@@ -75,9 +75,6 @@
     <ClCompile Include="Source\DXTKGui\Controls\GUIFactory.cpp">
       <Filter>Source Files\DXTGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controllers\KeyboardController.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DXTKGui\Controls\ListBox.cpp">
       <Filter>Source Files\DXTGui</Filter>
     </ClCompile>
@@ -198,9 +195,6 @@
       <Filter>Header Files\DXTGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\DXTKGui\BaseGraphics\IElement2D.h">
-      <Filter>Header Files\DXTGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controllers\KeyboardController.h">
       <Filter>Header Files\DXTGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\DXTKGui\Controls\ListBox.h">

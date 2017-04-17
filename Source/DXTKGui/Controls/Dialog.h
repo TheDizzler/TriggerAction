@@ -20,7 +20,7 @@ public:
 	virtual void setScrollBar(ScrollBarDesc& scrollBarDesc);
 	virtual void alwaysShowScrollBar(bool alwaysShow);
 
-	void setDimensions(const Vector2& position, const Vector2& size,
+	virtual void setDimensions(const Vector2& position, const Vector2& size,
 		const int frameThickness = 2);
 
 	void setOpenTransition(TransitionEffects::TransitionEffect* effect);
@@ -99,7 +99,8 @@ public:
 	/** Could make this adaptable? */
 	Vector2 dialogTextMargin = Vector2(10, 10);
 	int titleTextMargin = 10;
-private:
+
+protected:
 
 	enum GUIControlLookUp {
 		TitleText, /*DialogText,*/ ButtonOK, ButtonNeutral, ButtonCancel, Other

@@ -18,7 +18,24 @@ public:
 private:
 
 	vector<shared_ptr<Joystick>> joysticks;
-	
+
 	vector<unique_ptr<Dialog>> dialogs;
 	vector<int> displayingLostJoys;
+};
+
+
+class ControllerDialog : public Dialog {
+public:
+	ControllerDialog(GUIFactory* guiFactory);
+
+	virtual void setDimensions(const Vector2& position, const Vector2& size,
+		const int frameThickness = 10) override;
+
+	virtual void update(double deltaTime) override;
+
+
+private:
+	double dialogOpenTime = 0;
+	const double CONTROLLER_WAIT_TIME = 1.0;
+	int ellipsisii = 16;
 };

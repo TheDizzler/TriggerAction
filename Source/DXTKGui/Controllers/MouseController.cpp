@@ -1,8 +1,8 @@
 #include "MouseController.h"
 
-MouseController::MouseController(HWND hWnd) {
+MouseController::MouseController(HWND h) {
 
-	hwnd = hWnd;
+	hwnd = h;
 	mouse.reset(new Mouse());
 	mouse->SetWindow(hwnd);
 
