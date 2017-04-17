@@ -187,7 +187,7 @@ void Sprite::setAlpha(const float alpha) {
 	tint.w = alpha;
 }
 
-void Sprite::setLayerDepth(const float depth) {
+void Sprite::setLayerDepth(const float depth, bool frontToBack) {
 	layerDepth = depth;
 }
 

@@ -26,7 +26,8 @@ public:
 	virtual void setFont(shared_ptr<FontSet> newFont);
 	virtual void setTint(const XMFLOAT4 color) override;
 	virtual void setScale(const Vector2& scl) override;
-	virtual void setLayerDepth(const float newDepth) override;
+	/** bool frontToBack has no effect in TextLabel. */
+	virtual void setLayerDepth(const float newDepth, bool frontToBack = true) override;
 
 	void setText(string text);
 	void setText(wostringstream& text);
@@ -89,9 +90,9 @@ private:
 	wstring label;
 	shared_ptr<FontSet> font;
 
-	virtual void setToUnpressedState();
+	/*virtual void setToUnpressedState();
 	virtual void setToHoverState();
-	virtual void setToSelectedState();
+	virtual void setToSelectedState();*/
 
 	/* Sometimes a TextLabel is just a TextLabel. */
 	bool isHoverable = false;

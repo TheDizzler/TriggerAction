@@ -22,20 +22,20 @@ void Dialog::initialize(GraphicsAsset* pixelAsset, const pugi::char_t* font) {
 
 	panel.reset(guiFactory->createPanel());
 	panel->setTint(Color(0, 1, 1, 1));
-	frame.reset(new RectangleFrame(pixelAsset));
-	bgSprite.reset(new RectangleSprite(pixelAsset));
+	frame = make_unique<RectangleFrame>(pixelAsset);
+	bgSprite = make_unique<RectangleSprite>(pixelAsset);
 	bgSprite->setTint(panel->getTint());
-	titleSprite.reset(new RectangleSprite(pixelAsset));
+	titleSprite = make_unique<RectangleSprite>(pixelAsset);
 	titleSprite->setTint(Color(1, 1, 1, 1));
-	buttonFrameSprite.reset(new RectangleSprite(pixelAsset));
+	buttonFrameSprite = make_unique< RectangleSprite>(pixelAsset);
 	buttonFrameSprite->setTint(Color(1, 1, 1, 1));
-	hitArea.reset(new HitArea(Vector2::Zero, Vector2::Zero));
+	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 
 	controls.resize(5);
 
 	unique_ptr<GUIControl> titleText;
 
-	dialogText.reset(new TextLabel(guiFactory->getFont(font)));
+	dialogText = make_unique<TextLabel>(guiFactory->getFont(font));
 	dialogText->setTint(Color(0, 0, 0, 1));
 
 	setLayerDepth(.95);
@@ -101,6 +101,83 @@ void Dialog::setCloseTransition(TransitionEffects::TransitionEffect* effect) {
 
 
 
+wstring Dialog::reformatText(size_t* scrollBarBuffer) {
+	
+	// if the text is longer than the dialog box
+	//		break the text down into multiple lines
+	wstring newText = L"";
+
+
+	// how long line length?
+	int maxLineLength = dialogFrameSize.x - *scrollBarBuffer - (dialogTextMargin.x * 2);
+
+	int i = 0;
+	int textLength = wcslen(dialogText->getText());
+	bool scrollbarAdded = false;
+	bool done = false;
+	while (i < textLength) {
+		wstring currentLine = L"";
+		while (dialogText->measureString(currentLine).x < maxLineLength) {
+
+			currentLine += dialogText->getText()[i++];
+			if (i >= textLength) {
+				done = true;
+				break;
+			}
+		}
+
+		// how long is currentLine?
+		int currentLength = dialogText->measureString(currentLine).x;
+
+		if (!done) {
+			// go through currentLine until a whitespace is found and add a newline char before it
+			wchar_t ch = currentLine[currentLine.length() - 1];
+			int back = 0;
+			while (!isspace(ch)) {
+
+				++back;
+				--i;
+				// check to see if word is too long for line
+				int nextChar = currentLine.length() - back - 1;
+				if (nextChar < 0) {
+					/* this means current word is too long for line
+					(i.e. stupidly narrow dialog box or ridiculously long word) */
+					// TODO: hyphenate word and put rest on next line
+					int excessLength = currentLength - maxLineLength;
+					int o = currentLine.length();
+					while (excessLength > 0) {
+						wstring choppedWord = currentLine.substr(0, --o);
+						excessLength = dialogText->measureString(choppedWord).x - maxLineLength;
+					}
+					// should have a nicely fiting word chunk now (no hypen)
+					i += o;
+					back -= o;
+					break;
+				}
+				ch = currentLine[nextChar];
+			}
+			currentLine.erase(currentLine.end() - back, currentLine.end());
+		}
+
+		newText += currentLine + L"\n";
+
+		// If text is getting too long, restart and adjust for scrollbar
+		if (!scrollbarAdded
+			&& dialogText->measureString(newText).y + dialogTextMargin.y * 2
+		> dialogFrameSize.y) {
+
+			*scrollBarBuffer = panel->getScrollBarSize().x;
+			maxLineLength = dialogFrameSize.x - *scrollBarBuffer - (dialogTextMargin.x * 2);
+			i = 0;
+			newText = L"";
+			scrollbarAdded = true;
+			done = false;
+		}
+	}
+
+	return newText;
+}
+
 void Dialog::testMinimumSize() {
 
 	Vector2 mindialogtextSize = dialogText->measureString(L"Min accept");
@@ -154,7 +231,7 @@ void Dialog::calculateTitlePos() {
 void Dialog::setTitle(wstring text, const Vector2& scale,
 	const pugi::char_t* font, Color color) {
 
-	controls[TitleText].reset(new TextLabel(guiFactory->getFont(font)));
+	controls[TitleText] = make_unique<TextLabel>(guiFactory->getFont(font));
 	controls[TitleText]->setText(text);
 	controls[TitleText]->setScale(scale);
 	controls[TitleText]->setTint(color);
@@ -171,92 +248,26 @@ void Dialog::calculateDialogTextPos() {
 	}
 
 	TextLabel formattedText(Vector2::Zero, dialogText->getText(), dialogText->getFont());
-	int scrollBarBuffer = 0;
+	size_t scrollBarBuffer = 0;
+
 	if (dialogtextsize.x + dialogTextMargin.x * 2 > dialogFrameSize.x) {
+	
 	// if the text is longer than the dialog box
 	//		break the text down into multiple lines
-		wstring newText = L"";
-
-
-		// how long line length?
-		int maxLineLength = dialogFrameSize.x - scrollBarBuffer - (dialogTextMargin.x * 2);
-		/*if (maxLineLength <= minDialogTextSize) {
-			setDimensions(position, Vector2(maxLineLength + 50, size.y));
-			return;
-		}*/
-
-		int i = 0;
-		int textLength = wcslen(dialogText->getText());
-		bool scrollbarAdded = false;
-		bool done = false;
-		while (i < textLength) {
-			wstring currentLine = L"";
-			while (dialogText->measureString(currentLine).x < maxLineLength) {
-
-				currentLine += dialogText->getText()[i++];
-				if (i >= textLength) {
-					done = true;
-					break;
-				}
-			}
-
-			// how long is currentLine?
-			int currentLength = dialogText->measureString(currentLine).x;
-
-			if (!done) {
-				// go through currentLine until a whitespace is found and add a newline char before it
-				wchar_t ch = currentLine[currentLine.length() - 1];
-				int back = 0;
-				while (!isspace(ch)) {
-
-					++back;
-					--i;
-					// check to see if word is too long for line
-					int nextChar = currentLine.length() - back - 1;
-					if (nextChar < 0) {
-						/* this means current word is too long for line
-							(i.e. stupidly narrow dialog box or ridiculously long word) */
-						// TODO: hyphenate word and put rest on next line
-						int excessLength = currentLength - maxLineLength;
-						int o = currentLine.length();
-						while (excessLength > 0) {
-							wstring choppedWord = currentLine.substr(0, --o);
-							excessLength = dialogText->measureString(choppedWord).x - maxLineLength;
-						}
-						// should have a nicely fiting word chunk now (no hypen)
-						i += o;
-						back -= o;
-						/*i += (back - newback);
-						back = newback;*/
-						break;
-					}
-					ch = currentLine[nextChar];
-				}
-				currentLine.erase(currentLine.end() - back, currentLine.end());
-			}
-
-			newText += currentLine + L"\n";
-
-			// If text is getting too long, restart and adjust for scrollbar
-			if (!scrollbarAdded
-				&& dialogText->measureString(newText).y + dialogTextMargin.y * 2
-			> dialogFrameSize.y) {
-
-				scrollBarBuffer = panel->getScrollBarSize().x;
-				maxLineLength = dialogFrameSize.x - scrollBarBuffer - (dialogTextMargin.x * 2);
-				i = 0;
-				newText = L"";
-				scrollbarAdded = true;
-				done = false;
-			}
-		}
-
-		formattedText.setText(newText);
+		formattedText.setText(reformatText(&scrollBarBuffer));
+		dialogtextsize = formattedText.measureString();
+	} else if (dialogtextsize.y /*+ dialogTextMargin.y * 2*/ > dialogFrameSize.y) {
+		
+		// width is fine but text is getting long
+		scrollBarBuffer = panel->getScrollBarSize().x;
+		formattedText.setText(reformatText(&scrollBarBuffer));
 		dialogtextsize = formattedText.measureString();
 	}
 
 	Vector2 dialogpos;
 	if (centerText) {
+		//if (panel->scrollBarVisible())
+			//scrollBarBuffer = panel->getScrollBarSize().x;
 		dialogpos = Vector2(dialogFramePosition.x +
 			(dialogFrameSize.x - dialogtextsize.x - scrollBarBuffer) / 2, 0);
 	} else {
@@ -609,22 +620,22 @@ void Dialog::setLayerDepth(const float newDepth, bool frontToBack) {
 	float nudge = .00000001;
 	if (!frontToBack)
 		nudge *= -1;
-	float ld = layerDepth + nudge;
-	bgSprite->setLayerDepth(layerDepth + nudge);
-	panel->setLayerDepth(layerDepth + nudge * 2);
-	titleSprite->setLayerDepth(layerDepth + nudge * 3);
-	buttonFrameSprite->setLayerDepth(layerDepth + nudge * 4);
+	//float ld = layerDepth + nudge;
+	bgSprite->setLayerDepth(layerDepth + nudge, frontToBack);
+	panel->setLayerDepth(layerDepth + nudge * 2, frontToBack);
+	titleSprite->setLayerDepth(layerDepth + nudge * 3, frontToBack);
+	buttonFrameSprite->setLayerDepth(layerDepth + nudge * 4, frontToBack);
 
 	nudge *= 4;
 	for (auto const& control : controls) {
 		if (control == NULL)
 			continue;
 		nudge += nudge;
-		control->setLayerDepth(layerDepth + nudge);
+		control->setLayerDepth(layerDepth + nudge, frontToBack);
 	}
 	nudge += nudge;
 
-	frame->setLayerDepth(layerDepth + nudge);
+	frame->setLayerDepth(layerDepth + nudge, frontToBack);
 }
 
 

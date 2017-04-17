@@ -39,7 +39,7 @@ public:
 	virtual void setTint(const Color& color) = 0;
 	virtual void setTint(const XMVECTORF32 color) = 0;
 	virtual void setAlpha(const float alpha) = 0;
-	virtual void setLayerDepth(const float depth) = 0;
+	virtual void setLayerDepth(const float depth, bool frontToBack = true) = 0;
 
 	virtual void draw(SpriteBatch* batch) = 0;
 

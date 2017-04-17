@@ -216,7 +216,7 @@ void RectangleFrame::setAlpha(const float alpha) {
 	tint.w = alpha;
 }
 
-void RectangleFrame::setLayerDepth(const float depth) {
+void RectangleFrame::setLayerDepth(const float depth, bool frontToBack) {
 	layerDepth = depth;
 }
 
@@ -270,6 +270,10 @@ void Line::setTint(const Color& color) {
 
 void Line::setTint(const XMVECTORF32 color) {
 	tint = color;
+}
+
+void Line::setLayerDepth(const float depth, bool frontToBack) {
+	layerDepth = depth;
 }
 
 void Line::draw(SpriteBatch* batch) {
@@ -451,7 +455,7 @@ void TriangleFrame::setAlpha(const float alpha) {
 	tint.w = alpha;
 }
 
-void TriangleFrame::setLayerDepth(const float depth) {
+void TriangleFrame::setLayerDepth(const float depth, bool frontToBack) {
 	layerDepth = depth;
 }
 /** ***** END TRIANGLEFRAME ***** **/

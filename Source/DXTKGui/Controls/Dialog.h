@@ -69,7 +69,7 @@ public:
 	virtual void setTint(const XMFLOAT4 color) override;
 	virtual void setScale(const Vector2& newScale) override;
 	virtual void setPosition(const Vector2& newPosition) override;
-	virtual void setLayerDepth(const float depth, bool frontToBack = true);
+	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 	const Color& getPanelTint() const;
 	virtual const Vector2& getPosition() const override;
@@ -125,7 +125,7 @@ private:
 	Vector2 cancelButtonPosition;
 	Vector2 neutralButtonPosition;
 
-	//float minDialogTextSize;
+	wstring reformatText(size_t* scrollBarBuffer);
 	void testMinimumSize();
 
 	void calculateTitlePos();

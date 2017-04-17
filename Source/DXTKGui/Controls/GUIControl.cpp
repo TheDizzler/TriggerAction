@@ -111,7 +111,7 @@ void GUIControl::setAlpha(const float alpha) {
 	tint.w = alpha;
 }
 
-void GUIControl::setLayerDepth(const float depth) {
+void GUIControl::setLayerDepth(const float depth, bool frontToBack) {
 	layerDepth = depth;
 }
 

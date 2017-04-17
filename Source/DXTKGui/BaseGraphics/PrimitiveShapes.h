@@ -54,7 +54,8 @@ public:
 	virtual void setScale(const Vector2& scale) override;
 	virtual void setRotation(const float rotation) override;
 	virtual void setAlpha(const float alpha) override;
-	virtual void setLayerDepth(const float depth) override;
+	/* bool frontToBack has no effect in RectangleFrame. */
+	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 	bool contains(const Vector2& point);
 private:
@@ -109,7 +110,8 @@ public:
 	virtual void setTint(const Color& color) override;
 	virtual void setTint(const XMVECTORF32 color) override;
 	virtual void setAlpha(const float alpha) override;
-	virtual void setLayerDepth(const float depth) override;
+	/* bool frontToBack has no effect in TriangleFrame. */
+	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 	virtual void draw(SpriteBatch * batch) override;
 
@@ -146,6 +148,8 @@ public:
 	void setRotation(const float rotation);
 	void setTint(const Color& color);
 	void setTint(const XMVECTORF32 color);
+	/* bool frontToBack has no effect in Line. */
+	virtual void setLayerDepth(const float depth, bool frontToBack = true);
 
 	void draw(SpriteBatch* batch);
 

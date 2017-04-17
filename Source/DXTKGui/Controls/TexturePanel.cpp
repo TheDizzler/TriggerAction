@@ -3,7 +3,7 @@
 //#include "../../Engine/GameEngine.h"
 TexturePanel::TexturePanel(GraphicsAsset* pixelAsset, ScrollBar* scrllbr) {
 
-	hitArea.reset(new HitArea(Vector2::Zero, Vector2::Zero));
+	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 	verticalScrollBar.reset(scrllbr);
 }
 
@@ -82,6 +82,18 @@ void TexturePanel::setTexturePosition(const Vector2& texPos) {
 	setPosition(texPos);
 }
 
+
+void TexturePanel::setLayerDepth(const float newDepth, bool frontToBack) {
+
+	layerDepth = newDepth;
+	float nudge = .00000001;
+	if (!frontToBack)
+		nudge *= -1;
+
+	verticalScrollBar->setLayerDepth(layerDepth + nudge, frontToBack);
+}
+
+
 void TexturePanel::setScale(const Vector2& newScale) {
 	GUIControl::setScale(newScale);
 	verticalScrollBar->setScale(newScale);
@@ -107,6 +119,10 @@ const int TexturePanel::getHeight() const {
 
 const Vector2& TexturePanel::getScrollBarSize() const {
 	return verticalScrollBar->getSize();
+}
+
+bool TexturePanel::scrollBarVisible() const {
+	return showScrollBar || alwaysDisplayScrollBar;
 }
 
 bool TexturePanel::clicked() {

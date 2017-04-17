@@ -39,7 +39,7 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 //#ifdef _DEBUG
 //	audioFlags = audioFlags | AudioEngine_Debug;
 //#endif
-	audioEngine.reset(new AudioEngine(audioFlags));
+	audioEngine = make_unique<AudioEngine>(audioFlags);
 	retryAudio = false;
 
 	if (!audioEngine->IsAudioDevicePresent()) {
@@ -73,7 +73,7 @@ void GameEngine::onAudioDeviceChange() {
 bool GameEngine::initGFXAssets() {
 
 	// get graphical assets from xml file
-	docAssMan.reset(new pugi::xml_document());
+	docAssMan = make_unique<pugi::xml_document>();
 	if (!docAssMan->load_file(GUIAssets::assetManifestFile)) {
 		GameEngine::errorMessage(L"Could not read AssetManifest file!",
 			L"Fatal Read Error!");
@@ -104,7 +104,7 @@ bool GameEngine::initGFXAssets() {
 
 bool GameEngine::initStage() {
 
-	game.reset(new GameManager(this));
+	game = make_unique<GameManager>(this);
 	if (!game->initializeGame(hwnd, device, mouse, joysticks)) {
 		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;

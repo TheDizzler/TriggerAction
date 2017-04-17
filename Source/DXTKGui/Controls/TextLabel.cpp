@@ -38,7 +38,7 @@ void TextLabel::update(double deltaTime) {
 			isHover = true;
 			if (!isPressed) {
 				onHover();
-				setToHoverState();
+				//setToHoverState();
 			}
 		} else
 			isHover = false;
@@ -46,15 +46,15 @@ void TextLabel::update(double deltaTime) {
 		if (isPressed && !mouse->leftButton()) {
 			isClicked = true;
 			onClick();
-			setToUnpressedState();
+			//setToUnpressedState();
 		} else {
 			isClicked = false;
 			if (!isHover) {
 				isPressed = false;
-				setToUnpressedState();
+				//setToUnpressedState();
 			} else if (mouse->clicked()) {
 				isPressed = true;
-				setToSelectedState();
+				//setToSelectedState();
 			}
 		}
 	}
@@ -131,17 +131,17 @@ void TextLabel::setHoverable(bool hoverable) {
 	isHoverable = hoverable;
 }
 
-void TextLabel::setToUnpressedState() {
-	//font->setTint(normalColorText);
-}
-
-void TextLabel::setToHoverState() {
-	//font->setTint(hoverColorText);
-}
-
-void TextLabel::setToSelectedState() {
-	//font->setTint(selectedColorText);
-}
+//void TextLabel::setToUnpressedState() {
+//	//font->setTint(normalColorText);
+//}
+//
+//void TextLabel::setToHoverState() {
+//	//font->setTint(hoverColorText);
+//}
+//
+//void TextLabel::setToSelectedState() {
+//	//font->setTint(selectedColorText);
+//}
 
 #include "GUIFactory.h"
 void TextLabel::setFont(const pugi::char_t* fontName) {
@@ -164,7 +164,7 @@ void TextLabel::setScale(const Vector2 & scl) {
 	hitArea->size = size;
 }
 
-void TextLabel::setLayerDepth(const float newDepth) {
+void TextLabel::setLayerDepth(const float newDepth, bool frontToBack) {
 	layerDepth = newDepth;
 }
 

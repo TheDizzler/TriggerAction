@@ -44,7 +44,7 @@ public:
 	virtual void setTint(const Color& color) override;
 	virtual void setTint(const XMVECTORF32 color) override;
 	virtual void setAlpha(const float alpha) override;
-	virtual void setLayerDepth(const float depth) override;
+	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 	/** Warning: calling setPosition() or setScale() will reset the HitArea! */
 	virtual void setHitArea(HitArea* newHitArea);
 

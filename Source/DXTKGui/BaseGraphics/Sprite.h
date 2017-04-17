@@ -71,7 +71,8 @@ public:
 	virtual void setTint(const Color& color) override;
 	virtual void setTint(const XMVECTORF32 color) override;
 	virtual void setAlpha(const float alpha) override;
-	virtual void setLayerDepth(const float depth) override;
+	/** bool frontToBack has no effect in Sprite. */
+	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 	virtual void moveBy(const Vector2& moveVector);
 	virtual void rotateBy(float rotateAmount);

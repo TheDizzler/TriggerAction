@@ -211,9 +211,9 @@ void Button::setLayerDepth(float newDepth, bool frontToBack) {
 	float nudge = .00000001;
 	if (!frontToBack)
 		nudge *= -1;
-	rectSprite->setLayerDepth(layerDepth + nudge);
-	frame->setLayerDepth(layerDepth + nudge * 2);
-	buttonLabel->setLayerDepth(layerDepth + nudge * 3);
+	rectSprite->setLayerDepth(layerDepth + nudge, frontToBack);
+	frame->setLayerDepth(layerDepth + nudge * 2, frontToBack);
+	buttonLabel->setLayerDepth(layerDepth + nudge * 3, frontToBack);
 }
 
 void Button::setScale(const Vector2& scl) {
@@ -358,6 +358,15 @@ void ImageButton::setRotation(const float rot) {
 	rotation = rot;
 }
 
+void ImageButton::setLayerDepth(float newDepth, bool frontToBack) {
+
+	layerDepth = newDepth;
+	float nudge = .00000001;
+	if (!frontToBack)
+		nudge *= -1;
+	buttonLabel->setLayerDepth(newDepth + nudge, frontToBack);
+}
+
 void ImageButton::setToUnpressedState() {
 
 	buttonLabel->setTint(normalColorText);
@@ -498,6 +507,10 @@ const int AnimatedButton::getWidth() const {
 const int AnimatedButton::getHeight() const {
 	return animation->animationFrames[currentFrameIndex]->sourceRect.bottom
 		- animation->animationFrames[currentFrameIndex]->sourceRect.top;
+}
+
+void AnimatedButton::setLayerDepth(float newDepth, bool frontToBack) {
+	layerDepth = newDepth;
 }
 
 bool AnimatedButton::clicked() {

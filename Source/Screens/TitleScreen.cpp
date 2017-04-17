@@ -43,7 +43,7 @@ void TitleScreen::setGameManager(GameManager* gm) {
 
 double dialogOpenTime = 0;
 const double CONTROLLER_WAIT_TIME = 1.0;
-int ellipsisii = 4;
+int ellipsisii = 16;
 void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 
 	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
@@ -55,12 +55,12 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 		dialogOpenTime += deltaTime;
 		if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
 			dialogOpenTime = 0;
-			if (ellipsisii++ > 3) {
+			if (ellipsisii++ > 10) {
 				ellipsisii = 0;
-				noControllerDialog->setText(L"Waiting for controller\n");
+				noControllerDialog->setText(L"Waiting for controller\nLots if stuff here.\nWrite\nRight\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh");
 			} else {
 				wstring text = noControllerDialog->getText();
-				text += L".";
+				text += L".\n";
 				noControllerDialog->setText(text);
 			}
 		}
