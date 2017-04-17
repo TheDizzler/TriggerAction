@@ -14,8 +14,8 @@ GameManager::~GameManager() {
 }
 
 #include "../Engine/GameEngine.h"
-bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr<MouseController> ms,
-	vector<shared_ptr<Joystick>> joysticks) {
+bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr<MouseController> ms/*,
+	vector<shared_ptr<Joystick>> joysticks*/) {
 
 	device = dvc;
 	mouse = ms;
@@ -63,10 +63,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 
 
 	guiOverlay = make_unique<GUIOverlay>(joysticks);
-	//menuScreen.reset(new MenuManager());
-	//menuScreen->setGameManager(this);
-	//if (!menuScreen->initialize(device, mouse))
-	//	return false;
+
 
 	mapManifest = make_unique<xml_document>();
 	if (!mapManifest->load_file(Globals::mapManifestFile)) {
@@ -94,8 +91,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		return false;
 	}
 
-	// check if no controllers set up
-	if (joysticks.size() <= 0) {
+	if (true) {
 
 		titleScreen = make_unique<TitleScreen>(joysticks);
 		titleScreen->setGameManager(this);
@@ -179,6 +175,14 @@ void GameManager::controllerRemoved(vector<shared_ptr<Joystick>> lostDevices) {
 
 	for (shared_ptr<Joystick> joystick : lostDevices)
 		currentScreen->controllerRemoved(joystick->slot);
+}
+
+void GameManager::newController(HANDLE joyHandle) {
+	currentScreen->newController(joyHandle);
+}
+
+void GameManager::controllerAccepted(shared_ptr<Joystick> newJoy) {
+	gameEngine->controllerAccepted(newJoy);
 }
 
 

@@ -79,3 +79,6 @@ void LevelScreen::controllerRemoved(size_t controllerSlot) {
 	guiOverlay->reportLostJoystick(controllerSlot);
 
 }
+
+void LevelScreen::newController(HANDLE joyHandle) {
+}

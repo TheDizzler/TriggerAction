@@ -17,5 +17,6 @@ public:
 	/** Action to perform when a joystick has been deregistered.
 		Controller slot is virtual, used to track controllers in some sort of list.*/
 	virtual void controllerRemoved(size_t controllerSlot) = 0;
+	virtual void newController(HANDLE joyHandle) = 0;
 	
 };

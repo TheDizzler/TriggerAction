@@ -1,6 +1,7 @@
 #pragma once
 #include "../DXTKGui/BaseGraphics/screen.h"
 #include "../Engine/Joystick.h"
+#include "GUIOverlay.h"
 
 
 class TitleScreen : public Screen {
@@ -17,11 +18,12 @@ public:
 
 	virtual void pause() override;
 	virtual void controllerRemoved(size_t controllerSlot) override;
+	virtual void newController(HANDLE joyHandle);
 
 private:
 	GameManager* game;
-	vector<shared_ptr<Joystick>> joysticks;
-	unique_ptr<Dialog> noControllerDialog;
+	//vector<shared_ptr<Joystick>> joysticks;
+	unique_ptr<ControllerDialog> noControllerDialog;
 
 	unique_ptr<Button> quitButton;
 

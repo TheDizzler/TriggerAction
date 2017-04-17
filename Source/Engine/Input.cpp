@@ -1,6 +1,7 @@
 #include "../pch.h"
 #include "Input.h"
 
+vector<shared_ptr<Joystick>> joysticks;
 
 Input::Input() {
 }
@@ -24,7 +25,20 @@ bool Input::initRawInput(HWND hwnd) {
 }
 
 
-void Input::addJoysticks(vector<HANDLE> handles) {
+
+
+ControllerListener::ControllerListener(/*Input* ge*/) {
+	//gameEngine = ge;
+}
+
+ControllerListener::~ControllerListener() {
+	lostDevices.clear();
+	joystickMap.clear();
+	joysticks.clear();
+}
+
+
+void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 	if (handles.size() < joystickMap.size()) {
 		// joystick was removed it - find it!
@@ -62,6 +76,7 @@ void Input::addJoysticks(vector<HANDLE> handles) {
 						joysticks.erase(joysticks.begin() + i);
 					}
 					OutputDebugString(L"Joystick removed\n");
+					controllerRemoved();
 				}
 			}
 			found = NULL;
@@ -79,9 +94,9 @@ void Input::addJoysticks(vector<HANDLE> handles) {
 		for (const auto& newHandle : handles) {
 			if (joystickMap.find(newHandle) != joystickMap.end()) {
 				OutputDebugString(L"That joystick already registered.\n");
-			} else if (lostDevices.size() > 0) {
+			} else if (gameInitialized) {
 				// create joystick and wait for player response
-
+				newController(newHandle);
 
 			} else {
 				shared_ptr<Joystick> newStick = make_shared<Joystick>(newHandle, ++numSticks);
@@ -95,30 +110,19 @@ void Input::addJoysticks(vector<HANDLE> handles) {
 }
 
 
-void Input::controllerRemoved(PDEV_BROADCAST_DEVICEINTERFACE removedDevice) {
 
-	/*for (const auto& joy : joystickDeviceMap) {
-		if (joy.first->dwType == removedDevice->dbcc_devicetype) {
-			OutputDebugString(L"Found removed joystick");
-		}
-	}*/
-
-
-}
-
-
-void Input::parseRawInput(PRAWINPUT pRawInput) {
+void ControllerListener::parseRawInput(PRAWINPUT pRawInput) {
 
 	if (joystickMap.find(pRawInput->header.hDevice) != joystickMap.end()) {
 		shared_ptr<Joystick> joystick = joystickMap[pRawInput->header.hDevice];
-			//wostringstream wss;
-			//wss << "Controller: " << joystick->slot << endl;
-			//OutputDebugString(wss.str().c_str());
+		//wostringstream wss;
+		//wss << "Controller: " << joystick->slot << endl;
+		//OutputDebugString(wss.str().c_str());
 		joystick->parseRawInput(pRawInput);
 	}
 }
 
-bool Input::matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle) {
+bool ControllerListener::matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle) {
 
 
 	for (HANDLE newHandle : newHandles)
@@ -126,3 +130,10 @@ bool Input::matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle) {
 			return true;
 	return false;
 }
+
+
+void ControllerListener::controllerAccepted(shared_ptr<Joystick> newJoy) {
+	joystickMap[newJoy->handle] = newJoy;
+	joysticks.push_back(newJoy);
+}
+

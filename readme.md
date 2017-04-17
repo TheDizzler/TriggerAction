@@ -8,7 +8,7 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- added ability to disable pop-up message in hrReporter in StringHelper (changes also made in GraphicsAsset)
 >- made changes to AssetSet: can add animations
 >- changed Animations: frametime is now held by individual frame
->- added prototype function to Screen for actions to take when a joystick is removed
+>- added prototype functions to Screen for actions to take when a joystick is removed (controllerRemoved(size_t controllerSlot)) and added (newController(HANDLE joyHandle))
 >- added functional getText() to Dialog
 >- made Dialog conform to a minimum size
 >- updates to GUIFactory to create Dialog with possibilities of errors
@@ -23,3 +23,4 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- deleted superfluous KeyboardController
 >- dialog is responsive to frame thickness now
 >- removed useless functions in TextLabel: setToUnpressedState(), setToHoverState(), setToSelectedState()
+>- added controllerRemoved(size_t controllerSlot) and newController(HANDLE joyHandle) to Screen

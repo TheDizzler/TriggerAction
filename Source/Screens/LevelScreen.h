@@ -27,6 +27,7 @@ public:
 
 	virtual void pause() override;
 	virtual void controllerRemoved(size_t controllerSlot) override;
+	virtual void newController(HANDLE joyHandle);
 
 private:
 	GameManager* game;

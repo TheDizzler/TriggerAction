@@ -3,6 +3,7 @@
 
 unique_ptr<GUIFactory> guiFactory;
 unique_ptr<GFXAssetManager> gfxAssets;
+//unique_ptr<ControllerListener> joyListener;
 
 unique_ptr<Dialog> GameEngine::errorDialog;
 unique_ptr<Dialog> GameEngine::warningDialog;
@@ -33,6 +34,8 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 		return false;
 	}
 
+	//joyListener = make_unique<ControllerListener>(this);
+
 	// Initialize Audio Engine
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	AUDIO_ENGINE_FLAGS audioFlags = AudioEngine_Default;
@@ -60,7 +63,7 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 		return false;
 	}
 
-
+	gameInitialized = true;
 	return true;
 }
 
@@ -105,7 +108,7 @@ bool GameEngine::initGFXAssets() {
 bool GameEngine::initStage() {
 
 	game = make_unique<GameManager>(this);
-	if (!game->initializeGame(hwnd, device, mouse, joysticks)) {
+	if (!game->initializeGame(hwnd, device, mouse/*, joysticks*/)) {
 		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;
 	}
@@ -182,6 +185,11 @@ void GameEngine::run(double deltaTime, int fps) {
 void GameEngine::controllerRemoved() {
 
 	game->controllerRemoved(lostDevices);
+}
+
+void GameEngine::newController(HANDLE joyHandle) {
+
+	game->newController(joyHandle);
 }
 
 

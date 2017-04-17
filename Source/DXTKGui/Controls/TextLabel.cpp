@@ -131,17 +131,7 @@ void TextLabel::setHoverable(bool hoverable) {
 	isHoverable = hoverable;
 }
 
-//void TextLabel::setToUnpressedState() {
-//	//font->setTint(normalColorText);
-//}
-//
-//void TextLabel::setToHoverState() {
-//	//font->setTint(hoverColorText);
-//}
-//
-//void TextLabel::setToSelectedState() {
-//	//font->setTint(selectedColorText);
-//}
+
 
 #include "GUIFactory.h"
 void TextLabel::setFont(const pugi::char_t* fontName) {

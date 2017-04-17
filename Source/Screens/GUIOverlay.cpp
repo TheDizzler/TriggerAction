@@ -40,9 +40,15 @@ void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
 	unique_ptr<ControllerDialog> joyLostDialog;
 	size_t numDialogs = dialogs.size();
 	Vector2 dialogPos, dialogSize;
-	dialogSize = Vector2(Globals::WINDOW_WIDTH / 4, Globals::WINDOW_HEIGHT / 4);
+	if (numDialogs <= 0)
+		dialogSize = Vector2(Globals::WINDOW_WIDTH / 4, Globals::WINDOW_HEIGHT / 4);
+	else
+		dialogSize = Vector2(dialogs[0]->getWidth(), dialogs[0]->getHeight());
+
+
 	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
 	dialogPos.y -= dialogSize.y / 2;
+
 	if (numDialogs <= 0) {
 		dialogPos.x -= dialogSize.x / 2;
 	} else {
@@ -56,15 +62,16 @@ void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
 	//guiFactory->createDialog(dialogPos, dialogSize, false, true, 10);
 	joyLostDialog->setDimensions(dialogPos, dialogSize);
 	wostringstream title;
-	title << L"Player " << lostJoy->slot << L" - ";
-	title << StringHelper::convertCharStarToWCharT(lostJoy->pc->name.c_str()) << L" - has dropped." << endl;
+	title << L"Player " << lostJoy->slot;
+	title << L"  has dropped." << endl;
 	joyLostDialog->setTitle(title.str(), Vector2(1.2, 1.2));
 	wostringstream wss;
+	wss << StringHelper::convertCharStarToWCharT(lostJoy->pc->name.c_str()) << endl;
 	wss << L"Waiting for controller...\n";
+	/*wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n";
 	wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n";
 	wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n";
-	wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n";
-	wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n";
+	wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n"; wss << L"eaeea\n";*/
 	joyLostDialog->setText(wss.str());
 	joyLostDialog->show();
 
@@ -91,17 +98,23 @@ void ControllerDialog::setDimensions(const Vector2& position, const Vector2& siz
 
 void ControllerDialog::update(double deltaTime) {
 
-	/*dialogOpenTime += deltaTime;
+	dialogOpenTime += deltaTime;
 	if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
 		dialogOpenTime = 0;
-		if (ellipsisii++ > 4) {
+		if (ellipsisii++ > 6) {
 			ellipsisii = 0;
-			setText(L"Waiting for controller");
+			setText(defaultText);
 		} else {
 			wstring text = dialogText->getText();
-			text += L".\n";
-			setText(text);
+			text += L".";
+			Dialog::setText(text);
 		}
-	}*/
+	}
 	Dialog::update(deltaTime);
+}
+
+void ControllerDialog::setText(wstring text) {
+
+	defaultText = text;
+	Dialog::setText(text);
 }

@@ -22,8 +22,8 @@ public:
 	~GameManager();
 
 
-	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse,
-		vector<shared_ptr<Joystick>> joysticks);
+	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse/*,
+		vector<shared_ptr<Joystick>> joysticks*/);
 
 
 	void update(double deltaTime, shared_ptr<MouseController> mouse);
@@ -34,6 +34,8 @@ public:
 	void loadMainMenu();
 
 	void controllerRemoved(vector<shared_ptr<Joystick>> lostDevices);
+	void newController(HANDLE joyHandle);
+	void controllerAccepted(shared_ptr<Joystick> newJoy);
 
 	void setPaused(bool paused);
 	void pause();

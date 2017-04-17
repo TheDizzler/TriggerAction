@@ -34,7 +34,10 @@ public:
 	virtual void update(double deltaTime) override;
 
 
+	virtual void setText(wstring text) override;
+
 private:
+	wstring defaultText;
 	double dialogOpenTime = 0;
 	const double CONTROLLER_WAIT_TIME = 1.0;
 	int ellipsisii = 16;
