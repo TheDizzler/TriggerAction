@@ -26,7 +26,7 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 
 	virtual void pause() override;
-	virtual void controllerRemoved() override;
+	virtual void controllerRemoved(size_t controllerSlot) override;
 
 private:
 	GameManager* game;

@@ -87,7 +87,7 @@ public:
 	/** Not used in DialogBox */
 	virtual const Vector2& XM_CALLCONV measureString() const override;
 
-	void open();
+	void show();
 	void close();
 	/* Deprecating. Use ActionListeners instead. */
 	//ClickAction getResult();

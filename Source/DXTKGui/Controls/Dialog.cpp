@@ -530,7 +530,7 @@ const Vector2& XM_CALLCONV Dialog::measureString() const {
 }
 
 
-void Dialog::open() {
+void Dialog::show() {
 	isOpen = true;
 	isClosing = false;
 	if (openTransition != NULL) {
@@ -544,7 +544,7 @@ void Dialog::close() {
 	isOpening = false;
 	if (closeTransition != NULL) {
 		if (isClosing) {
-			open();
+			show();
 		} else {
 			isClosing = true;
 			(closeTransition->*resetTransition)(this);

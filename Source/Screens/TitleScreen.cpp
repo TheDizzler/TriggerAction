@@ -21,7 +21,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	dialogPos = dialogSize;
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	noControllerDialog = guiFactory->createDialog(dialogPos, dialogSize, 2, true, true);
+	noControllerDialog = guiFactory->createDialog(dialogPos, dialogSize, true, true);
 	//noControllerDialog->setTint(Color(1, .5, 1, 1));
 	noControllerDialog->setTitle(L"Test");
 	noControllerDialog->setLayerDepth(1);
@@ -51,13 +51,13 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 	}
 
 	if (joysticks.size() <= 0) {
-		noControllerDialog->open();
+		noControllerDialog->show();
 		dialogOpenTime += deltaTime;
 		if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
 			dialogOpenTime = 0;
-			if (ellipsisii++ > 10) {
+			if (ellipsisii++ > 4) {
 				ellipsisii = 0;
-				noControllerDialog->setText(L"Waiting for controller\nLots if stuff here.\nWrite\nRight\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh\nWrite\nRigh");
+				noControllerDialog->setText(L"Waiting for controller");
 			} else {
 				wstring text = noControllerDialog->getText();
 				text += L".\n";
@@ -106,5 +106,5 @@ void TitleScreen::pause() {
 }
 
 
-void TitleScreen::controllerRemoved() {
+void TitleScreen::controllerRemoved(size_t controllerSlot) {
 }

@@ -12,7 +12,7 @@ public:
 		RIGHT, DOWN, LEFT, UP
 	};*/
 
-	Joystick(HANDLE handle, USHORT controllerSlot);
+	Joystick(HANDLE handle, size_t controllerSlot);
 	~Joystick();
 
 	void registerNewHandle(HANDLE handle);
@@ -29,7 +29,7 @@ public:
 
 	void parseRawInput(PRAWINPUT pRawInput);
 
-	USHORT slot = -1;
+	size_t slot;
 	PlayerCharacter* pc;
 	HANDLE handle;
 private:

@@ -3,9 +3,11 @@
 
 #include "../Engine/GameEngine.h"
 #include "../Managers/GFXAssetManager.h"
-CharacterData::CharacterData(string name) {
+CharacterData::CharacterData(string nm) {
 
+	name = nm;
 	assets = gfxAssets->getAssetSet(name.c_str());
+	
 }
 
 

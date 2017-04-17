@@ -408,8 +408,8 @@ ComboBox* GUIFactory::createComboBox(const Vector2& position,
 	return combobox;
 }
 
-unique_ptr<Dialog> GUIFactory::createDialog(const Vector2& position, const Vector2& size, int frameThickness,
-	bool movable, bool centerText, const char_t* fontName) {
+unique_ptr<Dialog> GUIFactory::createDialog(const Vector2& position, const Vector2& size,
+	bool movable, bool centerText, int frameThickness, const char_t* fontName) {
 
 	unique_ptr<Dialog> dialog = make_unique<Dialog>(hwnd, movable, centerText);
 	dialog->initializeControl(this, mouseController);

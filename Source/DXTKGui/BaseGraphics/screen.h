@@ -15,7 +15,8 @@ public:
 	virtual void update(double deltaTime, shared_ptr<MouseController> mouse) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 	virtual void pause() = 0;
-	/** Action to perform when a joystick has been deregistered. */
-	virtual void controllerRemoved() = 0;
+	/** Action to perform when a joystick has been deregistered.
+		Controller slot is virtual, used to track controllers in some sort of list.*/
+	virtual void controllerRemoved(size_t controllerSlot) = 0;
 	
 };

@@ -64,10 +64,18 @@ void LevelScreen::draw(SpriteBatch * batch) {
 }
 
 void LevelScreen::pause() {
+
+// open player menu
+	
 	game->confirmExit();
 }
 
 
-void LevelScreen::controllerRemoved() {
+void LevelScreen::controllerRemoved(size_t controllerSlot) {
+
 	
+	game->setPaused(true);
+
+	guiOverlay->reportLostJoystick(controllerSlot);
+
 }

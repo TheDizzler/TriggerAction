@@ -26,6 +26,8 @@ public:
 	void run(double time, int fps);
 	virtual void render(double time);
 
+	bool paused = false;
+
 	void suspend();
 	void resume();
 	void exit();
@@ -69,7 +71,7 @@ public:
 
 
 	static void showErrorDialog(wstring message, wstring title, bool outputDebug = true) {
-		errorDialog->open();
+		errorDialog->show();
 		errorDialog->setTitle(title);
 		errorDialog->setText(message);
 		showDialog = errorDialog.get();
@@ -80,7 +82,7 @@ public:
 	}
 
 	static void showWarningDialog(wstring message, wstring title) {
-		warningDialog->open();
+		warningDialog->show();
 		warningDialog->setTitle(title);
 		warningDialog->setText(message);
 		warningDialog->setTextTint(Color(1, 0, 0, 1));

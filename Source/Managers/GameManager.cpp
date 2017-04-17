@@ -26,7 +26,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		dialogPos = dialogSize;
 		dialogPos.x -= dialogSize.x / 2;
 		dialogPos.y -= dialogSize.y / 2;
-		
+
 		exitDialog = guiFactory->createDialog(dialogPos, dialogSize, 4, true, true);
 		//exitDialog->setDimensions(dialogPos, dialogSize);
 		exitDialog->setTint(Color(0, .5, 1, 1));
@@ -175,10 +175,16 @@ void GameManager::loadMainMenu() {
 
 }
 
-void GameManager::controllerRemoved() {
-	currentScreen->controllerRemoved();
+void GameManager::controllerRemoved(vector<shared_ptr<Joystick>> lostDevices) {
+
+	for (shared_ptr<Joystick> joystick : lostDevices)
+		currentScreen->controllerRemoved(joystick->slot);
 }
 
+
+void GameManager::setPaused(bool paused) {
+	gameEngine->paused = paused;
+}
 
 void GameManager::pause() {
 
@@ -188,9 +194,10 @@ void GameManager::pause() {
 
 void GameManager::confirmExit() {
 
+	setPaused(true);
 	if (!exitDialog->isOpen) {
 		GameEngine::showDialog = exitDialog.get();
-		exitDialog->open();
+		exitDialog->show();
 	}
 }
 

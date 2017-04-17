@@ -1,7 +1,7 @@
 #include "../pch.h"
 #include "Joystick.h"
 
-Joystick::Joystick(HANDLE hndl, USHORT controllerSlot) {
+Joystick::Joystick(HANDLE hndl, size_t controllerSlot) {
 
 	handle = hndl;
 	slot = controllerSlot;

@@ -363,7 +363,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						}
 						if (deviceInterface->dbcc_classguid == guidHid) {
 						// remove joysticks
-							OutputDebugString(L"Joystick removed\n");
+							//OutputDebugString(L"Joystick removed\n");
 							//gameEngine->controllerRemoved(deviceInterface);
 							registerControllers();
 							gameEngine->controllerRemoved();
@@ -398,77 +398,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-
-//#include <afx.h>
-//void updateDevice(PDEV_BROADCAST_DEVICEINTERFACE pDevInf, WPARAM wParam) {
-//	// dbcc_name:
-//	// \\?\USB#Vid_04e8&Pid_503b#0002F9A9828E0F06#{a5dcbf10-6530-11d2-901f-00c04fb951ed}
-//	// convert to
-//	// USB\Vid_04e8&Pid_503b\0002F9A9828E0F06
-//	ASSERT(lstrlen(pDevInf->dbcc_name) > 4);
-//	CString szDevId = pDevInf->dbcc_name + 4;
-//	int idx = szDevId.ReverseFind(_T('#'));
-//	ASSERT(-1 != idx);
-//	szDevId.Truncate(idx);
-//	szDevId.Replace(_T('#'), _T('\\'));
-//	szDevId.MakeUpper();
-//
-//	CString szClass;
-//	idx = szDevId.Find(_T('\\'));
-//	ASSERT(-1 != idx);
-//	szClass = szDevId.Left(idx);
-//
-//	// if we are adding device, we only need present devices
-//	// otherwise, we need all devices
-//	DWORD dwFlag = DBT_DEVICEARRIVAL != wParam
-//		? DIGCF_ALLCLASSES : (DIGCF_ALLCLASSES | DIGCF_PRESENT);
-//	HDEVINFO hDevInfo = SetupDiGetClassDevs(NULL, szClass, NULL, dwFlag);
-//	if (hDevInfo == INVALID_HANDLE_VALUE) {
-//		//AfxMessageBox(CString("SetupDiGetClassDevs(): ")
-//			//+ _com_error(GetLastError()).ErrorMessage(), MB_ICONEXCLAMATION);
-//		OutputDebugString(L"SetupDiGetClassDevs() failed");
-//		return;
-//	}
-//	
-//
-//	SP_DEVINFO_DATA* pspDevInfoData =
-//		(SP_DEVINFO_DATA*) HeapAlloc(GetProcessHeap(), 0, sizeof(SP_DEVINFO_DATA));
-//	pspDevInfoData->cbSize = sizeof(SP_DEVINFO_DATA);
-//	for (int i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, pspDevInfoData); i++) {
-//		DWORD DataT;
-//		DWORD nSize = 0;
-//		TCHAR buf[MAX_PATH];
-//
-//		if (!SetupDiGetDeviceInstanceId(hDevInfo, pspDevInfoData, buf, sizeof(buf), &nSize)) {
-//			//AfxMessageBox(CString("SetupDiGetDeviceInstanceId(): ")
-//				//+ _com_error(GetLastError()).ErrorMessage(), MB_ICONEXCLAMATION);
-//			OutputDebugString(L"SetupDiGetDeviceInstanceId() failed");
-//			break;
-//		}
-//
-//		if (szDevId == buf) {
-//			// device found
-//			if (SetupDiGetDeviceRegistryProperty(hDevInfo, pspDevInfoData,
-//				SPDRP_FRIENDLYNAME, &DataT, (PBYTE) buf, sizeof(buf), &nSize)) {
-//				// do nothing
-//			} else if (SetupDiGetDeviceRegistryProperty(hDevInfo, pspDevInfoData,
-//				SPDRP_DEVICEDESC, &DataT, (PBYTE) buf, sizeof(buf), &nSize)) {
-//				// do nothing
-//			} else {
-//				lstrcpy(buf, _T("Unknown"));
-//			}
-//			// update UI
-//			// .....
-//			// .....
-//			break;
-//		}
-//	}
-//
-//
-//	if (pspDevInfoData)
-//		HeapFree(GetProcessHeap(), 0, pspDevInfoData);
-//	SetupDiDestroyDeviceInfoList(hDevInfo);
-//}
 
 
 int registerControllers() {

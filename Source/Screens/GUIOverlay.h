@@ -6,17 +6,19 @@
 class GUIOverlay {
 public:
 	GUIOverlay(vector<shared_ptr<Joystick>> joysticks);
-	//~GUIOverlay();
+	~GUIOverlay();
 
 
 	void update(double deltaTime, shared_ptr<MouseController> mouse);
 	void draw(SpriteBatch* batch);
 
 	//void createDialog(wstring text, wstring title);
+	void reportLostJoystick(size_t controllerSlot);
 
-	void openLostControllerDialog(size_t playerNum);	
 private:
 
 	vector<shared_ptr<Joystick>> joysticks;
-	unique_ptr<Dialog> controllerLostDialog;
+	
+	vector<unique_ptr<Dialog>> dialogs;
+	vector<int> displayingLostJoys;
 };

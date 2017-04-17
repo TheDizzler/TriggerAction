@@ -120,9 +120,9 @@ void GameEngine::initErrorDialogs() {
 	dialogPos = dialogSize;
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	errorDialog = guiFactory->createDialog(dialogSize, dialogPos, 5, false, true);
-	
-	
+	errorDialog = guiFactory->createDialog(dialogSize, dialogPos, false, true, 5);
+
+
 	//errorDialog->setDimensions(dialogPos, dialogSize);
 	errorDialog->setTint(Color(0, 120, 207));
 	unique_ptr<Button> quitButton;
@@ -137,7 +137,7 @@ void GameEngine::initErrorDialogs() {
 	scrollBarDesc.upPressedButtonImage = "ScrollBar Up Pressed Custom";
 	scrollBarDesc.trackImage = "ScrollBar Track Custom";
 	scrollBarDesc.scrubberImage = "Scrubber Custom";
-	warningDialog = guiFactory->createDialog(dialogPos, dialogSize, 3, false, true);
+	warningDialog = guiFactory->createDialog(dialogPos, dialogSize, false, true, 3);
 
 	//warningDialog->setDimensions(dialogPos, dialogSize);
 	warningDialog->setScrollBar(scrollBarDesc);
@@ -181,7 +181,7 @@ void GameEngine::run(double deltaTime, int fps) {
 
 void GameEngine::controllerRemoved() {
 
-	game->controllerRemoved();
+	game->controllerRemoved(lostDevices);
 }
 
 
@@ -190,14 +190,20 @@ void GameEngine::update(double deltaTime) {
 	mouse->saveMouseState();
 	keys->saveKeyboardState();
 
-	if (showDialog->isOpen) {
+	if (paused) {
 		auto state = Keyboard::Get().GetState();
 		keyTracker.Update(state);
-		if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
-			showDialog->close();
-			return;
-		}
-		showDialog->update(deltaTime);
+
+		if (showDialog->isOpen) {
+			
+			if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+				showDialog->close();
+				paused = false;
+				return;
+			}
+			showDialog->update(deltaTime);
+		} else if (keyTracker.IsKeyPressed(Keyboard::Escape))
+			game->confirmExit();
 	} else
 		game->update(deltaTime, mouse);
 

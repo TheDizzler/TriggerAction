@@ -33,8 +33,9 @@ public:
 	bool loadLevel(const pugi::char_t* file);
 	void loadMainMenu();
 
-	void controllerRemoved();
+	void controllerRemoved(vector<shared_ptr<Joystick>> lostDevices);
 
+	void setPaused(bool paused);
 	void pause();
 	void confirmExit();
 	void exit();

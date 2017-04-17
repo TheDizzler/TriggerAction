@@ -18,3 +18,5 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- FontSet default layerDepth set to .91f when no layerDepth called
 >- realized most of FontSet doesn't do anything, making the class basically redundant
 >- set Sprite default layerDepth .1f;
+>- changed order of createDialog params
+>- changed dialog->open() to show() because that seems more common
