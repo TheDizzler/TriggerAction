@@ -9,7 +9,11 @@
 	<gfx dir="gfx/" >
 		<spritesheet name="Title Screen" file="Title Screen.dds">
 			<sprite name="Pendulum" x="225" y="17" width="59" height="212" />
+			<sprite name="C Clock" x="163" y="14" width="48" height="88" />
+			<sprite name="Minute Hand" x="142" y="103" width="33" height="7" />
+			<sprite name="Hour Hand" x="181" y="103" width="7" height="29" />
 		</spritesheet>
+
 	</gfx>
 
 
@@ -19,6 +23,37 @@
 			<font name="Bookshelf" file="Bookshelf.spritefont" fontSize="42" />
 			<font name="BlackCloak" file="BlackCloak.spritefont" fontSize="32" />
 		</spritefonts>
+
+		
+		<spritesheet name="Menu Items" file="Menu Item Sheet.dds">
+			<sprite name="Cursor Hand 1" x="145" y="210" width="15" height="12">
+				<origin x="15" y="5" />
+			</sprite>
+			<sprite name="Cursor Hand 2" x="144" y="194" width="16" height="12">
+				<origin x="16" y="3" />
+			</sprite>
+			<sprite name="Cursor Down" x="130" y="194" width="11" height="12">
+				<origin x="6" y="12" />
+			</sprite>
+			<sprite name="Cursor Up" x="130" y="211" width="11" height="12">
+				<origin x="6" y="0" />
+			</sprite>
+
+			<spriteset name="Menu BG" repeat="4x2" offset="71" note="Ripped by Jackster">
+				<sprite name="Top Left Corner" x="1" y="1" width="8" height="8" />
+				<sprite name="Top Center" x="25" y="1" width="16" height="8" />
+				<sprite name="Top Right Corner" x="57" y="1" width="8" height="8" />
+				
+				<sprite name="Center Left" x="1" y="25" width="8" height="16" />
+				<sprite name="Center Right" x="57" y="25" width="8" height="16" />
+
+				<sprite name="Bottom Left Corner" x="1" y="57" width="8" height="8" />
+				<sprite name="Bottom Center" x="25" y="57" width="16" height="8" />
+				<sprite name="Bottom Right Corner" x="57" y="57" width="8" height="8" />
+
+				<sprite name="Middle" x="17" y="17" width="32" height="32" />
+			</spriteset>
+		</spritesheet>
 
 
 		<spritesheet name="Default GUI Sprites" file ="default gui spritesheet.dds">

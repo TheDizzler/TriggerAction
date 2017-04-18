@@ -182,9 +182,9 @@ void GameEngine::run(double deltaTime, int fps) {
 }
 
 
-void GameEngine::controllerRemoved() {
+void GameEngine::controllerRemoved(size_t controllerSlot) {
 
-	game->controllerRemoved(lostDevices);
+	game->controllerRemoved(controllerSlot/*lostDevices*/);
 }
 
 void GameEngine::newController(HANDLE joyHandle) {

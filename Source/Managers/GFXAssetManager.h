@@ -3,21 +3,21 @@
 #include "../GameObjects/CharacterData.h"
 
 
-class AssetSet {
-public:
-	AssetSet(const char_t* setName);
-	~AssetSet();
-
-	void addAsset(string assetName, unique_ptr<GraphicsAsset> asset);
-	void addAsset(string assetName, shared_ptr<Animation> asset);
-	GraphicsAsset* const getAsset(const char_t* assetName);
-	shared_ptr<Animation> getAnimation(const char_t* animationName);
-private:
-
-	const char_t* setName;
-	map<string, unique_ptr<GraphicsAsset> > assetMap;
-	map<string, shared_ptr<Animation>> animationMap;
-};
+//class AssetSet {
+//public:
+//	AssetSet(const char_t* setName);
+//	~AssetSet();
+//
+//	void addAsset(string assetName, unique_ptr<GraphicsAsset> asset);
+//	void addAsset(string assetName, shared_ptr<Animation> asset);
+//	GraphicsAsset* const getAsset(const char_t* assetName);
+//	shared_ptr<Animation> getAnimation(const char_t* animationName);
+//private:
+//
+//	const char_t* setName;
+//	map<string, unique_ptr<GraphicsAsset> > assetMap;
+//	map<string, shared_ptr<Animation>> animationMap;
+//};
 
 
 

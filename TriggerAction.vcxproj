@@ -172,6 +172,7 @@
     <ClCompile Include="Source\DXTKGui\Controls\Dialog.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\GUIControl.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\GUIFactory.cpp" />
+    <ClCompile Include="Source\DXTKGui\Controls\ImageDialog.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\ListBox.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\Panel.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\ScrollBar.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="Source\DXTKGui\Controls\Dialog.h" />
     <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h" />
     <ClInclude Include="Source\DXTKGui\Controls\GUIFactory.h" />
+    <ClInclude Include="Source\DXTKGui\Controls\ImageDialog.h" />
     <ClInclude Include="Source\DXTKGui\Controls\ListBox.h" />
     <ClInclude Include="Source\DXTKGui\Controls\Panel.h" />
     <ClInclude Include="Source\DXTKGui\Controls\ScrollBar.h" />

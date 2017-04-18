@@ -4,9 +4,6 @@
 vector<const Hitbox*> hitboxesAll;
 
 
-LevelScreen::LevelScreen(vector<shared_ptr<Joystick>> joys) {
-	joysticks = joys;
-}
 
 LevelScreen::~LevelScreen() {
 	pcs.clear();
@@ -15,7 +12,11 @@ LevelScreen::~LevelScreen() {
 #include "../Engine/GameEngine.h"
 bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
-	for (int i = 0; i < joysticks.size(); ++i) {
+	//for (int i = 0; i < joysticks; ++i) {
+	int i = 0;
+	for (const auto& joystick : joysticks) {
+		if (!joystick->getHandle())
+			continue;
 		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(joysticks[i]);
 		const CharacterData* dataSet = gfxAssets->getPlayerData(characters[i]);
 		if (!dataSet)
@@ -24,6 +25,7 @@ bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 
 		hitboxesAll.push_back(newPC->getHitbox());
 		pcs.push_back(move(newPC));
+		++i;
 	}
 	return true;
 }
@@ -40,6 +42,8 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	for (const auto& pc : pcs)
 		pc->setInitialPosition();
+
+	camera->centerOn(Vector2(256 / 2, 224 / 2));
 }
 
 
@@ -66,14 +70,14 @@ void LevelScreen::draw(SpriteBatch * batch) {
 void LevelScreen::pause() {
 
 // open player menu
-	
+
 	game->confirmExit();
 }
 
 
 void LevelScreen::controllerRemoved(size_t controllerSlot) {
 
-	
+
 	game->setPaused(true);
 
 	guiOverlay->reportLostJoystick(controllerSlot);

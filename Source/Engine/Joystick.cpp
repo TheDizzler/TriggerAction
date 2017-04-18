@@ -1,17 +1,24 @@
 #include "../pch.h"
 #include "Joystick.h"
 
-Joystick::Joystick(HANDLE hndl, size_t controllerSlot) {
+Joystick::Joystick(/*HANDLE hndl, */size_t controllerSlot) {
 
-	handle = hndl;
+	//handle = hndl;
 	slot = controllerSlot;
+
+	ZeroMemory(bButtonStates, sizeof(bButtonStates));
 }
 
 Joystick::~Joystick() {
 }
 
+#include "../Managers/GameManager.h"
 void Joystick::registerNewHandle(HANDLE hndl) {
 	handle = hndl;
+}
+
+HANDLE Joystick::getHandle() {
+	return handle;
 }
 
 void Joystick::parseRawInput(PRAWINPUT pRawInput) {

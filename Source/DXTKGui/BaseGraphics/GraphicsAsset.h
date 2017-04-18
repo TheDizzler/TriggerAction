@@ -1,5 +1,8 @@
 #pragma once
 
+#include <pugixml.hpp>
+#include <map>
+
 #include "IElement2D.h"
 
 
@@ -67,4 +70,21 @@ protected:
 
 	RECT sourceRect;
 
+};
+
+
+class AssetSet {
+public:
+	AssetSet(const pugi::char_t* setName);
+	~AssetSet();
+
+	void addAsset(string assetName, unique_ptr<GraphicsAsset> asset);
+	void addAsset(string assetName, shared_ptr<Animation> asset);
+	GraphicsAsset* const getAsset(const pugi::char_t* assetName);
+	shared_ptr<Animation> getAnimation(const pugi::char_t* animationName);
+private:
+
+	const pugi::char_t* setName;
+	map<string, unique_ptr<GraphicsAsset> > assetMap;
+	map<string, shared_ptr<Animation>> animationMap;
 };

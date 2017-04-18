@@ -1,18 +1,16 @@
 #pragma once
 
-#include <pugixml.hpp>
-#include <map>
+
 
 #include "../BaseGraphics/screen.h"
 #include "../BaseGraphics/GraphicsAsset.h"
 #include "ComboBox.h"
-#include "Dialog.h"
+#include "ImageDialog.h"
 #include "CheckBox.h"
 #include "Spinner.h"
 
 
 using namespace pugi;
-
 
 
 class GUIFactory {
@@ -38,7 +36,7 @@ public:
 	unique_ptr<Sprite> getSpriteFromAsset(const char_t* assetName);
 	shared_ptr<Animation> getAnimation(const char_t* animationName);
 	GraphicsAsset* const getAsset(const char_t* assetName);
-
+	shared_ptr<AssetSet> const getAssetSet(const char_t* setName);
 
 	Line* createLine(const Vector2& position, const Vector2& size, Color lineColor = Color(0, 0, 0, 1));
 
@@ -99,6 +97,11 @@ public:
 		bool movable = false, bool centerText = false, int frameThickness = 2,
 		const char_t* fontName = "Default Font");
 
+		unique_ptr<ImageDialog> createDialog(shared_ptr<AssetSet> dialogImageSet,
+			const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
+			bool movable = false, bool centerText = false,
+			const char_t* fontName = "Default Font");
+
 	ScrollBar* createScrollBar(const Vector2& position, size_t barHeight);
 	ScrollBar* createScrollBar(const Vector2& position, size_t barHeight,
 		ScrollBarDesc& scrollBarDesc);
@@ -131,6 +134,9 @@ private:
 		const char_t* fontName = "Default Font");
 
 	bool getGUIAssetsFromXML();
+	unique_ptr<GraphicsAsset> parseSprite(xml_node spriteNode, ComPtr<ID3D11ShaderResourceView> sheetTexture,
+	int xOffset = 0, int yOffset = 0);
+
 	xml_node guiAssetsNode;
 
 	const char_t* defaultFontFile;
@@ -138,5 +144,6 @@ private:
 	map<string, string> fontMap;
 	map<string, unique_ptr<GraphicsAsset> > assetMap;
 	map<string, shared_ptr<Animation> > animationMap;
+	map<string, shared_ptr<AssetSet> > setMap;
 
 };

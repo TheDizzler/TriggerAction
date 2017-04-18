@@ -14,7 +14,7 @@ public:
 
 
 
-	LevelScreen(vector<shared_ptr<Joystick>> joysticks);
+	//LevelScreen(vector<shared_ptr<Joystick>> joysticks);
 	~LevelScreen();
 
 	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
@@ -34,7 +34,7 @@ private:
 
 	unique_ptr<Map> map;
 
-	vector<shared_ptr<Joystick>> joysticks;
+	//vector<shared_ptr<Joystick>> joysticks;
 	vector<unique_ptr<PlayerCharacter>> pcs;
 
 

@@ -7,6 +7,9 @@ Dialog::Dialog(HWND h, bool canMove, bool centerTxt) {
 	centerText = centerTxt;
 }
 
+Dialog::Dialog() {
+}
+
 Dialog::~Dialog() {
 
 	controls.clear();

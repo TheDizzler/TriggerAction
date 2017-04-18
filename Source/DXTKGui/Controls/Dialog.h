@@ -12,6 +12,8 @@ class Dialog : public GUIControlBox {
 public:
 
 	Dialog(HWND hwnd, bool movable, bool centerText);
+	/* Used only for classes that extend this class */
+	Dialog();
 	~Dialog();
 
 	void initialize(GraphicsAsset* pixelAsset,

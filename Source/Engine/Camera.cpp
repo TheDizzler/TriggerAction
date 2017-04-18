@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+#include "../globals.h"
 Camera::Camera(int vwprtWdth, int vwprtHght) {
 
 	zoom = 1.0f;
@@ -8,31 +9,32 @@ Camera::Camera(int vwprtWdth, int vwprtHght) {
 	viewportHeight = vwprtHght;
 	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
 
-	buildingWidth = 100;
-	buildingHeight = 50;
+	float xZoom = Globals::WINDOW_WIDTH / targetResolution.x;
+	float yZoom = Globals::WINDOW_HEIGHT / targetResolution.y;
 
-	//viewX = (viewportWidth) / zoom / 2;
-	//viewY = (viewportHeight) / zoom / 2;
-
-	cameraPosition = Vector2::Zero;
-}
-
-Camera::Camera(const Vector2& viewport) {
-
-	zoom = 1.0f;
-
-	viewportWidth = viewport.x;
-	viewportHeight = viewport.y;
-	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
-
-	buildingWidth = 100;
-	buildingHeight = 50;
-
-	//viewX = (viewportWidth) / zoom / 2;
-	//viewY = (viewportHeight) / zoom / 2;
+	if (xZoom < yZoom)
+		zoom = xZoom;
+	else
+		zoom = yZoom;
+		//viewX = (viewportWidth) / zoom / 2;
+		//viewY = (viewportHeight) / zoom / 2;
 
 	cameraPosition = Vector2::Zero;
 }
+
+//Camera::Camera(const Vector2& viewport) {
+//
+//	zoom = 1.0f;
+//
+//	viewportWidth = viewport.x;
+//	viewportHeight = viewport.y;
+//	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
+//
+//	//viewX = (viewportWidth) / zoom / 2;
+//	//viewY = (viewportHeight) / zoom / 2;
+//
+//	cameraPosition = Vector2::Zero;
+//}
 
 Camera::~Camera() {
 }

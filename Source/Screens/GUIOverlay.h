@@ -5,21 +5,26 @@
 
 class GUIOverlay {
 public:
-	GUIOverlay(vector<shared_ptr<Joystick>> joysticks);
+	GUIOverlay();
 	~GUIOverlay();
 
 
 	void update(double deltaTime, shared_ptr<MouseController> mouse);
 	void draw(SpriteBatch* batch);
 
-	//void createDialog(wstring text, wstring title);
+	void setDialogText(USHORT playerSlot, wstring text);
+	
 	void reportLostJoystick(size_t controllerSlot);
 
 private:
+	
+	/** The order of these is important!! */
+	enum HUDDIALOG {ENEMIES, PLAYERSTATS, PLAYER1, PLAYER2, PLAYER3};
+	unique_ptr<ImageDialog> hudDialogs[HUDDIALOG::PLAYER3 + 1];
 
-	vector<shared_ptr<Joystick>> joysticks;
+	unique_ptr<TextLabel> textLabel;
+	vector<unique_ptr<Dialog>> lostJoyDialogs;
 
-	vector<unique_ptr<Dialog>> dialogs;
 	vector<int> displayingLostJoys;
 };
 
@@ -41,4 +46,5 @@ private:
 	double dialogOpenTime = 0;
 	const double CONTROLLER_WAIT_TIME = 1.0;
 	int ellipsisii = 16;
+	bool first = true;
 };

@@ -1,10 +1,12 @@
 #pragma once
 
-#define MAX_BUTTONS		24
+#define MAX_BUTTONS		128
 #include <hidsdi.h>
 
 class PlayerCharacter;
 
+/* A joystick class with huge thanks to Alexander Bocken
+	https://www.codeproject.com/Articles/185522/Using-the-Raw-Input-API-to-Process-Joystick-Input */
 class Joystick {
 public:
 
@@ -12,18 +14,18 @@ public:
 		RIGHT, DOWN, LEFT, UP
 	};*/
 
-	Joystick(HANDLE handle, size_t controllerSlot);
+	Joystick( size_t controllerSlot);
 	~Joystick();
 
 	void registerNewHandle(HANDLE handle);
-
+	HANDLE getHandle();
 
 	BOOL bButtonStates[MAX_BUTTONS];
-	LONG lAxisX;
-	LONG lAxisY;
-	LONG lAxisZ;
-	LONG lAxisRz;
-	LONG lHat;
+	LONG lAxisX = 0;
+	LONG lAxisY = 0;
+	LONG lAxisZ = 0;
+	LONG lAxisRz = 0;
+	LONG lHat = 0;
 	INT  g_NumberOfButtons;
 
 
@@ -31,8 +33,8 @@ public:
 
 	size_t slot;
 	PlayerCharacter* pc;
-	HANDLE handle;
+	
 private:
-
+	HANDLE handle = NULL;
 
 };

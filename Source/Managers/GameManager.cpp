@@ -62,7 +62,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 	}
 
 
-	guiOverlay = make_unique<GUIOverlay>(joysticks);
+	guiOverlay = make_unique<GUIOverlay>();
 
 
 	mapManifest = make_unique<xml_document>();
@@ -84,7 +84,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 
 	mapParser = make_unique<MapParser>(device);
 
-	levelScreen = make_unique<LevelScreen>(joysticks);
+	levelScreen = make_unique<LevelScreen>();
 	levelScreen->setGameManager(this);
 	if (!levelScreen->initialize(device, mouse)) {
 		GameEngine::showErrorDialog(L"Level Screen failed to initialize", L"Error initializing level");
@@ -93,7 +93,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 
 	if (true) {
 
-		titleScreen = make_unique<TitleScreen>(joysticks);
+		titleScreen = make_unique<TitleScreen>();
 		titleScreen->setGameManager(this);
 		titleScreen->initialize(device, mouse);
 		currentScreen = titleScreen.get();
@@ -171,18 +171,18 @@ void GameManager::loadMainMenu() {
 
 }
 
-void GameManager::controllerRemoved(vector<shared_ptr<Joystick>> lostDevices) {
+void GameManager::controllerRemoved(size_t controllerSlot/*vector<shared_ptr<Joystick>> lostDevices*/) {
 
-	for (shared_ptr<Joystick> joystick : lostDevices)
-		currentScreen->controllerRemoved(joystick->slot);
+	//for (shared_ptr<Joystick> joystick : lostDevices)
+		currentScreen->controllerRemoved(controllerSlot/*joystick->slot*/);
 }
 
 void GameManager::newController(HANDLE joyHandle) {
 	currentScreen->newController(joyHandle);
 }
 
-void GameManager::controllerAccepted(shared_ptr<Joystick> newJoy) {
-	gameEngine->controllerAccepted(newJoy);
+void GameManager::controllerAccepted(HANDLE handle) {
+	gameEngine->controllerAccepted(handle);
 }
 
 

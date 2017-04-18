@@ -6,7 +6,7 @@
 
 class TitleScreen : public Screen {
 public:
-	TitleScreen(vector<shared_ptr<Joystick>> joysticks);
+	//TitleScreen();
 	~TitleScreen();
 
 
@@ -22,12 +22,16 @@ public:
 
 private:
 	GameManager* game;
-	//vector<shared_ptr<Joystick>> joysticks;
+	
 	unique_ptr<ControllerDialog> noControllerDialog;
+	unique_ptr<ImageDialog> testDialog;
 
 	unique_ptr<Button> quitButton;
 
 	
 	unique_ptr<Sprite> pendulum;
+	float pendulumRotation;
+	
+	float angularVelocity = 0;
 
 };

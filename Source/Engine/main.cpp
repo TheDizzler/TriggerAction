@@ -36,7 +36,6 @@ double getFrameTime();
 bool initWindow(HINSTANCE hInstance, int showWnd);
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-void updateDevice(PDEV_BROADCAST_DEVICEINTERFACE pDevInf, WPARAM wParam);
 
 GUID guidHid;
 
@@ -56,8 +55,7 @@ void releaseResources() {
 /** Main windows function.
 @nShowWnd how window should be displayed. Examples: SW_SHOWMAXIMIZED, SW_SHOW, SW_SHOWMINIMIZED. */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-	//DEFINE_GUID(GUID_HID, 0x4D1E55B2L, 0xF16F, 0x11CF, 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30);
-	//#define GUID_CLASS_INPUT GUID_HID
+	
 	guidHid = GUID();
 	guidHid.Data1 = 0x4D1E55B2L;
 	guidHid.Data2 = 0xF16F;
@@ -90,12 +88,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ZeroMemory(&NotificationFilter, sizeof(NotificationFilter));
 	NotificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
 	NotificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-	//NotificationFilter.dbcc_classguid = KSCATEGORY_AUDIO;
 	newInterface = RegisterDeviceNotification(hwnd, &NotificationFilter,
 		DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
-	//if (dev_notify == NULL) {
-		//OutputDebugString(L"Could not register for devicenotifications!");
-	//}
 
 
 	messageLoop(); /* Main program loop */

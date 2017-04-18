@@ -168,6 +168,7 @@ const CharacterData* GFXAssetManager::getPlayerData(string characterName) {
 	return characterDataMap[characterName].get();
 }
 
+
 bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 
 	string assetsDir = gfxAssetsNode.parent().attribute("dir").as_string();
@@ -321,46 +322,3 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 	return true;
 }
 /**** ***** GFXAssetManager END ***** ****/
-
-
-
-/**** ***** AssetSet START***** ****/
-AssetSet::AssetSet(const char_t* name) {
-	setName = name;
-}
-
-AssetSet::~AssetSet() {
-	assetMap.clear();
-	animationMap.clear();
-}
-
-void AssetSet::addAsset(string assetName, unique_ptr<GraphicsAsset> asset) {
-	assetMap[assetName] = move(asset);
-}
-
-void AssetSet::addAsset(string assetName, shared_ptr<Animation> asset) {
-	animationMap[assetName] = move(asset);
-}
-
-GraphicsAsset* const AssetSet::getAsset(const char_t* assetName) {
-
-	if (assetMap.find(assetName) == assetMap.end()) {
-		wostringstream ws;
-		ws << "Cannot find asset file: " << assetName << " in " << setName << "\n";
-		OutputDebugString(ws.str().c_str());
-		return NULL;
-	}
-
-	return assetMap[assetName].get();
-}
-
-shared_ptr<Animation> AssetSet::getAnimation(const char_t* animationName) {
-
-	if (animationMap.find(animationName) == animationMap.end()) {
-		wostringstream ws;
-		ws << "Cannot find asset file: " << animationName << " in " << setName << "\n";
-		OutputDebugString(ws.str().c_str());
-		return NULL;
-	}
-	return animationMap[animationName];
-}

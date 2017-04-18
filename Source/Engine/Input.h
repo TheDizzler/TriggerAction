@@ -5,12 +5,13 @@
 #include "../DXTKGui/Controllers/MouseController.h"
 #include "Joystick.h"
 
-extern vector<shared_ptr<Joystick>> joysticks;
+extern shared_ptr<Joystick> joysticks[3];
+extern vector<shared_ptr<Joystick>> tempJoysticks;
 
 class ControllerListener {
 public:
-	ControllerListener(/*Input* gameEngine*/);
-	~ControllerListener();
+	ControllerListener();
+	virtual ~ControllerListener();
 
 
 	void addJoysticks(vector<HANDLE> handles);
@@ -18,19 +19,20 @@ public:
 	void parseRawInput(PRAWINPUT pRawInput);
 
 	virtual void newController(HANDLE joyHandle) = 0;
-	virtual void controllerRemoved() = 0;
-	void controllerAccepted(shared_ptr<Joystick> newJoy);
-
-	USHORT numSticks = -1;
+	virtual void controllerRemoved(size_t controllerSlot) = 0;
+	void controllerAccepted(HANDLE handle);
 
 
-	vector<shared_ptr<Joystick>> lostDevices;
+	//vector<shared_ptr<Joystick>> lostDevices;
 	bool matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle);
 
-	map<HANDLE, shared_ptr<Joystick>> joystickMap;
+	
 protected:
 	bool gameInitialized = false;
-		//Input* gameEngine;
+	map<HANDLE, shared_ptr<Joystick>> joystickMap;
+	/** When a new controller is detected, they get placed here until a player "claims" it. */
+	map<HANDLE, shared_ptr<Joystick>> unclaimedJoysticks;
+	vector<int> availableControllerSlots;
 };
 
 

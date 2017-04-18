@@ -13,7 +13,7 @@ https://roguesharp.wordpress.com/2014/07/13/tutorial-5-creating-a-2d-camera-with
 class Camera {
 public:
 	Camera(int viewportWidth, int viewportHeight);
-	Camera(const Vector2& viewport);
+	//Camera(const Vector2& viewport);
 	~Camera();
 
 	void updateViewport(const Vector2& viewportArea, const Vector2& viewportPosition, bool zoomToFit = false);
@@ -50,8 +50,7 @@ private:
 	Vector2 cameraPosition;
 	float zoom;
 	
-	float buildingWidth;
-	float buildingHeight;
+	Vector2 targetResolution = Vector2(256, 224);
 
 	/*float viewX = (viewportWidth / zoom / 2);
 	float viewY = (viewportHeight / zoom / 2);*/

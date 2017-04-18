@@ -118,3 +118,46 @@ ComPtr<ID3D11ShaderResourceView> GraphicsAsset::getTexture() {
 ComPtr<ID3D11Resource> GraphicsAsset::getResource() {
 	return resource;
 }
+
+
+
+/**** ***** AssetSet START***** ****/
+AssetSet::AssetSet(const pugi::char_t* name) {
+	setName = name;
+}
+
+AssetSet::~AssetSet() {
+	assetMap.clear();
+	animationMap.clear();
+}
+
+void AssetSet::addAsset(string assetName, unique_ptr<GraphicsAsset> asset) {
+	assetMap[assetName] = move(asset);
+}
+
+void AssetSet::addAsset(string assetName, shared_ptr<Animation> asset) {
+	animationMap[assetName] = move(asset);
+}
+
+GraphicsAsset* const AssetSet::getAsset(const pugi::char_t* assetName) {
+
+	if (assetMap.find(assetName) == assetMap.end()) {
+		wostringstream ws;
+		ws << "Cannot find asset file: " << assetName << " in " << setName << "\n";
+		OutputDebugString(ws.str().c_str());
+		return NULL;
+	}
+
+	return assetMap[assetName].get();
+}
+
+shared_ptr<Animation> AssetSet::getAnimation(const pugi::char_t* animationName) {
+
+	if (animationMap.find(animationName) == animationMap.end()) {
+		wostringstream ws;
+		ws << "Cannot find asset file: " << animationName << " in " << setName << "\n";
+		OutputDebugString(ws.str().c_str());
+		return NULL;
+	}
+	return animationMap[animationName];
+}

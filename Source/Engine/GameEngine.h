@@ -91,7 +91,7 @@ public:
 	}
 	static Dialog* showDialog;
 
-	virtual void controllerRemoved() override;
+	virtual void controllerRemoved(size_t controllerSlot) override;
 	virtual void newController(HANDLE joyHandle) override;
 private:
 
