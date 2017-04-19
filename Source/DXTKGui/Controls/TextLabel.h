@@ -24,7 +24,9 @@ public:
 
 	virtual void setFont(const pugi::char_t* font = "Default Font") override;
 	virtual void setFont(shared_ptr<FontSet> newFont);
-	virtual void setTint(const XMFLOAT4 color) override;
+	//virtual void setTint(const XMFLOAT4 color) override;
+	/*virtual void setTint(const Color& color) override;
+	virtual void setTint(const XMVECTORF32 color) override;*/
 	virtual void setScale(const Vector2& scl) override;
 	/** bool frontToBack has no effect in TextLabel. */
 	virtual void setLayerDepth(const float newDepth, bool frontToBack = true) override;

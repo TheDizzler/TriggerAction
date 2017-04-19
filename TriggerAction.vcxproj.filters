@@ -165,7 +165,7 @@
     <ClCompile Include="Source\Screens\TitleScreen.cpp">
       <Filter>Source Files\Screens</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\ImageDialog.cpp">
+    <ClCompile Include="Source\DXTKGui\Controls\DynamicDialog.cpp">
       <Filter>Source Files\DXTGui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -296,7 +296,7 @@
     <ClInclude Include="Source\Screens\TitleScreen.h">
       <Filter>Header Files\Screens</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\ImageDialog.h">
+    <ClInclude Include="Source\DXTKGui\Controls\DynamicDialog.h">
       <Filter>Header Files\DXTGui</Filter>
     </ClInclude>
   </ItemGroup>

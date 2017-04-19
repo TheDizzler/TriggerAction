@@ -171,10 +171,9 @@ void GameManager::loadMainMenu() {
 
 }
 
-void GameManager::controllerRemoved(size_t controllerSlot/*vector<shared_ptr<Joystick>> lostDevices*/) {
+void GameManager::controllerRemoved(size_t controllerSlot) {
 
-	//for (shared_ptr<Joystick> joystick : lostDevices)
-		currentScreen->controllerRemoved(controllerSlot/*joystick->slot*/);
+		currentScreen->controllerRemoved(controllerSlot);
 }
 
 void GameManager::newController(HANDLE joyHandle) {
@@ -199,7 +198,7 @@ void GameManager::pause() {
 void GameManager::confirmExit() {
 
 	setPaused(true);
-	if (!exitDialog->isOpen) {
+	if (!exitDialog->isShowing()) {
 		GameEngine::showDialog = exitDialog.get();
 		exitDialog->show();
 	}

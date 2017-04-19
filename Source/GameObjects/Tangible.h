@@ -2,7 +2,8 @@
 
 #include "IElement3D.h"
 
-struct Hitbox {
+class Hitbox {
+public:
 	Hitbox(int rowdata[5]);
 	Hitbox(const Hitbox* copybox);
 	//~Hitbox();

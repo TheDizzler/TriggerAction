@@ -21,16 +21,15 @@ HDEVNOTIFY newInterface = NULL;
 double countsPerSecond = 0.0;
 __int64 counterStart = 0;
 
-int frameCount = 0;
-int fps = 0;
-__int64 frameTimeOld = 0;
+//int frameCount = 0;
+//float framesPerSecond = 0;
 double frameTime = 0;
 
 int registerControllers();
 int getInputDeviceInfo(bool writeToFile, wstring filename = L"USB Devices.txt");
 int messageLoop();
 void startTimer();
-double getTime();
+double getSecondsSinceStart();
 double getFrameTime();
 
 bool initWindow(HINSTANCE hInstance, int showWnd);
@@ -92,6 +91,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
 
 
+	LARGE_INTEGER frequencyCount;
+	QueryPerformanceFrequency(&frequencyCount);
+	countsPerSecond = double(frequencyCount.QuadPart);
+	startTimer();
+
 	messageLoop(); /* Main program loop */
 	releaseResources();
 
@@ -113,17 +117,16 @@ int messageLoop() {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {	// game code
-			frameCount++;
-			if (getTime() > 1.0f) {
-				fps = frameCount;
+			/*frameCount++;
+			if (getSecondsSinceStart() > 1.0f) {
 				frameCount = 0;
 				startTimer();
-			}
+			}*/
 
 			double frameTime = getFrameTime();
+			//framesPerSecond = frameTime*1000;
 
-
-			gameEngine->run(frameTime, fps);
+			gameEngine->run(frameTime);
 
 		}
 
@@ -229,8 +232,6 @@ bool initWindow(HINSTANCE hInstance, int showWnd) {
 }
 
 
-
-
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 
@@ -280,19 +281,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		}
 		return 0;
-		/*case MIM_DATA:
-		case 	MIM_ERROR:
-		case 	MIM_LONGDATA:
-		case 	MIM_LONGERROR:
-		case 	MIM_MOREDATA:
-		case 	MIM_OPEN:
-		case 	MM_MIM_CLOSE:
-		case 	MM_MOM_CLOSE:
-		case 	MM_MOM_DONE:
-		case 	MM_MOM_OPEN:
-		case 	MM_MOM_POSITIONCB:
-			OutputDebugString(L"Ayy lmao!");
-			return 0;*/
 		case WM_MOUSEMOVE:
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONUP:
@@ -464,7 +452,6 @@ int registerControllers() {
 }
 
 #include <fstream>
-
 /* Finds and list all HID devices. For device finding, debugging, etc. */
 int getInputDeviceInfo(bool writeToFile, wstring filename) {
 
@@ -546,21 +533,21 @@ int getInputDeviceInfo(bool writeToFile, wstring filename) {
 	return 0;
 }
 
-
+__int64 lastFrameStartTime = 0;
 void startTimer() {
 
 	LARGE_INTEGER frequencyCount;
-	QueryPerformanceFrequency(&frequencyCount);
+	/*QueryPerformanceFrequency(&frequencyCount);
 
-	countsPerSecond = double(frequencyCount.QuadPart);
+	countsPerSecond = double(frequencyCount.QuadPart);*/
 
 	QueryPerformanceCounter(&frequencyCount);
 	counterStart = frequencyCount.QuadPart;
-
+	lastFrameStartTime = frequencyCount.QuadPart;
 }
 
 
-double getTime() {
+double getSecondsSinceStart() {
 
 	LARGE_INTEGER currentTime;
 	QueryPerformanceCounter(&currentTime);
@@ -574,11 +561,11 @@ double getFrameTime() {
 	__int64 tickCount;
 	QueryPerformanceCounter(&currentTime);
 
-	tickCount = currentTime.QuadPart - frameTimeOld;
-	frameTimeOld = currentTime.QuadPart;
+	tickCount = currentTime.QuadPart - lastFrameStartTime;
+	lastFrameStartTime = currentTime.QuadPart;
 
-	if (tickCount < 0.0f)
-		tickCount = 0.0f;
+	//if (tickCount < 0.0f) // why would this ever be negative?
+	//	tickCount = 0.0f;
 
-	return float(tickCount) / countsPerSecond;
+	return double(tickCount) / countsPerSecond;
 }

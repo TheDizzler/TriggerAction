@@ -560,6 +560,10 @@ void Dialog::close() {
 		isOpen = false;
 }
 
+bool Dialog::isShowing() {
+	return isOpen;
+}
+
 
 void Dialog::setFont(const pugi::char_t* fontName) {
 

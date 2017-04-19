@@ -142,10 +142,6 @@ void TextLabel::setFont(shared_ptr<FontSet> newFont) {
 	font = newFont;
 }
 
-void TextLabel::setTint(const XMFLOAT4 color) {
-	tint = color;
-}
-
 void TextLabel::setScale(const Vector2 & scl) {
 	scale = scl;
 	Vector2 size = font->measureString(label.c_str());

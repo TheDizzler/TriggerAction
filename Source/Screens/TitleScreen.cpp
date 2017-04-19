@@ -8,8 +8,8 @@ TitleScreen::~TitleScreen() {
 
 }
 
-//float TOTAL_SWING_TIME;
-const float GRAVITY = .0000981; // assume 1 pixel == 1 cm, therefore gravity is in 1/100 of a pixel per second squared
+const float GRAVITY = 981; // assume 1 pixel == 1 cm, therefore gravity is in 1/100 of a pixel per second squared
+float TOTAL_SWING_TIME;
 
 #include "../Engine/GameEngine.h"
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
@@ -54,9 +54,6 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	//TOTAL_SWING_TIME = 2 * XM_PI * sqrt(pendulum->getHeight() / GRAVITY);
 
 
-	testDialog = guiFactory->createDialog(guiFactory->getAssetSet("Menu BG 0"), Vector2(100, 100));
-
-
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
 
 	return true;
@@ -66,26 +63,47 @@ void TitleScreen::setGameManager(GameManager* gm) {
 	game = gm;
 }
 
-int direction = -1;
+bool chucking = true;
+double timeChuck = 0;
+double totalSwingTime = 0;
+double g = GRAVITY;
 float angularAcceleration = 0;
 float damping = .99989;
+bool doneSwinging = false;
 void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 
 	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
 	}
 
-	//float g = GRAVITY;
+	/*if (chucking) {
+		timeChuck += deltaTime;
+		if (timeChuck >= 1)
+			chucking = false;
+		return;
+	}*/
 
-	angularAcceleration = (-GRAVITY / pendulum->getHeight()) * pendulumRotation;
+	if (!doneSwinging) {
+		totalSwingTime += deltaTime;
+		/*if (totalSwingTime >= TOTAL_SWING_TIME)
+			totalSwingTime = 0;*/
+		double equ = abs(double(pendulum->getHeight()) / -g);
+		pendulumRotation = sin(totalSwingTime / sqrt(equ))*damping;
+
+		damping -= .0002;
+		if (damping <= .000001) {
+			doneSwinging = true;
+			pendulumRotation = 0;
+		}
+	}
+	/*angularAcceleration = (-g / pendulum->getHeight()) * pendulumRotation;
 	angularVelocity += angularAcceleration;
 	angularVelocity *= damping;
-	pendulumRotation += angularVelocity;
+	pendulumRotation += angularVelocity;*/
 
-	//if (joysticks[0]->bButtonStates[0])
-		pendulum->setRotation(pendulumRotation);
+	pendulum->setRotation(pendulumRotation);
 
-	if (noControllerDialog->isOpen) {
+	if (noControllerDialog->isShowing()) {
 		noControllerDialog->update(deltaTime);
 
 		for (int i = 0; i < tempJoysticks.size(); ++i) {
@@ -115,7 +133,7 @@ void TitleScreen::draw(SpriteBatch * batch) {
 
 	noControllerDialog->draw(batch);
 
-	testDialog->draw(batch);
+
 }
 
 void TitleScreen::pause() {

@@ -89,14 +89,12 @@ public:
 	/** Not used in DialogBox */
 	virtual const Vector2& XM_CALLCONV measureString() const override;
 
-	void show();
-	void close();
+	virtual void show();
+	virtual void close();
 	/* Deprecating. Use ActionListeners instead. */
 	//ClickAction getResult();
 
-	bool isOpen = false;
-	bool isOpening = false;
-	bool isClosing = false;
+	virtual bool isShowing();
 
 	/** Could make this adaptable? */
 	Vector2 dialogTextMargin = Vector2(10, 10);
@@ -153,6 +151,10 @@ protected:
 	Vector2 pressedPosition;
 	bool movable = false;
 	bool centerText = false;
+
+	bool isOpen = false;
+	bool isOpening = false;
+	bool isClosing = false;
 
 	TransitionEffects::TransitionEffect* openTransition = NULL;
 	TransitionEffects::TransitionEffect* closeTransition = NULL;

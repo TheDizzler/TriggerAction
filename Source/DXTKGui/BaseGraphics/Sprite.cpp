@@ -24,6 +24,7 @@ Sprite::Sprite(const Vector2& pos) {
 
 }
 
+
 Sprite::~Sprite() {
 	texture.Reset();
 }
@@ -37,11 +38,6 @@ void Sprite::load(GraphicsAsset* const graphicsAsset) {
 	height = graphicsAsset->getHeight();
 
 	origin = graphicsAsset->getOrigin();
-	/*Vector2 sheetLoc = graphicsAsset->getPosition();
-	sourceRect.left = sheetLoc.x;
-	sourceRect.top = sheetLoc.y;
-	sourceRect.bottom = sheetLoc.y + height;
-	sourceRect.right = sheetLoc.x + width;*/
 
 	sourceRect = graphicsAsset->getSourceRect();
 
@@ -50,12 +46,6 @@ void Sprite::load(GraphicsAsset* const graphicsAsset) {
 		Vector2(width, height)));
 }
 
-/* This only needs to be called when the sprites moves to update the hitbox location */
-//void Sprite::update(double deltaTime) {
-//
-//	hitArea->position = Vector2(position.x - origin.x, position.y - origin.y);
-//
-//}
 
 
 void Sprite::draw(SpriteBatch* batch) {

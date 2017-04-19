@@ -6,28 +6,36 @@ const int TEXT_MARGIN = 5;
 #include "../Engine/GameEngine.h"
 GUIOverlay::GUIOverlay() {
 
+	unique_ptr<TextLabel> textLabel;
 	textLabel.reset(guiFactory->createTextLabel(Vector2(-100, -100)));
 
 	for (auto& dialog : hudDialogs)
-		dialog = guiFactory->createDialog(guiFactory->getAssetSet("Menu BG 1"));
+		dialog = guiFactory->createDialog(guiFactory->getAssetSet("Menu BG 0"));
 
 	Vector2 textMeasure = textLabel->measureString(L"TECH");
 	// should be enough to fit 4 lines of text + margin
 	int windowHeight = textMeasure.y * 4 + TEXT_MARGIN;
 	Vector2 pos, size;
 	size = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
-	pos = Vector2(Globals::WINDOW_WIDTH - size.x, 0);
+	pos = Vector2(Globals::WINDOW_WIDTH - size.x, 16);
 	hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
-	pos = Vector2::Zero;
+	pos = Vector2(0, 16);
 	hudDialogs[HUDDIALOG::ENEMIES]->setDimensions(pos, size);
 
 	// should be wide enough to fit four letter word and the hand icon
-	size.x = textMeasure.x + guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
+	size.x = textMeasure.x * 2 + guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
+	pos.y = 16;
 	hudDialogs[HUDDIALOG::PLAYER1]->setDimensions(pos, size);
 	pos.x += size.x;
 	hudDialogs[HUDDIALOG::PLAYER2]->setDimensions(pos, size);
 	pos.x += size.x;
 	hudDialogs[HUDDIALOG::PLAYER3]->setDimensions(pos, size);
+
+
+	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
+	fpsLabel->setTint(Colors::Black);
+	fpsLabel->setScale(Vector2(.5, .5));
+	fpsLabel->setLayerDepth(1);
 }
 
 GUIOverlay::~GUIOverlay() {
@@ -35,10 +43,32 @@ GUIOverlay::~GUIOverlay() {
 
 }
 
+int frameCount = 0;
+double fpsUpdateTime = 5;
+const double FPS_UPDATE_TIME = 1;
 void GUIOverlay::update(double deltaTime, shared_ptr<MouseController> mouse) {
 
-	//for (const auto& dialog : hudDialogs)
-		//dialog->update(deltaTime);
+	fpsUpdateTime += deltaTime;
+	++frameCount;
+	if (fpsUpdateTime >= FPS_UPDATE_TIME) {
+
+		wostringstream wss;
+		wss << "frameCount: " << frameCount << " fpsUpdateTime: " << fpsUpdateTime << endl;
+		wss << "fps: " << frameCount / fpsUpdateTime;
+		fpsLabel->setText(wss);
+
+		fpsUpdateTime = 0;
+		frameCount = 0;
+	}
+
+	for (const auto& joy : waitingForInput)
+		if (joy->bButtonStates[0]) {
+			joy->slot = 0;
+		}
+
+
+		//for (const auto& dialog : hudDialogs)
+			//dialog->update(deltaTime);
 
 	for (const auto& dialog : lostJoyDialogs) {
 		dialog->update(deltaTime);
@@ -53,20 +83,19 @@ void GUIOverlay::draw(SpriteBatch* batch) {
 
 	for (const auto& dialog : lostJoyDialogs)
 		dialog->draw(batch);
+
+
+	fpsLabel->draw(batch);
 }
 
 void GUIOverlay::setDialogText(USHORT playerSlot, wstring text) {
 
-	hudDialogs[PLAYER1 + playerSlot + 1]->setText(text);
+	hudDialogs[PLAYER1 + playerSlot]->setText(text);
+	hudDialogs[PLAYER1 + playerSlot]->show();
 }
 
 #include "../DXTKGui/StringHelper.h"
 void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
-
-	/*for (int i : displayingLostJoys) {
-		if (i == controllerSlot)
-			return;
-	}*/
 
 	displayingLostJoys.push_back(controllerSlot);
 	shared_ptr<Joystick> lostJoy = joysticks[controllerSlot];
@@ -106,6 +135,46 @@ void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
 
 	lostJoyDialogs.push_back(move(joyLostDialog));
 }
+
+void GUIOverlay::controllerRemoved(size_t controllerSlot) {
+
+	wstringstream wss;
+	wss << "controller " << controllerSlot << " removed" << endl;
+	OutputDebugString(wss.str().c_str());
+
+	hudDialogs[PLAYER1 + controllerSlot]->close();
+
+}
+
+
+int GUIOverlay::controllerWaiting(shared_ptr<Joystick> joystick) {
+
+	for (int i = 0; i < 2; ++i)
+		if (!hudDialogs[PLAYER1 + i]->isShowing()) {
+			hudDialogs[PLAYER1 + i]->show();
+			hudDialogs[PLAYER1 + i]->setText(L"Push A\nto begin!");
+			waitingForInput.push_back(joystick);
+			return i;
+
+		}
+
+	return -1;
+}
+
+void GUIOverlay::controllerAccepted(shared_ptr<Joystick> joystick) {
+
+	for (int i = 0; i < waitingForInput.size(); ++i) {
+		if (waitingForInput[i].get() == joystick.get()) {
+			swap(waitingForInput[i], waitingForInput.back());
+			waitingForInput.pop_back();
+		}
+	}
+
+	wostringstream ws;
+	ws << L"Player " << (joystick->slot + 1);
+	guiOverlay->setDialogText(joystick->slot, ws.str());
+}
+
 
 
 

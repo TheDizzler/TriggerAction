@@ -24,9 +24,11 @@ private:
 	GameManager* game;
 	
 	unique_ptr<ControllerDialog> noControllerDialog;
-	unique_ptr<ImageDialog> testDialog;
+	//unique_ptr<DynamicDialog> testDialog;
 
 	unique_ptr<Button> quitButton;
+
+	
 
 	
 	unique_ptr<Sprite> pendulum;

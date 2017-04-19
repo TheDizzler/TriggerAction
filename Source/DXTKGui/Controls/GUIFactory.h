@@ -5,7 +5,7 @@
 #include "../BaseGraphics/screen.h"
 #include "../BaseGraphics/GraphicsAsset.h"
 #include "ComboBox.h"
-#include "ImageDialog.h"
+#include "DynamicDialog.h"
 #include "CheckBox.h"
 #include "Spinner.h"
 
@@ -97,7 +97,7 @@ public:
 		bool movable = false, bool centerText = false, int frameThickness = 2,
 		const char_t* fontName = "Default Font");
 
-		unique_ptr<ImageDialog> createDialog(shared_ptr<AssetSet> dialogImageSet,
+		unique_ptr<DynamicDialog> createDialog(shared_ptr<AssetSet> dialogImageSet,
 			const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
 			bool movable = false, bool centerText = false,
 			const char_t* fontName = "Default Font");

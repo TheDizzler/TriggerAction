@@ -10,7 +10,7 @@
 
 extern unique_ptr<GUIFactory> guiFactory;
 extern unique_ptr<GFXAssetManager> gfxAssets;
-//extern unique_ptr<ControllerListener> joyListener;
+
 
 /** The engine to connect higher level game code to the low level
 	graphic and OS software. This class should be reusable for any 2D game,
@@ -24,8 +24,8 @@ public:
 	bool initEngine(HWND hwnd, HINSTANCE hInstance);
 	void onAudioDeviceChange();
 
-	void run(double time, int fps);
-	virtual void render(double time);
+	void run(double time);
+	
 
 	bool paused = false;
 
@@ -99,6 +99,7 @@ private:
 	unique_ptr<GameManager> game;
 
 	void update(double time);
+	virtual void render() override;
 
 	bool initGFXAssets();
 	bool initStage();

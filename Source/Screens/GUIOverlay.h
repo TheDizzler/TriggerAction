@@ -15,14 +15,20 @@ public:
 	void setDialogText(USHORT playerSlot, wstring text);
 	
 	void reportLostJoystick(size_t controllerSlot);
+	void controllerRemoved(size_t controllerSlot);
+
+	int controllerWaiting(shared_ptr<Joystick> joystick);
+	void controllerAccepted(shared_ptr<Joystick> joystick);
 
 private:
 	
 	/** The order of these is important!! */
 	enum HUDDIALOG {ENEMIES, PLAYERSTATS, PLAYER1, PLAYER2, PLAYER3};
-	unique_ptr<ImageDialog> hudDialogs[HUDDIALOG::PLAYER3 + 1];
+	unique_ptr<DynamicDialog> hudDialogs[HUDDIALOG::PLAYER3 + 1];
 
-	unique_ptr<TextLabel> textLabel;
+	unique_ptr<TextLabel> fpsLabel;
+
+	vector<shared_ptr<Joystick>> waitingForInput;
 	vector<unique_ptr<Dialog>> lostJoyDialogs;
 
 	vector<int> displayingLostJoys;

@@ -5,7 +5,7 @@
 #include "Tangible.h"
 
 
-static enum Facing {
+enum Facing {
 	RIGHT, DOWN, LEFT, UP
 };
 

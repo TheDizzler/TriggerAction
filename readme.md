@@ -26,3 +26,5 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- added controllerRemoved(size_t controllerSlot) and newController(HANDLE joyHandle) to Screen
 >- moved AssetSet into DXTKGui and implemented asset sets
 >- ImageDialogs 
+>- TextLabel setFonts weren't exposed
+>- fixed major timing issues in main.cpp

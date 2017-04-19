@@ -3,11 +3,14 @@
 
 unique_ptr<GUIFactory> guiFactory;
 unique_ptr<GFXAssetManager> gfxAssets;
-//unique_ptr<ControllerListener> joyListener;
+
+
 
 unique_ptr<Dialog> GameEngine::errorDialog;
 unique_ptr<Dialog> GameEngine::warningDialog;
 Dialog* GameEngine::showDialog = NULL;
+
+
 
 GameEngine::GameEngine() {
 }
@@ -157,10 +160,11 @@ void GameEngine::initErrorDialogs() {
 }
 
 bool warningCanceled = false;
-void GameEngine::run(double deltaTime, int fps) {
+void GameEngine::run(double deltaTime) {
+
 
 	update(deltaTime);
-	render(deltaTime);
+	render();
 	if (!audioEngine->IsAudioDevicePresent() && !warningCanceled) {
 		// no audio device found. Operating in silent mode.
 		showWarningDialog(L"No audio device found. Operating in Silent Mode.\nEnd Message...",
@@ -202,8 +206,8 @@ void GameEngine::update(double deltaTime) {
 		auto state = Keyboard::Get().GetState();
 		keyTracker.Update(state);
 
-		if (showDialog->isOpen) {
-			
+		if (showDialog->isShowing()) {
+
 			if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
 				showDialog->close();
 				paused = false;
@@ -220,7 +224,7 @@ void GameEngine::update(double deltaTime) {
 
 
 #include "CommonStates.h"
-void GameEngine::render(double deltaTime) {
+void GameEngine::render() {
 
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::GhostWhite);
 	CommonStates blendState(device.Get());

@@ -443,11 +443,11 @@ unique_ptr<Dialog> GUIFactory::createDialog(const Vector2& position, const Vecto
 	return move(dialog);
 }
 
-unique_ptr<ImageDialog> GUIFactory::createDialog(shared_ptr<AssetSet> dialogImageSet,
+unique_ptr<DynamicDialog> GUIFactory::createDialog(shared_ptr<AssetSet> dialogImageSet,
 	const Vector2& position, const Vector2& size, bool movable, bool centerText,
 	const char_t* fontName) {
 
-	unique_ptr<ImageDialog> dialog = make_unique<ImageDialog>(movable, centerText);
+	unique_ptr<DynamicDialog> dialog = make_unique<DynamicDialog>(movable, centerText);
 	dialog->initializeControl(this, mouseController);
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(position, size);

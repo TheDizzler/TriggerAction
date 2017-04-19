@@ -1,4 +1,5 @@
 #pragma once
+#define SLOT_OF_DEATH 69
 
 #include <Keyboard.h>
 
@@ -7,6 +8,22 @@
 
 extern shared_ptr<Joystick> joysticks[3];
 extern vector<shared_ptr<Joystick>> tempJoysticks;
+
+DWORD WINAPI waitForHUDThread(PVOID pVoid);
+DWORD WINAPI waitForPlayerThread(PVOID pVoid);
+
+
+struct JoyData {
+	JoyData(shared_ptr<Joystick> joy) : joystick(joy) {
+	}
+	~JoyData() {
+		wostringstream wss;
+		wss << "Slot " << joystick->slot << " data deleting" << endl;
+		OutputDebugString(wss.str().c_str());
+	}
+
+	shared_ptr<Joystick> joystick;
+};
 
 class ControllerListener {
 public:
@@ -23,16 +40,18 @@ public:
 	void controllerAccepted(HANDLE handle);
 
 
-	//vector<shared_ptr<Joystick>> lostDevices;
 	bool matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle);
 
-	
+
 protected:
 	bool gameInitialized = false;
 	map<HANDLE, shared_ptr<Joystick>> joystickMap;
 	/** When a new controller is detected, they get placed here until a player "claims" it. */
 	map<HANDLE, shared_ptr<Joystick>> unclaimedJoysticks;
-	vector<int> availableControllerSlots;
+	deque<int> availableControllerSlots;
+
+	//HANDLE threadHandles[3];
+	deque<HANDLE> threadHandles;
 };
 
 
