@@ -29,7 +29,7 @@ public:
 	//virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
 
-
+	virtual void setPosition(const Vector2& newPosition) override;
 	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 

@@ -21,12 +21,13 @@ void DynamicDialog::initialize(shared_ptr<AssetSet> set, const pugi::char_t* fon
 
 	assetSet = set;
 
+	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 	dialogText = make_unique<TextLabel>(guiFactory->getFont(font));
 	//dialogText->setTint(Color(0, 0, 0, 1));
 
 	setLayerDepth(.95);
-	
-	
+
+
 }
 
 
@@ -36,6 +37,7 @@ void DynamicDialog::setText(wstring text) {
 
 /** Using sprites appears to be slower. */
 bool useSprites = false;
+bool useTexture = true;
 void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz, const int frameThickness) {
 	//for (const pugi::char_t* asset : assets) {
 
@@ -167,8 +169,21 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz, const
 		bottomRightCorner = assetSet->getAsset("Bottom Right Corner");
 	}
 
+	if (size.x > 0 || size.y > 0) {
+		panel.reset(guiFactory->createPanel());
+		panel->setTint(Color(0, 1, 1, 1));
+		Vector2 fix(-20, -20);
+		panel->setDimensions(position/* + fix*/, size);
+		isOpen = true;
+		bool original = useTexture;
+		useTexture = false;
+		panel->setTexture(
+			guiFactory->createTextureFromIElement2D(this, panel->getTint()));
+		useTexture = original;
+		isOpen = false;
 
-
+		panel->setTexturePosition(position /*+ fix*/);
+	}
 
 	Vector2 textPos = position + dialogTextMargin;
 	dialogText->setPosition(textPos);
@@ -178,94 +193,105 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz, const
 
 void DynamicDialog::draw(SpriteBatch* batch) {
 
-	if (!isOpen)
-		return;
+	/*if (!isOpen)
+		return;*/
 
-	if (useSprites) {
-		for (const auto& sprite : bgSprites) {
-			sprite->draw(batch);
-		}
-
+	if (useTexture) {
+		panel->draw(batch);
 	} else {
-		Vector2 topPos = position;
-		Vector2 bottomPos = bottomLeftPosition;
-
-		// draw left corners
-		batch->Draw(topLeftCorner->getTexture().Get(), topPos, &topLeftCorner->getSourceRect(),
-			tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
-
-		batch->Draw(bottomLeftCorner->getTexture().Get(), bottomPos,
-			&bottomLeftCorner->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
-
-		// draw middle
-		int width = topLeftCorner->getWidth();
-		Vector2 cornerSize(width, topLeftCorner->getHeight());
-		topPos = position + cornerSize;
-		int maxLength = topPos.x + size.x - cornerSize.x * 2;
-		int maxHeight = topPos.y + size.y - cornerSize.y * 2;
-		while (topPos.y < maxHeight) {
-			topPos.x = position.x + cornerSize.x;
-			while (topPos.x < maxLength) {
-				batch->Draw(middle->getTexture().Get(), topPos,
-					&middle->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
-
-				topPos.x += middle->getWidth();
+		if (useSprites) {
+			for (const auto& sprite : bgSprites) {
+				sprite->draw(batch);
 			}
-			topPos.y += middle->getHeight();
-		}
 
-		topPos = position;
-		maxLength = position.x + size.x - width;
-		topPos.x += width;
-		bottomPos.x += width;
+		} else {
+			Vector2 topPos = position;
+			Vector2 bottomPos = bottomLeftPosition;
 
-		while (topPos.x < maxLength) {
+			// draw left corners
+			batch->Draw(topLeftCorner->getTexture().Get(), topPos, &topLeftCorner->getSourceRect(),
+				tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
 
-			batch->Draw(topCenter->getTexture().Get(), topPos,
-				&topCenter->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+			batch->Draw(bottomLeftCorner->getTexture().Get(), bottomPos,
+				&bottomLeftCorner->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
 
-			batch->Draw(bottomCenter->getTexture().Get(), bottomPos,
-				&bottomCenter->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+			// draw middle
+			int width = topLeftCorner->getWidth();
+			Vector2 cornerSize(width, topLeftCorner->getHeight());
+			topPos = position + cornerSize;
+			int maxLength = topPos.x + size.x - cornerSize.x * 2;
+			int maxHeight = topPos.y + size.y - cornerSize.y * 2;
+			while (topPos.y < maxHeight) {
+				topPos.x = position.x + cornerSize.x;
+				while (topPos.x < maxLength) {
+					batch->Draw(middle->getTexture().Get(), topPos,
+						&middle->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
 
-			width = topCenter->getWidth();
+					topPos.x += middle->getWidth();
+				}
+				topPos.y += middle->getHeight();
+			}
+
+			topPos = position;
+			maxLength = position.x + size.x - width;
 			topPos.x += width;
 			bottomPos.x += width;
-		}
 
-		// draw bottom corners
-		batch->Draw(topRightCorner->getTexture().Get(), topPos,
-			&topRightCorner->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+			while (topPos.x < maxLength) {
 
-		batch->Draw(bottomRightCorner->getTexture().Get(), bottomPos,
-			&bottomRightCorner->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+				batch->Draw(topCenter->getTexture().Get(), topPos,
+					&topCenter->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+
+				batch->Draw(bottomCenter->getTexture().Get(), bottomPos,
+					&bottomCenter->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+
+				width = topCenter->getWidth();
+				topPos.x += width;
+				bottomPos.x += width;
+			}
+
+			// draw bottom corners
+			batch->Draw(topRightCorner->getTexture().Get(), topPos,
+				&topRightCorner->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+
+			batch->Draw(bottomRightCorner->getTexture().Get(), bottomPos,
+				&bottomRightCorner->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
 
 
-		// draw verticals
-		Vector2 leftPos = position;
-		Vector2 rightPos = position;
-		//rightPos.x += size.x - topLeftCorner->getWidth();
-		rightPos.x = bottomPos.x;
+			// draw verticals
+			Vector2 leftPos = position;
+			Vector2 rightPos = position;
+			//rightPos.x += size.x - topLeftCorner->getWidth();
+			rightPos.x = bottomPos.x;
 
-		int height = topLeftCorner->getHeight();
-		maxHeight = position.y + size.y - height;
-		leftPos.y += height;
-		rightPos.y += height;
-		while (leftPos.y < maxHeight) {
-
-			batch->Draw(centerLeft->getTexture().Get(), leftPos,
-				&centerLeft->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
-
-			batch->Draw(centerRight->getTexture().Get(), rightPos,
-				&centerRight->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
-
-			height = centerLeft->getHeight();
+			int height = topLeftCorner->getHeight();
+			maxHeight = position.y + size.y - height;
 			leftPos.y += height;
 			rightPos.y += height;
+			while (leftPos.y < maxHeight) {
+
+				batch->Draw(centerLeft->getTexture().Get(), leftPos,
+					&centerLeft->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+
+				batch->Draw(centerRight->getTexture().Get(), rightPos,
+					&centerRight->getSourceRect(), tint, rotation, origin, scale, SpriteEffects_None, layerDepth);
+
+				height = centerLeft->getHeight();
+				leftPos.y += height;
+				rightPos.y += height;
+			}
 		}
-
 	}
-
 	dialogText->draw(batch);
+}
+
+void DynamicDialog::setPosition(const Vector2& newPosition) {
+
+	
+	Vector2 moveBy = newPosition - position;
+	dialogText->moveBy(moveBy);
+	GUIControl::setPosition(newPosition);
+	panel->setPosition(newPosition);
 }
 
 void DynamicDialog::setLayerDepth(const float depth, bool frontToBack) {

@@ -2,7 +2,7 @@
 #include "GUIOverlay.h"
 
 const int TEXT_MARGIN = 5;
-
+const int TEST_BOX_MARGIN = 16;
 #include "../Engine/GameEngine.h"
 GUIOverlay::GUIOverlay() {
 
@@ -17,14 +17,14 @@ GUIOverlay::GUIOverlay() {
 	int windowHeight = textMeasure.y * 4 + TEXT_MARGIN;
 	Vector2 pos, size;
 	size = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
-	pos = Vector2(Globals::WINDOW_WIDTH - size.x, 16);
+	pos = Vector2(Globals::WINDOW_WIDTH - size.x, TEST_BOX_MARGIN);
 	hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
-	pos = Vector2(0, 16);
+	pos = Vector2(0, TEST_BOX_MARGIN);
 	hudDialogs[HUDDIALOG::ENEMIES]->setDimensions(pos, size);
 
 	// should be wide enough to fit four letter word and the hand icon
 	size.x = textMeasure.x * 2 + guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
-	pos.y = 16;
+	pos.y = TEST_BOX_MARGIN;
 	hudDialogs[HUDDIALOG::PLAYER1]->setDimensions(pos, size);
 	pos.x += size.x;
 	hudDialogs[HUDDIALOG::PLAYER2]->setDimensions(pos, size);
