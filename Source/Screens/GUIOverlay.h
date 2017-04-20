@@ -16,9 +16,9 @@ public:
 	
 	void reportLostJoystick(size_t controllerSlot);
 	void controllerRemoved(size_t controllerSlot);
-
-	int controllerWaiting(shared_ptr<Joystick> joystick);
-	void controllerAccepted(shared_ptr<Joystick> joystick);
+	void unclaimedJoystickRemoved(JoyData* joyData);
+	int controllerWaiting(JoyData* joyData);
+	void controllerAccepted(JoyData* joyData);
 
 private:
 	
@@ -28,7 +28,7 @@ private:
 
 	unique_ptr<TextLabel> fpsLabel;
 
-	vector<shared_ptr<Joystick>> waitingForInput;
+	vector<JoyData*> waitingForInput;
 	vector<unique_ptr<Dialog>> lostJoyDialogs;
 
 	vector<int> displayingLostJoys;

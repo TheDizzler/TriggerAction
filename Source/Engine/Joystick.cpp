@@ -177,3 +177,18 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	//pButtonCaps = NULL;
 	//pValueCaps = NULL;
 }
+
+
+
+
+#include "Input.h"
+void JoyData::playerAcceptedSlot() {
+
+	joystick->slot = tempSlot;
+	listener->controllerAcceptedSlot(this);
+}
+
+void JoyData::removeFromUnclaimed() {
+
+	listener->unclaimedJoystickRemoved(this);
+}

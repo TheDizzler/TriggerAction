@@ -13,17 +13,6 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid);
 DWORD WINAPI waitForPlayerThread(PVOID pVoid);
 
 
-struct JoyData {
-	JoyData(shared_ptr<Joystick> joy) : joystick(joy) {
-	}
-	~JoyData() {
-		wostringstream wss;
-		wss << "Slot " << joystick->slot << " data deleting" << endl;
-		OutputDebugString(wss.str().c_str());
-	}
-
-	shared_ptr<Joystick> joystick;
-};
 
 class ControllerListener {
 public:
@@ -37,8 +26,9 @@ public:
 
 	virtual void newController(HANDLE joyHandle) = 0;
 	virtual void controllerRemoved(size_t controllerSlot) = 0;
-	void controllerAccepted(HANDLE handle);
-
+	//void controllerAccepted(HANDLE handle);
+	void controllerAcceptedSlot(JoyData* joyData);
+	void unclaimedJoystickRemoved(JoyData* joyData);
 
 	bool matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle);
 
@@ -48,10 +38,17 @@ protected:
 	map<HANDLE, shared_ptr<Joystick>> joystickMap;
 	/** When a new controller is detected, they get placed here until a player "claims" it. */
 	map<HANDLE, shared_ptr<Joystick>> unclaimedJoysticks;
-	deque<int> availableControllerSlots;
+	deque<USHORT> availableControllerSlots;
 
 	//HANDLE threadHandles[3];
-	deque<HANDLE> threadHandles;
+	//deque<HANDLE> threadHandles;
+
+	/* Thread Safe. */
+	bool slotsAvailable();
+	/** Thread safe. Does not check if any slots available.*/
+	USHORT getNextAvailableControllerSlot();
+
+	CRITICAL_SECTION cs;
 };
 
 

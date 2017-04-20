@@ -106,21 +106,21 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 	if (noControllerDialog->isShowing()) {
 		noControllerDialog->update(deltaTime);
 
-		for (int i = 0; i < tempJoysticks.size(); ++i) {
-			if (tempJoysticks[i]->bButtonStates[0]) {
-				game->controllerAccepted(tempJoysticks[i]->getHandle());
-				swap(tempJoysticks[i], tempJoysticks.back());
-				tempJoysticks.pop_back();
-				break;
-			}
-		}
+		//for (int i = 0; i < tempJoysticks.size(); ++i) {
+		//	if (tempJoysticks[i]->bButtonStates[0]) {
+		//		game->controllerAccepted(tempJoysticks[i]->getHandle());
+		//		swap(tempJoysticks[i], tempJoysticks.back());
+		//		tempJoysticks.pop_back();
+		//		break;
+		//	}
+		//}
 
-		for (const auto& joy : joysticks) {
-			if (joy->getHandle()) {
-				noControllerDialog->close();
-				break;
-			}
-		}
+		//for (const auto& joy : joysticks) {
+		//	if (joy->getHandle()) {
+		//		noControllerDialog->close();
+		//		break;
+		//	}
+		//}
 	} else
 		quitButton->update(deltaTime);
 }
@@ -156,6 +156,7 @@ void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
 void TitleScreen::newController(HANDLE joyHandle) {
 
+	noControllerDialog->close();
 	//for (const auto& joy : joysticks) {
 	//	if (joy->getHandle()) {
 	//		noControllerDialog->close();

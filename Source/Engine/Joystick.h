@@ -38,3 +38,26 @@ private:
 	HANDLE handle = NULL;
 
 };
+
+
+class ControllerListener;
+/** This class is used for passing awaiting joysticks around threads. */
+struct JoyData {
+
+	JoyData(shared_ptr<Joystick> joy, ControllerListener* conListener)
+		: joystick(joy), listener(conListener) {
+	}
+	~JoyData() {
+		wostringstream wss;
+		wss << "Slot " << joystick->slot << " data deleting" << endl;
+		OutputDebugString(wss.str().c_str());
+	}
+
+	void playerAcceptedSlot();
+	void removeFromUnclaimed();
+
+	ControllerListener* listener;
+	shared_ptr<Joystick> joystick;
+	int tempSlot;
+	bool finishFlag = false;
+};

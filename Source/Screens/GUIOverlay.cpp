@@ -62,8 +62,9 @@ void GUIOverlay::update(double deltaTime, shared_ptr<MouseController> mouse) {
 	}
 
 	for (const auto& joy : waitingForInput)
-		if (joy->bButtonStates[0]) {
-			joy->slot = 0;
+		if (joy->joystick->bButtonStates[0]) {
+			//joy->slot = 0;
+			joy->finishFlag = true;
 		}
 
 
@@ -147,13 +148,13 @@ void GUIOverlay::controllerRemoved(size_t controllerSlot) {
 }
 
 
-int GUIOverlay::controllerWaiting(shared_ptr<Joystick> joystick) {
+int GUIOverlay::controllerWaiting(JoyData* joyData) {
 
 	for (int i = 0; i < 2; ++i)
 		if (!hudDialogs[PLAYER1 + i]->isShowing()) {
 			hudDialogs[PLAYER1 + i]->show();
 			hudDialogs[PLAYER1 + i]->setText(L"Push A\nto begin!");
-			waitingForInput.push_back(joystick);
+			waitingForInput.push_back(joyData);
 			return i;
 
 		}
@@ -161,18 +162,32 @@ int GUIOverlay::controllerWaiting(shared_ptr<Joystick> joystick) {
 	return -1;
 }
 
-void GUIOverlay::controllerAccepted(shared_ptr<Joystick> joystick) {
+
+void GUIOverlay::unclaimedJoystickRemoved(JoyData* joyData) {
 
 	for (int i = 0; i < waitingForInput.size(); ++i) {
-		if (waitingForInput[i].get() == joystick.get()) {
+		if (waitingForInput[i] == joyData) {
+			swap(waitingForInput[i], waitingForInput.back());
+			waitingForInput.pop_back();
+		}
+	}
+
+	controllerRemoved(joyData->tempSlot);
+}
+
+
+void GUIOverlay::controllerAccepted(JoyData* joyData) {
+
+	for (int i = 0; i < waitingForInput.size(); ++i) {
+		if (waitingForInput[i] == joyData) {
 			swap(waitingForInput[i], waitingForInput.back());
 			waitingForInput.pop_back();
 		}
 	}
 
 	wostringstream ws;
-	ws << L"Player " << (joystick->slot + 1);
-	guiOverlay->setDialogText(joystick->slot, ws.str());
+	ws << L"Player " << (joyData->joystick->slot + 1);
+	guiOverlay->setDialogText(joyData->joystick->slot, ws.str());
 }
 
 
@@ -196,10 +211,10 @@ void ControllerDialog::setDimensions(const Vector2& position, const Vector2& siz
 
 void ControllerDialog::update(double deltaTime) {
 
-	/*if (!isOpen)
-		return;*/
+	if (!isOpen)
+		return;
 
-	if (tempJoysticks.size() > 0) {
+	/*if (tempJoysticks.size() > 0) {
 
 		if (first) {
 			first = false;
@@ -212,28 +227,28 @@ void ControllerDialog::update(double deltaTime) {
 
 		}
 
-	} else {
+	} else {*/
 
-		if (!first) {
-			first = true;
-			dialogOpenTime = 0;
-			ellipsisii = 16;
+	/*if (!first) {
+		first = true;
+		dialogOpenTime = 0;
+		ellipsisii = 16;
+		setText(defaultText);
+	}*/
+
+	dialogOpenTime += deltaTime;
+	if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
+		dialogOpenTime = 0;
+		if (ellipsisii++ > 5) {
+			ellipsisii = 0;
 			setText(defaultText);
-		}
-
-		dialogOpenTime += deltaTime;
-		if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
-			dialogOpenTime = 0;
-			if (ellipsisii++ > 5) {
-				ellipsisii = 0;
-				setText(defaultText);
-			} else {
-				wstring text = dialogText->getText();
-				text += L".";
-				Dialog::setText(text);
-			}
+		} else {
+			wstring text = dialogText->getText();
+			text += L".";
+			Dialog::setText(text);
 		}
 	}
+//}
 	Dialog::update(deltaTime);
 }
 

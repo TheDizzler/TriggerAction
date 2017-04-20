@@ -4,7 +4,7 @@
 shared_ptr<Joystick> joysticks[3];
 vector<shared_ptr<Joystick>> tempJoysticks;
 
-bool endNow = false;
+bool endAllThreadsNow = false;
 
 Input::Input() {
 
@@ -38,15 +38,19 @@ ControllerListener::ControllerListener() {
 	availableControllerSlots.push_back(0);
 	availableControllerSlots.push_back(1);
 	availableControllerSlots.push_back(2);
+
+	InitializeCriticalSection(&cs);
 }
 
 ControllerListener::~ControllerListener() {
 
-	endNow = true;
+	endAllThreadsNow = true;
 	joystickMap.clear();
 
-	std::deque<int> empty;
+	std::deque<USHORT> empty;
 	swap(availableControllerSlots, empty);
+
+	DeleteCriticalSection(&cs);
 }
 
 
@@ -129,29 +133,36 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 			if (joystickMap.find(newHandle) != joystickMap.end()) {
 				//OutputDebugString(L"That joystick already registered.\n");
 			} else if (gameInitialized) {
-				if (availableControllerSlots.size() == 0) {
+				if (!slotsAvailable()/*availableControllerSlots.size() == 0*/) {
 					// too many players
 					return;
 				}
 
 				// create joystick and wait for player response
 				if (unclaimedJoysticks.find(newHandle) == unclaimedJoysticks.end()) {
+
+					/*USHORT nextAvailableSlot = availableControllerSlots[0];
+					availableControllerSlots.pop_front();*/
+
 					shared_ptr<Joystick> newJoy = make_shared<Joystick>(10);
 					newJoy->registerNewHandle(newHandle);
 					unclaimedJoysticks[newHandle] = newJoy;
 					tempJoysticks.push_back(newJoy);
 
-					JoyData* data = new JoyData(newJoy);
+					OutputDebugString(L"Attempting to link new Joystick!\n");
+
+					JoyData* data = new JoyData(newJoy, this);
+					data->tempSlot = getNextAvailableControllerSlot();
 					DWORD id;
-					threadHandles.push_back(
-						CreateThread(NULL, 0, waitForPlayerThread, (PVOID) data, 0, &id));
+					//threadHandles.push_back(
+					CreateThread(NULL, 0, waitForPlayerThread, (PVOID) data, 0, &id)/*)*/;
 
 				}
 			} else {
-				USHORT nextAvailableSlot = availableControllerSlots[0];
-				availableControllerSlots.pop_front();
+				/*USHORT nextAvailableSlot = availableControllerSlots[0];
+				availableControllerSlots.pop_front();*/
 
-				shared_ptr<Joystick> newStick = joysticks[nextAvailableSlot];
+				shared_ptr<Joystick> newStick = joysticks[getNextAvailableControllerSlot()];
 				newStick->registerNewHandle(newHandle);
 				joystickMap[newHandle] = newStick;
 
@@ -159,10 +170,10 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 				OutputDebugString(L"New joystick found!\n");
 
 				// Create a thread to ping the HUD until it's ready
-				JoyData* data = new JoyData(newStick);
+				JoyData* data = new JoyData(newStick, this);
 				DWORD id;
-				threadHandles.push_back(
-					CreateThread(NULL, 0, waitForHUDThread, (PVOID) data, 0, &id));
+				//threadHandles.push_back(
+				CreateThread(NULL, 0, waitForHUDThread, (PVOID) data, 0, &id)/*)*/;
 			}
 		}
 	}
@@ -188,20 +199,93 @@ bool ControllerListener::matchFound(vector<HANDLE> newHandles, HANDLE joystickHa
 	return false;
 }
 
+bool ControllerListener::slotsAvailable() {
+
+	bool anySlots = false;
+	EnterCriticalSection(&cs);
+	{
+		anySlots = availableControllerSlots.size() != 0;
+	}
+	LeaveCriticalSection(&cs);
+
+	return anySlots;
+}
+
+
+USHORT ControllerListener::getNextAvailableControllerSlot() {
+
+	USHORT nextAvailableSlot;
+	EnterCriticalSection(&cs);
+	{
+		nextAvailableSlot = availableControllerSlots[0];
+		availableControllerSlots.pop_front();
+	}
+	LeaveCriticalSection(&cs);
+
+	return nextAvailableSlot;
+}
+
+
+//void ControllerListener::controllerAccepted(HANDLE handle) {
+//
+//	shared_ptr<Joystick> joy = joysticks[getNextAvailableControllerSlot()];
+//	/*swap(availableControllerSlots[0], availableControllerSlots.back());
+//	availableControllerSlots.pop_back();*/
+//	joy->registerNewHandle(handle);
+//	joystickMap[handle] = joy;
+//
+//	guiOverlay->setDialogText(joy->slot, L"Hello!"); // This player becomes player 1
+//
+//	map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
+//	mapIt = unclaimedJoysticks.find(handle);
+//	if (mapIt != unclaimedJoysticks.end())
+//		unclaimedJoysticks.erase(mapIt);
+//}
+
+void ControllerListener::controllerAcceptedSlot(JoyData* joyData) {
+
+	shared_ptr<Joystick> joy = joysticks[joyData->tempSlot];
+
+	joy->registerNewHandle(joyData->joystick->getHandle());
+	joystickMap[joy->getHandle()] = joy;
+
+	guiOverlay->controllerAccepted(joyData);
+
+	map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
+	mapIt = unclaimedJoysticks.find(joyData->joystick->getHandle());
+	if (mapIt != unclaimedJoysticks.end())
+		unclaimedJoysticks.erase(mapIt);
+
+	newController(joy->getHandle());
+}
+
+void ControllerListener::unclaimedJoystickRemoved(JoyData* joyData) {
+
+	guiOverlay->unclaimedJoystickRemoved(joyData);
+	//guiOverlay->controllerRemoved(joyData->tempSlot);
+	map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
+	mapIt = unclaimedJoysticks.find(joyData->joystick->getHandle());
+	if (mapIt != unclaimedJoysticks.end())
+		unclaimedJoysticks.erase(mapIt);
+}
+
 
 DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 
 	JoyData* joyData = (JoyData*) pVoid;
 
-	int tempSlot = guiOverlay->controllerWaiting(joyData->joystick);
-	while (joyData->joystick->slot >= 3) {
+	joyData->tempSlot = guiOverlay->controllerWaiting(joyData);
+	while (!joyData->finishFlag) {
 
 		if (joyData->joystick->slot == SLOT_OF_DEATH) {
-			guiOverlay->controllerRemoved(tempSlot);
+
+			//joyData->listener->unclaimedJoystickRemoved(joyData);
+			joyData->removeFromUnclaimed();
+
 			delete joyData;
 			return 0;
 		}
-		if (endNow) {
+		if (endAllThreadsNow) {
 
 			delete joyData;
 			return 0;
@@ -209,8 +293,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 		Sleep(500);
 	}
 
-	joyData->joystick->slot = tempSlot;
-	guiOverlay->controllerAccepted(joyData->joystick);
+	joyData->playerAcceptedSlot();
 	delete joyData;
 	return 0;
 
@@ -227,8 +310,8 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 		//wss << L"Test Thread #" << GetCurrentThreadId() << endl;
 		//wss << data->joystick->slot << " waiting for HUD." << endl;
 		//OutputDebugString(wss.str().c_str());
-		
-		if (endNow) {
+
+		if (endAllThreadsNow) {
 			delete data;
 			return 0;
 		}
@@ -242,19 +325,5 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 }
 
 
-void ControllerListener::controllerAccepted(HANDLE handle) {
 
-	shared_ptr<Joystick> joy = joysticks[availableControllerSlots[0]];
-	swap(availableControllerSlots[0], availableControllerSlots.back());
-	availableControllerSlots.pop_back();
-	joy->registerNewHandle(handle);
-	joystickMap[handle] = joy;
-
-	guiOverlay->setDialogText(joy->slot, L"Hello!"); // This player becomes player 1
-
-	map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
-	mapIt = unclaimedJoysticks.find(handle);
-	if (mapIt != unclaimedJoysticks.end())
-		unclaimedJoysticks.erase(mapIt);
-}
 

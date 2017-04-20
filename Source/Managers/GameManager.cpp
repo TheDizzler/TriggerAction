@@ -181,7 +181,7 @@ void GameManager::newController(HANDLE joyHandle) {
 }
 
 void GameManager::controllerAccepted(HANDLE handle) {
-	gameEngine->controllerAccepted(handle);
+	//gameEngine->controllerAccepted(handle);
 }
 
 
