@@ -39,14 +39,14 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		quitButton->setText(L"Quit");
 		exitDialog->setConfirmButton(move(quitButton));
 		exitDialog->setCancelButton(L"Keep Testing!");
+		exitDialog->setCancelOnClickListener(new CancelDialogButton(gameEngine, exitDialog.get()));
 		//exitDialog->setMatrixFunction([&]()-> Matrix { return camera->translationMatrix(); });
-		//exitDialog->open();
+		//exitDialog->show();
 		exitDialog->setOpenTransition(
-			/*new TransitionEffects::SpinGrowTransition(exitDialog.get(), .5));*/
-			new TransitionEffects::SplitTransition(exitDialog.get(), 25));
-		//new TransitionEffects::BlindsTransition(exitDialog.get(), .25, false, true));
-		/*new TransitionEffects::TrueGrowTransition(exitDialog.get(),
-		Vector2(.001, .001), Vector2(1, 1)));*/
+			//new TransitionEffects::SpinGrowTransition(.5));
+			//new TransitionEffects::SplitTransition(25));
+		//new TransitionEffects::BlindsTransition(.25, false, true));
+		new TransitionEffects::TrueGrowTransition(exitDialog.get(), Vector2(.001, .001), Vector2(1, 1), 10));
 		/*new TransitionEffects::SlideAndGrowTransition(
 		Vector2(-200, -200), exitDialog->getPosition(),
 		Vector2(.001, .001), Vector2(1, 1)));*/
@@ -173,7 +173,7 @@ void GameManager::loadMainMenu() {
 
 void GameManager::controllerRemoved(size_t controllerSlot) {
 
-		currentScreen->controllerRemoved(controllerSlot);
+	currentScreen->controllerRemoved(controllerSlot);
 }
 
 void GameManager::newController(HANDLE joyHandle) {
@@ -198,7 +198,7 @@ void GameManager::pause() {
 void GameManager::confirmExit() {
 
 	setPaused(true);
-	if (!exitDialog->isShowing()) {
+	if (!exitDialog->isOpen()) {
 		GameEngine::showDialog = exitDialog.get();
 		exitDialog->show();
 	}
@@ -262,4 +262,9 @@ size_t GameManager::getSelectedDisplayIndex() {
 
 size_t GameManager::getSelectedDisplayModeIndex() {
 	return gameEngine->getSelectedDisplayModeIndex();
+}
+
+void CancelDialogButton::onClick(Button * button) {
+	dialog->hide();
+	engine->paused = false;
 }

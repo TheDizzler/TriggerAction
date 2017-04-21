@@ -6,10 +6,12 @@
 	"Top Left Corner",  "Top Center", "Top Right Corner",
 	"Center Left", "Middle", "Center Right"
 	"Bottom Left Corner", "Bottom Center", "Bottom Right Corner"
-	This Dialog is expensive and should be used sparingly. */
-class DynamicDialog : Dialog {
+	NOTE: Snaps the size to the dimensions of the assets that make it.
+	Converts the final image into a texture and uses that for display. */
+class DynamicDialog : public Dialog {
 public:
-	DynamicDialog(bool movable, bool centerText);
+	/** Movable and centerText not yet implemented). */
+	DynamicDialog();
 	~DynamicDialog();
 
 
@@ -19,36 +21,26 @@ public:
 	void initialize(shared_ptr<AssetSet> assetSet,
 		const pugi::char_t* font = "Default Font");
 
+	virtual GraphicsAsset* texturize() override;
+	virtual void textureDraw(SpriteBatch * batch) override;
 
 	virtual void setText(wstring text) override;
+	virtual void setDimensions(const Vector2& position, const Vector2& size);
 
-	/** FrameThickness has no effect. */
-	virtual void setDimensions(const Vector2& position, const Vector2& size,
-		const int frameThickness = 2) override;
-
-	//virtual void update(double deltaTime);
-	virtual void draw(SpriteBatch* batch);
+	virtual void update(double deltaTime) override;
+	virtual void draw(SpriteBatch* batch) override;
 
 	virtual void setPosition(const Vector2& newPosition) override;
 	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 
-	virtual void show() override;
-	virtual void close() override;
+protected:
+	bool useTexture = true;
+	unique_ptr<TexturePanel> texturePanel;
 
-	virtual bool isShowing() override;
-private:
 
 	shared_ptr<AssetSet> assetSet;
-	vector<unique_ptr<Sprite>> bgSprites;
-
-	Vector2 bottomLeftPosition;
 	
-	struct miniAsset {
-
-
-	};
-
 	GraphicsAsset* topLeftCorner;
 	GraphicsAsset* topCenter;
 	GraphicsAsset* topRightCorner;
@@ -60,4 +52,7 @@ private:
 	GraphicsAsset* bottomLeftCorner;
 	GraphicsAsset* bottomCenter;
 	GraphicsAsset* bottomRightCorner;
+
+
+
 };

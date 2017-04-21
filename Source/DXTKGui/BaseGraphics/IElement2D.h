@@ -26,9 +26,6 @@ public:
 	virtual const int getHeight() const = 0;
 	virtual const float getLayerDepth() const = 0;
 
-	/** Get coordinates of object relative to screen. */
-	//virtual const Vector2& getScreenPosition() const = 0;
-	//virtual const HitArea& getScreenHitArea() const = 0;
 
 	virtual void moveBy(const Vector2& moveVector) = 0;
 	virtual void setPosition(const Vector2& position) = 0;
@@ -43,6 +40,18 @@ public:
 
 	virtual void draw(SpriteBatch* batch) = 0;
 
-	//virtual GraphicsAsset* createTexture() = 0;
+};
+
+class GraphicsAsset;
+interface Texturizable {
+public:
+
+	virtual GraphicsAsset* texturize() = 0;
+	virtual void textureDraw(SpriteBatch* batch) = 0;
+
+	virtual void setPosition(const Vector2& position) = 0;
+	virtual const Vector2& getPosition() const = 0;
+	virtual const int getWidth() const = 0;
+	virtual const int getHeight() const = 0;
 };
 

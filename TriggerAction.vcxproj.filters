@@ -43,6 +43,12 @@
     <Filter Include="Header Files\Screens">
       <UniqueIdentifier>{8b5fe32c-b654-42f9-8f1b-6be6da3c7a3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUIObjects">
+      <UniqueIdentifier>{3141f4a5-a1cf-4a1b-aa3a-7cd37eb160c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUIObjects">
+      <UniqueIdentifier>{79e875d3-ee86-4408-9343-72a15d737cf8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -167,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="Source\DXTKGui\Controls\DynamicDialog.cpp">
       <Filter>Source Files\DXTGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp">
+      <Filter>Source Files\GUIObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="Source\DXTKGui\Controls\DynamicDialog.h">
       <Filter>Header Files\DXTGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GUIObjects\PCSelectDialog.h">
+      <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

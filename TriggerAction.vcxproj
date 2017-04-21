@@ -193,6 +193,7 @@
     <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp" />
     <ClCompile Include="Source\GameObjects\Tangible.cpp" />
     <ClCompile Include="Source\GameObjects\Tile.cpp" />
+    <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
     <ClCompile Include="Source\Managers\MapManager.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="Source\GameObjects\Tangible.h" />
     <ClInclude Include="Source\GameObjects\Tile.h" />
     <ClInclude Include="Source\globals.h" />
+    <ClInclude Include="Source\GUIObjects\PCSelectDialog.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
     <ClInclude Include="Source\Managers\MapManager.h" />
@@ -250,13 +252,17 @@
     <Xml Include="assets\AssetManifest.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="assets\Character Data - Frog.xml" />
+    <Xml Include="assets\Character Data - Frog.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="assets\MapManifest.xml">
       <SubType>Designer</SubType>
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="assets\Character Data - Marle.xml" />
+    <Text Include="assets\Character Data - Marle.xml">
+      <SubType>Designer</SubType>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

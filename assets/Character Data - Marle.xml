@@ -6,9 +6,9 @@
 	<spritesheet name="Marle Sheet" file="Marle spritesheet.dds">
 
 		<sprite name="portrait" set="Marle" x="1" y="2" width="48" height="48" />
-		<sprite name="portrait small" set="Marle" x="16" y="86" width="16" height="16" />
-		<sprite name="magic kanji" set="Marle" x="17" y="52" width="16" height="16" />
-		<sprite name="magic english" set="Marle" x="2" y="68" width="48" height="16" />
+		<sprite name="portrait small" set="Marle" x="16" y="86" width="16" height="16"/>
+		<sprite name="magic kanji" set="Marle" x="17" y="52" width="16" height="16"/>
+		<sprite name="magic english" set="Marle" x="2" y="68" width="48" height="16"/>
 
 		<animation name="stand down" num="3" set="Marle">
 			<sprite x="64" y="16" width="13" height="33" frameTime="1.5"/>

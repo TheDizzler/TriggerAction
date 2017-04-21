@@ -3,7 +3,7 @@
 #include "GUIControl.h"
 
 
-class TextLabel : public GUIControl {
+class TextLabel : public GUIControl, public Texturizable {
 public:
 	TextLabel(Vector2 position, wstring text, shared_ptr<FontSet> font);
 	TextLabel(Vector2 position, shared_ptr<FontSet> font);
@@ -16,12 +16,16 @@ public:
 	/* Draw with an alternate color. */
 	void draw(SpriteBatch* batch, Color tint);
 
+	virtual GraphicsAsset* texturize() override;
+	virtual void textureDraw(SpriteBatch* batch) override;
+
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
 
 	const shared_ptr<FontSet> getFont() const;
 
+	virtual void setPosition(const Vector2& position) override;
 	virtual void setFont(const pugi::char_t* font = "Default Font") override;
 	virtual void setFont(shared_ptr<FontSet> newFont);
 	//virtual void setTint(const XMFLOAT4 color) override;

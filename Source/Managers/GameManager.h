@@ -77,7 +77,7 @@ private:
 	shared_ptr<MouseController> mouse;
 	ComPtr<ID3D11Device> device;
 
-	unique_ptr<Dialog> exitDialog;
+	unique_ptr<PromptDialog> exitDialog;
 
 };
 
@@ -86,9 +86,19 @@ public:
 	OnClickListenerDialogQuitButton(GameManager* screen) : main(screen) {
 	}
 	virtual void onClick(Button* button) override {
-		main->exitDialog->close();
+		main->exitDialog->hide();
 		main->exit();
 	}
 private:
 	GameManager* main;
+};
+
+class CancelDialogButton : public Button::OnClickListener {
+public:
+	CancelDialogButton(GameEngine* eng, Dialog* dlg) : engine(eng), dialog(dlg) {
+	}
+	virtual void onClick(Button* button) override;
+private:
+	GameEngine* engine;
+	Dialog* dialog;
 };

@@ -47,7 +47,7 @@ ControllerListener::~ControllerListener() {
 	endAllThreadsNow = true;
 	joystickMap.clear();
 
-	std::deque<USHORT> empty;
+	deque<USHORT> empty;
 	swap(availableControllerSlots, empty);
 
 	DeleteCriticalSection(&cs);

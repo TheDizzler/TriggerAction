@@ -60,7 +60,8 @@ public:
 
 	const HitArea* getHitArea() const;
 
-	/* control->setMatrixFunction([&]() -> Matrix { return camera->translationMatrix(); }); */
+	/* Use example:
+		control->setMatrixFunction([&]() -> Matrix { return camera->translationMatrix(); }); */
 	void setMatrixFunction(function<Matrix()> translationFunction) {
 		translationMatrix = translationFunction;
 	}
@@ -77,7 +78,7 @@ public:
 
 	bool contains(const Vector2& point);
 
-	GraphicsAsset* createTexture();
+	//GraphicsAsset* createTexture();
 
 	virtual bool clicked() = 0;
 	/* Is Mouse Button down over control? */

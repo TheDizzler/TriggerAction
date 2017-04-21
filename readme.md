@@ -25,6 +25,8 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- removed useless functions in TextLabel: setToUnpressedState(), setToHoverState(), setToSelectedState()
 >- added controllerRemoved(size_t controllerSlot) and newController(HANDLE joyHandle) to Screen
 >- moved AssetSet into DXTKGui and implemented asset sets
->- ImageDialogs 
+>- DynamicDialogs 
 >- TextLabel setFonts weren't exposed
 >- fixed major timing issues in main.cpp
+>- RectangleFrame more efficient (one draw call instead of 4)
+>- TransitionEffects changed to be more end-user friendly

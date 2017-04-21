@@ -9,8 +9,11 @@ GUIOverlay::GUIOverlay() {
 	unique_ptr<TextLabel> textLabel;
 	textLabel.reset(guiFactory->createTextLabel(Vector2(-100, -100)));
 
-	for (auto& dialog : hudDialogs)
-		dialog = guiFactory->createDialog(guiFactory->getAssetSet("Menu BG 0"));
+	//for (auto& dialog : hudDialogs)
+	hudDialogs[HUDDIALOG::PLAYERSTATS] = guiFactory->createDynamicDialog(guiFactory->getAssetSet("Menu BG 0"));
+	hudDialogs[HUDDIALOG::ENEMIES] = guiFactory->createDynamicDialog(guiFactory->getAssetSet("Menu BG 0"));
+
+
 
 	Vector2 textMeasure = textLabel->measureString(L"TECH");
 	// should be enough to fit 4 lines of text + margin
@@ -19,17 +22,23 @@ GUIOverlay::GUIOverlay() {
 	size = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
 	pos = Vector2(Globals::WINDOW_WIDTH - size.x, TEST_BOX_MARGIN);
 	hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
-	pos = Vector2(0, TEST_BOX_MARGIN);
+	pos = Vector2(10, TEST_BOX_MARGIN);
 	hudDialogs[HUDDIALOG::ENEMIES]->setDimensions(pos, size);
 
 	// should be wide enough to fit four letter word and the hand icon
 	size.x = textMeasure.x * 2 + guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
 	pos.y = TEST_BOX_MARGIN;
-	hudDialogs[HUDDIALOG::PLAYER1]->setDimensions(pos, size);
-	pos.x += size.x;
-	hudDialogs[HUDDIALOG::PLAYER2]->setDimensions(pos, size);
-	pos.x += size.x;
-	hudDialogs[HUDDIALOG::PLAYER3]->setDimensions(pos, size);
+	hudDialogs[HUDDIALOG::PLAYER1]
+		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size, "Marle");
+	pos.x += hudDialogs[HUDDIALOG::PLAYER1]->getWidth();
+
+	hudDialogs[HUDDIALOG::PLAYER2]
+		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size, "Frog");
+
+	pos.x += hudDialogs[HUDDIALOG::PLAYER2]->getWidth();
+
+	hudDialogs[HUDDIALOG::PLAYER3]
+		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size, "Frog");
 
 
 	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
@@ -40,7 +49,8 @@ GUIOverlay::GUIOverlay() {
 
 GUIOverlay::~GUIOverlay() {
 	lostJoyDialogs.clear();
-
+	for (auto& dialog : hudDialogs)
+		dialog.reset();
 }
 
 int frameCount = 0;
@@ -143,7 +153,7 @@ void GUIOverlay::controllerRemoved(size_t controllerSlot) {
 	wss << "controller " << controllerSlot << " removed" << endl;
 	OutputDebugString(wss.str().c_str());
 
-	hudDialogs[PLAYER1 + controllerSlot]->close();
+	hudDialogs[PLAYER1 + controllerSlot]->hide();
 
 }
 
@@ -151,7 +161,7 @@ void GUIOverlay::controllerRemoved(size_t controllerSlot) {
 int GUIOverlay::controllerWaiting(JoyData* joyData) {
 
 	for (int i = 0; i < 2; ++i)
-		if (!hudDialogs[PLAYER1 + i]->isShowing()) {
+		if (!hudDialogs[PLAYER1 + i]->isOpen()) {
 			hudDialogs[PLAYER1 + i]->show();
 			hudDialogs[PLAYER1 + i]->setText(L"Push A\nto begin!");
 			waitingForInput.push_back(joyData);
@@ -191,10 +201,23 @@ void GUIOverlay::controllerAccepted(JoyData* joyData) {
 }
 
 
+unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialogImageSet,
+	const Vector2& position, const Vector2& size, const char_t* pcName, const char_t* fontName) {
+
+	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>();
+	dialog->initializeControl(guiFactory.get(), NULL);
+	dialog->initialize(dialogImageSet, fontName);
+	dialog->loadPC(gfxAssets->getAssetSet(pcName));
+	dialog->setDimensions(position, size);
+	dialog->texturize();
+	return move(dialog);
+}
+
+
 
 
 ControllerDialog::ControllerDialog(GUIFactory* guiF)
-	: Dialog(guiF->getHWND(), false, true) {
+	: PromptDialog(guiF->getHWND(), false, true) {
 
 	initializeControl(guiF, guiF->getMouseController());
 	initialize(guiFactory->getAsset("White Pixel"));
@@ -205,13 +228,13 @@ ControllerDialog::ControllerDialog(GUIFactory* guiF)
 void ControllerDialog::setDimensions(const Vector2& position, const Vector2& size,
 	const int frameThickness) {
 
-	Dialog::setDimensions(position, size, frameThickness);
+	PromptDialog::setDimensions(position, size, frameThickness);
 }
 
 
 void ControllerDialog::update(double deltaTime) {
 
-	if (!isOpen)
+	if (!isShowing)
 		return;
 
 	/*if (tempJoysticks.size() > 0) {
@@ -226,15 +249,8 @@ void ControllerDialog::update(double deltaTime) {
 			dialogOpenTime = 0;
 
 		}
+		*/
 
-	} else {*/
-
-	/*if (!first) {
-		first = true;
-		dialogOpenTime = 0;
-		ellipsisii = 16;
-		setText(defaultText);
-	}*/
 
 	dialogOpenTime += deltaTime;
 	if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
@@ -245,15 +261,14 @@ void ControllerDialog::update(double deltaTime) {
 		} else {
 			wstring text = dialogText->getText();
 			text += L".";
-			Dialog::setText(text);
+			PromptDialog::setText(text);
 		}
 	}
-//}
-	Dialog::update(deltaTime);
+	PromptDialog::update(deltaTime);
 }
 
 void ControllerDialog::setText(wstring text) {
 
 	defaultText = text;
-	Dialog::setText(text);
+	PromptDialog::setText(text);
 }

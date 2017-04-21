@@ -117,6 +117,11 @@ protected:
 	unique_ptr<RectangleSprite> rectSprite;
 	unique_ptr<RectangleFrame> frame;
 	int frameThickness = 2;
+
+	GraphicsAsset* pixelAsset;
+
+
+	bool resized = false;
 };
 
 

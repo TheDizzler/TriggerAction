@@ -56,8 +56,9 @@ bool ScrollBar::initialize(GraphicsAsset* const pixelAsset,
 		barHeight - scrollBarUpButton->getHeight() * 2);
 
 	if (scrllBrTrck.get() == NULL) {
-		scrollBarTrack = make_unique<RectangleSprite>(pixelAsset->getTexture(),
-			scrollBarPosition, trackSize);
+		/*scrollBarTrack = make_unique<RectangleSprite>(pixelAsset->getTexture(),
+			scrollBarPosition, trackSize);*/
+		scrollBarTrack.reset(guiFactory->createRectangle(scrollBarPosition, trackSize));
 		scrollBarTrack->setTint(Color(.502, .502, .502, 1));
 	} else {
 		scrollBarTrack = move(scrllBrTrck);
@@ -71,10 +72,12 @@ bool ScrollBar::initialize(GraphicsAsset* const pixelAsset,
 		scrollBarPosition.y);
 
 	if (scrbbr == NULL) {
-		scrubber.reset(new Scrubber(pixelAsset, false));
+		//scrubber.reset(new Scrubber(pixelAsset, false));
+		scrubber = make_unique<Scrubber>(pixelAsset, false);
 
 	} else {
-		scrubber.reset(new Scrubber(scrbbr, true));
+		//scrubber.reset(new Scrubber(scrbbr, true));
+		scrubber = make_unique<Scrubber>(scrbbr, true);
 	}
 
 	scrubber->setDimensions(scrollBarTrack.get(), 1, 0);

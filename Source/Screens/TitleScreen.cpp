@@ -23,8 +23,8 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	//noControllerDialog = guiFactory->createDialog(dialogPos, dialogSize, true, true);
-	//noControllerDialog->setTint(Color(1, .5, 1, 1));
+	
+
 	noControllerDialog = make_unique<ControllerDialog>(guiFactory.get());
 	noControllerDialog->setDimensions(dialogPos, dialogSize);
 	noControllerDialog->setLayerDepth(1);
@@ -51,9 +51,11 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	pendulum->setRotation(pendulumRotation);
 	pendulum->setLayerDepth(.9);
 
-	//TOTAL_SWING_TIME = 2 * XM_PI * sqrt(pendulum->getHeight() / GRAVITY);
+	Vector2 pos = Vector2::Zero;
+	for (int i = 0; i < 300; ++i) {
+		
 
-
+	}
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
 
 	return true;
@@ -63,8 +65,7 @@ void TitleScreen::setGameManager(GameManager* gm) {
 	game = gm;
 }
 
-bool chucking = true;
-double timeChuck = 0;
+//TOTAL_SWING_TIME = 2 * XM_PI * sqrt(pendulum->getHeight() / GRAVITY);
 double totalSwingTime = 0;
 double g = GRAVITY;
 float angularAcceleration = 0;
@@ -75,13 +76,6 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
 	}
-
-	/*if (chucking) {
-		timeChuck += deltaTime;
-		if (timeChuck >= 1)
-			chucking = false;
-		return;
-	}*/
 
 	if (!doneSwinging) {
 		totalSwingTime += deltaTime;
@@ -103,7 +97,7 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 
 	pendulum->setRotation(pendulumRotation);
 
-	if (noControllerDialog->isShowing()) {
+	if (noControllerDialog->isOpen()) {
 		noControllerDialog->update(deltaTime);
 
 		//for (int i = 0; i < tempJoysticks.size(); ++i) {
@@ -133,7 +127,8 @@ void TitleScreen::draw(SpriteBatch * batch) {
 
 	noControllerDialog->draw(batch);
 
-
+	/*for (const auto& frame : frames)
+		frame->draw(batch);*/
 }
 
 void TitleScreen::pause() {
@@ -156,12 +151,6 @@ void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
 void TitleScreen::newController(HANDLE joyHandle) {
 
-	noControllerDialog->close();
-	//for (const auto& joy : joysticks) {
-	//	if (joy->getHandle()) {
-	//		noControllerDialog->close();
-	//		break;
-	//	}
-	//}
+	noControllerDialog->hide();
 
 }

@@ -72,6 +72,15 @@ void TextLabel::draw(SpriteBatch* batch, Color color) {
 		rotation, origin, scale, layerDepth);
 }
 
+GraphicsAsset* TextLabel::texturize() {
+	return guiFactory->createTextureFromIElement2D(this);
+}
+
+void TextLabel::textureDraw(SpriteBatch* batch) {
+	font->draw(batch, label.c_str(), position, tint,
+		rotation, origin, scale, layerDepth);
+}
+
 #include <sstream>
 void TextLabel::setText(string text) {
 
@@ -134,6 +143,9 @@ void TextLabel::setHoverable(bool hoverable) {
 
 
 #include "GUIFactory.h"
+void TextLabel::setPosition(const Vector2& pos) {
+	position = pos;
+}
 void TextLabel::setFont(const pugi::char_t* fontName) {
 	font = guiFactory->getFont(fontName);
 }
@@ -153,6 +165,8 @@ void TextLabel::setScale(const Vector2 & scl) {
 void TextLabel::setLayerDepth(const float newDepth, bool frontToBack) {
 	layerDepth = newDepth;
 }
+
+
 
 const Vector2& TextLabel::getPosition() const {
 	return position;

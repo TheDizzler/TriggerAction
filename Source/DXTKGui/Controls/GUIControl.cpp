@@ -82,10 +82,10 @@ unique_ptr<HitArea> GUIControl::getScreenHitArea(Matrix viewProjectionMatrix) co
 }
 
 
-GraphicsAsset* GUIControl::createTexture() {
-	return guiFactory->createTextureFromIElement2D(this);
-
-}
+//GraphicsAsset* GUIControl::createTexture() {
+//	Color rgba = {0 , 0 , 0 , 0};
+//	return guiFactory->createTextureFromIElement2D(this, rgba);
+//}
 
 void GUIControl::setOrigin(const Vector2 & org) {
 	origin = org;

@@ -58,4 +58,5 @@ private:
 	unique_ptr<ScrollBar> verticalScrollBar;
 	bool alwaysDisplayScrollBar = false;
 	bool showScrollBar = false;
+	bool neverShowScrollBar = false;
 };

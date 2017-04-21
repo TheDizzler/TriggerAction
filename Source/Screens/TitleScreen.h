@@ -27,6 +27,7 @@ private:
 	//unique_ptr<DynamicDialog> testDialog;
 
 	unique_ptr<Button> quitButton;
+	vector<unique_ptr<RectangleFrame>> frames;
 
 	
 

@@ -166,7 +166,7 @@ RectangleSprite* GUIFactory::createRectangle(
 RectangleFrame* GUIFactory::createRectangleFrame(const Vector2& position,
 	const Vector2& size, USHORT frameThickness, Color frameColor) {
 
-	RectangleFrame* frame = new RectangleFrame(getAsset("White Pixel"));
+	RectangleFrame* frame = new RectangleFrame(getAsset("White Pixel"), this);
 	frame->setDimensions(position, size, frameThickness);
 	frame->setTint(frameColor);
 
@@ -343,7 +343,7 @@ Spinner* GUIFactory::createSpinner(const Vector2& position, const size_t width,
 
 	Spinner* spinner = new Spinner(position, width, itemHeight, autoSize);
 	spinner->initializeControl(this, mouseController);
-	spinner->initialize(fontName, getAsset("White Pixel"), upButtonAsset, downButtonAsset);
+	spinner->initialize(fontName, upButtonAsset, downButtonAsset);
 	return spinner;
 }
 
@@ -394,9 +394,12 @@ ScrollBar* GUIFactory::createScrollBar(const Vector2& position, size_t barHeight
 	return scrollBar;
 }
 
-TexturePanel* GUIFactory::createPanel(bool scrollBarAlwaysVisible) {
+TexturePanel* GUIFactory::createPanel(bool neverShowScrollBar) {
 
-	TexturePanel* panel = new TexturePanel(getAsset("White Pixel"), createScrollBar(Vector2::Zero, 10));
+	ScrollBar* scrllbar = NULL;
+	if (!neverShowScrollBar)
+		scrllbar = createScrollBar(Vector2::Zero, 10);
+	TexturePanel* panel = new TexturePanel(getAsset("White Pixel"), scrllbar);
 	panel->initializeControl(this, mouseController);
 	return panel;
 }
@@ -424,7 +427,7 @@ ComboBox* GUIFactory::createComboBox(const Vector2& position,
 	ComboBox* combobox = new ComboBox(position, width, itemHeight, maxItemsShown);
 	combobox->initializeControl(this, mouseController);
 
-	combobox->initialize(getFont(fontName), getAsset("White Pixel"),
+	combobox->initialize(getFont(fontName),
 		createListBox(
 			Vector2(position.x, position.y + itemHeight),
 			width, itemHeight, maxItemsShown, enumerateList, fontName),
@@ -433,21 +436,20 @@ ComboBox* GUIFactory::createComboBox(const Vector2& position,
 	return combobox;
 }
 
-unique_ptr<Dialog> GUIFactory::createDialog(const Vector2& position, const Vector2& size,
+unique_ptr<PromptDialog> GUIFactory::createDialog(const Vector2& position, const Vector2& size,
 	bool movable, bool centerText, int frameThickness, const char_t* fontName) {
 
-	unique_ptr<Dialog> dialog = make_unique<Dialog>(hwnd, movable, centerText);
+	unique_ptr<PromptDialog> dialog = make_unique<PromptDialog>(hwnd, movable, centerText);
 	dialog->initializeControl(this, mouseController);
 	dialog->initialize(getAsset("White Pixel"), fontName);
 	dialog->setDimensions(position, size, frameThickness);
 	return move(dialog);
 }
 
-unique_ptr<DynamicDialog> GUIFactory::createDialog(shared_ptr<AssetSet> dialogImageSet,
-	const Vector2& position, const Vector2& size, bool movable, bool centerText,
-	const char_t* fontName) {
+unique_ptr<DynamicDialog> GUIFactory::createDynamicDialog(shared_ptr<AssetSet> dialogImageSet,
+	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
-	unique_ptr<DynamicDialog> dialog = make_unique<DynamicDialog>(movable, centerText);
+	unique_ptr<DynamicDialog> dialog = make_unique<DynamicDialog>();
 	dialog->initializeControl(this, mouseController);
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(position, size);
@@ -457,7 +459,7 @@ unique_ptr<DynamicDialog> GUIFactory::createDialog(shared_ptr<AssetSet> dialogIm
 
 
 GraphicsAsset* GUIFactory::createTextureFromIElement2D(
-	IElement2D* control, Color bgColor) {
+	Texturizable* control, Color bgColor) {
 
 	int buffer = 20; // padding to give a bit of lee-way to prevent tearing
 
@@ -545,11 +547,13 @@ GraphicsAsset* GUIFactory::createTextureFromIElement2D(
 	//Vector2 oldSize = Vector2(control->getWidth(), control->getHeight());
 	control->setPosition(Vector2(0, 0));
 
+	//float rgba[4] = {0 , 0 ,0 , 0};
 	deviceContext->ClearRenderTargetView(textureRenderTargetView.Get(), bgColor);
+
 
 	batch->Begin(SpriteSortMode_Immediate);
 	{
-		control->draw(batch);
+		control->textureDraw(batch);
 	}
 	batch->End();
 
@@ -559,7 +563,7 @@ GraphicsAsset* GUIFactory::createTextureFromIElement2D(
 	control->setPosition(oldPos);
 	GraphicsAsset* gfxAsset = new GraphicsAsset();
 	gfxAsset->loadAsPartOfSheet(shaderResourceView, Vector2(0, 0),
-		Vector2(width - widthPadding - buffer, height - heightPadding - buffer));
+		Vector2(width - widthPadding - buffer, height - heightPadding - buffer), Vector2::Zero);
 	return gfxAsset;
 }
 

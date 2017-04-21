@@ -6,8 +6,8 @@ unique_ptr<GFXAssetManager> gfxAssets;
 
 
 
-unique_ptr<Dialog> GameEngine::errorDialog;
-unique_ptr<Dialog> GameEngine::warningDialog;
+unique_ptr<PromptDialog> GameEngine::errorDialog;
+unique_ptr<PromptDialog> GameEngine::warningDialog;
 Dialog* GameEngine::showDialog = NULL;
 
 
@@ -200,16 +200,15 @@ void GameEngine::newController(HANDLE joyHandle) {
 void GameEngine::update(double deltaTime) {
 
 	mouse->saveMouseState();
-	//keys->saveKeyboardState();
 
 	if (paused) {
 		auto state = Keyboard::Get().GetState();
 		keyTracker.Update(state);
 
-		if (showDialog->isShowing()) {
+		if (showDialog->isOpen()) {
 
 			if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
-				showDialog->close();
+				showDialog->hide();
 				paused = false;
 				return;
 			}

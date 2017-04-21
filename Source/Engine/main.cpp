@@ -54,7 +54,7 @@ void releaseResources() {
 /** Main windows function.
 @nShowWnd how window should be displayed. Examples: SW_SHOWMAXIMIZED, SW_SHOW, SW_SHOWMINIMIZED. */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-	
+
 	guidHid = GUID();
 	guidHid.Data1 = 0x4D1E55B2L;
 	guidHid.Data2 = 0xF16F;
@@ -204,7 +204,8 @@ bool initWindow(HINSTANCE hInstance, int showWnd) {
 
 	//}
 
-	DWORD windowStyle = (WS_OVERLAPPEDWINDOW&~WS_THICKFRAME | /*WS_CAPTION | WS_SYSMENU | */WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+	DWORD windowStyle = (WS_OVERLAPPEDWINDOW&~WS_THICKFRAME | /*WS_CAPTION | WS_SYSMENU | */
+		WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 	hwnd = CreateWindowEx(
 		NULL,					// extended style, check em out here https://msdn.microsoft.com/en-us/library/61fe4bte(v=vs.140).aspx
 		wndClassName,
@@ -222,6 +223,10 @@ bool initWindow(HINSTANCE hInstance, int showWnd) {
 		MessageBox(NULL, L"Error creating window", L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+
+	// Makes window transparent. Interesting! But useless?
+	/*SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
+	SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 100, LWA_ALPHA);*/
 
 	ShowWindow(hwnd, showWnd);
 	UpdateWindow(hwnd);

@@ -25,7 +25,7 @@ public:
 	void onAudioDeviceChange();
 
 	void run(double time);
-	
+
 
 	bool paused = false;
 
@@ -113,9 +113,9 @@ private:
 
 
 	/* Critical error dialog. Exits game when dismissed. */
-	static unique_ptr<Dialog> errorDialog;
+	static unique_ptr<PromptDialog> errorDialog;
 	/* Minor error dialog. Choice between exit game and continue. */
-	static unique_ptr<Dialog> warningDialog;
+	static unique_ptr<PromptDialog> warningDialog;
 
 };
 

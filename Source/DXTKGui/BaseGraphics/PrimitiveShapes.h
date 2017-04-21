@@ -2,6 +2,8 @@
 
 #include "Sprite.h"
 
+
+
 /** For drawing a primitive, filled rectangle.
 	Unlike other sprites, the origin of a Rectangle Sprite is the top left
 	corner (0, 0) to be consistent with GUIControls. */
@@ -17,18 +19,23 @@ public:
 	virtual void moveBy(const Vector2& moveVector);
 };
 
+
+class TexturePanel;
+class GUIFactory;
 /** A primitive, non-filled rectangle. */
-class RectangleFrame : public IElement2D {
+class RectangleFrame : public IElement2D, public Texturizable {
 public:
-	RectangleFrame(GraphicsAsset* pixelAsset);
-	//RectangleFrame(ComPtr<ID3D11ShaderResourceView> pixel,
-		//const Vector2& pos, const Vector2& size, int frameThickness);
+	/* GUIFactory is optional. */
+	RectangleFrame(GraphicsAsset* pixelAsset, _In_opt_ GUIFactory* guifactory);
 	~RectangleFrame();
 
 	void setDimensions(const Vector2& position, const Vector2& size,
 		int frameThickness = 2);
 	void setSize(const Vector2& size);
 	void refreshDimensions();
+
+	virtual GraphicsAsset* texturize() override;
+	virtual void textureDraw(SpriteBatch* batch) override;
 
 	virtual void setPosition(const Vector2& newPosition) override;
 	virtual void moveBy(const Vector2& moveVector) override;
@@ -61,6 +68,8 @@ public:
 private:
 	ComPtr<ID3D11ShaderResourceView> pixel;
 
+	bool useTexture = true;
+	unique_ptr<TexturePanel> texturePanel;
 
 	RECT frameHorizontal;
 	RECT frameVertical;
@@ -76,10 +85,14 @@ private:
 	int frameThickness;
 	float layerDepth = .9f;
 	unique_ptr<HitArea> hitArea;
+
+	GUIFactory* guiFactory;
+
 };
 
 
-/** Lines don't cross so it looks a little funny...*/
+/** Still just a proto-type. Not recommended for real life.
+	Lines don't cross so it looks a little funny...*/
 class TriangleFrame : public IElement2D {
 public:
 	TriangleFrame(GraphicsAsset* pixelAsset);
@@ -118,7 +131,6 @@ public:
 private:
 	ComPtr<ID3D11ShaderResourceView> pixel;
 
-	//Vector2 centerPoint;
 	Vector2 origin;
 	Vector2 originLine1, originLine2, originLine3;
 	Vector2 point1, point2, point3;

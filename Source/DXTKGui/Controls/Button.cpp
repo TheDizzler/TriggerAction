@@ -1,22 +1,18 @@
 #include "Button.h"
 
 
-Button::Button(GraphicsAsset* pixelAsset,
-	unique_ptr<FontSet> font) {
+Button::Button(GraphicsAsset* px, unique_ptr<FontSet> font) {
 
-	if (pixelAsset != NULL) {
-		// this stops errors when coming from ImageButton
-		frame.reset(new RectangleFrame(pixelAsset));
-		rectSprite.reset(new RectangleSprite(pixelAsset));
-	}
-	hitArea.reset(new HitArea(Vector2::Zero, Vector2::Zero));
-	buttonLabel.reset(new TextLabel(Vector2(0, 0), L"", move(font)));
+	pixelAsset = px;
+	//if (pixelAsset != NULL) {
+	//	// this stops errors when coming from ImageButton
+	//	frame.reset(new RectangleFrame(pixelAsset));
+	//	rectSprite.reset(new RectangleSprite(pixelAsset));
+	//}
+	hitArea = make_unique<HitArea>();
+	buttonLabel.reset(new TextLabel(Vector2::Zero, L"", move(font)));
 
 	position = Vector2(-1, -1);
-
-	if (pixelAsset != NULL)
-		setToUnpressedState();	// this always calls Button::setToUnpressedState
-								// even if it is an ImageButton
 }
 
 
@@ -28,8 +24,8 @@ Button::~Button() {
 }
 
 
-int textMargin = 10;
-bool resized = false;
+const int textMargin = 10;
+
 void Button::setDimensions(const Vector2& pos, const Vector2& size,
 	const int frmThcknss) {
 
@@ -37,6 +33,11 @@ void Button::setDimensions(const Vector2& pos, const Vector2& size,
 
 	Vector2 labelSize = measureString();
 	Vector2 newSize = size;
+
+
+	frame.reset(guiFactory->createRectangleFrame(pos, size));
+	rectSprite.reset(guiFactory->createRectangle());
+
 
 	if ((labelSize.x + textMargin * 2) > size.x) {
 		newSize.x = labelSize.x + textMargin * 2;
@@ -54,6 +55,9 @@ void Button::setDimensions(const Vector2& pos, const Vector2& size,
 
 	setPosition(pos);
 	setLayerDepth(.9);
+
+	setToUnpressedState();
+
 }
 
 
@@ -86,11 +90,12 @@ void Button::update(double deltaTime) {
 	}
 }
 
+// this function is not cheap. I suspect the frame is most costly.
 void Button::draw(SpriteBatch* batch) {
 
 	rectSprite->draw(batch);
-	frame->draw(batch);
 	buttonLabel->draw(batch);
+	frame->draw(batch);
 }
 
 
@@ -212,8 +217,8 @@ void Button::setLayerDepth(float newDepth, bool frontToBack) {
 	if (!frontToBack)
 		nudge *= -1;
 	rectSprite->setLayerDepth(layerDepth + nudge, frontToBack);
-	frame->setLayerDepth(layerDepth + nudge * 2, frontToBack);
-	buttonLabel->setLayerDepth(layerDepth + nudge * 3, frontToBack);
+	buttonLabel->setLayerDepth(layerDepth + nudge * 2, frontToBack);
+	frame->setLayerDepth(layerDepth + nudge * 3, frontToBack);
 }
 
 void Button::setScale(const Vector2& scl) {
@@ -327,7 +332,6 @@ void ImageButton::setDimensions(const Vector2& pos, const Vector2& size) {
 
 	setScale(Vector2(size.x / getWidth(), size.y / getHeight()));
 	Vector2 newpos = pos;
-	//newpos.x += hitArea->
 	setPosition(newpos);
 }
 

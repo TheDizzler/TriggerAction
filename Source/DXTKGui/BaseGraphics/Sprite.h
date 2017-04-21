@@ -5,7 +5,7 @@
 
 struct HitArea {
 
-	HitArea(Vector2 pos, Vector2 sz) : position(pos), size(sz) {
+	HitArea(Vector2 pos = Vector2::Zero, Vector2 sz = Vector2::Zero) : position(pos), size(sz) {
 	}
 	HitArea(const HitArea* toCopy) {
 		position = toCopy->position;
