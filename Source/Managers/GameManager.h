@@ -23,7 +23,7 @@ public:
 
 
 	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse/*,
-		vector<shared_ptr<Joystick>> joysticks*/);
+		vector<shared_ptr<Joystick>> joystickSlots*/);
 
 
 	void update(double deltaTime, shared_ptr<MouseController> mouse);

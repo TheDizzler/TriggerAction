@@ -10,6 +10,8 @@
 		<sprite name="magic kanji" set="Frog" x="458" y="52" width="16" height="16" />
 		<sprite name="magic english" set="Frog" x="442" y="69" width="48" height="16" />
 
+		<weaponMenuIcon name="Sword" />
+
 		<animation name="stand down" timePerFrame=".5" set="Frog">
 			<sprite x="399" y="4" width="16" height="24"/>
 			<sprite x="418" y="4" width="16" height="24"/>

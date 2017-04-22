@@ -4,7 +4,7 @@
 Joystick::Joystick(/*HANDLE hndl, */size_t controllerSlot) {
 
 	//handle = hndl;
-	slot = controllerSlot;
+	socket = controllerSlot;
 
 	ZeroMemory(bButtonStates, sizeof(bButtonStates));
 }
@@ -164,7 +164,7 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	//wss << "Buttons: " << g_NumberOfButtons << "\n";
 	//wss << "bButtonStates[0]: " << bButtonStates[0] << "\n";
 	//wss << "bButtonStates[1]: " << bButtonStates[1] << "\n";
-	//wss << "Controller: " << slot << endl;
+	//wss << "Controller: " << socket << endl;
 	//wss << lAxisX << " " << lAxisY << "\n";
 	//OutputDebugString(wss.str().c_str());
 
@@ -176,19 +176,4 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	//pPreparsedData = NULL;
 	//pButtonCaps = NULL;
 	//pValueCaps = NULL;
-}
-
-
-
-
-#include "Input.h"
-void JoyData::playerAcceptedSlot() {
-
-	joystick->slot = tempSlot;
-	listener->controllerAcceptedSlot(this);
-}
-
-void JoyData::removeFromUnclaimed() {
-
-	listener->unclaimedJoystickRemoved(this);
 }

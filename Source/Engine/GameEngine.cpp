@@ -111,7 +111,7 @@ bool GameEngine::initGFXAssets() {
 bool GameEngine::initStage() {
 
 	game = make_unique<GameManager>(this);
-	if (!game->initializeGame(hwnd, device, mouse/*, joysticks*/)) {
+	if (!game->initializeGame(hwnd, device, mouse/*, joystickSlots*/)) {
 		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;
 	}
@@ -188,7 +188,7 @@ void GameEngine::run(double deltaTime) {
 
 void GameEngine::controllerRemoved(size_t controllerSlot) {
 
-	game->controllerRemoved(controllerSlot/*lostDevices*/);
+	game->controllerRemoved(controllerSlot);
 }
 
 void GameEngine::newController(HANDLE joyHandle) {

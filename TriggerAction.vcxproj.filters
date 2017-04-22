@@ -177,6 +177,9 @@
     <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp">
       <Filter>Source Files\GUIObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUIObjects\SelectionPointer.cpp">
+      <Filter>Source Files\GUIObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controls\Button.h">
@@ -309,6 +312,9 @@
       <Filter>Header Files\DXTGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\GUIObjects\PCSelectDialog.h">
+      <Filter>Header Files\GUIObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GUIObjects\SelectionPointer.h">
       <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
   </ItemGroup>

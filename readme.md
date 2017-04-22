@@ -30,3 +30,5 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- fixed major timing issues in main.cpp
 >- RectangleFrame more efficient (one draw call instead of 4)
 >- TransitionEffects changed to be more end-user friendly
+>- Dialogs broken down and refactored (Major changes!)
+>- Interface class for IElement2Ds that can be turned into a TexturePanel

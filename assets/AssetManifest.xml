@@ -24,8 +24,41 @@
 			<font name="BlackCloak" file="BlackCloak.spritefont" fontSize="32" />
 		</spritefonts>
 
-		
+
 		<spritesheet name="Menu Items" file="Menu Item Sheet.dds">
+
+			<sprite name="Katana" set="Menu Icons" x="1" y="182" width="8" height="8" />
+			<sprite name="Bow" set="Menu Icons" x="9" y="182" width="8" height="8" />
+			<sprite name="Gun" set="Menu Icons" x="17" y="182" width="8" height="8" />
+			<sprite name="Claw" set="Menu Icons" x="25" y="182" width="8" height="8" />
+			<sprite name="Sword" set="Menu Icons" x="33" y="182" width="8" height="8" />
+			<sprite name="Fist" set="Menu Icons" x="41" y="182" width="8" height="8" />
+			<sprite name="Scyth" set="Menu Icons" x="49" y="182" width="8" height="8" />
+			<sprite name="Helmet" set="Menu Icons" x="57" y="182" width="8" height="8" />
+			<sprite name="Armor" set="Menu Icons" x="65" y="182" width="8" height="8" />
+			<sprite name="Accessory" set="Menu Icons" x="53" y="182" width="8" height="8" />
+			<sprite name="Defense" set="Menu Icons" x="113" y="182" width="8" height="8" />
+
+			<!-- Unselected Menu Screen Icons -->
+			<sprite name="Characters x" set="Menu Icons" x="1" y="143" width="16" height="16" />
+			<sprite name="Items x" set="Menu Icons" x="17" y="143" width="16" height="16" />
+			<sprite name="Tech x" set="Menu Icons" x="33" y="143" width="16" height="16" />
+			<sprite name="Dunno x" set="Menu Icons" x="49" y="143" width="16" height="16" />
+			<sprite name="Switch x" set="Menu Icons" x="65" y="143" width="16" height="16" />
+			<sprite name="Save x" set="Menu Icons" x="81" y="143" width="16" height="16" />
+
+			<!-- Selected Menu Screen Icons -->
+			<sprite name="Characters o" set="Menu Icons" x="1" y="159" width="16" height="16" />
+			<sprite name="Items o" set="Menu Icons" x="17" y="159" width="16" height="16" />
+			<sprite name="Tech o" set="Menu Icons" x="33" y="159" width="16" height="16" />
+			<sprite name="Dunno o" set="Menu Icons" x="49" y="159" width="16" height="16" />
+			<sprite name="Switch o" set="Menu Icons" x="65" y="159" width="16" height="16" />
+			<sprite name="Save o" set="Menu Icons" x="81" y="159" width="16" height="16" />
+
+			<!-- Settings Menu Icons-->
+			<sprite name="Sound" set="Settings Icons" x="104" y="143" width="16" height="16" />
+
+
 			<sprite name="Cursor Hand 1" x="145" y="210" width="15" height="12">
 				<origin x="15" y="5" />
 			</sprite>
@@ -43,7 +76,7 @@
 				<sprite name="Top Left Corner" x="1" y="1" width="8" height="8" />
 				<sprite name="Top Center" x="25" y="1" width="16" height="8" />
 				<sprite name="Top Right Corner" x="57" y="1" width="8" height="8" />
-				
+
 				<sprite name="Center Left" x="1" y="25" width="8" height="16" />
 				<sprite name="Center Right" x="57" y="25" width="8" height="16" />
 

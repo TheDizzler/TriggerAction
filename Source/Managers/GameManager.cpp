@@ -15,7 +15,7 @@ GameManager::~GameManager() {
 
 #include "../Engine/GameEngine.h"
 bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr<MouseController> ms/*,
-	vector<shared_ptr<Joystick>> joysticks*/) {
+	vector<shared_ptr<Joystick>> joystickSlots*/) {
 
 	device = dvc;
 	mouse = ms;

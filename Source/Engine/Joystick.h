@@ -31,8 +31,9 @@ public:
 
 	void parseRawInput(PRAWINPUT pRawInput);
 
-	size_t slot;
-	PlayerCharacter* pc;
+	size_t socket;
+	short playerSlot = -1;
+	//PlayerCharacter* pc;
 	
 private:
 	HANDLE handle = NULL;
@@ -49,15 +50,12 @@ struct JoyData {
 	}
 	~JoyData() {
 		wostringstream wss;
-		wss << "Slot " << joystick->slot << " data deleting" << endl;
+		wss << "Slot " << joystick->socket << " data deleting" << endl;
 		OutputDebugString(wss.str().c_str());
 	}
 
-	void playerAcceptedSlot();
-	void removeFromUnclaimed();
-
 	ControllerListener* listener;
 	shared_ptr<Joystick> joystick;
-	int tempSlot;
+	
 	bool finishFlag = false;
 };

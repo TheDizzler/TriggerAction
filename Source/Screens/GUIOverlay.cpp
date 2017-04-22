@@ -6,12 +6,12 @@ const int TEST_BOX_MARGIN = 16;
 #include "../Engine/GameEngine.h"
 GUIOverlay::GUIOverlay() {
 
+
+
+
 	unique_ptr<TextLabel> textLabel;
 	textLabel.reset(guiFactory->createTextLabel(Vector2(-100, -100)));
 
-	//for (auto& dialog : hudDialogs)
-	hudDialogs[HUDDIALOG::PLAYERSTATS] = guiFactory->createDynamicDialog(guiFactory->getAssetSet("Menu BG 0"));
-	hudDialogs[HUDDIALOG::ENEMIES] = guiFactory->createDynamicDialog(guiFactory->getAssetSet("Menu BG 0"));
 
 
 
@@ -21,36 +21,57 @@ GUIOverlay::GUIOverlay() {
 	Vector2 pos, size;
 	size = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
 	pos = Vector2(Globals::WINDOW_WIDTH - size.x, TEST_BOX_MARGIN);
-	hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
-	pos = Vector2(10, TEST_BOX_MARGIN);
-	hudDialogs[HUDDIALOG::ENEMIES]->setDimensions(pos, size);
+	hudDialogs[HUDDIALOG::PLAYERSTATS] = createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+	hudDialogs[HUDDIALOG::ENEMIES] = createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+	//hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
+	pos = Vector2(TEST_BOX_MARGIN * 2, TEST_BOX_MARGIN);
+	//hudDialogs[HUDDIALOG::ENEMIES]->setDimensions(pos, size);
 
 	// should be wide enough to fit four letter word and the hand icon
 	size.x = textMeasure.x * 2 + guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
+
 	pos.y = TEST_BOX_MARGIN;
 	hudDialogs[HUDDIALOG::PLAYER1]
-		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size, "Marle");
+		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
 	pos.x += hudDialogs[HUDDIALOG::PLAYER1]->getWidth();
 
 	hudDialogs[HUDDIALOG::PLAYER2]
-		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size, "Frog");
+		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
 
 	pos.x += hudDialogs[HUDDIALOG::PLAYER2]->getWidth();
 
 	hudDialogs[HUDDIALOG::PLAYER3]
-		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size, "Frog");
+		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
 
+
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		playerSlots[i] = make_shared<PlayerSlot>(i);
+		playerSlots[i]->pairWithDialog(hudDialogs[HUDDIALOG::PLAYER1 + i].get());
+		
+	}
 
 	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
 	fpsLabel->setTint(Colors::Black);
 	fpsLabel->setScale(Vector2(.5, .5));
 	fpsLabel->setLayerDepth(1);
+
+
+	InitializeCriticalSection(&cs_waitingJoysticks);
 }
 
 GUIOverlay::~GUIOverlay() {
+
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		//playerSlots[i]->unpairSocket();
+		playerSlots[i].reset();
+	}
+	//delete playerSlots;
 	lostJoyDialogs.clear();
 	for (auto& dialog : hudDialogs)
 		dialog.reset();
+
+	DeleteCriticalSection(&cs_waitingJoysticks);
+
 }
 
 int frameCount = 0;
@@ -71,20 +92,22 @@ void GUIOverlay::update(double deltaTime, shared_ptr<MouseController> mouse) {
 		frameCount = 0;
 	}
 
-	for (const auto& joy : waitingForInput)
-		if (joy->joystick->bButtonStates[0]) {
-			//joy->slot = 0;
-			joy->finishFlag = true;
+
+	/*for (const auto& slot : playerSlots) {
+		if (slot->joystick->bButtonStates[0]) {
+
 		}
+	}*/
 
-
-		//for (const auto& dialog : hudDialogs)
-			//dialog->update(deltaTime);
-
+	/*if (waitingForInput.size() > 0) {
+		sharedResource(READ_INPUT, NULL);
+	}*/
 	for (const auto& dialog : lostJoyDialogs) {
 		dialog->update(deltaTime);
-
 	}
+
+	for (const auto& dialog : hudDialogs)
+		dialog->update(deltaTime);
 }
 
 void GUIOverlay::draw(SpriteBatch* batch) {
@@ -106,10 +129,10 @@ void GUIOverlay::setDialogText(USHORT playerSlot, wstring text) {
 }
 
 #include "../DXTKGui/StringHelper.h"
-void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
+void GUIOverlay::reportLostJoystick(size_t joystickSocket) {
 
-	displayingLostJoys.push_back(controllerSlot);
-	shared_ptr<Joystick> lostJoy = joysticks[controllerSlot];
+	displayingLostJoys.push_back(joystickSocket);
+	shared_ptr<Joystick> lostJoy = joystickSlots[joystickSocket];
 
 	unique_ptr<ControllerDialog> joyLostDialog;
 	size_t numDialogs = lostJoyDialogs.size();
@@ -135,11 +158,11 @@ void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
 	joyLostDialog = make_unique<ControllerDialog>(guiFactory.get());
 	joyLostDialog->setDimensions(dialogPos, dialogSize);
 	wostringstream title;
-	title << L"Player " << lostJoy->slot;
+	title << L"Player " << lostJoy->socket;
 	title << L"  has dropped." << endl;
 	joyLostDialog->setTitle(title.str(), Vector2(1.2, 1.2));
 	wostringstream wss;
-	wss << StringHelper::convertCharStarToWCharT(lostJoy->pc->name.c_str()) << endl;
+	//wss << StringHelper::convertCharStarToWCharT(lostJoy->pc->name.c_str()) << endl;
 	wss << L"Waiting for controller...\n";
 	joyLostDialog->setText(wss.str());
 	joyLostDialog->show();
@@ -147,67 +170,112 @@ void GUIOverlay::reportLostJoystick(size_t controllerSlot) {
 	lostJoyDialogs.push_back(move(joyLostDialog));
 }
 
-void GUIOverlay::controllerRemoved(size_t controllerSlot) {
+
+void GUIOverlay::controllerRemoved(size_t playerSlot) {
 
 	wstringstream wss;
-	wss << "controller " << controllerSlot << " removed" << endl;
+	wss << "Controller is PlayerSlot " << playerSlot << " removed" << endl;
 	OutputDebugString(wss.str().c_str());
 
-	hudDialogs[PLAYER1 + controllerSlot]->hide();
-
+	playerSlots[playerSlot]->pcDialog->hide();
+	playerSlots[playerSlot]->unpairSocket();
 }
 
 
-int GUIOverlay::controllerWaiting(JoyData* joyData) {
+void GUIOverlay::controllerTryingToPair(JoyData* joyData) {
 
-	for (int i = 0; i < 2; ++i)
-		if (!hudDialogs[PLAYER1 + i]->isOpen()) {
-			hudDialogs[PLAYER1 + i]->show();
-			hudDialogs[PLAYER1 + i]->setText(L"Push A\nto begin!");
-			waitingForInput.push_back(joyData);
-			return i;
-
-		}
-
-	return -1;
-}
-
-
-void GUIOverlay::unclaimedJoystickRemoved(JoyData* joyData) {
-
-	for (int i = 0; i < waitingForInput.size(); ++i) {
-		if (waitingForInput[i] == joyData) {
-			swap(waitingForInput[i], waitingForInput.back());
-			waitingForInput.pop_back();
+	EnterCriticalSection(&cs_waitingJoysticks);
+	OutputDebugString(L"\nEntering CS -> ");
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		if (playerSlots[i]->pairWithSocket(joyData->joystick)) {
+			playerSlots[i]->pcDialog->show();
+			playerSlots[i]->pcDialog->setText(L"Push A\nto join!");
+			playerSlots[i]->pcDialog->_threadJoystickData = joyData;
+			/*hudDialogs[PLAYER1 + i]->show();
+			hudDialogs[PLAYER1 + i]->setText(L"Push A\nto join!");*/
+			break;
 		}
 	}
-
-	controllerRemoved(joyData->tempSlot);
+	OutputDebugString(L"Exiting CS\n");
+	LeaveCriticalSection(&cs_waitingJoysticks);
 }
 
 
-void GUIOverlay::controllerAccepted(JoyData* joyData) {
 
-	for (int i = 0; i < waitingForInput.size(); ++i) {
-		if (waitingForInput[i] == joyData) {
-			swap(waitingForInput[i], waitingForInput.back());
-			waitingForInput.pop_back();
-		}
-	}
+//void GUIOverlay::unpairedJoystickRemoved(JoyData* joyData) {
+//
+//	//sharedResource(REMOVE_JOYSTICK_FROM_WAITING, joyData);
+//
+//	controllerRemoved(joyData->joystick->socket);
+//}
+
+
+
+//void GUIOverlay::sharedResource(size_t task, PVOID pvoid) {
+//
+//	EnterCriticalSection(&cs_waitingJoysticks);
+//	switch (task) {
+//		case READ_INPUT:
+//			for (const auto& joy : waitingForInput) {
+//				if (joy->joystick->bButtonStates[0]) {
+//					joy->finishFlag = true;
+//				}
+//			}
+//			break;
+//
+//		case REMOVE_JOYSTICK_FROM_WAITING:
+//			JoyData* joyData = (JoyData*) pvoid;
+//			for (int i = 0; i < waitingForInput.size(); ++i) {
+//				if (waitingForInput[i] == joyData) {
+//					swap(waitingForInput[i], waitingForInput.back());
+//					waitingForInput.pop_back();
+//				}
+//			}
+//
+//			if (!joyData->pairingKilled)
+//				guiOverlay->readyPCSelect(joyData->joystick->socket);
+//			break;
+//	}
+//	LeaveCriticalSection(&cs_waitingJoysticks);
+//}
+
+
+
+//void GUIOverlay::pairPlayerSlotWith(JoyData* joyData) {
+//
+//	sharedResource(REMOVE_JOYSTICK_FROM_WAITING, joyData);
+//
+//}
+
+
+void GUIOverlay::finalizePair(JoyData* joyData) {
+
+	readyPCSelect(playerSlots[joyData->joystick->playerSlot]);
+}
+
+
+void GUIOverlay::readyPCSelect(shared_ptr<PlayerSlot> playerSlot) {
 
 	wostringstream ws;
-	ws << L"Player " << (joyData->joystick->slot + 1);
-	guiOverlay->setDialogText(joyData->joystick->slot, ws.str());
+	ws << L"Player " << (playerSlot->slotNumber + 1);
+	playerSlot->pcDialog->setText(ws.str());
+
+	EnterCriticalSection(&cs_waitingJoysticks);
+	{
+		playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
+		if (nextAvaiablePC > numPCsAvailable - 1)
+			nextAvaiablePC = 0;
+	}
+	LeaveCriticalSection(&cs_waitingJoysticks);
 }
 
 
 unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialogImageSet,
-	const Vector2& position, const Vector2& size, const char_t* pcName, const char_t* fontName) {
+	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
 	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>();
 	dialog->initializeControl(guiFactory.get(), NULL);
 	dialog->initialize(dialogImageSet, fontName);
-	dialog->loadPC(gfxAssets->getAssetSet(pcName));
 	dialog->setDimensions(position, size);
 	dialog->texturize();
 	return move(dialog);
@@ -236,20 +304,6 @@ void ControllerDialog::update(double deltaTime) {
 
 	if (!isShowing)
 		return;
-
-	/*if (tempJoysticks.size() > 0) {
-
-		if (first) {
-			first = false;
-			dialogOpenTime = 0;
-			Dialog::setText(L"Push A to start!");
-		}
-		dialogOpenTime += deltaTime;
-		if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
-			dialogOpenTime = 0;
-
-		}
-		*/
 
 
 	dialogOpenTime += deltaTime;

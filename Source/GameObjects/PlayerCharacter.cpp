@@ -4,7 +4,7 @@
 
 PlayerCharacter::PlayerCharacter(shared_ptr<Joystick> joy) {
 	joystick = joy;
-	joystick->pc = this;
+	//joystick->pc = this;
 }
 
 PlayerCharacter::~PlayerCharacter() {

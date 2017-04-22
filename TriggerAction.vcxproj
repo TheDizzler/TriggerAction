@@ -154,7 +154,9 @@
     <None Include="assets\maps\Test Square B.tmx">
       <SubType>Designer</SubType>
     </None>
-    <None Include="assets\maps\Test Square C.tmx" />
+    <None Include="assets\maps\Test Square C.tmx">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="assets\maps\Test Square.tmx">
       <SubType>Designer</SubType>
     </None>
@@ -194,6 +196,7 @@
     <ClCompile Include="Source\GameObjects\Tangible.cpp" />
     <ClCompile Include="Source\GameObjects\Tile.cpp" />
     <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp" />
+    <ClCompile Include="Source\GUIObjects\SelectionPointer.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
     <ClCompile Include="Source\Managers\MapManager.cpp" />
@@ -240,6 +243,7 @@
     <ClInclude Include="Source\GameObjects\Tile.h" />
     <ClInclude Include="Source\globals.h" />
     <ClInclude Include="Source\GUIObjects\PCSelectDialog.h" />
+    <ClInclude Include="Source\GUIObjects\SelectionPointer.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
     <ClInclude Include="Source\Managers\MapManager.h" />

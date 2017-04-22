@@ -23,7 +23,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	
+
 
 	noControllerDialog = make_unique<ControllerDialog>(guiFactory.get());
 	noControllerDialog->setDimensions(dialogPos, dialogSize);
@@ -31,7 +31,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	noControllerDialog->setText(L"Waiting for controller");
 
 	bool noJoys = true;
-	for (const auto& joy : joysticks) {
+	for (const auto& joy : joystickSlots) {
 		if (joy->getHandle()) {
 			noJoys = false;
 			break;
@@ -53,7 +53,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 
 	Vector2 pos = Vector2::Zero;
 	for (int i = 0; i < 300; ++i) {
-		
+
 
 	}
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
@@ -100,21 +100,6 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 	if (noControllerDialog->isOpen()) {
 		noControllerDialog->update(deltaTime);
 
-		//for (int i = 0; i < tempJoysticks.size(); ++i) {
-		//	if (tempJoysticks[i]->bButtonStates[0]) {
-		//		game->controllerAccepted(tempJoysticks[i]->getHandle());
-		//		swap(tempJoysticks[i], tempJoysticks.back());
-		//		tempJoysticks.pop_back();
-		//		break;
-		//	}
-		//}
-
-		//for (const auto& joy : joysticks) {
-		//	if (joy->getHandle()) {
-		//		noControllerDialog->close();
-		//		break;
-		//	}
-		//}
 	} else
 		quitButton->update(deltaTime);
 }
@@ -126,9 +111,6 @@ void TitleScreen::draw(SpriteBatch * batch) {
 	pendulum->draw(batch);
 
 	noControllerDialog->draw(batch);
-
-	/*for (const auto& frame : frames)
-		frame->draw(batch);*/
 }
 
 void TitleScreen::pause() {
@@ -138,7 +120,7 @@ void TitleScreen::pause() {
 void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
 	bool noJoys = true;
-	for (const auto& joy : joysticks) {
+	for (const auto& joy : joystickSlots) {
 		if (joy->getHandle()) {
 			noJoys = false;
 			break;
@@ -151,6 +133,7 @@ void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
 void TitleScreen::newController(HANDLE joyHandle) {
 
-	noControllerDialog->hide();
+	if (joyHandle)
+		noControllerDialog->hide();
 
 }

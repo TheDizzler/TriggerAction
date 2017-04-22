@@ -547,7 +547,6 @@ GraphicsAsset* GUIFactory::createTextureFromIElement2D(
 	//Vector2 oldSize = Vector2(control->getWidth(), control->getHeight());
 	control->setPosition(Vector2(0, 0));
 
-	//float rgba[4] = {0 , 0 ,0 , 0};
 	deviceContext->ClearRenderTargetView(textureRenderTargetView.Get(), bgColor);
 
 

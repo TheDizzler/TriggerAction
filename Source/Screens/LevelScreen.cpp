@@ -12,12 +12,12 @@ LevelScreen::~LevelScreen() {
 #include "../Engine/GameEngine.h"
 bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
-	//for (int i = 0; i < joysticks; ++i) {
+	//for (int i = 0; i < joystickSlots; ++i) {
 	int i = 0;
-	for (const auto& joystick : joysticks) {
+	for (const auto& joystick : joystickSlots) {
 		if (!joystick->getHandle())
 			continue;
-		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(joysticks[i]);
+		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(joystickSlots[i]);
 		const CharacterData* dataSet = gfxAssets->getPlayerData(characters[i]);
 		if (!dataSet)
 			return false;
