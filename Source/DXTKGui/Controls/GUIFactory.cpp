@@ -14,9 +14,11 @@ GUIFactory::GUIFactory(HWND h, pugi::xml_node guiAssets) {
 }
 
 GUIFactory::~GUIFactory() {
+	mouseController.reset();
 	assetMap.clear();
 	fontMap.clear();
 	animationMap.clear();
+	setMap.clear();
 }
 
 HWND GUIFactory::getHWND() {

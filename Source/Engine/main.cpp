@@ -21,8 +21,6 @@ HDEVNOTIFY newInterface = NULL;
 double countsPerSecond = 0.0;
 __int64 counterStart = 0;
 
-//int frameCount = 0;
-//float framesPerSecond = 0;
 double frameTime = 0;
 
 int registerControllers();

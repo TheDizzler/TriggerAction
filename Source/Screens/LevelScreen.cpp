@@ -14,10 +14,13 @@ bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 
 	//for (int i = 0; i < joystickSlots; ++i) {
 	int i = 0;
-	for (const auto& joystick : joystickSlots) {
-		if (!joystick->getHandle())
+	//for (const auto& joystick : joystickPorts) {
+		//if (!joystick->getHandle())
+			//continue;
+	for (const auto& slot : playerSlots) {
+		if (!slot->hasJoystick())
 			continue;
-		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(joystickSlots[i]);
+		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(slot);
 		const CharacterData* dataSet = gfxAssets->getPlayerData(characters[i]);
 		if (!dataSet)
 			return false;
@@ -47,7 +50,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 }
 
 
-void LevelScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
+void LevelScreen::update(double deltaTime) {
 
 	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();

@@ -200,6 +200,7 @@
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
     <ClCompile Include="Source\Managers\MapManager.cpp" />
+    <ClCompile Include="Source\Managers\PlayerSlot.cpp" />
     <ClCompile Include="Source\pch.cpp" />
     <ClCompile Include="Source\Screens\GUIOverlay.cpp" />
     <ClCompile Include="Source\Screens\LevelScreen.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
     <ClInclude Include="Source\Managers\MapManager.h" />
+    <ClInclude Include="Source\Managers\PlayerSlot.h" />
     <ClInclude Include="Source\pch.h" />
     <ClInclude Include="Source\Screens\GUIOverlay.h" />
     <ClInclude Include="Source\Screens\LevelScreen.h" />

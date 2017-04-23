@@ -7,12 +7,8 @@ const int TEST_BOX_MARGIN = 16;
 GUIOverlay::GUIOverlay() {
 
 
-
-
 	unique_ptr<TextLabel> textLabel;
 	textLabel.reset(guiFactory->createTextLabel(Vector2(-100, -100)));
-
-
 
 
 	Vector2 textMeasure = textLabel->measureString(L"TECH");
@@ -45,7 +41,6 @@ GUIOverlay::GUIOverlay() {
 
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		playerSlots[i] = make_shared<PlayerSlot>(i);
 		playerSlots[i]->pairWithDialog(hudDialogs[HUDDIALOG::PLAYER1 + i].get());
 		
 	}
@@ -55,29 +50,31 @@ GUIOverlay::GUIOverlay() {
 	fpsLabel->setScale(Vector2(.5, .5));
 	fpsLabel->setLayerDepth(1);
 
+	fps2Label.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 60)));
+	fps2Label->setTint(Colors::Black);
+	fps2Label->setScale(Vector2(.5, .5));
+	fps2Label->setLayerDepth(1);
 
-	InitializeCriticalSection(&cs_waitingJoysticks);
+	InitializeCriticalSection(&cs_selectingPC);
 }
+
 
 GUIOverlay::~GUIOverlay() {
 
-	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		//playerSlots[i]->unpairSocket();
-		playerSlots[i].reset();
-	}
-	//delete playerSlots;
+	
 	lostJoyDialogs.clear();
 	for (auto& dialog : hudDialogs)
 		dialog.reset();
 
-	DeleteCriticalSection(&cs_waitingJoysticks);
+	DeleteCriticalSection(&cs_selectingPC);
 
 }
+
 
 int frameCount = 0;
 double fpsUpdateTime = 5;
 const double FPS_UPDATE_TIME = 1;
-void GUIOverlay::update(double deltaTime, shared_ptr<MouseController> mouse) {
+void GUIOverlay::update(double deltaTime) {
 
 	fpsUpdateTime += deltaTime;
 	++frameCount;
@@ -120,6 +117,7 @@ void GUIOverlay::draw(SpriteBatch* batch) {
 
 
 	fpsLabel->draw(batch);
+	fps2Label->draw(batch);
 }
 
 void GUIOverlay::setDialogText(USHORT playerSlot, wstring text) {
@@ -129,144 +127,62 @@ void GUIOverlay::setDialogText(USHORT playerSlot, wstring text) {
 }
 
 #include "../DXTKGui/StringHelper.h"
-void GUIOverlay::reportLostJoystick(size_t joystickSocket) {
+void GUIOverlay::reportLostJoystick(size_t playerSlot) {
 
-	displayingLostJoys.push_back(joystickSocket);
-	shared_ptr<Joystick> lostJoy = joystickSlots[joystickSocket];
+	//displayingLostJoys.push_back(joystickSocket);
+	//shared_ptr<Joystick> lostJoy = joystickPorts[joystickSocket];
 
-	unique_ptr<ControllerDialog> joyLostDialog;
-	size_t numDialogs = lostJoyDialogs.size();
-	Vector2 dialogPos, dialogSize;
-	if (numDialogs <= 0)
-		dialogSize = Vector2(Globals::WINDOW_WIDTH / 4, Globals::WINDOW_HEIGHT / 4);
-	else
-		dialogSize = Vector2(lostJoyDialogs[0]->getWidth(), lostJoyDialogs[0]->getHeight());
-
-
-	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
-	dialogPos.y -= dialogSize.y / 2;
-
-	if (numDialogs <= 0) {
-		dialogPos.x -= dialogSize.x / 2;
-	} else {
-		for (const auto& dialog : lostJoyDialogs)
-			dialog->moveBy(Vector2(-dialogSize.x / 2, 0));
-		dialogPos.x += (dialogSize.x / 2) * (numDialogs - 1);
-	}
+	//unique_ptr<ControllerDialog> joyLostDialog;
+	//size_t numDialogs = lostJoyDialogs.size();
+	//Vector2 dialogPos, dialogSize;
+	//if (numDialogs <= 0)
+	//	dialogSize = Vector2(Globals::WINDOW_WIDTH / 4, Globals::WINDOW_HEIGHT / 4);
+	//else
+	//	dialogSize = Vector2(lostJoyDialogs[0]->getWidth(), lostJoyDialogs[0]->getHeight());
 
 
-	joyLostDialog = make_unique<ControllerDialog>(guiFactory.get());
-	joyLostDialog->setDimensions(dialogPos, dialogSize);
-	wostringstream title;
-	title << L"Player " << lostJoy->socket;
-	title << L"  has dropped." << endl;
-	joyLostDialog->setTitle(title.str(), Vector2(1.2, 1.2));
-	wostringstream wss;
-	//wss << StringHelper::convertCharStarToWCharT(lostJoy->pc->name.c_str()) << endl;
-	wss << L"Waiting for controller...\n";
-	joyLostDialog->setText(wss.str());
-	joyLostDialog->show();
+	//dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
+	//dialogPos.y -= dialogSize.y / 2;
 
-	lostJoyDialogs.push_back(move(joyLostDialog));
+	//if (numDialogs <= 0) {
+	//	dialogPos.x -= dialogSize.x / 2;
+	//} else {
+	//	for (const auto& dialog : lostJoyDialogs)
+	//		dialog->moveBy(Vector2(-dialogSize.x / 2, 0));
+	//	dialogPos.x += (dialogSize.x / 2) * (numDialogs - 1);
+	//}
+
+
+	//joyLostDialog = make_unique<ControllerDialog>(guiFactory.get());
+	//joyLostDialog->setDimensions(dialogPos, dialogSize);
+	//wostringstream title;
+	//title << L"Player " << lostJoy->socket;
+	//title << L"  has dropped." << endl;
+	//joyLostDialog->setTitle(title.str(), Vector2(1.2, 1.2));
+	//wostringstream wss;
+	////wss << StringHelper::convertCharStarToWCharT(lostJoy->pc->name.c_str()) << endl;
+	//wss << L"Waiting for controller...\n";
+	//joyLostDialog->setText(wss.str());
+	//joyLostDialog->show();
+
+	//lostJoyDialogs.push_back(move(joyLostDialog));
 }
 
-
-void GUIOverlay::controllerRemoved(size_t playerSlot) {
-
-	wstringstream wss;
-	wss << "Controller is PlayerSlot " << playerSlot << " removed" << endl;
-	OutputDebugString(wss.str().c_str());
-
-	playerSlots[playerSlot]->pcDialog->hide();
-	playerSlots[playerSlot]->unpairSocket();
-}
-
-
-void GUIOverlay::controllerTryingToPair(JoyData* joyData) {
-
-	EnterCriticalSection(&cs_waitingJoysticks);
-	OutputDebugString(L"\nEntering CS -> ");
-	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		if (playerSlots[i]->pairWithSocket(joyData->joystick)) {
-			playerSlots[i]->pcDialog->show();
-			playerSlots[i]->pcDialog->setText(L"Push A\nto join!");
-			playerSlots[i]->pcDialog->_threadJoystickData = joyData;
-			/*hudDialogs[PLAYER1 + i]->show();
-			hudDialogs[PLAYER1 + i]->setText(L"Push A\nto join!");*/
-			break;
-		}
-	}
-	OutputDebugString(L"Exiting CS\n");
-	LeaveCriticalSection(&cs_waitingJoysticks);
-}
-
-
-
-//void GUIOverlay::unpairedJoystickRemoved(JoyData* joyData) {
-//
-//	//sharedResource(REMOVE_JOYSTICK_FROM_WAITING, joyData);
-//
-//	controllerRemoved(joyData->joystick->socket);
-//}
-
-
-
-//void GUIOverlay::sharedResource(size_t task, PVOID pvoid) {
-//
-//	EnterCriticalSection(&cs_waitingJoysticks);
-//	switch (task) {
-//		case READ_INPUT:
-//			for (const auto& joy : waitingForInput) {
-//				if (joy->joystick->bButtonStates[0]) {
-//					joy->finishFlag = true;
-//				}
-//			}
-//			break;
-//
-//		case REMOVE_JOYSTICK_FROM_WAITING:
-//			JoyData* joyData = (JoyData*) pvoid;
-//			for (int i = 0; i < waitingForInput.size(); ++i) {
-//				if (waitingForInput[i] == joyData) {
-//					swap(waitingForInput[i], waitingForInput.back());
-//					waitingForInput.pop_back();
-//				}
-//			}
-//
-//			if (!joyData->pairingKilled)
-//				guiOverlay->readyPCSelect(joyData->joystick->socket);
-//			break;
-//	}
-//	LeaveCriticalSection(&cs_waitingJoysticks);
-//}
-
-
-
-//void GUIOverlay::pairPlayerSlotWith(JoyData* joyData) {
-//
-//	sharedResource(REMOVE_JOYSTICK_FROM_WAITING, joyData);
-//
-//}
-
-
-void GUIOverlay::finalizePair(JoyData* joyData) {
-
-	readyPCSelect(playerSlots[joyData->joystick->playerSlot]);
-}
 
 
 void GUIOverlay::readyPCSelect(shared_ptr<PlayerSlot> playerSlot) {
 
 	wostringstream ws;
-	ws << L"Player " << (playerSlot->slotNumber + 1);
-	playerSlot->pcDialog->setText(ws.str());
+	ws << L"Player " << (playerSlot->getPlayerSlotNumber() + 1);
+	playerSlot->setDialogText(ws.str());
 
-	EnterCriticalSection(&cs_waitingJoysticks);
+	EnterCriticalSection(&cs_selectingPC);
 	{
 		playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
 		if (nextAvaiablePC > numPCsAvailable - 1)
 			nextAvaiablePC = 0;
 	}
-	LeaveCriticalSection(&cs_waitingJoysticks);
+	LeaveCriticalSection(&cs_selectingPC);
 }
 
 

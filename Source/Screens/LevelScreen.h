@@ -22,7 +22,7 @@ public:
 
 	void loadMap(unique_ptr<Map> map);
 
-	virtual void update(double deltaTime, shared_ptr<MouseController> mouse) override;
+	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 	virtual void pause() override;

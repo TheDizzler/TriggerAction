@@ -2,9 +2,9 @@
 #include "PlayerCharacter.h"
 
 
-PlayerCharacter::PlayerCharacter(shared_ptr<Joystick> joy) {
-	joystick = joy;
-	//joystick->pc = this;
+PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
+	playerSlot = slot;
+	joystick = playerSlot->getStick();
 }
 
 PlayerCharacter::~PlayerCharacter() {
@@ -21,8 +21,6 @@ void PlayerCharacter::initialize(const CharacterData* characterData, int startin
 	
 	loadAnimation("stand right");
 	origin = Vector2(0, getHeight());
-	
-
 }
 
 void PlayerCharacter::setInitialPosition() {

@@ -12,6 +12,9 @@ public:
 
 	void reset();
 
+	virtual void pairPlayerSlot(PlayerSlot* playerSlot);
+
+
 	void loadPC(shared_ptr<AssetSet> pcAssets);
 	virtual void setDimensions(const Vector2& position, const Vector2& size) override;
 
@@ -23,12 +26,13 @@ public:
 
 	virtual void hide() override;
 
-	//shared_ptr<Joystick> connectedJoystick;
-	PlayerSlot*  playerSlot;
-	PlayerCharacter* pcSelected;
 
-	JoyData* _threadJoystickData;
+	PlayerCharacter* pcSelected;
+	/* For temporary initialization purposes only! Do not use! */
+	//JoyData* _threadJoystickData;
 private:
+
+	PlayerSlot*  playerSlot;
 
 	unique_ptr<Sprite> portrait;
 	unique_ptr<Sprite> magicKanji;

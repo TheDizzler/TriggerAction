@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../Managers/GFXAssetManager.h"
-#include "../Engine/Joystick.h"
+//#include "../Engine/Joystick.h"
+#include "../Managers/PlayerSlot.h"
 #include "Tangible.h"
 
 
@@ -11,7 +12,7 @@ enum Facing {
 
 class PlayerCharacter : public Tangible {
 public:
-	PlayerCharacter(shared_ptr<Joystick> joystick);
+	PlayerCharacter(shared_ptr<PlayerSlot> joystick);
 	~PlayerCharacter();
 
 	virtual void initialize(const CharacterData* characterData, int startingPosition);
@@ -31,8 +32,8 @@ public:
 	size_t playerNumber = -1;
 private:
 
-	shared_ptr<Joystick> joystick;
-
+	shared_ptr<PlayerSlot> playerSlot;
+	Joystick* joystick;
 	shared_ptr<AssetSet> assetSet;
 	shared_ptr<Animation> currentAnimation;
 

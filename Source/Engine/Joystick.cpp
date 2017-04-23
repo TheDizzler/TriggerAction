@@ -1,6 +1,32 @@
 #include "../pch.h"
 #include "Joystick.h"
 
+
+double hz = 0.0;
+__int64 startTime = 0;
+__int64 lastFrameStart = 0;
+int frames = 0;
+void start() {
+
+	LARGE_INTEGER frequencyCount;
+	/*QueryPerformanceFrequency(&frequencyCount);
+
+	countsPerSecond = double(frequencyCount.QuadPart);*/
+
+	QueryPerformanceCounter(&frequencyCount);
+	startTime = frequencyCount.QuadPart;
+	lastFrameStart = frequencyCount.QuadPart;
+}
+
+double getTimeSinceStart() {
+
+	LARGE_INTEGER currentTime;
+	QueryPerformanceCounter(&currentTime);
+	return double(currentTime.QuadPart - startTime) / hz;
+}
+
+
+
 Joystick::Joystick(/*HANDLE hndl, */size_t controllerSlot) {
 
 	//handle = hndl;
@@ -15,11 +41,17 @@ Joystick::~Joystick() {
 #include "../Managers/GameManager.h"
 void Joystick::registerNewHandle(HANDLE hndl) {
 	handle = hndl;
+
+	LARGE_INTEGER frequencyCount;
+	QueryPerformanceFrequency(&frequencyCount);
+	hz = double(frequencyCount.QuadPart);
+	start();
 }
 
 HANDLE Joystick::getHandle() {
 	return handle;
 }
+
 
 void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 
@@ -176,4 +208,17 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	//pPreparsedData = NULL;
 	//pButtonCaps = NULL;
 	//pValueCaps = NULL;
+
+	/*double fpsUpdateTime = getTimeSinceStart();
+	++frames;
+	if (fpsUpdateTime > 1.0f) {
+		
+		wostringstream wss;
+		wss << "Joystick: " << endl;
+		wss << "frameCount: " << frames << " fpsUpdateTime: " << fpsUpdateTime << endl;
+		wss << "fps: " << frames / fpsUpdateTime;
+		guiOverlay->fps2Label->setText(wss);
+		frames = 0;
+		start();
+	}*/
 }

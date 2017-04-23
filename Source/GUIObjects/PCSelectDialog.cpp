@@ -16,6 +16,13 @@ void PCSelectDialog::reset() {
 	playerReady = false;
 }
 
+
+void PCSelectDialog::pairPlayerSlot(PlayerSlot* slot) {
+
+	playerSlot = slot;
+}
+
+
 void PCSelectDialog::loadPC(shared_ptr<AssetSet> pcAssets) {
 
 	pointer->load(guiFactory->getAsset("Cursor Hand 2"));
@@ -57,13 +64,16 @@ void PCSelectDialog::update(double deltaTime) {
 	if (!isShowing)
 		return;
 
-	if (!playerReady) {
-		if (playerSlot->joystick->bButtonStates[0]) {
-			_threadJoystickData->finishFlag = true;
+	//if (!playerReady) {
+	//	if (playerSlot->joystick->bButtonStates[0]) {
+	//		_threadJoystickData->finishFlag = true;
 
-			//playerReady = true;
-		}
-	}
+	//		//playerReady = true;
+	//	}
+	//}
+
+
+
 	pointer->update(deltaTime);
 
 }

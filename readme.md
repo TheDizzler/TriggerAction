@@ -32,3 +32,4 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- TransitionEffects changed to be more end-user friendly
 >- Dialogs broken down and refactored (Major changes!)
 >- Interface class for IElement2Ds that can be turned into a TexturePanel
+>- changed Screen update() to no longer take a mousecontroller as a param

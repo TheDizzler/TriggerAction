@@ -31,8 +31,8 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	noControllerDialog->setText(L"Waiting for controller");
 
 	bool noJoys = true;
-	for (const auto& joy : joystickSlots) {
-		if (joy->getHandle()) {
+	for (const auto& slot : playerSlots) {
+		if (slot->hasJoystick()) {
 			noJoys = false;
 			break;
 		}
@@ -71,7 +71,8 @@ double g = GRAVITY;
 float angularAcceleration = 0;
 float damping = .99989;
 bool doneSwinging = false;
-void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
+void TitleScreen::update(double deltaTime) {
+
 
 	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
@@ -100,17 +101,24 @@ void TitleScreen::update(double deltaTime, shared_ptr<MouseController> mouse) {
 	if (noControllerDialog->isOpen()) {
 		noControllerDialog->update(deltaTime);
 
-	} else
+	} else {
 		quitButton->update(deltaTime);
+
+		for (const auto& slot : playerSlots) {
+
+
+		}
+
+	}
 }
 
 
 void TitleScreen::draw(SpriteBatch * batch) {
 
 	quitButton->draw(batch);
-	pendulum->draw(batch);
+		pendulum->draw(batch);
 
-	noControllerDialog->draw(batch);
+		noControllerDialog->draw(batch);
 }
 
 void TitleScreen::pause() {
@@ -119,14 +127,15 @@ void TitleScreen::pause() {
 
 void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
-	bool noJoys = true;
-	for (const auto& joy : joystickSlots) {
-		if (joy->getHandle()) {
-			noJoys = false;
-			break;
+	//bool noJoys = true;
+	for (const auto& slot : playerSlots) {
+		if (slot->hasJoystick()) {
+			return;
+			//noJoys = false;
+			//break;
 		}
 	}
-	if (noJoys)
+	//if (noJoys)
 		noControllerDialog->show();
 }
 

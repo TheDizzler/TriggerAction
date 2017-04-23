@@ -1,6 +1,6 @@
 #pragma once
 #include "../DXTKGui/BaseGraphics/screen.h"
-#include "../Engine/Joystick.h"
+//#include "../Engine/Joystick.h"
 #include "GUIOverlay.h"
 
 
@@ -13,7 +13,7 @@ public:
 	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
 	virtual void setGameManager(GameManager* game) override;
 
-	virtual void update(double deltaTime, shared_ptr<MouseController> mouse) override;
+	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch * batch) override;
 
 	virtual void pause() override;

@@ -1,10 +1,10 @@
 #include "../pch.h"
 #include "Input.h"
 
-shared_ptr<Joystick> joystickSlots[3];
-//vector<shared_ptr<Joystick>> tempJoysticks;
+unique_ptr<PlayerSlotManager> slotManager;
 
 bool endAllThreadsNow = false;
+
 
 Input::Input() {
 
@@ -33,10 +33,11 @@ bool Input::initRawInput(HWND hwnd) {
 ControllerListener::ControllerListener() {
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		joystickSlots[i] = make_shared<Joystick>(i);
+		joystickPorts[i] = make_shared<Joystick>(i);
 		availableControllerSockets.push_back(i);
 	}
 
+	slotManager = make_unique<PlayerSlotManager>();
 
 	InitializeCriticalSection(&cs_availableControllerSockets);
 }
@@ -44,8 +45,8 @@ ControllerListener::ControllerListener() {
 ControllerListener::~ControllerListener() {
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
-		joystickSlots[i].reset();
-	//delete joystickSlots;
+		joystickPorts[i].reset();
+	
 
 	endAllThreadsNow = true;
 	joystickMap.clear();
@@ -85,7 +86,8 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 				OutputDebugString(L"Joystick removed\n");
 
-				guiOverlay->controllerRemoved(foundJoy->playerSlot);
+				//guiOverlay->controllerRemoved(foundJoy->playerSlot);
+				slotManager->controllerRemoved(foundJoy->playerSlot);
 				controllerRemoved(foundJoy->socket);
 
 			}
@@ -111,7 +113,7 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 				}
 
 
-				shared_ptr<Joystick> newJoy = joystickSlots[getNextAvailableControllerSocket()];
+				shared_ptr<Joystick> newJoy = joystickPorts[getNextAvailableControllerSocket()];
 				newJoy->registerNewHandle(newHandle);
 
 				joystickMap[newHandle] = newJoy;
@@ -125,7 +127,7 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 			} else {
 
 				// Controllers connected at launch
-				shared_ptr<Joystick> newStick = joystickSlots[getNextAvailableControllerSocket()];
+				shared_ptr<Joystick> newStick = joystickPorts[getNextAvailableControllerSocket()];
 				newStick->registerNewHandle(newHandle);
 				joystickMap[newHandle] = newStick;
 
@@ -208,7 +210,8 @@ void ControllerListener::unpairedJoystickRemoved(JoyData* joyData) {
 
 
 void ControllerListener::playerAcceptedSlot(JoyData* joyData) {
-	guiOverlay->finalizePair(joyData);
+	slotManager->finalizePair(joyData);
+	newController(joyData->joystick->getHandle());
 }
 
 
@@ -216,7 +219,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 
 	JoyData* joyData = (JoyData*) pVoid;
 
-	guiOverlay->controllerTryingToPair(joyData);
+	slotManager->controllerTryingToPair(joyData);
 	while (!joyData->finishFlag) {
 		// thread is now waiting for the player to confirm their Player Slot
 		if (endAllThreadsNow) {
@@ -234,9 +237,6 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 		Sleep(500);
 	}
 
-	/*if (joyData->joystick->playerSlot == -1) {
-		joyData->listener->unpairedJoystickRemoved(joyData); 
-	} else*/
 	joyData->listener->playerAcceptedSlot(joyData);
 
 	delete joyData;
@@ -244,7 +244,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 
 }
 
-
+/** PlayerSlots need to pair with HUD dialog boxes. */
 DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 
 	JoyData* joyData = (JoyData*) pVoid;
@@ -263,7 +263,7 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 	}
 
 
-	guiOverlay->controllerTryingToPair(joyData);
+	slotManager->controllerTryingToPair(joyData);
 	switch (joyData->joystick->playerSlot) {
 		case -1:
 			// Too many players? Shouldn't come up?

@@ -116,12 +116,12 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 }
 
 
-void GameManager::update(double deltaTime, shared_ptr<MouseController> mouse) {
+void GameManager::update(double deltaTime) {
 
 	auto state = Keyboard::Get().GetState();
 	keyTracker.Update(state);
 
-	currentScreen->update(deltaTime, mouse);
+	currentScreen->update(deltaTime);
 
 }
 

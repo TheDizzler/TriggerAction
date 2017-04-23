@@ -3,12 +3,14 @@
 
 #include <Keyboard.h>
 
-#include "../globals.h"
-#include "../DXTKGui/Controllers/MouseController.h"
-#include "Joystick.h"
 
-extern shared_ptr<Joystick> joystickSlots[MAX_PLAYERS];
-//extern vector<shared_ptr<Joystick>> tempJoysticks;
+#include "../DXTKGui/Controllers/MouseController.h"
+//#include "Joystick.h"
+#include "../Managers/PlayerSlot.h"
+
+extern unique_ptr<PlayerSlotManager> slotManager;
+
+
 
 DWORD WINAPI waitForHUDThread(PVOID pVoid);
 DWORD WINAPI waitForPlayerThread(PVOID pVoid);
@@ -33,7 +35,8 @@ public:
 
 	bool matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle);
 
-
+	/** This is a virtual representation of physical controller ports. */
+	shared_ptr<Joystick> joystickPorts[MAX_PLAYERS];
 protected:
 	bool gameInitialized = false;
 	map<HANDLE, shared_ptr<Joystick>> joystickMap;
@@ -52,6 +55,8 @@ protected:
 	USHORT sharedResource(size_t task);
 
 	CRITICAL_SECTION cs_availableControllerSockets;
+
+	
 };
 
 
@@ -71,5 +76,3 @@ protected:
 
 
 };
-
-

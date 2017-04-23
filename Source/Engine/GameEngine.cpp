@@ -216,9 +216,9 @@ void GameEngine::update(double deltaTime) {
 		} else if (keyTracker.IsKeyPressed(Keyboard::Escape))
 			game->confirmExit();
 	} else
-		game->update(deltaTime, mouse);
+		game->update(deltaTime);
 
-	guiOverlay->update(deltaTime, mouse);
+	guiOverlay->update(deltaTime);
 }
 
 

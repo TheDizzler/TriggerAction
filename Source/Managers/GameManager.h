@@ -26,7 +26,7 @@ public:
 		vector<shared_ptr<Joystick>> joystickSlots*/);
 
 
-	void update(double deltaTime, shared_ptr<MouseController> mouse);
+	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
 
 	void startGame();
