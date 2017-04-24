@@ -30,7 +30,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	noControllerDialog->setLayerDepth(1);
 	noControllerDialog->setText(L"Waiting for controller");
 
-	bool noJoys = true;
+	/*bool noJoys = true;
 	for (const auto& slot : playerSlots) {
 		if (slot->hasJoystick()) {
 			noJoys = false;
@@ -38,6 +38,9 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 		}
 	}
 	if (noJoys)
+		noControllerDialog->show();*/
+
+	if (activeSlots.size() == 0)
 		noControllerDialog->show();
 
 	pendulum = gfxAssets->getSpriteFromAsset("Pendulum");
@@ -104,11 +107,11 @@ void TitleScreen::update(double deltaTime) {
 	} else {
 		quitButton->update(deltaTime);
 
-		for (const auto& slot : playerSlots) {
-
-
+		for (const auto& slot : activeSlots) {
+			slot->characterSelect(deltaTime);
 		}
 
+		slotManager->waiting();
 	}
 }
 
@@ -116,9 +119,9 @@ void TitleScreen::update(double deltaTime) {
 void TitleScreen::draw(SpriteBatch * batch) {
 
 	quitButton->draw(batch);
-		pendulum->draw(batch);
+	pendulum->draw(batch);
 
-		noControllerDialog->draw(batch);
+	noControllerDialog->draw(batch);
 }
 
 void TitleScreen::pause() {
@@ -127,15 +130,14 @@ void TitleScreen::pause() {
 
 void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
-	//bool noJoys = true;
-	for (const auto& slot : playerSlots) {
+	/*for (const auto& slot : playerSlots) {
 		if (slot->hasJoystick()) {
 			return;
-			//noJoys = false;
-			//break;
 		}
 	}
-	//if (noJoys)
+	noControllerDialog->show();*/
+
+	if (activeSlots.size() == 0)
 		noControllerDialog->show();
 }
 

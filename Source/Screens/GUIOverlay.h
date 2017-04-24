@@ -15,21 +15,18 @@ public:
 	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
 
-	void setDialogText(USHORT playerSlot, wstring text);
+	void setDialogText(USHORT playerSlotNumber, wstring text);
 
-	void reportLostJoystick(size_t playerSlot);
-	/*void controllerRemoved(size_t playerSlot);
-	void controllerTryingToPair(JoyData* joyData);
-	void finalizePair(JoyData* joyData);*/
+	void reportLostJoystick(size_t playerSlotNumber);
 
-	void readyPCSelect(shared_ptr<PlayerSlot> playerSlot);
 
-	unique_ptr<TextLabel> fps2Label;
+	//void readyPCSelect(shared_ptr<PlayerSlot> playerSlot);
+
+	//unique_ptr<TextLabel> fps2Label;
 private:
 
-	int numPCsAvailable = 2;
-	const char_t* pcs[2] = {"Marle", "Frog"};
-	size_t nextAvaiablePC = 0;
+	/*int numPCsAvailable = 2;
+	size_t nextAvaiablePC = 0;*/
 
 	/** The order of these is important!! */
 	enum HUDDIALOG {
@@ -41,7 +38,7 @@ private:
 	
 
 
-	CRITICAL_SECTION cs_selectingPC;
+	//CRITICAL_SECTION cs_selectingPC;
 	////vector<JoyData*> waitingForInput;
 
 	vector<unique_ptr<Dialog>> lostJoyDialogs;

@@ -41,8 +41,8 @@ GUIOverlay::GUIOverlay() {
 
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		playerSlots[i]->pairWithDialog(hudDialogs[HUDDIALOG::PLAYER1 + i].get());
-		
+		slotManager->playerSlots[i]->pairWithDialog(hudDialogs[HUDDIALOG::PLAYER1 + i].get());
+
 	}
 
 	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
@@ -50,23 +50,23 @@ GUIOverlay::GUIOverlay() {
 	fpsLabel->setScale(Vector2(.5, .5));
 	fpsLabel->setLayerDepth(1);
 
-	fps2Label.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 60)));
-	fps2Label->setTint(Colors::Black);
-	fps2Label->setScale(Vector2(.5, .5));
-	fps2Label->setLayerDepth(1);
+	//fps2Label.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 60)));
+	//fps2Label->setTint(Colors::Black);
+	//fps2Label->setScale(Vector2(.5, .5));
+	//fps2Label->setLayerDepth(1);
 
-	InitializeCriticalSection(&cs_selectingPC);
+	//InitializeCriticalSection(&cs_selectingPC);
 }
 
 
 GUIOverlay::~GUIOverlay() {
 
-	
+
 	lostJoyDialogs.clear();
 	for (auto& dialog : hudDialogs)
 		dialog.reset();
 
-	DeleteCriticalSection(&cs_selectingPC);
+	//DeleteCriticalSection(&cs_selectingPC);
 
 }
 
@@ -117,17 +117,17 @@ void GUIOverlay::draw(SpriteBatch* batch) {
 
 
 	fpsLabel->draw(batch);
-	fps2Label->draw(batch);
+	//fps2Label->draw(batch);
 }
 
-void GUIOverlay::setDialogText(USHORT playerSlot, wstring text) {
+void GUIOverlay::setDialogText(USHORT playerSlotNumber, wstring text) {
 
-	hudDialogs[PLAYER1 + playerSlot]->setText(text);
-	hudDialogs[PLAYER1 + playerSlot]->show();
+	hudDialogs[PLAYER1 + playerSlotNumber]->setText(text);
+	hudDialogs[PLAYER1 + playerSlotNumber]->show();
 }
 
 #include "../DXTKGui/StringHelper.h"
-void GUIOverlay::reportLostJoystick(size_t playerSlot) {
+void GUIOverlay::reportLostJoystick(size_t playerSlotNumber) {
 
 	//displayingLostJoys.push_back(joystickSocket);
 	//shared_ptr<Joystick> lostJoy = joystickPorts[joystickSocket];
@@ -170,20 +170,20 @@ void GUIOverlay::reportLostJoystick(size_t playerSlot) {
 
 
 
-void GUIOverlay::readyPCSelect(shared_ptr<PlayerSlot> playerSlot) {
-
-	wostringstream ws;
-	ws << L"Player " << (playerSlot->getPlayerSlotNumber() + 1);
-	playerSlot->setDialogText(ws.str());
-
-	EnterCriticalSection(&cs_selectingPC);
-	{
-		playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
-		if (nextAvaiablePC > numPCsAvailable - 1)
-			nextAvaiablePC = 0;
-	}
-	LeaveCriticalSection(&cs_selectingPC);
-}
+//void GUIOverlay::readyPCSelect(shared_ptr<PlayerSlot> playerSlot) {
+//
+//	wostringstream ws;
+//	ws << L"Player " << (playerSlot->getPlayerSlotNumber() + 1);
+//	playerSlot->setDialogText(ws.str());
+//
+//	/*EnterCriticalSection(&cs_selectingPC);
+//	{
+//		playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
+//		if (nextAvaiablePC > numPCsAvailable - 1)
+//			nextAvaiablePC = 0;
+//	}
+//	LeaveCriticalSection(&cs_selectingPC);*/
+//}
 
 
 unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialogImageSet,

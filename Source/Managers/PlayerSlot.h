@@ -2,10 +2,10 @@
 
 #include "../globals.h"
 #include "../Engine/Joystick.h"
+#include "../GameObjects/CharacterData.h"
 
 
-
-
+const double REPEAT_DELAY = .5;
 
 class PCSelectDialog;
 
@@ -16,6 +16,10 @@ class PlayerSlot {
 public:
 	PlayerSlot(size_t slotNum) : slotNumber(slotNum) {
 	}
+
+	void characterSelect(double deltaTime);
+	void waiting();
+
 
 	void pairWithDialog(PCSelectDialog* dialog);
 
@@ -37,31 +41,38 @@ private:
 	Joystick* joystick = NULL;
 	size_t slotNumber;
 
-	
+	double repeatDelayTime = REPEAT_DELAY;
+
+	int currentCharacterNum = 0;
+	CharacterData* characterData;
 
 	/* For temporary initialization purposes only! Do not use! */
 	JoyData* _threadJoystickData;
 };
 
-extern shared_ptr<PlayerSlot>  playerSlots[MAX_PLAYERS];
+extern vector<shared_ptr<PlayerSlot>> activeSlots;
+extern deque<shared_ptr<PlayerSlot>> waitingSlots;
 
 class PlayerSlotManager {
 public:
 	PlayerSlotManager();
 	~PlayerSlotManager();
+
+	void waiting();
 	
-	void controllerRemoved(size_t playerSlot);
+
+	void controllerRemoved(size_t playerSlotNumber);
 	void controllerTryingToPair(JoyData* joyData);
 	void finalizePair(JoyData* joyData);
 
-
+	shared_ptr<PlayerSlot>  playerSlots[MAX_PLAYERS];
 
 private:
 	CRITICAL_SECTION cs_waitingJoysticks;
 	//vector<JoyData*> waitingForInput;
-	
-	/*enum WaitingForInputTast {
-	READ_INPUT, REMOVE_JOYSTICK_FROM_WAITING
+
+	enum WaitingForInputTast {
+		ADD_TO_WAITING_LIST, REMOVE_FROM_LIST, CHECK_FOR_CONFIRM
 	};
-	void sharedResource(size_t task, PVOID pvoid);*/
+	void accessWaitingSlots(size_t task, PVOID pvoid);
 };

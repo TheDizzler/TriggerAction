@@ -33,3 +33,6 @@ using namespace std;
 using namespace pugi;
 using namespace DirectX;
 using namespace Microsoft::WRL;
+
+
+static const char_t* characters[] = {"Chrono", "Marle", "Frog"};

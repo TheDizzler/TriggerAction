@@ -1,10 +1,49 @@
 #include "../pch.h"
 #include "PlayerSlot.h"
 
-shared_ptr<PlayerSlot>  playerSlots[MAX_PLAYERS];
+vector<shared_ptr<PlayerSlot>> activeSlots;
+deque<shared_ptr<PlayerSlot>> waitingSlots;
+
+//#include "../Screens/GUIOverlay.h"
+#include "../Engine/GameEngine.h"
+void PlayerSlot::characterSelect(double deltaTime) {
 
 
-#include "../Screens/GUIOverlay.h"
+	if (joystick->lAxisX < -10) {
+		repeatDelayTime += deltaTime;
+		if (repeatDelayTime >= REPEAT_DELAY) {
+			// select character to left
+			characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
+			pcDialog->loadPC(characterData->assets);
+			repeatDelayTime = 0;
+		}
+
+	} else if (joystick->lAxisX > 10) {
+		repeatDelayTime += deltaTime;
+		if (repeatDelayTime >= REPEAT_DELAY) {
+			// select character to right
+			characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+			pcDialog->loadPC(characterData->assets);
+			repeatDelayTime = 0;
+		}
+	} else {
+		repeatDelayTime = REPEAT_DELAY;
+	}
+}
+
+
+void PlayerSlot::waiting() {
+
+	if (joystick->bButtonStates[0]) {
+		_threadJoystickData->finishFlag = true;
+
+		//wostringstream ws;
+		//ws << L"Player " << (getPlayerSlotNumber() + 1);
+		//setDialogText(ws.str());
+	}
+}
+
+
 void PlayerSlot::pairWithDialog(PCSelectDialog* dialog) {
 	pcDialog = dialog;
 	pcDialog->pairPlayerSlot(this);
@@ -19,7 +58,7 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 		return false;
 	}
 	joystick = joyData->joystick.get();
-	joystick->playerSlot = slotNumber;
+	joystick->playerSlotNumber = slotNumber;
 
 	pcDialog->show();
 	pcDialog->setText(L"Push A\nto join!");
@@ -40,7 +79,7 @@ void PlayerSlot::unpairSocket() {
 
 	pcDialog->hide();
 
-	joystick->playerSlot = -1;
+	joystick->playerSlotNumber = -1;
 	joystick = NULL;
 
 }
@@ -67,7 +106,7 @@ void PlayerSlot::setDialogText(wstring text) {
 
 /** ******** PLAYERSLOT MANAGER START ******** **/
 
-#include "../DXTKGui/StringHelper.h"
+//#include "../DXTKGui/StringHelper.h"
 PlayerSlotManager::PlayerSlotManager() {
 	InitializeCriticalSection(&cs_waitingJoysticks);
 
@@ -81,36 +120,87 @@ PlayerSlotManager::~PlayerSlotManager() {
 	}
 }
 
+void PlayerSlotManager::waiting() {
+
+	if (activeSlots.size() > 0)
+		accessWaitingSlots(CHECK_FOR_CONFIRM, NULL);
+
+}
 
 
-void PlayerSlotManager::controllerRemoved(size_t playerSlot) {
+void PlayerSlotManager::controllerRemoved(size_t playerSlotNumber) {
 
 	wstringstream wss;
-	wss << "Controller is PlayerSlot " << playerSlot << " removed" << endl;
+	wss << "Controller is PlayerSlot " << playerSlotNumber << " removed" << endl;
 	OutputDebugString(wss.str().c_str());
 
-	playerSlots[playerSlot]->unpairSocket();
+	playerSlots[playerSlotNumber]->unpairSocket();
 }
 
 
 void PlayerSlotManager::controllerTryingToPair(JoyData* joyData) {
 
-	EnterCriticalSection(&cs_waitingJoysticks);
+	accessWaitingSlots(ADD_TO_WAITING_LIST, joyData);
+
+	/*EnterCriticalSection(&cs_waitingJoysticks);
 	OutputDebugString(L"\nEntering CS -> ");
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		if (playerSlots[i]->pairWithSocket(joyData)) {
+			waitingSlots.push_back(playerSlots[i]);
 			break;
 		}
 	}
 	OutputDebugString(L"Exiting CS\n");
+	LeaveCriticalSection(&cs_waitingJoysticks);*/
+}
+
+
+void PlayerSlotManager::finalizePair(JoyData* joyData) {
+
+	accessWaitingSlots(REMOVE_FROM_LIST, joyData);
+	//waitingSlots.erase(remove(waitingSlots.begin(), waitingSlots.end(), playerSlots[joyData->joystick->playerSlotNumber]));
+
+	activeSlots.push_back(playerSlots[joyData->joystick->playerSlotNumber]);
+	//guiOverlay->readyPCSelect(playerSlots[joyData->joystick->playerSlotNumber]);
+
+	wostringstream ws;
+	ws << L"Player " << (playerSlots[joyData->joystick->playerSlotNumber]->getPlayerSlotNumber() + 1);
+	playerSlots[joyData->joystick->playerSlotNumber]->setDialogText(ws.str());
+}
+
+
+void PlayerSlotManager::accessWaitingSlots(size_t task, PVOID pvoid) {
+
+	JoyData* joyData = (JoyData*) pvoid;
+
+	EnterCriticalSection(&cs_waitingJoysticks);
+	//OutputDebugString(L"\nEntering CS -> ");
+	switch (task) {
+		case ADD_TO_WAITING_LIST:
+			for (int i = 0; i < MAX_PLAYERS; ++i) {
+				if (playerSlots[i]->pairWithSocket(joyData)) {
+					waitingSlots.push_back(playerSlots[i]);
+					break;
+				}
+			}
+			break;
+
+		case REMOVE_FROM_LIST:
+			waitingSlots.erase(remove(waitingSlots.begin(), waitingSlots.end(),
+				playerSlots[joyData->joystick->playerSlotNumber]));
+			break;
+
+		case CHECK_FOR_CONFIRM:
+			for (const auto& slot : waitingSlots)
+				slot->waiting();
+			break;
+
+	}
+	//OutputDebugString(L"Exiting CS\n");
 	LeaveCriticalSection(&cs_waitingJoysticks);
 }
 
-#include "../Engine/GameEngine.h"
-void PlayerSlotManager::finalizePair(JoyData* joyData) {
 
-	guiOverlay->readyPCSelect(playerSlots[joyData->joystick->playerSlot]);
-}
 
 //void GUIOverlay::unpairedJoystickRemoved(JoyData* joyData) {
 //

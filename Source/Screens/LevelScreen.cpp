@@ -17,9 +17,9 @@ bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	//for (const auto& joystick : joystickPorts) {
 		//if (!joystick->getHandle())
 			//continue;
-	for (const auto& slot : playerSlots) {
-		if (!slot->hasJoystick())
-			continue;
+	for (const auto& slot : activeSlots) {
+		/*if (!slot->hasJoystick())
+			continue;*/
 		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(slot);
 		const CharacterData* dataSet = gfxAssets->getPlayerData(characters[i]);
 		if (!dataSet)

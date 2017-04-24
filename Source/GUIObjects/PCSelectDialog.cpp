@@ -64,15 +64,6 @@ void PCSelectDialog::update(double deltaTime) {
 	if (!isShowing)
 		return;
 
-	//if (!playerReady) {
-	//	if (playerSlot->joystick->bButtonStates[0]) {
-	//		_threadJoystickData->finishFlag = true;
-
-	//		//playerReady = true;
-	//	}
-	//}
-
-
 
 	pointer->update(deltaTime);
 

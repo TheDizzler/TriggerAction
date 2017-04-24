@@ -32,7 +32,7 @@ public:
 	void parseRawInput(PRAWINPUT pRawInput);
 
 	size_t socket;
-	short playerSlot = -1;
+	short playerSlotNumber = -1;
 	//PlayerCharacter* pc;
 	
 private:

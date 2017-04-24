@@ -9,8 +9,10 @@ SelectionPointer::SelectionPointer() {
 	layerDepth = 1;
 }
 
-
+#include "../Engine/Joystick.h"
 void SelectionPointer::update(double deltaTime) {
+
+	
 
 	if (!selectedPosition) {
 		// bouncing animation

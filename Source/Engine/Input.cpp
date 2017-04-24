@@ -87,7 +87,7 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 				OutputDebugString(L"Joystick removed\n");
 
 				//guiOverlay->controllerRemoved(foundJoy->playerSlot);
-				slotManager->controllerRemoved(foundJoy->playerSlot);
+				slotManager->controllerRemoved(foundJoy->playerSlotNumber);
 				controllerRemoved(foundJoy->socket);
 
 			}
@@ -228,7 +228,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 			return 0;
 		}
 
-		if (joyData->joystick->playerSlot == -1) {
+		if (joyData->joystick->playerSlotNumber == -1) {
 			joyData->listener->unpairedJoystickRemoved(joyData);
 			delete joyData;
 			return 0;
@@ -264,7 +264,7 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 
 
 	slotManager->controllerTryingToPair(joyData);
-	switch (joyData->joystick->playerSlot) {
+	switch (joyData->joystick->playerSlotNumber) {
 		case -1:
 			// Too many players? Shouldn't come up?
 			OutputDebugString(L"WARNING: this defitinely should not have been called");
@@ -282,7 +282,7 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 					return 0;
 				}
 
-				if (joyData->joystick->playerSlot == -1) {
+				if (joyData->joystick->playerSlotNumber == -1) {
 					joyData->listener->unpairedJoystickRemoved(joyData);
 					delete joyData;
 					return 0;

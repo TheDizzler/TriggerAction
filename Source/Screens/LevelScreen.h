@@ -4,7 +4,7 @@
 #include "../GameObjects/PlayerCharacter.h"
 #include "../Managers/MapManager.h"
 
-static const char_t* characters[] = {"Marle", "Frog"};
+//static const char_t* characters[] = {"Marle", "Frog"};
 
 extern vector<const Hitbox*> hitboxesAll;
 

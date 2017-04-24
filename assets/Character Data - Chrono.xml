@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
+
+
+	<spritesheet name="Chrono Sheet" file="Chrono spritesheet.dds">
+
+		<sprite name="portrait" set="Chrono" x="0" y="4" width="48" height="48" />
+		<sprite name="portrait small" set="Chrono" x="0" y="60" width="16" height="16"/>
+		<sprite name="magic kanji" set="Chrono" x="14" y="55" width="16" height="16"/>
+		<sprite name="magic english" set="Chrono" x="0" y="572" width="48" height="16"/>
+
+		<weaponMenuIcon name="Katana" />
+
+	</spritesheet>
+</root>

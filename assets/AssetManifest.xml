@@ -2,6 +2,7 @@
 <root game="Trigger Action RPG" xml="AssetManifest" dir="assets/">
 
 	<characterData>
+		<player name="Chrono" file="Character Data - Chrono.xml" />
 		<player name="Marle" file="Character Data - Marle.xml" />
 		<player name="Frog" file="Character Data - Frog.xml" />
 	</characterData>

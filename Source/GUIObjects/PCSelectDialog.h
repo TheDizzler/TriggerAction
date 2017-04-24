@@ -28,8 +28,6 @@ public:
 
 
 	PlayerCharacter* pcSelected;
-	/* For temporary initialization purposes only! Do not use! */
-	//JoyData* _threadJoystickData;
 private:
 
 	PlayerSlot*  playerSlot;

@@ -8,6 +8,7 @@ GFXAssetManager::GFXAssetManager(xml_node assetManifestRoot) {
 }
 
 GFXAssetManager::~GFXAssetManager() {
+	DeleteCriticalSection(&cs_selectingPC);
 	assetMap.clear();
 	animationMap.clear();
 	setMap.clear();
@@ -103,6 +104,7 @@ shared_ptr<AssetSet> const GFXAssetManager::getAssetSet(const char_t* setName) {
 
 
 
+
 #include "../DXTKGui/StringHelper.h"
 bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
@@ -164,6 +166,28 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 }
 
 
+CharacterData* GFXAssetManager::getNextCharacter(int* currentPCNum) {
+
+	/*EnterCriticalSection(&cs_selectingPC);
+	{*/
+		//playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
+		if (++(*currentPCNum) > numPCsAvailable - 1)
+			*currentPCNum = 0;
+	//}
+	//LeaveCriticalSection(&cs_selectingPC);
+
+	return characterDataMap[characters[*currentPCNum]].get();
+}
+
+CharacterData* GFXAssetManager::getPreviousCharacter(int * currentPCNum) {
+	
+	if (--(*currentPCNum) < 0)
+		*currentPCNum = numPCsAvailable - 1;
+
+	return characterDataMap[characters[*currentPCNum]].get();
+}
+
+
 const CharacterData* GFXAssetManager::getPlayerData(string characterName) {
 	return characterDataMap[characterName].get();
 }
@@ -201,6 +225,10 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 		characterData->loadData(characterDataRoot, getAssetSet(characterNode.attribute("name").as_string()));
 		characterDataMap[name] = move(characterData);
 	}
+
+	numPCsAvailable = characterDataMap.size();
+	InitializeCriticalSection(&cs_selectingPC);
+
 	return true;
 }
 

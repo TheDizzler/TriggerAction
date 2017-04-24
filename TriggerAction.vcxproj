@@ -258,6 +258,7 @@
     <Xml Include="assets\AssetManifest.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="assets\Character Data - Chrono.xml" />
     <Xml Include="assets\Character Data - Frog.xml">
       <SubType>Designer</SubType>
     </Xml>

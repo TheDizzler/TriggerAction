@@ -3,24 +3,6 @@
 #include "../GameObjects/CharacterData.h"
 
 
-//class AssetSet {
-//public:
-//	AssetSet(const char_t* setName);
-//	~AssetSet();
-//
-//	void addAsset(string assetName, unique_ptr<GraphicsAsset> asset);
-//	void addAsset(string assetName, shared_ptr<Animation> asset);
-//	GraphicsAsset* const getAsset(const char_t* assetName);
-//	shared_ptr<Animation> getAnimation(const char_t* animationName);
-//private:
-//
-//	const char_t* setName;
-//	map<string, unique_ptr<GraphicsAsset> > assetMap;
-//	map<string, shared_ptr<Animation>> animationMap;
-//};
-
-
-
 class GFXAssetManager {
 public:
 	GFXAssetManager(xml_node assetManifestRoot);
@@ -33,12 +15,19 @@ public:
 	GraphicsAsset* const getAsset(const char_t* assetName);
 	shared_ptr<AssetSet> const getAssetSet(const char_t* setName);
 
+	CharacterData* getNextCharacter(int* currentPCNum);
+	CharacterData* getPreviousCharacter(int* currentPCNum);
+	const CharacterData* getNextAvailabelCharacter();
 	const CharacterData* getPlayerData(string characterName);
+	
 
 private:
 	xml_node gfxAssetsNode;
 	xml_node characterDataNode;
 
+	int numPCsAvailable;
+	size_t nextAvaiablePC = 0;
+	CRITICAL_SECTION cs_selectingPC;
 	map<string, unique_ptr<CharacterData>> characterDataMap;
 
 	map<string, unique_ptr<GraphicsAsset> > assetMap;
