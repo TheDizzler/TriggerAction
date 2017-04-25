@@ -17,4 +17,5 @@ public:
 
 	unique_ptr<Hitbox> hitbox;
 
+	string weaponType;
 };

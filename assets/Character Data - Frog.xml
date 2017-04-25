@@ -3,14 +3,17 @@
 
 	<hitbox x="1" y="0" width="10" height="7" z="15"/>
 
-	<spritesheet name="Frog Sheet" file="Frog spritesheet.dds">
+	<weaponMenuIcon name="Sword" />
+
+
+	<spritesheet name="Frog Sheet" file="Frog spritesheet.dds" set="Frog">
 
 		<sprite name="portrait" set="Frog" x="442" y="3" width="48" height="48" />
 		<sprite name="portrait small" set="Frog" x="466" y="87" width="16" height="16" />
 		<sprite name="magic kanji" set="Frog" x="458" y="52" width="16" height="16" />
 		<sprite name="magic english" set="Frog" x="442" y="69" width="48" height="16" />
 
-		<weaponMenuIcon name="Sword" />
+		
 
 		<animation name="stand down" timePerFrame=".5" set="Frog">
 			<sprite x="399" y="4" width="16" height="24"/>

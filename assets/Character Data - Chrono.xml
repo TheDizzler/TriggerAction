@@ -1,15 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
 
+	<weaponMenuIcon name="Katana" />
 
-	<spritesheet name="Chrono Sheet" file="Chrono spritesheet.dds">
 
-		<sprite name="portrait" set="Chrono" x="0" y="4" width="48" height="48" />
-		<sprite name="portrait small" set="Chrono" x="0" y="60" width="16" height="16"/>
-		<sprite name="magic kanji" set="Chrono" x="14" y="55" width="16" height="16"/>
-		<sprite name="magic english" set="Chrono" x="0" y="572" width="48" height="16"/>
+	<spritesheet name="Chrono Sheet" file="Chrono spritesheet.dds" set="Chrono">
 
-		<weaponMenuIcon name="Katana" />
+		<sprite name="portrait" x="0" y="4" width="48" height="48" />
+		<sprite name="portrait small" x="0" y="58" width="16" height="16"/>
+		<sprite name="magic kanji" set="Chrono" x="54" y="2" width="16" height="16"/>
+		<sprite name="magic english" set="Chrono" x="20" y="58" width="48" height="16"/>
 
+
+		<animation name="stand down" num="3">
+			<!-- Looking straight -->
+			<sprite x="126" y="0" width="16" height="35" frameTime="1.5"/>
+			<!-- Eyes half-closed -->
+			<sprite x="126" y="160" width="16" height="35" frameTime=".25"/>
+			<!-- Eyese closed -->
+			<sprite x="126" y="200" width="16" height="35" frameTime=".5"/>
+			<!-- Eyes half-closed -->
+			<sprite x="126" y="160" width="16" height="35" frameTime=".25"/>
+
+			<!-- Looking straight -->
+			<sprite x="126" y="0" width="16" height="35" frameTime="1.5"/>
+			<!-- Looking right -->
+			<sprite x="126" y="40" width="16" height="35" frameTime=".5"/>
+			<!-- Looking straight -->
+			<sprite x="126" y="0" width="16" height="35" frameTime=".5"/>
+			<!-- Looking left -->
+			<sprite x="126" y="81" width="16" height="34" frameTime=".5"/>
+
+			<!-- Looking straight -->
+			<sprite x="126" y="0" width="16" height="35" frameTime="1.5"/>
+			<!-- Looking down -->
+			<sprite x="126" y="121" width="16" height="34" frameTime=".5"/>
+
+			<!-- Looking straight -->
+			<sprite x="126" y="0" width="16" height="35" frameTime="1.5"/>
+		</animation>
+
+		<animation name="stand up" timePerFrame=".5" num="1">
+			<sprite x="206" y="1" width="16" height="33" />
+			<sprite x="206" y="41" width="16" height="33" />
+
+			<sprite x="206" y="81" width="16" height="34" />
+			<sprite x="206" y="121" width="16" height="33" />
+		</animation>
+
+		<animation name="stand right" timePerFrame=".5" num="3" interval="4">
+			<!-- Looking straight -->
+			<sprite x="247" y="1" width="14" height="34" frameTime="1.5" />
+			<!-- Eyes half open -->
+			<sprite x="247" y="161" width="14" height="34" frameTime=".25"/>
+			<!-- Eyes closed -->
+			<sprite x="247" y="201" width="14" height="34" frameTime=".5"/>
+			<!-- Eyes half open -->
+			<sprite x="247" y="161" width="14" height="34" frameTime=".25"/>
+			<!-- Looking straight -->
+			<sprite x="247" y="1" width="14" height="34" frameTime="1.5" />
+
+			<!-- Looking right-->
+			<sprite x="247" y="41" width="14" height="33" frameTime=".25" />
+			<!-- Looking straight -->
+			<sprite x="247" y="1" width="14" height="34" frameTime="1.5" />
+			<!-- Looking left -->
+			<sprite x="247" y="81" width="14" height="34" frameTime=".5" />
+			<!-- Looking straight -->
+			<sprite x="247" y="1" width="14" height="34" frameTime="1.5" />
+
+			<!-- Looking down-->
+			<sprite x="247" y="122" width="14" height="32" frameTime=".25" />
+			<!-- Looking straight -->
+			<sprite x="247" y="1" width="14" height="34" frameTime="1.5" />
+
+
+		</animation>
+
+
+		<animation name="walk down" timePerFrame=".1" >
+			<sprite x="125" y="600" width="18" height="35" />
+			<sprite x="126" y="641" width="16" height="34" />
+			<sprite x="125" y="682" width="17" height="32" />
+			<sprite x="125" y="720" width="18" height="35" />
+			<sprite x="126" y="761" width="16" height="34" />
+			<sprite x="125" y="802" width="17" height="32" />
+		</animation>
+
+		<animation name="walk up" timePerFrame=".1" >
+			<sprite x="205" y="601" width="18" height="33" />
+			<sprite x="206" y="640" width="16" height="35" />
+			<sprite x="205" y="682" width="18" height="32" />
+			<sprite x="205" y="721" width="18" height="33" />
+			<sprite x="206" y="760" width="16" height="35" />
+			<sprite x="206" y="802" width="18" height="32" />
+		</animation>
+
+		<animation name="walk right" timePerFrame=".1">
+			<sprite x="246" y="601" width="15" height="34" />
+			<sprite x="243" y="642" width="21" height="32" />
+			<sprite x="247" y="681" width="14" height="33" />
+			<sprite x="247" y="721" width="14" height="34" />
+			<sprite x="243" y="726" width="22" height="32" />
+			<sprite x="247" y="801" width="14" height="33" />
+		</animation>
+
+		<animation name="run down" timePerFrame=".1" >
+			<!-- Right leg forward-->
+			<sprite x="125" y="841" width="18" height="34" />
+			<sprite x="125" y="682" width="17" height="32" />
+			<sprite x="125" y="720" width="18" height="35" />
+
+			<!-- Left leg forward-->
+			<sprite x="125" y="881" width="18" height="34" />
+			<sprite x="125" y="802" width="17" height="32" />
+			<sprite x="125" y="600" width="18" height="35" />
+		</animation>
+
+		<animation name="run up" timePerFrame=".1" >
+			<sprite x="205" y="601" width="18" height="33" />
+			<sprite x="206" y="640" width="16" height="35" />
+			<sprite x="205" y="839" width="17" height="38" />
+			<sprite x="205" y="682" width="18" height="32" />
+			<sprite x="205" y="721" width="18" height="33" />
+			<sprite x="206" y="760" width="16" height="35" />
+			<sprite x="205" y="879" width="17" height="38" />
+			<sprite x="206" y="802" width="18" height="32" />
+
+		</animation>
+
+		<animation name="run right" timePerFrame=".1" >
+			<sprite x="246" y="601" width="15" height="34" />
+			<sprite x="243" y="642" width="21" height="32" />
+			<sprite x="240" y="842" width="28" height="32" />
+			<sprite x="247" y="681" width="14" height="33" />
+			<sprite x="247" y="721" width="14" height="34" />
+			<sprite x="243" y="726" width="22" height="32" />
+			<sprite x="240" y="882" width="28" height="32" />
+			<sprite x="247" y="801" width="14" height="33" />
+		</animation>
+
+
+		<animation name="draw weapon down" timePerFrame=".4" >
+			<sprite x="286" y="2" width="15" height="32" />
+			<sprite x="283" y="41" width="22" height="34" />
+			<sprite x="284" y="81" width="20" height="34" />
+			<sprite x="285" y="122" width="17" height="32" />
+		</animation>
+
+		<animation name="draw weapon up" timePerFrame=".4" >
+			<sprite x="366" y="3" width="15" height="30" />
+			<sprite x="366" y="62" width="16" height="31" />
+			<sprite x="363" y="122" width="22" height="31" />
+		</animation>
+
+		<animation name="draw weapon right" timePerFrame=".4" >
+			<sprite x="402" y="2" width="24" height="32" />
+			<sprite x="399" y="42" width="30" height="32" />
+			<sprite x="400" y="82" width="28" height="32" />
+			<sprite x="399" y="122" width="28" height="31" />
+		</animation>
+
+		<animation name="battle stance down" timePerFrame=".3" >
+			<sprite x="285" y="817" width="17" height="31" />
+			<sprite x="285" y="857" width="18" height="31" />
+		</animation>
+
+		<animation name="battle stance up" timePerFrame=".3" >
+			<sprite x="365" y="818" width="18" height="29" />
+			<sprite x="365" y="858" width="17" height="29" />
+		</animation>
+
+		<animation name="battle stance right" timePerFrame=".3" >
+			<sprite x="399" y="818" width="28" height="30" />
+			<sprite x="400" y="858" width="26" height="30" />
+		</animation>
+
+
+		<sprite name="injured right" x="244" y="923" width="20" height="30" />
+		<sprite name="injured up" x="203" y="922" width="22" height="32" />
+		<sprite name="injured down" x="125" y="922" width="18" height="32" />
+
+		<animation name="main attack down"  >
+			<sprite x="286" y="245" width="16" height="46" timePerFrame=".25"/>
+			<sprite x="284" y="298" width="19" height="40" timePerFrame=".25"/>
+			<sprite x="284" y="338" width="19" height="40" timePerFrame=".25"/>
+			<sprite x="280" y="381" width="27" height="33" timePerFrame=".5"/>
+		</animation>
+		<animation name="main attack up">
+			<sprite x="365" y="243" width="17" height="30" timePerFrame=".25" />
+			<sprite x="366" y="284" width="16" height="48" timePerFrame=".25" />
+			<sprite x="364" y="342" width="19" height="31" timePerFrame=".25" />
+			<sprite x="364" y="383" width="20" height="29" timePerFrame=".25" />
+		</animation>
+		<animation name="main attack right" timePerFrame=".5" >
+			<sprite x="406" y="294" width="16" height="48" />
+			<sprite x="398" y="353" width="31" height="30" />
+			<sprite x="398" y="393" width="31" height="30" />
+		</animation>
+
+
+		<animation name="near attack down" timePerFrame=".25" >
+			<sprite x="316" y="248" width="35" height="40" />
+			<!-- Only one of these -->
+		</animation>
+		<animation name="near attack up" timePerFrame=".25" >
+			<sprite x="360" y="423" width="27" height="29" />
+			<sprite x="358" y="460" width="32" height="36" />
+		</animation>
+		<animation name="near attack right" timePerFrame=".25" >
+			<sprite x="399" y="431" width="29" height="33" />
+			<sprite x="283" y="429" width="22" height="37" />
+		</animation>
+
+		<!-- sprite x="" y="" width="" height="" /-->
 	</spritesheet>
 </root>

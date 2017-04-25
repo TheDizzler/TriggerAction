@@ -35,4 +35,4 @@ using namespace DirectX;
 using namespace Microsoft::WRL;
 
 
-static const char_t* characters[] = {"Chrono", "Marle", "Frog"};
+static const char_t* characters[] = {"Chrono", "Marle", "Lucca", "Frog"};

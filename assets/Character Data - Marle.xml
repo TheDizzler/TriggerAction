@@ -3,14 +3,17 @@
 
 	<hitbox x="6" y="0" width="9" height="6" z="24"/>
 
-	<spritesheet name="Marle Sheet" file="Marle spritesheet.dds">
+	<weaponMenuIcon name="Bow" />
+
+
+	<spritesheet name="Marle Sheet" file="Marle spritesheet.dds" set="Marle">
 
 		<sprite name="portrait" set="Marle" x="1" y="2" width="48" height="48" />
 		<sprite name="portrait small" set="Marle" x="16" y="86" width="16" height="16"/>
 		<sprite name="magic kanji" set="Marle" x="17" y="52" width="16" height="16"/>
 		<sprite name="magic english" set="Marle" x="2" y="68" width="48" height="16"/>
 
-		<weaponMenuIcon name="Bow" />
+		
 
 		<animation name="stand down" num="3" set="Marle">
 			<sprite x="64" y="16" width="13" height="33" frameTime="1.5"/>
@@ -51,31 +54,38 @@
 		</animation>
 
 		<animation name="run down" timePerFrame=".1" set="Marle">
+			<!-- right leg going forward -->
 			<sprite x="89" y="135" width="15" height="38" />
 			<sprite x="108" y="137" width="16" height="36" />
+			<sprite x="114" y="214" width="16" height="36" />
+
+			<!-- left leg going forward -->
 			<sprite x="127" y="135" width="15" height="38" />
 			<sprite x="145" y="137" width="16" height="36" />
-			<!-- These last two are odd? -->
 			<sprite x="96" y="214" width="16" height="36" />
-			<sprite x="114" y="214" width="16" height="36" />
+			
 		</animation>
 		<animation name="run up" timePerFrame=".1" set="Marle" >
+			<!-- left leg going forward -->
 			<sprite x="165" y="141" width="16" height="32" />
 			<sprite x="185" y="141" width="14" height="32" />
+			<sprite x="157" y="214" width="19" height="36" />
+			<!-- right leg going forward -->
 			<sprite x="203" y="141" width="16" height="32" />
 			<sprite x="223" y="141" width="14" height="33" />
-			<!-- These last two are odd? -->
 			<sprite x="134" y="214" width="19" height="36" />
-			<sprite x="157" y="214" width="19" height="36" />
+			
 		</animation>
 		<animation name="run right" timePerFrame=".1" set="Marle" >
+			<!-- right leg going forward -->
 			<sprite x="111" y="179" width="23" height="33" />
 			<sprite x="138" y="180" width="23" height="32" />
+			<sprite x="209" y="218" width="24" height="32" />
+			<!-- left leg going forward -->
 			<sprite x="165" y="179" width="23" height="33" />
 			<sprite x="192" y="180" width="23" height="32" />
-			<!-- These last two are odd? -->
 			<sprite x="181" y="218" width="24" height="32" />
-			<sprite x="209" y="218" width="24" height="32" />
+
 		</animation>
 
 		<animation name="draw weapon up" timePerFrame=".4" set="Marle">
@@ -114,9 +124,10 @@
 			<sprite x="426" y="100" width="21" height="32" />
 		</animation>
 
-		<sprite name="injured right" x="173" y="724" width="19" height="31" set="Marle" />
-		<sprite name="injured up" x="153" y="723" width="16" height="32" set="Marle" />
-		<sprite name="injured down" x="133" y="723" width="16" height="32" set="Marle" />
+		<sprite name="injured right" x="173" y="724" width="19" height="31" />
+		<sprite name="injured up" x="153" y="723" width="16" height="32" />
+		<sprite name="injured down" x="133" y="723" width="16" height="32" />
+
 
 		<animation name="near attack right" timePerFrame=".5" set="Marle" >
 
@@ -124,7 +135,8 @@
 
 		</animation>
 
-		<animation name="main attack right" timePerFrame=".5" set="Marle">
+
+		<animation name="main attack right" timePerFrame=".5" >
 			<!-- pre-attack sprite -->
 			<sprite x="341" y="100" width="30" height="32" />
 			<!-- shooting sprite -->

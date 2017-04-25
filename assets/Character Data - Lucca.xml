@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
+
+	<weaponMenuIcon name="Gun" />
+
+
+	<spritesheet name="Lucca Sheet" file="Lucca spritesheet.dds" set="Lucca">
+
+		<sprite name="portrait" set="Lucca" x="0" y="2" width="48" height="48" />
+		<sprite name="portrait small" set="Lucca" x="0" y="58" width="16" height="16"/>
+		<sprite name="magic kanji" set="Lucca" x="54" y="2" width="16" height="16"/>
+		<sprite name="magic english" set="Lucca" x="20" y="58" width="48" height="16"/>
+
+		
+
+	</spritesheet>
+</root>

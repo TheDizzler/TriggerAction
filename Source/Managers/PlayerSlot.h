@@ -34,6 +34,7 @@ public:
 	bool hasJoystick();
 	Joystick* getStick();
 
+	void selectCharacter();
 
 	void setDialogText(wstring text);
 	PCSelectDialog* pcDialog;
@@ -42,9 +43,12 @@ private:
 	size_t slotNumber;
 
 	double repeatDelayTime = REPEAT_DELAY;
-
-	int currentCharacterNum = 0;
+	
+	int currentCharacterNum = -1;
 	CharacterData* characterData;
+	bool characterSelected = false;
+	bool characterLocked = false;
+	bool buttonStillDown = false;
 
 	/* For temporary initialization purposes only! Do not use! */
 	JoyData* _threadJoystickData;

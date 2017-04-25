@@ -6,8 +6,9 @@ PCSelectDialog::PCSelectDialog() {
 
 	portrait = make_unique<Sprite>();
 	magicEnglish = make_unique<Sprite>();
-
+	weaponType = make_unique<Sprite>();
 	pointer = make_unique<SelectionPointer>();
+
 }
 
 
@@ -23,8 +24,9 @@ void PCSelectDialog::pairPlayerSlot(PlayerSlot* slot) {
 }
 
 
-void PCSelectDialog::loadPC(shared_ptr<AssetSet> pcAssets) {
+void PCSelectDialog::loadPC(CharacterData* pcData) {
 
+	auto pcAssets = pcData->assets;
 	pointer->load(guiFactory->getAsset("Cursor Hand 2"));
 
 	portrait->load(pcAssets->getAsset("portrait"));
@@ -34,6 +36,10 @@ void PCSelectDialog::loadPC(shared_ptr<AssetSet> pcAssets) {
 	magicEnglish->load(pcAssets->getAsset("magic english"));
 	magicEnglish->setOrigin(Vector2::Zero);
 	magicEnglish->setPosition(magicPos);
+
+	weaponType->load(guiFactory->getAsset(pcData->weaponType.c_str()));
+	weaponType->setOrigin(Vector2::Zero);
+	weaponType->setPosition(weaponTypePos);
 
 	playerReady = true;
 }
@@ -53,6 +59,18 @@ void PCSelectDialog::setDimensions(const Vector2& position, const Vector2 & size
 	pointerPos = portraitPos;
 	pointerPos.y += PORTRAIT_WIDTH / 2;
 	pointer->setPosition(pointerPos);
+
+	weaponTypePos = magicPos;
+	weaponTypePos.y += PORTRAIT_WIDTH / 2;
+
+	readyLabelPos = portraitPos;
+	readyLabelPos.y += PORTRAIT_WIDTH / 2;
+	readyLabel.reset(guiFactory->createTextLabel(Vector2::Zero));
+	readyLabel->setPosition(readyLabelPos);
+	readyLabel->setRotation(-XM_PIDIV4 * .5);
+	readyLabel->setTint(Colors::Red);
+	readyLabel->setScale(Vector2(1.75, 1.75));
+	readyLabel->setText(L"Ready!");
 }
 
 
@@ -80,7 +98,13 @@ void PCSelectDialog::draw(SpriteBatch* batch) {
 	if (playerReady) {
 		portrait->draw(batch);
 		magicEnglish->draw(batch);
-		pointer->draw(batch);
+		weaponType->draw(batch);
+		if (showReadyLabel)
+			readyLabel->draw(batch);
+		else
+			pointer->draw(batch);
+
+
 	}
 }
 
@@ -93,4 +117,12 @@ void PCSelectDialog::textureDraw(SpriteBatch* batch) {
 void PCSelectDialog::hide() {
 	DynamicDialog::hide();
 	reset();
+}
+
+void PCSelectDialog::setSelected(bool selected) {
+	pointer->setSelected(selected);
+}
+
+void PCSelectDialog::setReady(bool isReady) {
+	showReadyLabel = isReady;
 }

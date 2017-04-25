@@ -10,6 +10,8 @@ public:
 
 	virtual void update(double deltaTime);
 
+	void setSelected(bool selected);
+
 	virtual void setPosition(const Vector2& newPosition) override;
 private:
 

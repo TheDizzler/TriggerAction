@@ -168,19 +168,14 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 CharacterData* GFXAssetManager::getNextCharacter(int* currentPCNum) {
 
-	/*EnterCriticalSection(&cs_selectingPC);
-	{*/
-		//playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
-		if (++(*currentPCNum) > numPCsAvailable - 1)
-			*currentPCNum = 0;
-	//}
-	//LeaveCriticalSection(&cs_selectingPC);
+	if (++(*currentPCNum) > numPCsAvailable - 1)
+		*currentPCNum = 0;
 
 	return characterDataMap[characters[*currentPCNum]].get();
 }
 
-CharacterData* GFXAssetManager::getPreviousCharacter(int * currentPCNum) {
-	
+CharacterData* GFXAssetManager::getPreviousCharacter(int* currentPCNum) {
+
 	if (--(*currentPCNum) < 0)
 		*currentPCNum = numPCsAvailable - 1;
 
@@ -223,10 +218,14 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 
 		unique_ptr<CharacterData> characterData = make_unique<CharacterData>(name);
 		characterData->loadData(characterDataRoot, getAssetSet(characterNode.attribute("name").as_string()));
+		xml_node weaponIconNode = characterDataRoot.child("weaponMenuIcon");
+		characterData->weaponType = weaponIconNode.attribute("name").as_string();
 		characterDataMap[name] = move(characterData);
 	}
 
 	numPCsAvailable = characterDataMap.size();
+
+
 	InitializeCriticalSection(&cs_selectingPC);
 
 	return true;
@@ -238,6 +237,7 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 
 	for (xml_node spritesheetNode = gfxNode.child("spritesheet");
 		spritesheetNode; spritesheetNode = spritesheetNode.next_sibling("spritesheet")) {
+
 
 		string file_s = assetDir + spritesheetNode.attribute("file").as_string();
 		const char_t* file = file_s.c_str();
@@ -308,6 +308,13 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 				}
 				setMap[setName]->addAsset(name, animationAsset);
 
+			} else if (spritesheetNode.attribute("set")) {
+				string setName = spritesheetNode.attribute("set").as_string();
+				if (setMap.find(setName) == setMap.end()) {
+					// new set
+					setMap[setName] = make_shared<AssetSet>(setName.c_str());
+				}
+				setMap[setName]->addAsset(name, animationAsset);
 			} else
 				animationMap[name] = animationAsset;
 		}
@@ -342,6 +349,13 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 				}
 				setMap[setName]->addAsset(name, move(spriteAsset));
 
+			} else if (spritesheetNode.attribute("set")) {
+				string setName = spritesheetNode.attribute("set").as_string();
+				if (setMap.find(setName) == setMap.end()) {
+					// new set
+					setMap[setName] = make_shared<AssetSet>(setName.c_str());
+				}
+				setMap[setName]->addAsset(name, move(spriteAsset));
 			} else
 				assetMap[name] = move(spriteAsset);
 		}

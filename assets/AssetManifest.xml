@@ -4,6 +4,7 @@
 	<characterData>
 		<player name="Chrono" file="Character Data - Chrono.xml" />
 		<player name="Marle" file="Character Data - Marle.xml" />
+		<player name="Lucca" file="Character Data - Lucca.xml" />
 		<player name="Frog" file="Character Data - Frog.xml" />
 	</characterData>
 
@@ -39,6 +40,10 @@
 			<sprite name="Armor" set="Menu Icons" x="65" y="182" width="8" height="8" />
 			<sprite name="Accessory" set="Menu Icons" x="53" y="182" width="8" height="8" />
 			<sprite name="Defense" set="Menu Icons" x="113" y="182" width="8" height="8" />
+
+			<sprite name="H" x="49" y="286" width="7" height="8" />
+			<sprite name="M" x="57" y="286" width="7" height="8" />
+			<sprite name="P" x="66" y="286" width="6" height="8" />
 
 			<!-- Unselected Menu Screen Icons -->
 			<sprite name="Characters x" set="Menu Icons" x="1" y="143" width="16" height="16" />

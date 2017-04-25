@@ -329,6 +329,7 @@
     <Xml Include="assets\MapManifest.xml" />
     <Xml Include="assets\Character Data - Frog.xml" />
     <Xml Include="assets\Character Data - Chrono.xml" />
+    <Xml Include="assets\Character Data - Lucca.xml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\Character Data - Marle.xml" />

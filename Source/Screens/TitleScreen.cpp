@@ -103,7 +103,7 @@ void TitleScreen::update(double deltaTime) {
 
 	if (noControllerDialog->isOpen()) {
 		noControllerDialog->update(deltaTime);
-
+		slotManager->waiting();
 	} else {
 		quitButton->update(deltaTime);
 

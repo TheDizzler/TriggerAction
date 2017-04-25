@@ -91,6 +91,7 @@ void Button::update(double deltaTime) {
 }
 
 // this function is not cheap. I suspect the frame is most costly.
+//	EDIT: bit better now
 void Button::draw(SpriteBatch* batch) {
 
 	rectSprite->draw(batch);
@@ -180,12 +181,12 @@ void Button::positionText() {
 	if (textsize.x > 0) {
 
 		Vector2 newPos;
-		if (resized) {
-			newPos = Vector2(
-				position.x + (getScaledWidth() - textsize.x) / 2 /*+ textMargin*/,
-				position.y + (getScaledHeight() - textsize.y) / 2 /*+ textMargin*/);
-			resized = false;
-		} else
+		//if (resized) {
+		//	newPos = Vector2(
+		//		position.x + (getScaledWidth() - textsize.x) / 2 ,
+		//		position.y + (getScaledHeight() - textsize.y) / 2 /*+ textMargin*/);
+		//	resized = false;
+		//} else
 			newPos = Vector2(
 				position.x + (getScaledWidth() - textsize.x) / 2,
 				position.y + (getScaledHeight() - textsize.y) / 2);

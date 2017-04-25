@@ -8,26 +8,62 @@ deque<shared_ptr<PlayerSlot>> waitingSlots;
 #include "../Engine/GameEngine.h"
 void PlayerSlot::characterSelect(double deltaTime) {
 
+	if (characterLocked) {
 
-	if (joystick->lAxisX < -10) {
-		repeatDelayTime += deltaTime;
-		if (repeatDelayTime >= REPEAT_DELAY) {
-			// select character to left
-			characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
-			pcDialog->loadPC(characterData->assets);
-			repeatDelayTime = 0;
+
+	} else {
+		if (!characterSelected) {
+			if (joystick->lAxisX < -10) {
+				repeatDelayTime += deltaTime;
+				if (repeatDelayTime >= REPEAT_DELAY) {
+					// select character to left
+					characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
+					pcDialog->loadPC(characterData);
+					repeatDelayTime = 0;
+				}
+
+			} else if (joystick->lAxisX > 10) {
+				repeatDelayTime += deltaTime;
+				if (repeatDelayTime >= REPEAT_DELAY) {
+					// select character to right
+					characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+					pcDialog->loadPC(characterData);
+					repeatDelayTime = 0;
+				}
+			} else {
+				repeatDelayTime = REPEAT_DELAY;
+			}
 		}
+	}
 
-	} else if (joystick->lAxisX > 10) {
-		repeatDelayTime += deltaTime;
-		if (repeatDelayTime >= REPEAT_DELAY) {
-			// select character to right
-			characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-			pcDialog->loadPC(characterData->assets);
-			repeatDelayTime = 0;
+
+	if (joystick->bButtonStates[0]) {
+		if (!buttonStillDown) {
+			buttonStillDown = true;
+
+			if (characterSelected) {
+				characterLocked = true;
+				pcDialog->setReady(true);
+			} else {
+				characterSelected = true;
+				pcDialog->setSelected(true);
+			}
+		}
+	} else if (joystick->bButtonStates[1]) {
+		if (!buttonStillDown) {
+			buttonStillDown = true;
+			buttonStillDown = true;
+
+			if (characterLocked || characterSelected) {
+				characterLocked = false;
+				characterSelected = false;
+				pcDialog->setSelected(false);
+				pcDialog->setReady(false);
+			}
 		}
 	} else {
-		repeatDelayTime = REPEAT_DELAY;
+		buttonStillDown = false;
+
 	}
 }
 
@@ -36,10 +72,7 @@ void PlayerSlot::waiting() {
 
 	if (joystick->bButtonStates[0]) {
 		_threadJoystickData->finishFlag = true;
-
-		//wostringstream ws;
-		//ws << L"Player " << (getPlayerSlotNumber() + 1);
-		//setDialogText(ws.str());
+		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
 	}
 }
 
@@ -97,6 +130,12 @@ Joystick* PlayerSlot::getStick() {
 	return joystick;
 }
 
+void PlayerSlot::selectCharacter() {
+
+	characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+	pcDialog->loadPC(characterData);
+}
+
 void PlayerSlot::setDialogText(wstring text) {
 	pcDialog->setText(text);
 }
@@ -122,7 +161,7 @@ PlayerSlotManager::~PlayerSlotManager() {
 
 void PlayerSlotManager::waiting() {
 
-	if (activeSlots.size() > 0)
+	if (waitingSlots.size() > 0)
 		accessWaitingSlots(CHECK_FOR_CONFIRM, NULL);
 
 }
@@ -131,9 +170,11 @@ void PlayerSlotManager::waiting() {
 void PlayerSlotManager::controllerRemoved(size_t playerSlotNumber) {
 
 	wstringstream wss;
-	wss << "Controller is PlayerSlot " << playerSlotNumber << " removed" << endl;
+	wss << "Controller PlayerSlot " << playerSlotNumber << " removed" << endl;
 	OutputDebugString(wss.str().c_str());
 
+	activeSlots.erase(remove(activeSlots.begin(), activeSlots.end(),
+		playerSlots[playerSlotNumber]), activeSlots.end());
 	playerSlots[playerSlotNumber]->unpairSocket();
 }
 
@@ -142,26 +183,16 @@ void PlayerSlotManager::controllerTryingToPair(JoyData* joyData) {
 
 	accessWaitingSlots(ADD_TO_WAITING_LIST, joyData);
 
-	/*EnterCriticalSection(&cs_waitingJoysticks);
-	OutputDebugString(L"\nEntering CS -> ");
-	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		if (playerSlots[i]->pairWithSocket(joyData)) {
-			waitingSlots.push_back(playerSlots[i]);
-			break;
-		}
-	}
-	OutputDebugString(L"Exiting CS\n");
-	LeaveCriticalSection(&cs_waitingJoysticks);*/
 }
 
 
 void PlayerSlotManager::finalizePair(JoyData* joyData) {
 
 	accessWaitingSlots(REMOVE_FROM_LIST, joyData);
-	//waitingSlots.erase(remove(waitingSlots.begin(), waitingSlots.end(), playerSlots[joyData->joystick->playerSlotNumber]));
 
 	activeSlots.push_back(playerSlots[joyData->joystick->playerSlotNumber]);
-	//guiOverlay->readyPCSelect(playerSlots[joyData->joystick->playerSlotNumber]);
+
+	playerSlots[joyData->joystick->playerSlotNumber]->selectCharacter();
 
 	wostringstream ws;
 	ws << L"Player " << (playerSlots[joyData->joystick->playerSlotNumber]->getPlayerSlotNumber() + 1);

@@ -86,7 +86,6 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 				OutputDebugString(L"Joystick removed\n");
 
-				//guiOverlay->controllerRemoved(foundJoy->playerSlot);
 				slotManager->controllerRemoved(foundJoy->playerSlotNumber);
 				controllerRemoved(foundJoy->socket);
 
@@ -234,7 +233,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 			return 0;
 		}
 
-		Sleep(500);
+		Sleep(250);
 	}
 
 	joyData->listener->playerAcceptedSlot(joyData);

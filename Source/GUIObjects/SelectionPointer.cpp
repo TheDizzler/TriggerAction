@@ -12,13 +12,22 @@ SelectionPointer::SelectionPointer() {
 #include "../Engine/Joystick.h"
 void SelectionPointer::update(double deltaTime) {
 
-	
+
 
 	if (!selectedPosition) {
 		// bouncing animation
 		selectingTime += deltaTime;
 		position.x = startPos.x + BOUNCE_AMPLITUDE * sin(BOUNCE_VELOCITY * selectingTime);
+	} else {
+
+		selectingTime += deltaTime;
+		position.x = startPos.x + BOUNCE_AMPLITUDE * sin(8*BOUNCE_VELOCITY * selectingTime);
+
 	}
+}
+
+void SelectionPointer::setSelected(bool selected) {
+	selectedPosition = selected;
 }
 
 

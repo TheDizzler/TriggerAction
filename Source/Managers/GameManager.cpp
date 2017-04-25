@@ -46,12 +46,12 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 			//new TransitionEffects::SpinGrowTransition(.5));
 			//new TransitionEffects::SplitTransition(25));
 		//new TransitionEffects::BlindsTransition(.25, false, true));
-		new TransitionEffects::TrueGrowTransition(exitDialog.get(), Vector2(.001, .001), Vector2(1, 1), 10));
+		//new TransitionEffects::TrueGrowTransition(exitDialog.get(), Vector2(.001, .001), Vector2(1, 1), 10));
 		/*new TransitionEffects::SlideAndGrowTransition(
 		Vector2(-200, -200), exitDialog->getPosition(),
 		Vector2(.001, .001), Vector2(1, 1)));*/
-		/*new TransitionEffects::GrowTransition(
-		Vector2(.0001, 0001), Vector2(1, 1)));*/
+		new TransitionEffects::GrowTransition(
+		Vector2(.0001, 0001), Vector2(1, 1), 12));
 		/*new TransitionEffects::SlideTransition(
 		Vector2(-200, -200), exitDialog->getPosition()));*/
 
@@ -91,7 +91,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		return false;
 	}
 
-	if (true) {
+	if (false) {
 
 		titleScreen = make_unique<TitleScreen>();
 		titleScreen->setGameManager(this);
