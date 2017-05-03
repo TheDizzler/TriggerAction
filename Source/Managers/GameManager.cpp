@@ -91,7 +91,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		return false;
 	}
 
-	if (false) {
+	if (true) {
 
 		titleScreen = make_unique<TitleScreen>();
 		titleScreen->setGameManager(this);

@@ -235,20 +235,18 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node gfxNode, string assetDir) {
 
 
-	for (xml_node spritesheetNode = gfxNode.child("spritesheet");
-		spritesheetNode; spritesheetNode = spritesheetNode.next_sibling("spritesheet")) {
+	for (xml_node spritesheetNode : gfxNode.children("spritesheet")) {
 
 
 		string file_s = assetDir + spritesheetNode.attribute("file").as_string();
 		const char_t* file = file_s.c_str();
 
-		// the spritesheet itself is never saved into the map
-		unique_ptr<GraphicsAsset> masterAsset;
-		masterAsset.reset(new GraphicsAsset());
+		
+		unique_ptr<GraphicsAsset> masterAsset = make_unique<GraphicsAsset>();
 		if (!masterAsset->load(device, StringHelper::convertCharStarToWCharT(file))) {
 			return false;
 		}
-
+		string masterAssetName = spritesheetNode.attribute("name").as_string();
 
 		// parse all animations from spritesheet
 		for (xml_node animationNode = spritesheetNode.child("animation");
@@ -319,8 +317,7 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 				animationMap[name] = animationAsset;
 		}
 		// parse all single sprites from spritesheet
-		for (xml_node spriteNode = spritesheetNode.child("sprite"); spriteNode;
-			spriteNode = spriteNode.next_sibling("sprite")) {
+		for (xml_node spriteNode : spritesheetNode.children("sprite")) {
 
 			const char_t* name = spriteNode.attribute("name").as_string();
 			// pos in spritesheet
@@ -337,8 +334,7 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 				origin.y = originNode.attribute("y").as_int();
 			}
 
-			unique_ptr<GraphicsAsset> spriteAsset;
-			spriteAsset.reset(new GraphicsAsset());
+			unique_ptr<GraphicsAsset> spriteAsset = make_unique<GraphicsAsset>();
 			spriteAsset->loadAsPartOfSheet(masterAsset->getTexture(), position, size, origin);
 
 			if (spriteNode.attribute("set")) {
@@ -359,7 +355,7 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 			} else
 				assetMap[name] = move(spriteAsset);
 		}
-
+		assetMap[masterAssetName] = move(masterAsset);
 	}
 	return true;
 }

@@ -11,9 +11,9 @@ void PCCombatDialog::loadPC(CharacterData* pcData) {
 	auto pcAssets = pcData->assets;
 	pointer->load(guiFactory->getAsset("Cursor Hand 2"));
 
-	portrait->load(pcAssets->getAsset("portrait"));
-	portrait->setOrigin(Vector2::Zero);
-	portrait->setPosition(portraitPos);
+	miniPortrait->load(pcAssets->getAsset("portrait"));
+	miniPortrait->setOrigin(Vector2::Zero);
+	miniPortrait->setPosition(portraitPos);
 }
 
 
@@ -23,8 +23,12 @@ void PCCombatDialog::setDimensions(const Vector2& position, const Vector2& size)
 	spriteP = guiFactory->getSpriteFromAsset("P");
 }
 
+void PCCombatDialog::update(double deltaTime) {
+}
+
 void PCCombatDialog::draw(SpriteBatch* batch) {
 
+	miniPortrait->draw(batch);
 	spriteH->draw(batch);
 	spriteM->draw(batch);
 	spriteP->draw(batch);

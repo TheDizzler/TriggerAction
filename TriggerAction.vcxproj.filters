@@ -183,6 +183,9 @@
     <ClCompile Include="Source\Managers\PlayerSlot.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUIObjects\PCCombatDialog.cpp">
+      <Filter>Source Files\GUIObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controls\Button.h">
@@ -322,6 +325,9 @@
     </ClInclude>
     <ClInclude Include="Source\Managers\PlayerSlot.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GUIObjects\PCCombatDialog.h">
+      <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

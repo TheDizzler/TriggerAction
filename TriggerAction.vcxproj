@@ -195,6 +195,7 @@
     <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp" />
     <ClCompile Include="Source\GameObjects\Tangible.cpp" />
     <ClCompile Include="Source\GameObjects\Tile.cpp" />
+    <ClCompile Include="Source\GUIObjects\PCCombatDialog.cpp" />
     <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp" />
     <ClCompile Include="Source\GUIObjects\SelectionPointer.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="Source\GameObjects\Tangible.h" />
     <ClInclude Include="Source\GameObjects\Tile.h" />
     <ClInclude Include="Source\globals.h" />
+    <ClInclude Include="Source\GUIObjects\PCCombatDialog.h" />
     <ClInclude Include="Source\GUIObjects\PCSelectDialog.h" />
     <ClInclude Include="Source\GUIObjects\SelectionPointer.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
