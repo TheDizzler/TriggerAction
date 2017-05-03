@@ -15,6 +15,9 @@ Hitbox::Hitbox(const Hitbox* copybox) {
 	size = copybox->size;
 }
 
+Hitbox::~Hitbox() {
+}
+
 bool Hitbox::collision2d(_In_ const Hitbox* other) const {
 
 	if (position.x < other->position.x + other->size.x

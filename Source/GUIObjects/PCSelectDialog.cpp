@@ -2,13 +2,16 @@
 #include "PCSelectDialog.h"
 
 #include "../Engine/GameEngine.h"
-PCSelectDialog::PCSelectDialog() {
+PCSelectDialog::PCSelectDialog(GUIFactory* guiF) : DynamicDialog(guiF, NULL) {
 
 	portrait = make_unique<Sprite>();
 	magicEnglish = make_unique<Sprite>();
 	weaponType = make_unique<Sprite>();
 	pointer = make_unique<SelectionPointer>();
 
+}
+
+PCSelectDialog::~PCSelectDialog() {
 }
 
 
@@ -37,7 +40,7 @@ void PCSelectDialog::loadPC(CharacterData* pcData) {
 	magicEnglish->setOrigin(Vector2::Zero);
 	magicEnglish->setPosition(magicPos);
 
-	weaponType->load(guiFactory->getAsset(pcData->weaponType.c_str()));
+	weaponType->load(guiFactory->getAssetSet("Menu Icons")->getAsset(pcData->weaponType.c_str()));
 	weaponType->setOrigin(Vector2::Zero);
 	weaponType->setPosition(weaponTypePos);
 
@@ -77,12 +80,12 @@ void PCSelectDialog::setDimensions(const Vector2& position, const Vector2 & size
 
 #include "../Screens/GUIOverlay.h"
 void PCSelectDialog::update(double deltaTime) {
-	//DynamicDialog::update(deltaTime);
+	
 
 	if (!isShowing)
 		return;
 
-
+	DynamicDialog::update(deltaTime);
 	pointer->update(deltaTime);
 
 }
@@ -92,8 +95,7 @@ void PCSelectDialog::draw(SpriteBatch* batch) {
 	if (!isShowing)
 		return;
 
-	texturePanel->draw(batch);
-	dialogText->draw(batch);
+	DynamicDialog::draw(batch);
 
 	if (playerReady) {
 		portrait->draw(batch);

@@ -1,8 +1,11 @@
 #include "PCCombatDialog.h"
 
-PCCombatDialog::PCCombatDialog() {
+PCCombatDialog::PCCombatDialog(GUIFactory* factory) : DynamicDialog(factory, NULL) {
 	miniPortrait = make_unique<Sprite>();
 
+}
+
+PCCombatDialog::~PCCombatDialog() {
 }
 
 #include "../Engine/GameEngine.h"
@@ -24,6 +27,7 @@ void PCCombatDialog::setDimensions(const Vector2& position, const Vector2& size)
 }
 
 void PCCombatDialog::update(double deltaTime) {
+	DynamicDialog::update(deltaTime);
 }
 
 void PCCombatDialog::draw(SpriteBatch* batch) {

@@ -8,11 +8,11 @@ MouseController::MouseController(HWND h) {
 
 }
 
-
 MouseController::~MouseController() {
 }
 
-#include "../Controls/GUIFactory.h"
+
+#include "../GUIFactory.h"
 void MouseController::setState(Mouse::Mode mode) {
 	mouse->SetMode(mode);
 }

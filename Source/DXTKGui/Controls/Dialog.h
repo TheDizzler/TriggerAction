@@ -7,6 +7,8 @@
 class Dialog : public GUIControlBox, public Texturizable {
 public:
 
+	Dialog(GUIFactory* factory, shared_ptr<MouseController> mouseController);
+	virtual ~Dialog();
 	virtual void draw(SpriteBatch* batch) = 0;
 
 
@@ -29,7 +31,7 @@ public:
 	virtual bool clicked() override;
 	virtual bool pressed() override;
 	virtual bool hovering() override;
-	
+
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
@@ -58,10 +60,10 @@ protected:
 
 	Vector2 size;
 
-	
+
 
 	unique_ptr<TextLabel> dialogText;
-	
+
 
 
 	TransitionEffects::TransitionEffect* openTransition = NULL;
@@ -72,34 +74,36 @@ protected:
 
 
 	/** Generic OnClick for Cancel Button. Closes the dialog. That's all. */
-	class OnClickListenerCancelButton : public Button::OnClickListener {
+	class OnClickListenerCancelButton : public Button::ActionListener {
 	public:
 		OnClickListenerCancelButton(Dialog* dlg) : dialog(dlg) {
 		}
 		virtual void onClick(Button* button) override;
+		virtual void onPress(Button* button) override;
+		virtual void onHover(Button* button) override;
 	private:
 		Dialog* dialog;
 	};
 
 
-	
+
 };
 
 
 
 /** A pop-up Dialog Box with button options (optional - up to 3: Ok, Neutral, Cancel).
 	Title area and button area automatically adjust to size of their components.
-	NOTE: This control is fairly expensive. Use conservatively. */
+	NOTE: This control is fairly expensive. Use conservatively. EDIT: It's a bit better now. */
 class PromptDialog : public Dialog {
 public:
 
-	PromptDialog(HWND hwnd, bool movable, bool centerText);
+	PromptDialog(GUIFactory* factory,
+		shared_ptr<MouseController> mouseController, HWND hwnd, bool movable, bool centerText);
 	/* Used only for classes that extend this class */
-	PromptDialog();
-	~PromptDialog();
+	//PromptDialog();
+	virtual ~PromptDialog();
 
-	void initialize(GraphicsAsset* pixelAsset,
-		const pugi::char_t* font = "Default Font");
+	void initialize(const pugi::char_t* font = "Default Font");
 
 	virtual void setScrollBar(ScrollBarDesc& scrollBarDesc);
 	virtual void alwaysShowScrollBar(bool alwaysShow);
@@ -107,8 +111,6 @@ public:
 	virtual void setDimensions(const Vector2& position, const Vector2& size,
 		const int frameThickness = 2);
 
-	virtual GraphicsAsset* texturize() override;
-	virtual void textureDraw(SpriteBatch * batch) override;
 
 	void setTitle(wstring text, const Vector2& scale = Vector2(1.5, 1.5),
 		const pugi::char_t* font = "Default Font", Color color = Color(1, .5, 0, 1));
@@ -118,14 +120,15 @@ public:
 	void setTitleAreaDimensions(const Vector2& newSize);
 
 	/** Adds pre-created button to dialog as confirm button.
-		Note: user must initalize everything except for position. */
+		Note: user must initalize everything except for position.
+		Set autoSize to false if using an ImageButton. */
 	void setConfirmButton(unique_ptr<Button> okButton,
 		bool autoPosition = true, bool autoSize = true);
-	/** Creates a Button that does nothing until OnClickListener is set. */
+	/** Creates a Button that does nothing until ActionListener is set. */
 	void setConfirmButton(wstring text, const pugi::char_t* font = "Default Font");
 	/** Sets the listener to the confirm button. Will create the confirm button if one
 		has not already beeen created for it. */
-	void setConfirmOnClickListener(Button::OnClickListener* iOnClickListener);
+	void setConfirmOnClickListener(Button::ActionListener* iOnClickListener);
 
 	void setCancelButton(unique_ptr<Button> cancelButton,
 		bool autoPosition = true, bool autoSize = true);
@@ -133,12 +136,15 @@ public:
 	void setCancelButton(wstring text, const pugi::char_t* font = "Default Font");
 	/** Sets the listener to the cancel button. Will create the cancel button if one
 	has not already beeen created for it. */
-	void setCancelOnClickListener(Button::OnClickListener* iOnClickListener);
+	void setCancelOnClickListener(Button::ActionListener* iOnClickListener);
 
 	/* Dialog checks to see if it's open before performing any logic. */
 	virtual void update(double deltaTime);
 	/* Dialog checks to see if it's open before performing any logic. */
 	virtual void draw(SpriteBatch* batch);
+
+	virtual unique_ptr<GraphicsAsset> texturize() override;
+	virtual void textureDraw(SpriteBatch* batch) override;
 
 	/* Add other GUIControls to dialog. Control position should be relative to Dialog.
 		Returns the position of control in control list. */
@@ -155,12 +161,12 @@ public:
 	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 
 	const Color& getPanelTint() const;
-	
-	
+
+
 
 	virtual const vector<IElement2D*> getElements() const override;
 
-	
+
 	int titleTextMargin = 10;
 
 protected:
@@ -172,7 +178,7 @@ protected:
 	HWND hwnd;
 	vector<unique_ptr<GUIControl> > controls;
 	unique_ptr<TexturePanel> panel;
-	
+
 	Vector2 titleFrameSize = Vector2(0, 0);
 	Vector2 titleFramePosition;
 	Vector2 dialogFrameSize;

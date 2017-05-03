@@ -8,8 +8,9 @@ class Spinner : public GUIControl {
 	friend class SpinnerDownButtonListener;
 public:
 	/** Width does not include buttons. */
-	Spinner(const Vector2& pos, const size_t width, const size_t itemHeight, bool autoSize);
-	~Spinner();
+	Spinner(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		const Vector2& pos, const size_t width, const size_t itemHeight, bool autoSize);
+	virtual ~Spinner();
 
 	/* Note, if itemHeight is smaller than the font height and/or the button heights (combined)
 		this controller will grow to fit everything. */
@@ -68,24 +69,25 @@ private:
 };
 
 
-class SpinnerUpButtonListener : public Button::OnClickListener {
+class SpinnerUpButtonListener : public Button::ActionListener {
 public:
 	SpinnerUpButtonListener(Spinner* spnr) : spinner(spnr) {
 	}
-	virtual void onClick(Button* button) override {
-		spinner->increase();
-	}
+
+	virtual void onClick(Button* button) override;
+	virtual void onPress(Button* button) override;
+	virtual void onHover(Button* button) override;
 private:
 	Spinner* spinner;
 };
 
-class SpinnerDownButtonListener : public Button::OnClickListener {
+class SpinnerDownButtonListener : public Button::ActionListener {
 public:
 	SpinnerDownButtonListener(Spinner* spnr) : spinner(spnr) {
 	}
-	virtual void onClick(Button* button) override {
-		spinner->decrease();
-	}
+	virtual void onClick(Button* button) override;
+	virtual void onPress(Button* button) override;
+	virtual void onHover(Button* button) override;
 private:
 	Spinner* spinner;
 };

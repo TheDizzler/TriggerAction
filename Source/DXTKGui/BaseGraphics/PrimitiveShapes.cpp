@@ -1,20 +1,39 @@
 #include "PrimitiveShapes.h"
 
-RectangleSprite::RectangleSprite(GraphicsAsset* const graphicsAsset)
+#include "../StringHelper.h"
+RectangleSprite::RectangleSprite(GraphicsAsset* const graphicsAsset, Color color)
 	: Sprite() {
 
 	Sprite::load(graphicsAsset);
+	isPixel = true;
 	origin = Vector2(0, 0);
+	tint = color;
 }
 
-RectangleSprite::RectangleSprite(ComPtr<ID3D11ShaderResourceView> pixel,
-	const Vector2& pos, const Vector2 & size) : Sprite(pos) {
-
-	texture = pixel;
-	setDimensions(pos, size);
-}
+//RectangleSprite::RectangleSprite(ComPtr<ID3D11ShaderResourceView> pixel,
+//	const Vector2& pos, const Vector2 & size, Color color) : Sprite() {
+//
+//	texture = pixel;
+//	tint = color;
+//	setDimensions(pos, size);
+//}
 
 RectangleSprite::~RectangleSprite() {
+
+	//OutputDebugString(L"\n*** RectSprite Release ***\n");
+}
+
+void RectangleSprite::setSize(const Vector2 & size) {
+	Sprite::setSize(size);
+
+		/*sourceRect.left = 0;
+		sourceRect.top = 0;
+		sourceRect.bottom = height;
+		sourceRect.right = width;*/
+
+		/*hitArea.reset(new HitArea(
+			Vector2(position.x - origin.x *scale.x, position.y - origin.y*scale.y),
+			Vector2(size.x*scale.x, size.y*scale.y)));*/
 }
 
 const Vector2 RectangleSprite::getSize() const {
@@ -28,43 +47,44 @@ void RectangleSprite::moveBy(const Vector2& moveVector) {
 	hitArea->position = position;
 }
 
-#include "../Controls/GUIFactory.h"
+#include "../GUIFactory.h"
 #include "../Controls/TexturePanel.h"
 /**** ***** RECTANGLE FRAME START ***** ****/
 RectangleFrame::RectangleFrame(GraphicsAsset* pixelAsset, GUIFactory* gui) {
 
 	pixel = pixelAsset->getTexture();
-
-	useTexture = gui != NULL;
 	guiFactory = gui;
 
 	hitArea = make_unique<HitArea>();
+	texturePanel.reset(guiFactory->createPanel());
 }
 
 
 RectangleFrame::~RectangleFrame() {
+
 }
 
-//#include "../Controls/GUIFactory.h"
+
 void RectangleFrame::setDimensions(const Vector2& pos, const Vector2& size,
 	int frmThcknss) {
 
 	frameThickness = frmThcknss;
 	Vector2 position = pos;
 
-
+	height = size.y ;
+	width = size.x ;
 	// upper horizontal frame
 	frameHorizontal.left = 0;
 	frameHorizontal.top = 0;
-	frameHorizontal.right = size.x * scale.x;
+	frameHorizontal.right = width* scale.x;
 	frameHorizontal.bottom = frameThickness; // thickness of frame
 	frameTopPos = position;
 
 
 	// lower horizontal frame
-	int height = size.y * scale.y;
+	
 	frameBottomPos = frameTopPos;
-	frameBottomPos.y += height - frameThickness;
+	frameBottomPos.y += height* scale.y - frameThickness;
 	// frame sticks out passed rectangle area; (-frameThickness) pulls it back in
 
 	// left vertical frame
@@ -77,28 +97,18 @@ void RectangleFrame::setDimensions(const Vector2& pos, const Vector2& size,
 
 	// right vertical frame
 	frameRightPos = frameLeftPos;
-	frameRightPos.x += size.x - frameThickness;
+	frameRightPos.x += size.x * scale.x - frameThickness;
 	// frame sticks out passed rectangle area; (-frameThickness) pulls it back in
 
-	if (useTexture) {
-
-		texturePanel.reset(guiFactory->createPanel());
-		texturePanel->setTexture(texturize());
-		/*texturePanel->setTint(Color(0, 1, 1, 1));
-		texturePanel->setDimensions(position, size);
-		texturePanel->setTexture(
-			guiFactory->createTextureFromIElement2D(this, rgba));
-
-		texturePanel->setTexturePosition(position);*/
-	}
 	hitArea->position = pos;
 	hitArea->size = size * scale;
 
+	refreshTexture = true;
 }
 
 void RectangleFrame::setSize(const Vector2& size) {
 
-	setDimensions(frameTopPos, size);
+	setDimensions(frameTopPos, size, frameThickness);
 }
 
 bool cyberGrow = true; // cybergrow will only function if not using texture to draw
@@ -113,33 +123,38 @@ void RectangleFrame::refreshDimensions() {
 		frameRightPos.x += getWidth() *scale.x - frameThickness;
 
 	}
-	hitArea->size = Vector2(getWidth()*scale.x, getHeight()*scale.y);
+	hitArea->size = Vector2(width*scale.x, height*scale.y);
 	hitArea->position = frameTopPos;
 
+	refreshTexture = true;
 }
 
+
+void RectangleFrame::update() {
+	if (refreshTexture) {
+		texturePanel->setTexture(texturize());
+		refreshTexture = false;
+	}
+}
 
 void RectangleFrame::draw(SpriteBatch* batch) {
 
-	//if (useTexture) {
 	texturePanel->draw(batch);
-/*	return;
-}*/
-
 }
 
-GraphicsAsset* RectangleFrame::texturize() {
+unique_ptr<GraphicsAsset> RectangleFrame::texturize() {
 
-	texturePanel->setTint(Color(0, 1, 1, 1));
-	texturePanel->setDimensions(frameTopPos, hitArea->size);
+	//texturePanel->setTint(Color(0, 1, 1, 1));
+	//texturePanel->setDimensions(frameTopPos, hitArea->size);
 
-	GraphicsAsset* gfxAsset = guiFactory->createTextureFromIElement2D(this);
+	unique_ptr<GraphicsAsset> gfxAsset = guiFactory->createTextureFromIElement2D(this);
 	texturePanel->setTexturePosition(frameTopPos);
+	texturePanel->setLayerDepth(layerDepth);
 
-	return	gfxAsset;
+	return move(gfxAsset);
 }
 
-void RectangleFrame::textureDraw(SpriteBatch * batch) {
+void RectangleFrame::textureDraw(SpriteBatch* batch) {
 
 	// draw top horizontal bar
 	batch->Draw(pixel.Get(), frameTopPos, &frameHorizontal,
@@ -171,8 +186,7 @@ void RectangleFrame::setPosition(const Vector2& newPosition) {
 	frameRightPos = newPosition;
 	frameRightPos.x += getWidth() - frameThickness;
 	hitArea->position = newPosition;
-	if (useTexture)
-		texturePanel->setPosition(newPosition);
+	texturePanel->setPosition(newPosition);
 }
 
 void RectangleFrame::moveBy(const Vector2& moveVector) {
@@ -182,8 +196,7 @@ void RectangleFrame::moveBy(const Vector2& moveVector) {
 	frameLeftPos += moveVector;
 	frameRightPos += moveVector;
 	hitArea->position += moveVector;
-	if (useTexture)
-		texturePanel->moveBy(moveVector);
+	texturePanel->moveBy(moveVector);
 }
 
 
@@ -192,11 +205,11 @@ const Vector2& RectangleFrame::getPosition() const {
 }
 
 const int RectangleFrame::getWidth() const {
-	return frameHorizontal.right;
+	return hitArea->size.x;
 }
 
 const int RectangleFrame::getHeight() const {
-	return frameVertical.bottom;
+	return hitArea->size.y;
 }
 
 const float RectangleFrame::getLayerDepth() const {
@@ -214,14 +227,17 @@ const Vector2& RectangleFrame::getOrigin() const {
 
 void RectangleFrame::setTint(const XMFLOAT4 color) {
 	tint = color;
+	refreshTexture = true;
 }
 
 void RectangleFrame::setTint(const Color& color) {
 	tint = color;
+	refreshTexture = true;
 }
 
 void RectangleFrame::setTint(const XMVECTORF32 color) {
 	tint = color;
+	refreshTexture = true;
 }
 
 const Vector2 & RectangleFrame::getScale() const {
@@ -241,35 +257,29 @@ const float RectangleFrame::getAlpha() const {
 }
 
 void RectangleFrame::setOrigin(const Vector2& orgn) {
-	if (useTexture)
-		texturePanel->setOrigin(orgn);
+	texturePanel->setOrigin(orgn);
 	origin = orgn;
 }
 
 void RectangleFrame::setScale(const Vector2& scl) {
 
-	if (useTexture)
-		texturePanel->setScale(scl);
 	scale = scl;
 	refreshDimensions();
 }
 
 void RectangleFrame::setRotation(const float rot) {
 	rotation = rot;
-	if (useTexture)
-		texturePanel->setRotation(rot);
+	texturePanel->setRotation(rot);
 }
 
 void RectangleFrame::setAlpha(const float alpha) {
 	tint.w = alpha;
-	if (useTexture)
-		texturePanel->setAlpha(alpha);
+	texturePanel->setAlpha(alpha);
 }
 
 void RectangleFrame::setLayerDepth(const float depth, bool frontToBack) {
 	layerDepth = depth;
-	if (useTexture)
-		texturePanel->setLayerDepth(depth);
+	texturePanel->setLayerDepth(depth);
 }
 
 bool RectangleFrame::contains(const Vector2& point) {
@@ -295,6 +305,10 @@ Line::Line(GraphicsAsset* pixelAsset,
 }
 
 Line::~Line() {
+	/*wostringstream woo;
+	woo << L"\n\n*** Line Pixel ***\n" << endl;
+	woo << "\t\tResource release #: " << pixel.Reset() << endl;
+	OutputDebugString(woo.str().c_str());*/
 }
 
 const float Line::getRotation() const {
@@ -345,6 +359,13 @@ TriangleFrame::TriangleFrame(GraphicsAsset* pixelAsset) {
 }
 
 TriangleFrame::~TriangleFrame() {
+
+	/*wostringstream woo;
+	woo << L"\n\n*** TriangleFrame Pixel:" << endl;
+	woo << "\t\tResource release #: " << pixel.Reset() << endl;
+	OutputDebugString(woo.str().c_str());*/
+
+
 }
 
 void TriangleFrame::setDimensions(const Vector2& p1, const Vector2& p2,

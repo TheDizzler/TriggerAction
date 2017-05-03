@@ -26,8 +26,9 @@
 #include <SpriteBatch.h>
 #include <Audio.h>
 #include <pugixml.hpp>
+#include <deque>
 
-#include "DXTKGui\Controls\GUIFactory.h"
+#include "DXTKGui\GUIFactory.h"
 
 using namespace std;
 using namespace pugi;

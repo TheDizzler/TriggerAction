@@ -1,8 +1,9 @@
 #include "ListBox.h"
 
 
-ListBox::ListBox(const Vector2& pos, const int len,
-	size_t itmHght, const int maxItemsShown) {
+ListBox::ListBox(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+	const Vector2& pos, const int len, size_t itmHght, const int maxItemsShown)
+	: GUIControl(factory, mouseController) {
 
 	position = pos;
 	width = len;
@@ -11,10 +12,11 @@ ListBox::ListBox(const Vector2& pos, const int len,
 	itemHeight = itmHght;
 }
 
+#include "../StringHelper.h"
 ListBox::~ListBox() {
 
-	if (onClickListener != NULL)
-		delete onClickListener;
+	if (actionListener != NULL)
+		delete actionListener;
 
 	for (ListItem* listItem : listItems)
 		delete listItem;
@@ -23,30 +25,32 @@ ListBox::~ListBox() {
 	delete emptyListItem;
 }
 
-
-void ListBox::initialize(shared_ptr<FontSet> fnt, GraphicsAsset* pixelAsset,
+#include "../GUIFactory.h"
+void ListBox::initialize(const pugi::char_t* fnt, GraphicsAsset* pixelAsset,
 	ScrollBar* scrllbr, bool enumerateList) {
 
-	font = fnt;
+	fontName = fnt;
 	pixel = pixelAsset->getTexture();
 
+
+
+	refreshPanel = true;
 	firstItemPos = Vector2(position.x, position.y);
-
 	scrollBar.reset(scrllbr);
-
 	frame.reset(guiFactory->createRectangleFrame());
-
 	hitArea.reset(new HitArea(position, Vector2(frame->getWidth(), frame->getHeight())));
-
 	isEnumerated = enumerateList;
+
+	texturePanel.reset(guiFactory->createPanel(true));
 
 	emptyListItem = new EmptyListItem();
 	emptyListItem->initialize(width - scrollBar->getWidth(), itemHeight,
-		font, pixel, listItems.size(), isEnumerated);
+		guiFactory->createTextLabel(Vector2::Zero, L"", fontName),
+		pixel, listItems.size(), isEnumerated);
 	emptyListItem->setText();
 }
 
-#include "GUIFactory.h"
+
 void ListBox::setScrollBar(ScrollBarDesc& scrollBarDesc) {
 
 	scrollBar.reset(guiFactory->createScrollBar(
@@ -70,11 +74,13 @@ void ListBox::addItems(vector<ListItem* > items) {
 
 	for (ListItem* item : items) {
 		item->initialize(width - scrollBar->getWidth(), itemHeight,
-			font, pixel, listItems.size(), isEnumerated);
+			guiFactory->createTextLabel(Vector2::Zero, L"", fontName),
+			pixel, listItems.size(), isEnumerated);
 		listItems.push_back(item);
 		if (item->measureString().x + scrollBar->getWidth() > longestLabelLength)
 			longestLabelLength = item->measureString().x;
 	}
+
 	items.clear();
 
 	resizeBox();
@@ -105,6 +111,31 @@ void ListBox::resizeBox() {
 	Vector2 frameSize = Vector2(frameWidth, frameHeight);
 	frame->setDimensions(position, frameSize, frameThickness);
 	hitArea->size = frameSize;
+
+	refreshPanel = true;
+}
+
+
+void ListBox::moveBy(const Vector2& moveBy) {
+	GUIControl::moveBy(moveBy);
+	firstItemPos += moveBy;
+	texturePanel->moveBy(moveBy);
+}
+
+void ListBox::setPosition(const Vector2& newPosition) {
+	Vector2 moveBy = newPosition - position;
+	GUIControl::setPosition(newPosition);
+
+	firstItemPos += moveBy;
+	Vector2 pos = firstItemPos;
+
+	for (int i = firstItemToDisplay;
+		i < firstItemToDisplay + itemsToDisplay; ++i) {
+
+		listItems[i]->updatePosition(pos);
+		pos.y += itemHeight;
+	}
+	texturePanel->moveBy(moveBy);
 }
 
 void ListBox::alwaysShowScrollBar(bool alwaysShow) {
@@ -112,7 +143,6 @@ void ListBox::alwaysShowScrollBar(bool alwaysShow) {
 }
 
 void ListBox::setWidth(int newWidth) {
-
 	width = newWidth;
 	scrollBar->setPosition(Vector2(position.x + width, position.y));
 }
@@ -132,64 +162,81 @@ void ListBox::update(double deltaTime) {
 
 		if (hitArea->contains(mouse->getPosition())) {
 			int mouseWheelDelta = mouse->scrollWheelValue();
-			if (mouseWheelDelta != 0)
+			if (mouseWheelDelta != 0) {
 				scrollBar->scrollByIncrement(-mouseWheelDelta);
+				refreshPanel = true;
+			}
 		}
 
 		scrollBar->update(deltaTime);
 
-		double dif = listItems.size() /*- maxDisplayItems*/;
+		double dif = listItems.size();
 		firstItemToDisplay = round(scrollBar->percentScroll * (double) dif);
-		/*if (firstItemToDisplay > listItems.size() - maxDisplayItems)
-			firstItemToDisplay = listItems.size() - maxDisplayItems;*/
+
 	}
 
-	for (int j = firstItemToDisplay;
-		j < firstItemToDisplay + itemsToDisplay; ++j) {
+	for (int j = firstItemToDisplay; j < firstItemToDisplay + itemsToDisplay; ++j) {
 		if (listItems[j]->update(deltaTime, mouse.get())) {
-			if (!multiSelect) {
-				for (int i = 0; i < listItems.size(); ++i) {
-					if (listItems[i] == listItems[j]) {
-						selectedIndex = i;
-						continue;
+			refreshPanel = true;
+			if (listItems[j]->isSelected) {
+				if (!multiSelect) {
+					for (int i = 0; i < listItems.size(); ++i) {
+						if (listItems[i] == listItems[j]) {
+							if (selectedIndex != i) {
+								selectedIndex = i;
+								onClick();
+							}
+							continue;
+						}
+						if (listItems[i]->isSelected)
+							listItems[i]->setSelected(false);
 					}
-					listItems[i]->isPressed = false;
 				}
-			}
 
-			isClicked = true;
-			onClick();
+			}
 		}
+
 	}
 
-	Vector2 pos = firstItemPos;
+	if (refreshPanel) {
 
-	for (int i = firstItemToDisplay;
-		i < firstItemToDisplay + itemsToDisplay; ++i) {
-
-		listItems[i]->updatePosition(pos);
-		pos.y += itemHeight;
+		texturePanel->setTexture(texturize());
+		texturePanel->setTexturePosition(firstItemPos);
+		refreshPanel = false;
+		frame->update();
 	}
 }
 
 
 void ListBox::draw(SpriteBatch* batch) {
 
-	size_t shown = 0;
+
+	texturePanel->draw(batch);
+
+	if (itemsToDisplay == maxDisplayItems || alwaysDisplayScrollBar) {
+		scrollBar->draw(batch);
+	}
+
+	if (listItems.size() > 0) { // draw frame
+		frame->draw(batch);
+	}
+
+}
+
+
+void ListBox::textureDraw(SpriteBatch* batch) {
+	
 	for (int i = firstItemToDisplay;
 		i < firstItemToDisplay + itemsToDisplay; ++i) {
 
 		listItems[i]->draw(batch);
 
 	}
+}
 
-	if (itemsToDisplay == maxDisplayItems || alwaysDisplayScrollBar)
-		scrollBar->draw(batch);
 
-	if (listItems.size() > 0) { // draw frame
-		frame->draw(batch);
-	}
-
+unique_ptr<GraphicsAsset> ListBox::texturize() {
+	return guiFactory->createTextureFromIElement2D(this);
 }
 
 
@@ -201,11 +248,12 @@ void ListBox::setSelected(size_t newIndex) {
 	selectedIndex = newIndex;
 	if (!multiSelect) {
 		for (ListItem* unselect : listItems) {
-			unselect->isPressed = false;
+			if (unselect->isSelected)
+				unselect->setSelected(false);
 		}
 	}
-	listItems[selectedIndex]->isPressed = true;
 
+	listItems[selectedIndex]->setSelected(true);
 	// Adjust starting position of list to place the pressed item into view.
 	// Should only be relevant when the list is setup with an item pressed.
 	if (abs((float) firstItemToDisplay - selectedIndex) > maxDisplayItems) {
@@ -215,8 +263,9 @@ void ListBox::setSelected(size_t newIndex) {
 
 	}
 	scrollBar->setScrollPositionByPercent(
-		selectedIndex / (double) (listItems.size() /*- maxDisplayItems*/));
+		selectedIndex / (double) (listItems.size()));
 
+	refreshPanel = true;
 }
 
 const int ListBox::getSelectedIndex() const {
@@ -245,9 +294,9 @@ const Vector2& XM_CALLCONV ListBox::measureString() const {
 }
 
 
-void ListBox::setFont(const pugi::char_t* fontName) {
-
-	font = guiFactory->getFont(fontName);
+void ListBox::setFont(const pugi::char_t* fnt) {
+	fontName = fnt;
+	refreshPanel = true;
 }
 
 
@@ -270,7 +319,6 @@ const int ListBox::getHeight() const {
 bool ListBox::clicked() {
 
 	if (isClicked) {
-		//action = ClickAction::NONE;
 		isClicked = isPressed = false;
 		return true;
 	}
@@ -291,14 +339,12 @@ bool ListBox::hovering() {
 
 
 /** **** ListItem **** **/
-ListItem::ListItem() {
-}
-
 ListItem::~ListItem() {
+
 }
 
 void ListItem::initialize(const int width, const int height,
-	shared_ptr<FontSet> fnt, ComPtr<ID3D11ShaderResourceView> pixelTexture,
+	TextLabel* label, ComPtr<ID3D11ShaderResourceView> pixelTexture,
 	size_t listPos, bool enumerateList) {
 
 	itemRect.left = 0;
@@ -306,16 +352,18 @@ void ListItem::initialize(const int width, const int height,
 	itemRect.bottom = height;
 	itemRect.right = width;
 
-	hitArea.reset(new HitArea(
-		Vector2::Zero, Vector2(width, height)));
+	hitArea.reset(new HitArea(Vector2::Zero, Vector2(width, height)));
 
 	pixel = pixelTexture;
 	itemPosition = Vector2::Zero;
 
-	textLabel.reset(new TextLabel(fnt));
+	normalFontColor = label->getTint();
+	textLabel.reset(label);
+
 
 	isEnumerated = enumerateList;
 	listPosition = listPos;
+
 	setText();
 }
 
@@ -336,16 +384,18 @@ const wchar_t* ListItem::toString() {
 	return textLabel->getText();
 }
 
-
+/** Returns true if item isHovered. */
 bool ListItem::update(double deltaTime, MouseController* mouse) {
 
+	bool wasHover = isHover;
 	if ((isHover = hitArea->contains(mouse->getPosition()))) {
 
 		if (mouse->leftButton() && !buttonDownLast)
 			buttonDownLast = true;
 
 		else if (!mouse->leftButton() && buttonDownLast) {
-			isPressed = true;
+			isSelected = true;
+			textLabel->setTint(selectedFontColor);
 			buttonDownLast = false;
 			return true;
 		}
@@ -353,7 +403,8 @@ bool ListItem::update(double deltaTime, MouseController* mouse) {
 	} else
 		buttonDownLast = false;
 
-	return false;
+	textLabel->update(deltaTime);
+	return isHover && !wasHover;
 }
 
 void ListItem::updatePosition(const Vector2& pos) {
@@ -370,27 +421,37 @@ void ListItem::updatePosition(const Vector2& pos) {
 
 void ListItem::draw(SpriteBatch* batch) {
 
-	if (isPressed) {// draw pressed color bg
+	if (isSelected) {// draw pressed color bg
 
 		batch->Draw(pixel.Get(), itemPosition, &itemRect,
 			::DirectX::Colors::White, 0.0f, Vector2(0, 0), Vector2(1, 1),
-			SpriteEffects_None, 0.0f);
-		textLabel->draw(batch, Color(0, 0, 0, 1));
+			SpriteEffects_None, layerDepth);
+		textLabel->draw(batch);
 
 	} else if (isHover) { // draw hover color bg
 
 		batch->Draw(pixel.Get(), itemPosition, &itemRect,
 			::DirectX::Colors::Aqua, 0.0f, Vector2(0, 0), Vector2(1, 1),
-			SpriteEffects_None, 0.0f);
+			SpriteEffects_None, layerDepth);
 		textLabel->draw(batch);
 
 	} else { // draw basic bg
 
 		batch->Draw(pixel.Get(), itemPosition, &itemRect,
 			::DirectX::Colors::BurlyWood, 0.0f, Vector2(0, 0), Vector2(1, 1),
-			SpriteEffects_None, 0.0f);
+			SpriteEffects_None, layerDepth);
 		textLabel->draw(batch);
 	}
+}
+
+
+void ListItem::setSelected(bool select) {
+
+	isSelected = select;
+	if (isSelected)
+		textLabel->setTint(selectedFontColor);
+	else
+		textLabel->setTint(normalFontColor);
 }
 /** **** ListItem END **** **/
 

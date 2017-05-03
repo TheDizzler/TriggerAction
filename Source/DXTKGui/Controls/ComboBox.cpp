@@ -1,8 +1,9 @@
 #include "ComboBox.h"
 
 
-ComboBox::ComboBox(const Vector2& pos, const int len,
-	size_t itemHeight, const int maxItemsShown) {
+ComboBox::ComboBox(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+	const Vector2& pos, const int len, size_t itemHeight, const int maxItemsShown)
+	: GUIControl(factory, mouseController) {
 
 	position = pos;
 	width = len;
@@ -14,30 +15,35 @@ ComboBox::ComboBox(const Vector2& pos, const int len,
 
 ComboBox::~ComboBox() {
 
-	delete onClickListener;
+	if (actionListener)
+		delete actionListener;
+
 }
 
-#include "GUIFactory.h"
-bool ComboBox::initialize(shared_ptr<FontSet> fnt,/* GraphicsAsset* pixelAsset,*/
+#include "../GUIFactory.h"
+bool ComboBox::initialize(shared_ptr<FontSet> fnt,
 	ListBox* lstBx, const pugi::char_t* buttonName, bool enumerateList) {
 
-
-	frame.reset(guiFactory->createRectangleFrame());
 
 	comboListButton.reset(
 		(ImageButton*) guiFactory->createImageButton(buttonName));
 
 	comboListButton->setPosition(
 		Vector2(position.x + width - comboListButton->getWidth(), position.y));
-	comboListButton->setOnClickListener(new ShowListBoxListener(this));
-	frame->setDimensions(position, Vector2(width, comboListButton->getScaledHeight()));
+	comboListButton->setActionListener(new ShowListBoxListener(this));
+	frame.reset(guiFactory->createRectangleFrame(
+		position, Vector2(width, comboListButton->getScaledHeight())));
 
 	listBox.reset(lstBx);
-	listBox->setOnClickListener(new ListBoxListener(this));
+	listBox->setActionListener(new ListBoxListener(this));
 
 	selectedLabel.reset(guiFactory->createTextLabel(
 		Vector2(position.x + textMarginX, position.y + textMarginY)));
-	selectedLabel->setOnClickListener(new SelectedOnClick(this));
+	selectedLabel->setActionListener(new SelectedOnClick(this));
+
+	selectedBackgroundSprite.reset(guiFactory->createRectangle(position,
+		Vector2(width, comboListButton->getScaledHeight()), Color(.5, .5, .5, 1)));
+
 	return true;
 }
 
@@ -53,8 +59,8 @@ void ComboBox::update(double deltaTime) {
 
 	selectedLabel->update(deltaTime);
 	comboListButton->update(deltaTime);
+	frame->update();
 
-	
 
 	if (isOpen) {
 		listBox->update(deltaTime);
@@ -68,19 +74,20 @@ void ComboBox::draw(SpriteBatch* batch) {
 		listBox->draw(batch);
 	}
 
+	selectedBackgroundSprite->draw(batch);
 	selectedLabel->draw(batch);
 	comboListButton->draw(batch);
 	frame->draw(batch);
 }
 
 
-void ComboBox::open() {
+void ComboBox::show() {
 
 	isOpen = !isOpen;
-	
+
 }
 
-void ComboBox::close() {
+void ComboBox::hide() {
 	isOpen = false;
 }
 
@@ -89,6 +96,8 @@ void ComboBox::resizeBox() {
 	comboListButton->setPosition(
 		Vector2(position.x + width - comboListButton->getWidth(), position.y));
 	frame->setDimensions(position, Vector2(width, comboListButton->getHeight()));
+	selectedBackgroundSprite->setDimensions(position,
+		Vector2(width, comboListButton->getHeight()));
 }
 
 void ComboBox::alwaysShowScrollBar(bool alwaysShow) {
@@ -160,8 +169,14 @@ void ComboBox::clear() {
 	resizeBox();
 }
 
-void ComboBox::ShowListBoxListener::onClick(Button * button) {
-	comboBox->open();
+void ComboBox::ShowListBoxListener::onClick(Button* button) {
+	comboBox->show();
+}
+
+void ComboBox::ShowListBoxListener::onPress(Button* button) {
+}
+
+void ComboBox::ShowListBoxListener::onHover(Button* button) {
 }
 
 void ComboBox::ListBoxListener::onClick(ListBox* listbox, int selectedItemIndex) {

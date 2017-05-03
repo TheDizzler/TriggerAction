@@ -9,8 +9,9 @@
 class Button : public GUIControl {
 public:
 
-	Button(GraphicsAsset* pixelAsset, unique_ptr<FontSet> font);
-	~Button();
+	Button(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		const pugi::char_t* font);
+	virtual ~Button();
 
 	/* position is topleft of button. */
 	void setDimensions(const Vector2& position, const Vector2& size,
@@ -27,8 +28,9 @@ public:
 	virtual void setFont(const pugi::char_t* font = "Default Font") override;
 
 	void setTextOffset(const Vector2& unpressedOffset, const Vector2& pressedOffset);
+	virtual void moveBy(const Vector2& moveVector) override;
 	/* position is topleft of button. */
-	virtual void setPosition(const Vector2& position) override;
+	virtual void setPosition(const Vector2& moveVector) override;
 	virtual const Vector2& getPosition() const override;
 
 	virtual void setLayerDepth(float newDepth, bool frontToBack = true) override;
@@ -57,47 +59,42 @@ public:
 	virtual bool pressed() override;
 	virtual bool hovering() override;
 
-	class OnClickListener {
+	class ActionListener {
 	public:
 		virtual void onClick(Button* button) = 0;
+		virtual void onPress(Button* button) = 0;
+		virtual void onHover(Button* button) = 0;
 	};
 
 
-	void setOnClickListener(OnClickListener* iOnC) {
-		if (onClickListener != NULL)
-			delete onClickListener;
-		onClickFunction = &OnClickListener::onClick;
-		onClickListener = iOnC;
+	void setActionListener(ActionListener* iOnC) {
+		if (actionListener != NULL)
+			delete actionListener;
+		onClickFunction = &ActionListener::onClick;
+		onHoverFunction = &ActionListener::onHover;
+		onPressFunction = &ActionListener::onPress;
+		actionListener = iOnC;
 	}
 
 	void onClick() {
-		if (onClickListener != NULL) {
+		if (actionListener != NULL) {
 			isClicked = isPressed = false;
-			(onClickListener->*onClickFunction)(this);
+			(actionListener->*onClickFunction)(this);
 		}
 	}
 
-
-	void setOnHoverListener(OnClickListener* iOnC) {
-		if (!onHoverListener != NULL)
-			delete onHoverListener;
-		onHoverFunction = &OnClickListener::onClick;
-		onHoverListener = iOnC;
-
-	}
-
 	void onHover() {
-		if (onHoverListener != NULL) {
-			(onHoverListener->*onHoverFunction)(this);
+		if (actionListener != NULL) {
+			(actionListener->*onHoverFunction)(this);
 		}
 	}
 
 protected:
-	typedef void (OnClickListener::*OnClickFunction) (Button*);
+	typedef void (ActionListener::*OnClickFunction) (Button*);
+	ActionListener* actionListener = NULL;
 	OnClickFunction onClickFunction;
-	OnClickListener* onClickListener = NULL;
 	OnClickFunction onHoverFunction;
-	OnClickListener* onHoverListener = NULL;
+	OnClickFunction onPressFunction;
 
 	void positionText();
 	int width = 0;
@@ -118,10 +115,8 @@ protected:
 	unique_ptr<RectangleFrame> frame;
 	int frameThickness = 2;
 
-	GraphicsAsset* pixelAsset;
-
-
-	bool resized = false;
+	bool hasBeenSetUnpressed = false;
+	bool hasBeenSetHover = false;
 };
 
 
@@ -130,11 +125,12 @@ protected:
 	with Button::selectedColor if no downButton is used. */
 class ImageButton : public Button {
 public:
-	ImageButton(unique_ptr<Sprite> buttonSprite,
-		unique_ptr<FontSet> font);
-	ImageButton(unique_ptr<Sprite> upButtonSprite,
-		unique_ptr<Sprite> downButtonSprite, unique_ptr<FontSet> font);
-	~ImageButton();
+	ImageButton(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		unique_ptr<Sprite> buttonSprite, const pugi::char_t* font);
+	ImageButton(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		unique_ptr<Sprite> upButtonSprite,
+		unique_ptr<Sprite> downButtonSprite, const pugi::char_t* font);
+	virtual ~ImageButton();
 
 	virtual void draw(SpriteBatch* batch) override;
 
@@ -163,8 +159,9 @@ private:
 
 class AnimatedButton : public GUIControl {
 public:
-	AnimatedButton(shared_ptr<Animation> animation, Vector2 position);
-	~AnimatedButton();
+	AnimatedButton(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		shared_ptr<Animation> animation, Vector2 position);
+	virtual ~AnimatedButton();
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
@@ -173,7 +170,7 @@ public:
 	virtual void setFont(const pugi::char_t * font = "Default Font") override;
 	/* Not used in Animated Button. */
 	virtual void setText(wstring text) override;
-	
+
 	virtual const Vector2& XM_CALLCONV measureString() const override;
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;
@@ -189,7 +186,7 @@ public:
 	virtual void setToHoverState();
 	virtual void setToSelectedState();
 
-	class ButtonActionListener {
+	class ActionListener {
 	public:
 		virtual void onClick(AnimatedButton* button) = 0;
 		virtual void onPress(AnimatedButton* button) = 0;
@@ -199,37 +196,37 @@ public:
 	};
 
 
-	void setActionListener(ButtonActionListener* iOnC) {
-		if (onClickListener != NULL)
-			delete onClickListener;
-		onClickFunction = &ButtonActionListener::onClick;
-		onHoverFunction = &ButtonActionListener::onHover;
-		onPressFunction = &ButtonActionListener::onPress;
-		onClickListener = iOnC;
+	void setActionListener(ActionListener* iOnC) {
+		if (actionListener != NULL)
+			delete actionListener;
+		onClickFunction = &ActionListener::onClick;
+		onHoverFunction = &ActionListener::onHover;
+		onPressFunction = &ActionListener::onPress;
+		actionListener = iOnC;
 	}
 
 	void onClick() {
-		if (onClickListener != NULL) {
-			(onClickListener->*onClickFunction)(this);
+		if (actionListener != NULL) {
+			(actionListener->*onClickFunction)(this);
 		} else {
-				currentFrameIndex = animation->animationFrames.size() - 1;
+			currentFrameIndex = animation->animationFrames.size() - 1;
 		}
 
 		isClicked = isPressed = false;
 	}
 
 	void onPress() {
-		if (onClickListener != NULL) {
-			(onClickListener->*onPressFunction)(this);
-		} else 
+		if (actionListener != NULL) {
+			(actionListener->*onPressFunction)(this);
+		} else
 			currentFrameIndex = animation->animationFrames.size() - 2;
 	}
 
 	void onHover(double deltaTime) {
 		timeHovering += deltaTime;
 
-		if (onClickListener != NULL) {
-			(onClickListener->*onHoverFunction)(this);
+		if (actionListener != NULL) {
+			(actionListener->*onHoverFunction)(this);
 		} else {
 			if (timeHovering > timePerFrame) {
 				timeHovering = 0;
@@ -252,18 +249,16 @@ public:
 	shared_ptr<Animation> animation;
 	void adjustPosition(int lastFrame);
 private:
-	typedef void (ButtonActionListener::*OnClickFunction) (AnimatedButton*);
-	ButtonActionListener* onClickListener = NULL;
+	typedef void (ActionListener::*OnClickFunction) (AnimatedButton*);
+	ActionListener* actionListener = NULL;
 	OnClickFunction onClickFunction;
 	OnClickFunction onPressFunction;
 	OnClickFunction onHoverFunction;
 
 
 
-
-	/** Because frames of animation aren't always the same size... */
-
 	/** The origin point for adjusting position of animated frames. */
+	/** Because frames of animation aren't always the same size... */
 	Vector2 center;
 
 

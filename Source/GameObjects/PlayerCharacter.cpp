@@ -8,6 +8,7 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 }
 
 PlayerCharacter::~PlayerCharacter() {
+	playerSlot.reset();
 }
 
 #include "../Managers/MapManager.h"

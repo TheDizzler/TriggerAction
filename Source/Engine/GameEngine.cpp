@@ -20,6 +20,12 @@ GameEngine::~GameEngine() {
 
 	if (audioEngine != NULL)
 		audioEngine->Suspend();
+	delete blendState;
+	mouse.reset();
+	errorDialog.reset();
+	warningDialog.reset();
+	gfxAssets.reset();
+	guiFactory.reset();
 }
 
 
@@ -126,7 +132,7 @@ void GameEngine::initErrorDialogs() {
 	dialogPos = dialogSize;
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	errorDialog = guiFactory->createDialog(dialogSize, dialogPos, false, true, 5);
+	errorDialog.reset(guiFactory->createDialog(dialogSize, dialogPos, false, true, 5));
 
 
 	//errorDialog->setDimensions(dialogPos, dialogSize);
@@ -134,7 +140,7 @@ void GameEngine::initErrorDialogs() {
 	unique_ptr<Button> quitButton;
 	quitButton.reset(guiFactory->createButton());
 	quitButton->setText(L"Exit Program");
-	quitButton->setOnClickListener(new QuitButtonListener(this));
+	quitButton->setActionListener(new QuitButtonListener(this));
 	//quitButton->setMatrixFunction([&]()-> Matrix { return camera->translationMatrix(); });
 	errorDialog->setCancelButton(move(quitButton));
 
@@ -143,7 +149,7 @@ void GameEngine::initErrorDialogs() {
 	scrollBarDesc.upPressedButtonImage = "ScrollBar Up Pressed Custom";
 	scrollBarDesc.trackImage = "ScrollBar Track Custom";
 	scrollBarDesc.scrubberImage = "Scrubber Custom";
-	warningDialog = guiFactory->createDialog(dialogPos, dialogSize, false, true, 3);
+	warningDialog.reset(guiFactory->createDialog(dialogPos, dialogSize, false, true, 3));
 
 	//warningDialog->setDimensions(dialogPos, dialogSize);
 	warningDialog->setScrollBar(scrollBarDesc);
@@ -153,10 +159,12 @@ void GameEngine::initErrorDialogs() {
 	unique_ptr<Button> quitButton2;
 	quitButton2.reset(guiFactory->createButton());
 	quitButton2->setText(L"Exit Program");
-	quitButton2->setOnClickListener(new QuitButtonListener(this));
+	quitButton2->setActionListener(new QuitButtonListener(this));
 	warningDialog->setConfirmButton(move(quitButton2));
 
 	showDialog = warningDialog.get();
+
+	blendState = new CommonStates(device.Get());
 }
 
 bool warningCanceled = false;
@@ -226,21 +234,20 @@ void GameEngine::update(double deltaTime) {
 void GameEngine::render() {
 
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::GhostWhite);
-	CommonStates blendState(device.Get());
+	/*CommonStates blendState(device.Get());*/
 	batch->Begin(SpriteSortMode_FrontToBack/*, NULL, NULL, NULL, NULL, NULL, camera->translationMatrix()*/);
 	{
 		game->draw(batch.get());
 	}
 	batch->End();
 
-	batch->Begin(SpriteSortMode_Deferred, blendState.NonPremultiplied());
+	batch->Begin(SpriteSortMode_Deferred, blendState->NonPremultiplied());
 	{
 		guiOverlay->draw(batch.get());
 		showDialog->draw(batch.get());
 		mouse->draw(batch.get());
 	}
 	batch->End();
-
 
 	swapChain->Present(0, 0);
 }
@@ -267,5 +274,3 @@ void GameEngine::exit() {
 		swapChain->SetFullscreenState(false, NULL);
 	DestroyWindow(hwnd);
 }
-
-

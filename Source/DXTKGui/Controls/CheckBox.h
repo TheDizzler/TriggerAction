@@ -6,9 +6,10 @@
 class CheckBox : public GUIControl {
 public:
 
-	CheckBox(unique_ptr<Sprite> uncheckedSprite,
-		unique_ptr<Sprite> checkedSprite, unique_ptr<FontSet> font);
-	~CheckBox();
+	CheckBox(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		unique_ptr<Sprite> uncheckedSprite, unique_ptr<Sprite> checkedSprite,
+		const pugi::char_t* font);
+	virtual ~CheckBox();
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
@@ -38,25 +39,25 @@ public:
 
 	void setChecked(bool checked);
 
-	class OnClickListener {
+	class ActionListener {
 	public:
-	/** checkbox: The CheckBox this OnClickListener is attached to.
+	/** checkbox: The CheckBox this ActionListener is attached to.
 		isChecked: whether box is checked or no*/
 		virtual void onClick(CheckBox* checkbox, bool isChecked) = 0;
 	};
 
-	typedef void (OnClickListener::*OnClickFunction) (CheckBox*, bool);
+	
 
-	void setOnClickListener(OnClickListener* iOnC) {
-		if (onClickListener != NULL)
-			delete onClickListener;
-		onClickFunction = &OnClickListener::onClick;
-		onClickListener = iOnC;
+	void setActionListener(ActionListener* iOnC) {
+		if (actionListener != NULL)
+			delete actionListener;
+		onClickFunction = &ActionListener::onClick;
+		actionListener = iOnC;
 	}
 
 	void onClick() {
-		if (onClickListener != NULL) 
-			(onClickListener->*onClickFunction)(this, isClicked);
+		if (actionListener != NULL)
+			(actionListener->*onClickFunction)(this, isClicked);
 
 		if (isClicked)
 			texture = checkedSprite->getTexture().Get();
@@ -65,10 +66,11 @@ public:
 	}
 
 private:
-
+	typedef void (ActionListener::*OnClickFunction) (CheckBox*, bool);
+	ActionListener* actionListener = NULL;
 	OnClickFunction onClickFunction;
-	OnClickListener* onClickListener = NULL;
 	
+
 	ID3D11ShaderResourceView* texture;
 	/** Helper function to center text in check sprite. */
 	void centerText();
@@ -78,6 +80,6 @@ private:
 
 	unique_ptr<Sprite> uncheckedSprite;
 	unique_ptr<Sprite> checkedSprite;
-	/* The sprite used in draw(). */
-	//Sprite* drawSprite;
+	
+	bool firstHover;
 };

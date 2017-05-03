@@ -1,6 +1,18 @@
 #include "Dialog.h"
 
 
+Dialog::Dialog(GUIFactory* factory, shared_ptr<MouseController> mouseController)
+	: GUIControlBox(factory, mouseController) {
+}
+
+Dialog::~Dialog() {
+
+	if (openTransition)
+		delete openTransition;
+	if (closeTransition)
+		delete closeTransition;
+}
+
 void Dialog::show() {
 	isShowing = true;
 	isClosing = false;
@@ -94,10 +106,7 @@ void Dialog::setOpenTransition(TransitionEffects::TransitionEffect* effect) {
 		drawTransition = &TransitionEffects::TransitionEffect::draw;
 	}
 
-	bool originalState = isShowing;
-	isShowing = true;
 	effect->initializeEffect(this);
-	isShowing = originalState;
 
 	openTransition = effect;
 }
@@ -113,10 +122,7 @@ void Dialog::setCloseTransition(TransitionEffects::TransitionEffect* effect) {
 		drawTransition = &TransitionEffects::TransitionEffect::draw;
 	}
 
-	bool originalState = isShowing;
-	isShowing = true;
 	effect->initializeEffect(this);
-	isShowing = originalState;
 
 	closeTransition = effect;
 }
@@ -136,45 +142,42 @@ bool Dialog::hovering() {
 
 
 void Dialog::OnClickListenerCancelButton::onClick(Button* button) {
-
 	dialog->hide();
+}
+
+void Dialog::OnClickListenerCancelButton::onPress(Button * button) {
+}
+
+void Dialog::OnClickListenerCancelButton::onHover(Button * button) {
 }
 
 
 
 
 /** ******* PromptDialog START ******** **/
-PromptDialog::PromptDialog(HWND h, bool canMove, bool centerTxt) {
+PromptDialog::PromptDialog(GUIFactory* factory,
+	shared_ptr<MouseController> mouseController, HWND h, bool canMove, bool centerTxt)
+	: Dialog(factory, mouseController) {
 	hwnd = h;
 	movable = canMove;
 	centerText = centerTxt;
 }
 
-PromptDialog::PromptDialog() {
-}
-
 PromptDialog::~PromptDialog() {
-
-	std::vector<unique_ptr<GUIControl>> empty;
-	swap(controls, empty);
-
-	if (openTransition != NULL)
-		delete openTransition;
-	if (closeTransition != NULL)
-		delete closeTransition;
+	controls.clear();
 }
 
-#include "GUIFactory.h"
-void PromptDialog::initialize(GraphicsAsset* pixelAsset, const pugi::char_t* font) {
+#include "../GUIFactory.h"
+void PromptDialog::initialize(const pugi::char_t* font) {
 
 	panel.reset(guiFactory->createPanel(false));
 	panel->setTint(Color(0, 1, 1, 1));
 	frame.reset(guiFactory->createRectangleFrame());
-	bgSprite = make_unique<RectangleSprite>(pixelAsset);
+	bgSprite.reset(guiFactory->createRectangle());
 	bgSprite->setTint(panel->getTint());
-	titleSprite = make_unique<RectangleSprite>(pixelAsset);
+	titleSprite.reset(guiFactory->createRectangle());
 	titleSprite->setTint(Color(1, 1, 1, 1));
-	buttonFrameSprite = make_unique< RectangleSprite>(pixelAsset);
+	buttonFrameSprite.reset(guiFactory->createRectangle());
 	buttonFrameSprite->setTint(Color(1, 1, 1, 1));
 	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 
@@ -182,7 +185,7 @@ void PromptDialog::initialize(GraphicsAsset* pixelAsset, const pugi::char_t* fon
 
 	unique_ptr<GUIControl> titleText;
 
-	dialogText = make_unique<TextLabel>(guiFactory->getFont(font));
+	dialogText.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font, false));
 	dialogText->setTint(Color(0, 0, 0, 1));
 
 	setLayerDepth(.95);
@@ -227,15 +230,6 @@ void PromptDialog::setDimensions(const Vector2& pos, const Vector2& sz,
 	calculateDialogTextPos();
 }
 
-
-GraphicsAsset* PromptDialog::texturize() {
-	return guiFactory->createTextureFromIElement2D(this);
-}
-
-void PromptDialog::textureDraw(SpriteBatch* batch) {
-
-	//formattedText->draw(batch);
-}
 
 
 wstring PromptDialog::reformatText(size_t* scrollBarBuffer) {
@@ -368,8 +362,7 @@ void PromptDialog::calculateTitlePos() {
 void PromptDialog::setTitle(wstring text, const Vector2& scale,
 	const pugi::char_t* font, Color color) {
 
-	controls[TitleText] = make_unique<TextLabel>(guiFactory->getFont(font));
-	controls[TitleText]->setText(text);
+	controls[TitleText].reset(guiFactory->createTextLabel(Vector2::Zero, text, font));
 	controls[TitleText]->setScale(scale);
 	controls[TitleText]->setTint(color);
 	calculateTitlePos();
@@ -384,8 +377,8 @@ void PromptDialog::calculateDialogTextPos() {
 		return;
 	}
 
-	TextLabel formattedText(Vector2::Zero, dialogText->getText(), dialogText->getFont());
-	formattedText.initializeControl(guiFactory, NULL);
+	TextLabel formattedText(guiFactory, NULL, dialogText->getText(), dialogText->getFont(), false);
+	//formattedText.initializeControl(guiFactory, NULL);
 	size_t scrollBarBuffer = 0;
 
 	if (dialogtextsize.x + dialogTextMargin.x * 2 > dialogFrameSize.x) {
@@ -404,8 +397,6 @@ void PromptDialog::calculateDialogTextPos() {
 
 	Vector2 dialogpos;
 	if (centerText) {
-		//if (panel->scrollBarVisible())
-			//scrollBarBuffer = panel->getScrollBarSize().x;
 		dialogpos = Vector2(dialogFramePosition.x +
 			(dialogFrameSize.x - dialogtextsize.x - scrollBarBuffer) / 2, 0);
 	} else {
@@ -477,13 +468,13 @@ void PromptDialog::setConfirmButton(wstring text, const pugi::char_t* font) {
 	controls[ButtonOK]->setPosition(okButtonPosition);
 }
 
-void PromptDialog::setConfirmOnClickListener(Button::OnClickListener* iOnClickListener) {
+void PromptDialog::setConfirmOnClickListener(Button::ActionListener* iOnClickListener) {
 
 	if (controls[ButtonOK].get() == NULL) {
 		setConfirmButton(L"OK");
 	}
 
-	((Button*) controls[ButtonOK].get())->setOnClickListener(iOnClickListener);
+	((Button*) controls[ButtonOK].get())->setActionListener(iOnClickListener);
 }
 
 void PromptDialog::setCancelButton(unique_ptr<Button> cancelButton,
@@ -515,7 +506,7 @@ void PromptDialog::setCancelButton(wstring text, const pugi::char_t * font) {
 	unique_ptr<Button> cancelButton;
 	cancelButton.reset(guiFactory->createButton(font));
 	cancelButton->setDimensions(cancelButtonPosition, standardButtonSize, 3);
-	cancelButton->setOnClickListener(new OnClickListenerCancelButton(this));
+	cancelButton->setActionListener(new OnClickListenerCancelButton(this));
 	controls[ButtonCancel].reset();
 	controls[ButtonCancel] = move(cancelButton);
 	controls[ButtonCancel]->action = ClickAction::CANCEL;
@@ -527,13 +518,13 @@ void PromptDialog::setCancelButton(wstring text, const pugi::char_t * font) {
 	controls[ButtonCancel]->setPosition(cancelButtonPosition);
 }
 
-void PromptDialog::setCancelOnClickListener(Button::OnClickListener* iOnClickListener) {
+void PromptDialog::setCancelOnClickListener(Button::ActionListener* iOnClickListener) {
 
 	if (controls[ButtonCancel].get() == NULL) {
 		setCancelButton(L"OK");
 	}
 
-	((Button*) controls[ButtonCancel].get())->setOnClickListener(iOnClickListener);
+	((Button*) controls[ButtonCancel].get())->setActionListener(iOnClickListener);
 }
 
 bool PromptDialog::calculateButtonPosition(Vector2& buttonPos) {
@@ -605,6 +596,7 @@ void PromptDialog::update(double deltaTime) {
 
 	}
 	panel->update(deltaTime);
+	frame->update();
 	for (auto const& control : controls) {
 		if (control == NULL)
 			continue;
@@ -634,10 +626,30 @@ void PromptDialog::draw(SpriteBatch* batch) {
 				continue;
 			control->draw(batch);
 		}
-
-
 		frame->draw(batch);
 	}
+}
+
+unique_ptr<GraphicsAsset> PromptDialog::texturize() {
+	return guiFactory->createTextureFromIElement2D(this);
+}
+
+
+void PromptDialog::textureDraw(SpriteBatch* batch) {
+
+	bgSprite->draw(batch);
+	panel->draw(batch);
+	titleSprite->draw(batch);
+	buttonFrameSprite->draw(batch);
+
+	for (auto const& control : controls) {	// this definitely takes most of the CPU time
+		if (control == NULL)				// finding a way to optimize this would be ideal
+			continue;
+		control->draw(batch);
+	}
+
+
+	frame->draw(batch);
 }
 
 
@@ -813,6 +825,8 @@ void PromptDialog::setDraggedPosition(Vector2& newPosition) {
 	}
 
 	Vector2 moveBy = newPosition - position;
+	if (moveBy == Vector2::Zero)
+		return;
 	GUIControl::setPosition(newPosition);
 	dialogFramePosition += moveBy;
 	titleFramePosition += moveBy;

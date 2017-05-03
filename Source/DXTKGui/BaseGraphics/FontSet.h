@@ -11,7 +11,7 @@
 class FontSet {
 public:
 	FontSet();
-	~FontSet();
+	virtual ~FontSet();
 
 	virtual void load(ComPtr<ID3D11Device> device, const wchar_t* file);
 
@@ -25,7 +25,7 @@ public:
 
 protected:
 
-	std::unique_ptr<SpriteFont> font;
+	unique_ptr<SpriteFont> font;
 
 	wchar_t* defaultText = L"You are calling the wrong draw function, sire.";
 

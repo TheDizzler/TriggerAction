@@ -17,17 +17,13 @@ struct Frame {
 
 struct Animation {
 
-	Animation(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames/*, float frameTime*/)
-		: texture(tex), animationFrames(frames)/*, timePerFrame(frameTime)*/ {
+	Animation(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames)
+		: texture(tex), animationFrames(frames) {
 	}
-	~Animation() {
-		animationFrames.clear();
-	}
+	virtual ~Animation();
 
 	vector<shared_ptr<Frame>> animationFrames;
 	ComPtr<ID3D11ShaderResourceView> texture;
-	//float timePerFrame;
-
 };
 
 
@@ -37,12 +33,14 @@ public:
 
 
 	GraphicsAsset();
-	~GraphicsAsset();
+	virtual ~GraphicsAsset();
 
-	bool load(ComPtr<ID3D11Device> device, const wchar_t* file, const Vector2& origin = Vector2(-1000, -1000),
+	bool load(ComPtr<ID3D11Device> device, const wchar_t* file,
+		const Vector2& origin = Vector2(-1000, -1000),
 		bool showMessageBox = true);
 	void loadAsPartOfSheet(ComPtr<ID3D11ShaderResourceView> spriteSheetTexture,
-		const Vector2& locationInSheet, const Vector2& size, const Vector2& origin = Vector2(-1000, -1000));
+		const Vector2& locationInSheet, const Vector2& size,
+		const Vector2& origin = Vector2(-1000, -1000), const wchar_t* file = L"Master Sheet");
 
 	void getTextureDimensions(ID3D11Resource* res, UINT* width, UINT* height);
 
@@ -70,13 +68,15 @@ protected:
 
 	RECT sourceRect;
 
+	/* for debugging */
+	wstring textureFile;
 };
 
 
 class AssetSet {
 public:
 	AssetSet(const pugi::char_t* setName);
-	~AssetSet();
+	virtual ~AssetSet();
 
 	void addAsset(string assetName, unique_ptr<GraphicsAsset> asset);
 	void addAsset(string assetName, shared_ptr<Animation> asset);

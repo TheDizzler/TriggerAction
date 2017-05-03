@@ -2,12 +2,12 @@
 
 
 
-#include "../BaseGraphics/screen.h"
-#include "../BaseGraphics/GraphicsAsset.h"
-#include "ComboBox.h"
-#include "DynamicDialog.h"
-#include "CheckBox.h"
-#include "Spinner.h"
+#include "BaseGraphics/screen.h"
+#include "BaseGraphics/GraphicsAsset.h"
+#include "Controls/ComboBox.h"
+#include "Controls/DynamicDialog.h"
+#include "Controls/CheckBox.h"
+#include "Controls/Spinner.h"
 
 
 using namespace pugi;
@@ -18,7 +18,7 @@ public:
 	/** If this constructor is used, the assetManifest file MUST be set in initialize(). */
 	GUIFactory(HWND h);
 	GUIFactory(HWND hwnd, xml_node guiAssetsNode);
-	~GUIFactory();
+	virtual ~GUIFactory();
 
 	/** Required if a user wants to create their own controls. */
 	HWND getHWND();
@@ -32,7 +32,7 @@ public:
 		SpriteBatch* batch, shared_ptr<MouseController> mouse,
 		const char_t* assetManifestFile = NULL);
 
-	unique_ptr<FontSet> getFont(const char_t* fontName);
+	unique_ptr<FontSet> getFont(const char_t* fontName = "Default Font");
 	unique_ptr<Sprite> getSpriteFromAsset(const char_t* assetName);
 	shared_ptr<Animation> getAnimation(const char_t* animationName);
 	GraphicsAsset* const getAsset(const char_t* assetName);
@@ -41,7 +41,7 @@ public:
 	Line* createLine(const Vector2& position, const Vector2& size, Color lineColor = Color(0, 0, 0, 1));
 
 	RectangleSprite* createRectangle(const Vector2& position = Vector2::Zero,
-		const Vector2& size = Vector2::Zero);
+		const Vector2& size = Vector2::Zero, Color color = Color(1, 1, 1, 1));
 
 	RectangleFrame* createRectangleFrame(const Vector2& position = Vector2::Zero,
 		const Vector2& size = Vector2(10, 10), USHORT frameThickness = 2,
@@ -50,10 +50,15 @@ public:
 	TriangleFrame* createTriangleFrame(const Vector2& point1,
 		const Vector2& point2, const Vector2& point3, USHORT thickness = 2);
 
+	/** @useTexture - drawing fonts is expensive so the complete text is
+			turned into a texture to cut down on draw time. This is far more efficient
+			even if the text is updating every second (have not tested it at more than 1 update
+			a second but it should remain more efficient as long as the changes made
+			to the text is less frequent than the amount of draw commands.)
+			Only set to false if using a throw away text that won't be drawn. */
 	TextLabel* createTextLabel(const Vector2& position,
-		const char_t* fontName = "Default Font");
-	TextLabel* createTextLabel(const Vector2& position,
-		wstring text, const char_t* fontName = "Default Font");
+		wstring text = L"", const char_t* fontName = "Default Font",
+		bool useTexture = true);
 
 	/** Creates a button with no set text or position. */
 	Button* createButton(const char_t* fontName = "Default Font");
@@ -93,12 +98,15 @@ public:
 		bool enumerateList = false, const char_t* buttonAsset = "Combo Button Closed",
 		const char_t* fontName = "Default Font");
 
-	unique_ptr<PromptDialog> createDialog(
+	PromptDialog* createDialog(
 		const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
 		bool movable = false, bool centerText = false, int frameThickness = 2,
 		const char_t* fontName = "Default Font");
 
-	unique_ptr<DynamicDialog> createDynamicDialog(shared_ptr<AssetSet> dialogImageSet,
+	DynamicDialog* createDynamicDialog(const char_t* imageSet,
+		const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
+		const char_t* fontName = "Default Font");
+	DynamicDialog* createDynamicDialog(shared_ptr<AssetSet> dialogImageSet,
 		const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
 		const char_t* fontName = "Default Font");
 
@@ -111,10 +119,11 @@ public:
 	/* Creates a texture from a screen grab of an IElement2D object.
 		offset is the vector to bring object to top left corner of screen
 			in prep for its close up.*/
-	GraphicsAsset* createTextureFromIElement2D(
-		Texturizable* control, Color bgColor = {0, 0, 0, 0});
+	unique_ptr<GraphicsAsset> createTextureFromIElement2D(Texturizable* control,
+		bool autoBatchDraw = true, Color bgColor = {0, 0, 0, 0});
 
-	GraphicsAsset* createTextureFromScreen(Screen* screen, Color bgColor = {0, 0, 0, 0});
+	unique_ptr<GraphicsAsset> createTextureFromScreen(Screen* screen,
+		bool autoBatchDraw = true, Color bgColor = {0, 0, 0, 0});
 
 	static bool initialized;
 private:

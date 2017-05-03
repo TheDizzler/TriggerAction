@@ -2,7 +2,8 @@
 
 
 /** **** SCROLLBAR **** **/
-ScrollBar::ScrollBar(const Vector2& pos) {
+ScrollBar::ScrollBar(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+	const Vector2& pos) : GUIControl(factory, mouseController) {
 
 	position = pos;
 
@@ -11,12 +12,11 @@ ScrollBar::ScrollBar(const Vector2& pos) {
 ScrollBar::~ScrollBar() {
 }
 
-#include "GUIFactory.h"
+#include "../GUIFactory.h"
 bool ScrollBar::initialize(GraphicsAsset* const pixelAsset,
 	size_t barHght, ImageButton* scrollButtons[2], unique_ptr<Sprite> scrllBrTrck,
 	GraphicsAsset* scrbbr) {
 
-	//pixel = pixelAsset->getTexture();
 	barHeight = barHght;
 
 	if (scrollButtons == NULL || scrollButtons[0] == NULL) {
@@ -72,11 +72,9 @@ bool ScrollBar::initialize(GraphicsAsset* const pixelAsset,
 		scrollBarPosition.y);
 
 	if (scrbbr == NULL) {
-		//scrubber.reset(new Scrubber(pixelAsset, false));
 		scrubber = make_unique<Scrubber>(pixelAsset, false);
 
 	} else {
-		//scrubber.reset(new Scrubber(scrbbr, true));
 		scrubber = make_unique<Scrubber>(scrbbr, true);
 	}
 
@@ -335,10 +333,11 @@ const Vector2& XM_CALLCONV ScrollBar::measureString() const {
 
 
 /** **** Scrubber **** **/
-Scrubber::Scrubber(GraphicsAsset* const graphicsAsset, bool isPixel)
+Scrubber::Scrubber(GraphicsAsset* const graphicsAsset, bool pixel)
 	: RectangleSprite(graphicsAsset) {
 
-	assetIsPixel = isPixel;
+	//assetIsPixel = pixel;
+	isPixel = pixel;
 	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 }
 
@@ -355,7 +354,7 @@ void Scrubber::setDimensions(const Sprite* scrollBarTrack,
 
 
 
-	minPosition = maxPosition/* = position*/ = scrollBarTrack->getPosition();
+	minPosition = maxPosition = position = scrollBarTrack->getPosition();
 	if (max != -1)
 		maxPercent = max;
 	percentDifference = 1 / maxPercent;
@@ -364,7 +363,7 @@ void Scrubber::setDimensions(const Sprite* scrollBarTrack,
 		scrollBarTrack->getWidth(), scrollBarTrack->getHeight() * percentShowing);
 	scrollBarHeight = scrollBarTrack->getHeight();
 
-	if (!assetIsPixel) {
+	if (!isPixel) {
 		width = size.x;
 		height = size.y;
 	}
@@ -379,7 +378,7 @@ void Scrubber::setDimensions(const Sprite* scrollBarTrack,
 
 	minMaxDifference = maxPosition.y - minPosition.y;
 	setScrollPositionByPercent(currentpercent);
-	
+
 	hitArea->position = position;
 	hitArea->size = Vector2(width*scale.x, height*scale.y);
 

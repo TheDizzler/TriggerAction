@@ -5,12 +5,10 @@
 
 class ListItem {
 public:
-
-	ListItem();
-	~ListItem();
+	virtual ~ListItem();
 
 	void initialize(const int width, const int height,
-		shared_ptr<FontSet> fnt, ComPtr<ID3D11ShaderResourceView> pixelTexture,
+		TextLabel* label, ComPtr<ID3D11ShaderResourceView> pixelTexture,
 		size_t listPosition = 0, bool enumerateList = false);
 
 	void setWidth(int newWidth);
@@ -24,10 +22,13 @@ public:
 	virtual void draw(SpriteBatch* batch);
 
 
-
-	bool isPressed = false;
+	void setSelected(bool isSelected);
+	bool isSelected = false;
 
 protected:
+
+	Color selectedFontColor = Color(0, 0, 0, 1);
+	Color normalFontColor = Color(1, 1, 1, 1);
 
 	virtual void setText() = 0;
 	unique_ptr<TextLabel> textLabel;
@@ -39,6 +40,8 @@ protected:
 			position: for text only. */
 	Vector2 itemPosition;
 
+	float layerDepth = 1;
+
 	size_t textMarginX = 10;
 	size_t textMarginY = 5;
 
@@ -49,6 +52,8 @@ protected:
 
 	bool isEnumerated;
 	size_t listPosition = 0;
+
+	GUIFactory* guiFactory;
 };
 
 class EmptyListItem : public ListItem {
@@ -61,16 +66,17 @@ public:
 
 
 /** A simple control to display various (text) items. */
-class ListBox : public GUIControl {
-	//friend class ComboBox;
+class ListBox : public GUIControl, public Texturizable {
 public:
-	ListBox(const Vector2& position, const int width,
+	ListBox(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		const Vector2& position, const int width,
 		size_t itemHeight = 32, const int maxItemsShown = 7);
-	~ListBox();
+	virtual ~ListBox();
 
-	void initialize(shared_ptr<FontSet> font,
+	void initialize(const pugi::char_t* fontName,
 		GraphicsAsset* pixelAsset, ScrollBar* scrollBar,
 		bool enumerateList = false);
+
 
 	void setScrollBar(ScrollBarDesc& scrollBarDesc);
 	void alwaysShowScrollBar(bool alwaysShow);
@@ -81,6 +87,9 @@ public:
 
 	virtual void update(double deltaTime) override;
 	void draw(SpriteBatch* batch);
+
+	virtual unique_ptr<GraphicsAsset> texturize() override;
+	virtual void textureDraw(SpriteBatch * batch) override;
 
 
 	void setSelected(size_t newIndex);
@@ -95,11 +104,13 @@ public:
 	virtual const Vector2& XM_CALLCONV measureString() const;
 
 	bool multiSelect = false;
-	
+
 	/* Max items to display before showing scroll bar. */
 	size_t maxDisplayItems = 7;
 
 
+	virtual void moveBy(const Vector2& moveVector) override;
+	virtual void setPosition(const Vector2& position) override;
 
 	virtual void setFont(const pugi::char_t* font = "Default Font") override;
 	virtual const Vector2 & getPosition() const override;
@@ -110,41 +121,42 @@ public:
 	virtual bool pressed() override;
 	virtual bool hovering() override;
 
-	class OnClickListener {
+	class ActionListener {
 	public:
-		/** listbox: The ListBox this OnClickListener is attached to.
+		/** listbox: The ListBox this ActionListener is attached to.
 		selectedItemIndex: index of item in ListBox.*/
 		virtual void onClick(ListBox* listbox, int selectedItemIndex) = 0;
 	};
 
-	typedef void (OnClickListener::*OnClickFunction) (ListBox*, int);
+	
 
 
-	void setOnClickListener(OnClickListener* iOnC) {
-		if (onClickListener != NULL)
-			delete onClickListener;
-		onClickFunction = &OnClickListener::onClick;
-		onClickListener = iOnC;
+	void setActionListener(ActionListener* iOnC) {
+		if (actionListener != NULL)
+			delete actionListener;
+		onClickFunction = &ActionListener::onClick;
+		actionListener = iOnC;
 	}
 
 	void onClick() {
-		if (onClickListener != NULL)
-			(onClickListener->*onClickFunction)(this, selectedIndex);
+		if (actionListener != NULL)
+			(actionListener->*onClickFunction)(this, selectedIndex);
 	}
 
 
 private:
-
+	typedef void (ActionListener::*OnClickFunction) (ListBox*, int);
+	OnClickFunction onClickFunction;
+	ActionListener* actionListener = NULL;
 	/* width of listbox */
 	int width;
-	Vector2 position;
 	/* Always smaller or equal to maxDisplayItems. */
 	size_t itemsToDisplay = 0;
 
 	boolean isEnumerated = false;
 	bool alwaysDisplayScrollBar = false;
 
-	shared_ptr<FontSet> font;
+	const pugi::char_t* fontName;
 	vector<ListItem*> listItems;
 	size_t selectedIndex = 0;
 
@@ -158,15 +170,15 @@ private:
 
 	/** ID3D11ShaderResourceView is a ComPtr! */
 	ComPtr<ID3D11ShaderResourceView> pixel;
+	unique_ptr<TexturePanel> texturePanel;
+	bool refreshPanel = false;
 
 	int frameThickness = 2;
 
 	EmptyListItem* emptyListItem;
 
-	OnClickFunction onClickFunction;
-	OnClickListener* onClickListener = NULL;
-
 	void setWidth(int newWidth);
 	void resizeBox();
+
 
 };

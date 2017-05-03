@@ -7,8 +7,8 @@
 
 class PCCombatDialog : public DynamicDialog {
 public:
-	PCCombatDialog();
-	//~PCCombatDialog();
+	PCCombatDialog(GUIFactory* factory);
+	virtual ~PCCombatDialog();
 
 	void loadPC(CharacterData* characterData);
 	virtual void setDimensions(const Vector2& position, const Vector2& size) override;

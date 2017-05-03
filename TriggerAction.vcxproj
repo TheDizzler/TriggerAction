@@ -173,7 +173,6 @@
     <ClCompile Include="Source\DXTKGui\Controls\ComboBox.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\Dialog.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\GUIControl.cpp" />
-    <ClCompile Include="Source\DXTKGui\Controls\GUIFactory.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\DynamicDialog.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\ListBox.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\Panel.cpp" />
@@ -183,6 +182,7 @@
     <ClCompile Include="Source\DXTKGui\Controls\TexturePanel.cpp" />
     <ClCompile Include="Source\DXTKGui\Effects\ScreenTransitions.cpp" />
     <ClCompile Include="Source\DXTKGui\Effects\TransitionEffects.cpp" />
+    <ClCompile Include="Source\DXTKGui\GUIFactory.cpp" />
     <ClCompile Include="Source\Engine\Camera.cpp" />
     <ClCompile Include="Source\Engine\GameEngine.cpp" />
     <ClCompile Include="Source\Engine\GraphicsEngine.cpp" />
@@ -220,7 +220,6 @@
     <ClInclude Include="Source\DXTKGui\Controls\ComboBox.h" />
     <ClInclude Include="Source\DXTKGui\Controls\Dialog.h" />
     <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\GUIFactory.h" />
     <ClInclude Include="Source\DXTKGui\Controls\DynamicDialog.h" />
     <ClInclude Include="Source\DXTKGui\Controls\ListBox.h" />
     <ClInclude Include="Source\DXTKGui\Controls\Panel.h" />
@@ -231,6 +230,7 @@
     <ClInclude Include="Source\DXTKGui\Effects\ScreenTransitions.h" />
     <ClInclude Include="Source\DXTKGui\Effects\TransitionEffects.h" />
     <ClInclude Include="Source\DXTKGui\GuiAssets.h" />
+    <ClInclude Include="Source\DXTKGui\GUIFactory.h" />
     <ClInclude Include="Source\DXTKGui\StringHelper.h" />
     <ClInclude Include="Source\Engine\Camera.h" />
     <ClInclude Include="Source\Engine\GameEngine.h" />

@@ -6,7 +6,7 @@ class Joystick;
 class SelectionPointer : public Sprite {
 public:
 	SelectionPointer();
-	//~SelectionPointer();
+	virtual ~SelectionPointer();
 
 	virtual void update(double deltaTime);
 

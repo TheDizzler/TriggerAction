@@ -9,11 +9,12 @@
 	corner (0, 0) to be consistent with GUIControls. */
 class RectangleSprite : public Sprite {
 public:
-	RectangleSprite(GraphicsAsset* const graphicsAsset);
-	RectangleSprite(ComPtr<ID3D11ShaderResourceView> pixel,
-		const Vector2& position, const Vector2& size);
-	~RectangleSprite();
+	RectangleSprite(GraphicsAsset* const graphicsAsset, Color color = Color(1, 1, 1, 1));
+	/*RectangleSprite(ComPtr<ID3D11ShaderResourceView> pixel,
+		const Vector2& position, const Vector2& size, Color color);*/
+	virtual ~RectangleSprite();
 
+	virtual void setSize(const Vector2& size) override;
 	const Vector2 getSize() const;
 	/* position is top left corner. */
 	virtual void moveBy(const Vector2& moveVector);
@@ -25,16 +26,15 @@ class GUIFactory;
 /** A primitive, non-filled rectangle. */
 class RectangleFrame : public IElement2D, public Texturizable {
 public:
-	/* GUIFactory is optional. */
-	RectangleFrame(GraphicsAsset* pixelAsset, _In_opt_ GUIFactory* guifactory);
-	~RectangleFrame();
+	RectangleFrame(GraphicsAsset* pixelAsset, GUIFactory* guifactory);
+	virtual ~RectangleFrame();
 
 	void setDimensions(const Vector2& position, const Vector2& size,
 		int frameThickness = 2);
 	void setSize(const Vector2& size);
 	void refreshDimensions();
 
-	virtual GraphicsAsset* texturize() override;
+	virtual unique_ptr<GraphicsAsset> texturize() override;
 	virtual void textureDraw(SpriteBatch* batch) override;
 
 	virtual void setPosition(const Vector2& newPosition) override;
@@ -44,6 +44,7 @@ public:
 	virtual void setTint(const Color& color) override;
 	virtual void setTint(const XMVECTORF32 color) override;
 
+	virtual void update();
 	void draw(SpriteBatch* batch);
 
 	virtual const Vector2& getPosition() const override;
@@ -68,7 +69,7 @@ public:
 private:
 	ComPtr<ID3D11ShaderResourceView> pixel;
 
-	bool useTexture = true;
+	bool refreshTexture = true;
 	unique_ptr<TexturePanel> texturePanel;
 
 	RECT frameHorizontal;
@@ -82,12 +83,13 @@ private:
 	Vector2 scale = Vector2(1, 1);
 	float rotation = 0.0f;
 	Color tint = Colors::Black;
-	int frameThickness;
+	int frameThickness = 2;
 	float layerDepth = .9f;
 	unique_ptr<HitArea> hitArea;
+	int height;
+	int width;
 
 	GUIFactory* guiFactory;
-
 };
 
 
@@ -96,7 +98,7 @@ private:
 class TriangleFrame : public IElement2D {
 public:
 	TriangleFrame(GraphicsAsset* pixelAsset);
-	~TriangleFrame();
+	virtual ~TriangleFrame();
 
 	void setDimensions(const Vector2& point1, const Vector2& point2, const Vector2& point3,
 		USHORT thickness);
@@ -151,7 +153,7 @@ public:
 	Line(GraphicsAsset* pixelAsset);
 	Line(GraphicsAsset* pixelAsset,
 		const Vector2& pos, const Vector2& size);
-	~Line();
+	virtual ~Line();
 
 	const float getRotation() const;
 

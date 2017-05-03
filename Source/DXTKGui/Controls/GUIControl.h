@@ -6,18 +6,21 @@
 #include "../BaseGraphics/GraphicsAsset.h"
 #include "../Controllers/MouseController.h"
 
+class GUIFactory;
 interface GUIControl : public IElement2D {
 public:
 
-	void initializeControl(GUIFactory* factory,
+	GUIControl(GUIFactory* factory,
 		shared_ptr<MouseController> mouseController) {
 		guiFactory = factory;
 		mouse = mouseController;
 		projectedHitArea.reset(new HitArea(Vector2::Zero, Vector2::Zero));
 
 		translationMatrix = [&]() -> Matrix { return Matrix::Identity; };
-		cameraZoom = [&]() -> float { return 1;};
+		cameraZoom = [&]() -> float { return 1; };
 	}
+
+	virtual ~GUIControl();
 
 	/* Deprecating */
 	enum ClickAction {
@@ -110,7 +113,7 @@ protected:
 	bool isPressed = false;
 	/** While still hovering over control, button has been pressed and released. */
 	bool isClicked = false;
-
+	
 
 	GUIFactory* guiFactory;
 	shared_ptr<MouseController> mouse;
@@ -123,6 +126,9 @@ protected:
 		Not actually implemented.... */
 interface GUIControlBox : public GUIControl {
 public:
+	GUIControlBox(GUIFactory* factory, shared_ptr<MouseController> mouseController)
+		: GUIControl(factory, mouseController) {
+	}
 	virtual size_t addControl(unique_ptr<GUIControl> control) = 0;
 	virtual void addControls(vector<unique_ptr<GUIControl> > controls) = 0;
 

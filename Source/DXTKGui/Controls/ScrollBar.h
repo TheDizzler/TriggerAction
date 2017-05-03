@@ -7,7 +7,7 @@ class Scrubber : public RectangleSprite {
 public:
 	/* If using an image file instead of a pixel, set staticImage to true. */
 	Scrubber(GraphicsAsset* const graphicsAsset, bool assetIsPixel = true);
-	~Scrubber();
+	virtual ~Scrubber();
 
 	/*void setDimensions(const Vector2& startPosition,
 		const Vector2& size, const int scrollBarHeight);*/
@@ -35,7 +35,6 @@ public:
 	double percentAt = 0;
 
 private:
-	bool assetIsPixel;
 	Vector2 minPosition;
 	Vector2 maxPosition;
 
@@ -72,8 +71,9 @@ struct ScrollBarDesc {
 /** Do not use this classes HitArea - it is NULL. */
 class ScrollBar : public GUIControl {
 public:
-	ScrollBar(const Vector2& position);
-	~ScrollBar();
+	ScrollBar(GUIFactory* factory, shared_ptr<MouseController> mouseController,
+		const Vector2& position);
+	virtual ~ScrollBar();
 
 	/* scrollBarButtons[0] = Up Button
 		scrollBarButtons[1] = Down Button */
@@ -116,9 +116,6 @@ public:
 	virtual bool hovering() override;
 
 private:
-
-	/* Position of entire scrollbar area. */
-	//Vector2 position;
 
 	unique_ptr<Sprite> scrollBarTrack;
 	unique_ptr<Scrubber> scrubber;

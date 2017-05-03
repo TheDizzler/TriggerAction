@@ -13,7 +13,7 @@ enum Facing {
 class PlayerCharacter : public Tangible {
 public:
 	PlayerCharacter(shared_ptr<PlayerSlot> joystick);
-	~PlayerCharacter();
+	virtual ~PlayerCharacter();
 
 	virtual void initialize(const CharacterData* characterData, int startingPosition);
 	void setInitialPosition();

@@ -189,8 +189,7 @@ void GUIOverlay::reportLostJoystick(size_t playerSlotNumber) {
 unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialogImageSet,
 	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
-	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>();
-	dialog->initializeControl(guiFactory.get(), NULL);
+	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(guiFactory.get());
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(position, size);
 	dialog->texturize();
@@ -201,10 +200,9 @@ unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialo
 
 
 ControllerDialog::ControllerDialog(GUIFactory* guiF)
-	: PromptDialog(guiF->getHWND(), false, true) {
+	: PromptDialog(guiF, guiF->getMouseController(), guiF->getHWND(), false, true) {
 
-	initializeControl(guiF, guiF->getMouseController());
-	initialize(guiFactory->getAsset("White Pixel"));
+	initialize();
 
 }
 

@@ -6,7 +6,7 @@ class Hitbox {
 public:
 	Hitbox(int rowdata[5]);
 	Hitbox(const Hitbox* copybox);
-	//~Hitbox();
+	virtual ~Hitbox();
 
 	/** Only checks x and y for collision. */
 	bool collision2d(const Hitbox* other) const;
@@ -27,7 +27,7 @@ public:
 class Tangible {
 public:
 
-	~Tangible();
+	virtual ~Tangible();
 
 	void debugUpdate(Vector2 moveAmount);
 	void debugDraw(SpriteBatch* batch);

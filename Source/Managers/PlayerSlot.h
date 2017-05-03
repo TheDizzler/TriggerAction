@@ -73,7 +73,6 @@ public:
 
 private:
 	CRITICAL_SECTION cs_waitingJoysticks;
-	//vector<JoyData*> waitingForInput;
 
 	enum WaitingForInputTast {
 		ADD_TO_WAITING_LIST, REMOVE_FROM_LIST, CHECK_FOR_CONFIRM

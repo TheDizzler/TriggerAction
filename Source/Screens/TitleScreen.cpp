@@ -15,7 +15,7 @@ float TOTAL_SWING_TIME;
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
 	quitButton.reset(guiFactory->createButton(Vector2(200, 200), Vector2(10, 10), L"Quit"));
-	quitButton->setOnClickListener(new OnClickListenerDialogQuitButton(game));
+	quitButton->setActionListener(new OnClickListenerDialogQuitButton(game));
 	//quitButton->setLayerDepth(0.0);
 
 	Vector2 dialogPos, dialogSize;

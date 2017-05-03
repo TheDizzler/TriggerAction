@@ -3,7 +3,7 @@
 #include <Keyboard.h>
 
 #include "../Screens/TitleScreen.h"
-#include "../DXTKGui/Controls/GUIFactory.h"
+#include "../DXTKGui/GUIFactory.h"
 #include "../Screens/LevelScreen.h"
 #include "../Screens/GUIOverlay.h"
 
@@ -81,7 +81,7 @@ private:
 
 };
 
-class OnClickListenerDialogQuitButton : public Button::OnClickListener {
+class OnClickListenerDialogQuitButton : public Button::ActionListener {
 public:
 	OnClickListenerDialogQuitButton(GameManager* screen) : main(screen) {
 	}
@@ -89,15 +89,21 @@ public:
 		main->exitDialog->hide();
 		main->exit();
 	}
+	virtual void onPress(Button* button) override {
+	};
+	virtual void onHover(Button* button) override {
+	};
 private:
 	GameManager* main;
 };
 
-class CancelDialogButton : public Button::OnClickListener {
+class CancelDialogButton : public Button::ActionListener {
 public:
 	CancelDialogButton(GameEngine* eng, Dialog* dlg) : engine(eng), dialog(dlg) {
 	}
 	virtual void onClick(Button* button) override;
+	virtual void onPress(Button* button) override;
+	virtual void onHover(Button* button) override;
 private:
 	GameEngine* engine;
 	Dialog* dialog;

@@ -9,6 +9,9 @@ SelectionPointer::SelectionPointer() {
 	layerDepth = 1;
 }
 
+SelectionPointer::~SelectionPointer() {
+}
+
 #include "../Engine/Joystick.h"
 void SelectionPointer::update(double deltaTime) {
 

@@ -9,7 +9,6 @@
 
 
 class GUIFactory;
-//class Camera;
 /** A mouse controller that gets rawinput from WM_INPUT in the windows
 		message pump. Because the message pump doesn't send mouse rawinput
 		when there is no mouse action, the current and last button states
@@ -19,7 +18,7 @@ public:
 
 
 	MouseController(HWND hwnd);
-	~MouseController();
+	virtual ~MouseController();
 
 	/* MODE_ABSOLUTE (default) or MODE_RELATIVE (cannot handle relative mode yet). */
 	void setState(Mouse::Mode mode);

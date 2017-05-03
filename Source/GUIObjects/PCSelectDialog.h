@@ -8,8 +8,8 @@
 class PlayerSlot;
 class PCSelectDialog : public DynamicDialog {
 public:
-	PCSelectDialog();
-	//~PCSelectDialog();
+	PCSelectDialog(GUIFactory* guiFactory);
+	virtual ~PCSelectDialog();
 
 	void reset();
 

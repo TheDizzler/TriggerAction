@@ -26,12 +26,15 @@ void ScreenTransitionManager::setTransition(ScreenTransition* effect) {
 	transition = effect;
 }
 
+#include "../BaseGraphics/screen.h"
 void ScreenTransitionManager::transitionBetween(
 	Screen* oldScreen, Screen* newScreen, float transitionTime) {
 
+	Color purple = Color(158, 0, 58);
+	Color blue = Color(0, 58, 158);
 	transition->setTransitionBetween(
-		guiFactory->createTextureFromScreen(oldScreen, Color(158, 0, 58)),
-		guiFactory->createTextureFromScreen(newScreen, Color(0, 58, 158)), transitionTime);
+		guiFactory->createTextureFromScreen(oldScreen, true, Color(158, 0, 58)),
+		guiFactory->createTextureFromScreen(newScreen, true, Color(0, 58, 158)), transitionTime);
 }
 
 bool ScreenTransitionManager::runTransition(double deltaTime) {
@@ -45,12 +48,17 @@ void ScreenTransitionManager::drawTransition(SpriteBatch* batch) {
 
 
 
-#include "../BaseGraphics/screen.h"
+#include "../StringHelper.h"
 void ScreenTransition::setTransitionBetween(
-	GraphicsAsset* oldScreen, GraphicsAsset* newScreen, float time) {
+	unique_ptr<GraphicsAsset> oldScreen, unique_ptr<GraphicsAsset> newScreen, float time) {
 
-	oldScreenAsset.reset(oldScreen);
-	newScreenAsset.reset(newScreen);
+	wostringstream woo;
+	woo << L"\n\n *** ScreenTransition Release *** " << endl;
+	woo << "\t\oldTexture release #: " << oldTexture.Reset() << endl;
+	woo << "\t\newTexture release #: " << newTexture.Reset() << endl;
+
+	oldScreenAsset = move(oldScreen);
+	newScreenAsset = move(newScreen);
 
 	oldTexture = oldScreenAsset->getTexture();
 	newTexture = newScreenAsset->getTexture();
@@ -64,6 +72,18 @@ void ScreenTransition::setTransitionBetween(
 	transitionTime = time;
 
 	reset();
+}
+
+
+ScreenTransitions::ScreenTransition::~ScreenTransition() {
+
+	wostringstream woo;
+	woo << L"\n\n *** ScreenTransition Release *** " << endl;
+	woo << "\t\oldTexture release #: " << oldTexture.Reset() << endl;
+	woo << "\t\newTexture release #: " << newTexture.Reset() << endl;
+	oldScreenAsset.reset();
+	newScreenAsset.reset();
+	OutputDebugString(L"\n*** ScreenTransition Done ***");
 }
 
 
@@ -131,8 +151,8 @@ SquareFlipScreenTransition::~SquareFlipScreenTransition() {
 }
 
 void SquareFlipScreenTransition::setTransitionBetween(
-	GraphicsAsset* oldScreen, GraphicsAsset* newScreen, float time) {
-	ScreenTransition::setTransitionBetween(oldScreen, newScreen, time);
+	unique_ptr<GraphicsAsset> oldScreen, unique_ptr<GraphicsAsset> newScreen, float time) {
+	ScreenTransition::setTransitionBetween(move(oldScreen), move(newScreen), time);
 
 	int squareSize = 64;
 	int row = ceil((float) oldScreenAsset->getWidth() / squareSize) + 1;
@@ -255,8 +275,8 @@ ScreenTransitions::LineWipeScreenTransition::~LineWipeScreenTransition() {
 }
 
 void LineWipeScreenTransition::setTransitionBetween(
-	GraphicsAsset* oldScreen, GraphicsAsset* newScreen, float time) {
-	ScreenTransition::setTransitionBetween(oldScreen, newScreen, time);
+	unique_ptr<GraphicsAsset> oldScreen, unique_ptr<GraphicsAsset> newScreen, float time) {
+	ScreenTransition::setTransitionBetween(move(oldScreen), move(newScreen), time);
 
 	int rows = 7;
 	int rowHeight = ceil((float) oldScreenAsset->getHeight() / rows);
@@ -270,7 +290,7 @@ void LineWipeScreenTransition::setTransitionBetween(
 		Line* line = new Line();
 		RECT rect;
 		rect.left = 0;
-		rect.right = oldScreen->getWidth();
+		rect.right = oldScreenAsset->getWidth();
 		rect.top = i*rowHeight;
 		rect.bottom = rect.top + rowHeight;
 		line->rect = rect;

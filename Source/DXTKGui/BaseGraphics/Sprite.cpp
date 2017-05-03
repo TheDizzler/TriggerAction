@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-
+#include "../StringHelper.h"
 Sprite::Sprite() {
 
 	rotation = 0.0f;
@@ -26,13 +26,12 @@ Sprite::Sprite(const Vector2& pos) {
 
 
 Sprite::~Sprite() {
-	texture.Reset();
+
 }
 
 /* GraphicsAsset is not stored in Sprite. */
 void Sprite::load(GraphicsAsset* const graphicsAsset) {
 
-	texture.Reset();
 	texture = graphicsAsset->getTexture();
 	width = graphicsAsset->getWidth();
 	height = graphicsAsset->getHeight();

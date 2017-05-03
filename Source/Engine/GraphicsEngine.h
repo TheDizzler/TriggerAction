@@ -23,7 +23,7 @@ extern unique_ptr<Camera> camera;
 class GraphicsEngine {
 public:
 	GraphicsEngine();
-	~GraphicsEngine();
+	virtual ~GraphicsEngine();
 
 	bool initD3D(HWND hwnd);
 

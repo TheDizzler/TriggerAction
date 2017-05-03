@@ -117,15 +117,22 @@ private:
 	/* Minor error dialog. Choice between exit game and continue. */
 	static unique_ptr<PromptDialog> warningDialog;
 
+	CommonStates* blendState;
+
 };
 
-class QuitButtonListener : public Button::OnClickListener {
+class QuitButtonListener : public Button::ActionListener {
 public:
 	QuitButtonListener(GameEngine* eng) : engine(eng) {
 	}
 	virtual void onClick(Button * button) override {
 		engine->exit();
 	}
-
+	virtual void onPress(Button * button) override {
+	};
+	virtual void onHover(Button * button) override {
+	};
 	GameEngine* engine;
+
+
 };

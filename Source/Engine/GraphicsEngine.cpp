@@ -12,9 +12,22 @@ GraphicsEngine::~GraphicsEngine() {
 	if (swapChain.Get() != NULL)
 		swapChain->SetFullscreenState(false, NULL);
 
+	batch.reset();
+	camera.reset();
+
 	adapters.clear();
 	displays.clear();
 	displayModeList.clear();
+
+	device.Reset();
+	swapChain.Reset();
+	renderTargetView.Reset();
+	deviceContext->Flush();
+	deviceContext.Reset();
+
+	debugDevice->ReportLiveDeviceObjects(D3D11_RLDO_FLAGS::D3D11_RLDO_DETAIL
+		| D3D11_RLDO_FLAGS::D3D11_RLDO_SUMMARY);
+	debugDevice.Reset();
 
 }
 
@@ -23,14 +36,12 @@ bool GraphicsEngine::initD3D(HWND h) {
 
 	hwnd = h;
 	if (!getDisplayAdapters()) {
-		//MessageBox(NULL, L"Error gathering display info", L"ERROR", MB_OK);
 		OutputDebugString(L"Error gathering display info");
 		return false;
 	}
 
 
 	if (!initializeAdapter(selectedAdapterIndex)) {
-		//MessageBox(NULL, L"Error initializing Adapter", L"ERROR", MB_OK);
 		OutputDebugString(L"Error initializing Adapter");
 		return false;
 	}
@@ -169,7 +180,8 @@ bool GraphicsEngine::initializeAdapter(int adapterIndex) {
 		L"Error creating Device and Swap Chain.", L"ERROR"))
 		return false;
 
-	device.Get()->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(debugDevice.GetAddressOf()));
+	device.Get()->QueryInterface(__uuidof(ID3D11Debug),
+		reinterpret_cast<void**>(debugDevice.GetAddressOf()));
 
 	verifyAdapter(device);
 
@@ -391,7 +403,7 @@ bool GraphicsEngine::stopFullScreen() {
 		return false;
 
 	swapChain->SetFullscreenState(false, NULL);
-	
+
 	return true;
 }
 
@@ -509,7 +521,7 @@ bool GraphicsEngine::verifyAdapter(ComPtr<ID3D11Device> deviceCheck) {
 	dxgiDev->Release();
 	dxgiAdapter->Release();
 	factory->Release();
-	
+
 	return true;
 }
 

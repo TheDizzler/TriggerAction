@@ -27,21 +27,20 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		dialogPos.x -= dialogSize.x / 2;
 		dialogPos.y -= dialogSize.y / 2;
 
-		exitDialog = guiFactory->createDialog(dialogPos, dialogSize, true, true, 10);
+		exitDialog.reset(guiFactory->createDialog(dialogPos, dialogSize, true, true, 10));
 		//exitDialog->setDimensions(dialogPos, dialogSize);
 		exitDialog->setTint(Color(0, .5, 1, 1));
-		exitDialog->setTitle(L"Exit Test?", Vector2(1, 1), "BlackCloak");
+		exitDialog->setTitle(L"Exit Game?", Vector2(1, 1), "BlackCloak");
 		//exitDialog->setTitleAreaDimensions(Vector2(0, 150));
-		exitDialog->setText(L"Really Quit The Test Project?");
+		exitDialog->setText(L"Really End The Trigger Action?");
 		unique_ptr<Button> quitButton;
 		quitButton.reset(guiFactory->createButton());
-		quitButton->setOnClickListener(new OnClickListenerDialogQuitButton(this));
-		quitButton->setText(L"Quit");
+		quitButton->setActionListener(new OnClickListenerDialogQuitButton(this));
+		quitButton->setText(L"Time Out");
 		exitDialog->setConfirmButton(move(quitButton));
-		exitDialog->setCancelButton(L"Keep Testing!");
+		exitDialog->setCancelButton(L"Keep Triggering!");
 		exitDialog->setCancelOnClickListener(new CancelDialogButton(gameEngine, exitDialog.get()));
 		//exitDialog->setMatrixFunction([&]()-> Matrix { return camera->translationMatrix(); });
-		//exitDialog->show();
 		exitDialog->setOpenTransition(
 			//new TransitionEffects::SpinGrowTransition(.5));
 			//new TransitionEffects::SplitTransition(25));
@@ -50,15 +49,14 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		/*new TransitionEffects::SlideAndGrowTransition(
 		Vector2(-200, -200), exitDialog->getPosition(),
 		Vector2(.001, .001), Vector2(1, 1)));*/
-		new TransitionEffects::GrowTransition(
-		Vector2(.0001, 0001), Vector2(1, 1), 12));
+			new TransitionEffects::GrowTransition(exitDialog.get(),
+				Vector2(.0001, 0001), Vector2(1, 1), 12));
 		/*new TransitionEffects::SlideTransition(
 		Vector2(-200, -200), exitDialog->getPosition()));*/
 
 		//exitDialog->setCloseTransition(
 		/*new TransitionEffects::ShrinkTransition(
 		Vector2(1, 1), Vector2(.001, .001)));*/
-		//exitDialog->close();
 	}
 
 
@@ -267,4 +265,10 @@ size_t GameManager::getSelectedDisplayModeIndex() {
 void CancelDialogButton::onClick(Button * button) {
 	dialog->hide();
 	engine->paused = false;
+}
+
+void CancelDialogButton::onPress(Button * button) {
+}
+
+void CancelDialogButton::onHover(Button * button) {
 }
