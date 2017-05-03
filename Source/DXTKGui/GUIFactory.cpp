@@ -568,7 +568,8 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromIElement2D(
 			control->textureDraw(batch);
 		}
 		batch->End();
-	}
+	} else
+		control->textureDraw(batch);
 
 	deviceContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	textureRenderTargetView.Reset();
@@ -674,7 +675,8 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 			screen->textureDraw(batch);
 		}
 		batch->End();
-	}
+	} else
+		screen->textureDraw(batch);
 
 	deviceContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	textureRenderTargetView.Reset();

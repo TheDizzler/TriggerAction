@@ -14,13 +14,11 @@ DynamicDialog::~DynamicDialog() {
 void DynamicDialog::initialize(shared_ptr<AssetSet> set, const pugi::char_t* font) {
 
 	assetSet = set;
-
+	texturePanel.reset(guiFactory->createPanel());
 	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 	dialogText.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font));
 
 	setLayerDepth(.95);
-
-
 }
 
 
@@ -79,17 +77,12 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz) {
 	Vector2 textPos = position + dialogTextMargin;
 	dialogText->setPosition(textPos);
 
-	texturePanel->setTexture(texturize());
+	refreshTexture = true;
 }
 
 
 unique_ptr<GraphicsAsset> DynamicDialog::texturize() {
-
-	texturePanel.reset(guiFactory->createPanel());
-	texturePanel->setDimensions(position, size);
 	unique_ptr<GraphicsAsset> gfxAss = guiFactory->createTextureFromIElement2D(this);
-	texturePanel->setTexturePosition(position);
-
 	return move(gfxAss);
 }
 
@@ -187,6 +180,10 @@ void DynamicDialog::textureDraw(SpriteBatch* batch) {
 
 void DynamicDialog::update(double deltaTime) {
 
+	if (refreshTexture) {
+		texturePanel->setTexture(texturize());
+		refreshTexture = false;
+	}
 	dialogText->update(deltaTime);
 }
 

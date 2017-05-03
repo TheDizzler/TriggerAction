@@ -10,6 +10,7 @@
 #include <cctype>
 #include <sstream>
 #include <vector>
+#include <deque>
 #include <queue>
 #include <map>
 #include <WinSDKVer.h>		// these are necessary for XAudio2.8
@@ -26,7 +27,7 @@
 #include <SpriteBatch.h>
 #include <Audio.h>
 #include <pugixml.hpp>
-#include <deque>
+
 
 #include "DXTKGui\GUIFactory.h"
 

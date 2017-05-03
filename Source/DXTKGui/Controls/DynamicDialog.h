@@ -33,7 +33,7 @@ public:
 
 
 protected:
-	bool useTexture = true;
+	bool refreshTexture = true;
 	unique_ptr<TexturePanel> texturePanel;
 
 

@@ -17,7 +17,7 @@ GUIOverlay::GUIOverlay() {
 	Vector2 pos, size;
 	size = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
 	pos = Vector2(Globals::WINDOW_WIDTH - size.x, TEST_BOX_MARGIN);
-	hudDialogs[HUDDIALOG::PLAYERSTATS] = createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+	hudDialogs[HUDDIALOG::PLAYERSTATS] = createPCDialog(guiFactory->getAssetSet("Menu BG 1"), pos, size);
 	hudDialogs[HUDDIALOG::ENEMIES] = createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
 	//hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
 	pos = Vector2(TEST_BOX_MARGIN * 2, TEST_BOX_MARGIN);
@@ -192,7 +192,6 @@ unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialo
 	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(guiFactory.get());
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(position, size);
-	dialog->texturize();
 	return move(dialog);
 }
 

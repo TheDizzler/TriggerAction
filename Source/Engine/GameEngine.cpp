@@ -18,6 +18,7 @@ GameEngine::GameEngine() {
 
 GameEngine::~GameEngine() {
 
+	game.reset();
 	if (audioEngine != NULL)
 		audioEngine->Suspend();
 	delete blendState;

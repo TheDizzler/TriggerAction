@@ -7,7 +7,7 @@
 class TitleScreen : public Screen {
 public:
 	//TitleScreen();
-	~TitleScreen();
+	virtual ~TitleScreen();
 
 
 	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
