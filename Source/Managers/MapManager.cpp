@@ -100,6 +100,9 @@ MapParser::MapParser(ComPtr<ID3D11Device> dev) {
 	device = dev;
 }
 
+MapParser::~MapParser() {
+}
+
 #include "../Engine/GameEngine.h"
 bool MapParser::parseMap(xml_node mapRoot, string mapsDir) {
 
@@ -127,7 +130,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 	for (xml_node tilesetNode : mapRoot.children("tileset")) {
 
 
-		string fileStr = mapsDir + tilesetNode.child("image").attribute("source").as_string();
+		string fileStr = mapsDir
+			+ tilesetNode.child("image").attribute("source").as_string();
 
 		int tileWidth = tilesetNode.attribute("tilewidth").as_int();
 		int tileHeight = tilesetNode.attribute("tileheight").as_int();
@@ -138,7 +142,6 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 		if (!mapAsset->load(device, file)) {
 			wstringstream wss;
 			wss << "Unable to load map texture file: " << file;
-			//MessageBox(0, wss.str().c_str(), L"Critical error", MB_OK);
 			GameEngine::showErrorDialog(wss.str(), L"Critical error");
 			return false;
 		}
@@ -264,7 +267,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 			xml_node animNode = tileNode.child("animation");
 			if (animNode) {
 				vector<shared_ptr<Frame>> frames;
-				
+
 				for (xml_node frameNode : animNode.children("frame")) {
 
 					USHORT frameID = frameNode.attribute("tileid").as_int() + firstGid;
@@ -278,7 +281,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 					float frameTime = frameNode.attribute("duration").as_float() / 1000;
 					frame.reset(new Frame(rect, frameTime));
 					frames.push_back(move(frame));
-					
+
 					// remove from assets (?)
 					map->assetMap.erase(frameID); // (???) if there are any properties they will be lost!
 				}

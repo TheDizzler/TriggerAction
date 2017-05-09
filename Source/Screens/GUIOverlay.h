@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../GUIObjects/MenuDialog.h"
 #include "../GUIObjects/PCSelectDialog.h"
 #include "../Engine/Joystick.h"
 
@@ -11,18 +12,24 @@ public:
 	GUIOverlay();
 	~GUIOverlay();
 
+	void initializeTitleScreen();
 
 	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
+
+	void showMenu();
 
 	void setDialogText(USHORT playerSlotNumber, wstring text);
 
 	void reportLostJoystick(size_t playerSlotNumber);
 
-
+	
 	//void readyPCSelect(shared_ptr<PlayerSlot> playerSlot);
 
 	//unique_ptr<TextLabel> fps2Label;
+
+	/** Displayed by GUIOverlay but controlled by it's associated screen. */
+	unique_ptr<MenuDialog> menuDialog;
 private:
 
 	/*int numPCsAvailable = 2;
@@ -34,6 +41,7 @@ private:
 	};
 	unique_ptr<PCSelectDialog> hudDialogs[HUDDIALOG::PLAYER3 + 1];
 
+	
 	unique_ptr<TextLabel> fpsLabel;
 	
 

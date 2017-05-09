@@ -10,6 +10,7 @@ class TileAsset;
 class TileBase : public IElement3D, public Maskable {
 public:
 
+	virtual ~TileBase();
 	/** Empty update. */
 	virtual void update(double deltaTime);
 
@@ -23,7 +24,7 @@ public:
 class Tile : public TileBase {
 public:
 	Tile();
-
+	virtual ~Tile();
 
 	/* TileAsset is not stored in Tile. */
 	virtual void load(TileAsset* const tileAsset);
@@ -50,6 +51,7 @@ protected:
 class TangibleTile : public Tile, public Tangible {
 public:
 
+	virtual ~TangibleTile();
 	virtual void load(TileAsset* const tileAsset) override;
 
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;

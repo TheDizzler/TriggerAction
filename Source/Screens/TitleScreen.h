@@ -21,20 +21,25 @@ public:
 	virtual void newController(HANDLE joyHandle);
 
 private:
+
+	enum ScreenState {
+		START_MENU, CHARACTER_SELECT
+	};
+	ScreenState state = START_MENU;
+
 	GameManager* game;
-	
+
 	unique_ptr<ControllerDialog> noControllerDialog;
 	//unique_ptr<DynamicDialog> testDialog;
 
 	unique_ptr<Button> quitButton;
 	vector<unique_ptr<RectangleFrame>> frames;
 
-	
 
-	
+
 	unique_ptr<Sprite> pendulum;
 	float pendulumRotation;
-	
+
 	float angularVelocity = 0;
 
 };

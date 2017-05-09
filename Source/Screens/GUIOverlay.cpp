@@ -1,7 +1,7 @@
 #include "../pch.h"
 #include "GUIOverlay.h"
 
-const int TEXT_MARGIN = 5;
+const int TEXT_MARGIN = 10;
 const int TEST_BOX_MARGIN = 16;
 #include "../Engine/GameEngine.h"
 GUIOverlay::GUIOverlay() {
@@ -48,14 +48,23 @@ GUIOverlay::GUIOverlay() {
 	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
 	fpsLabel->setTint(Colors::Black);
 	fpsLabel->setScale(Vector2(.5, .5));
-	fpsLabel->setLayerDepth(1);
+	//fpsLabel->setLayerDepth(1);
 
+
+	menuDialog = make_unique<MenuDialog>(guiFactory.get());
+	menuDialog->initialize(guiFactory->getAssetSet("Menu BG 1"));
+	menuDialog->setDimensions(
+		Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 2),
+		Vector2(100, 100));
+	/*menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());*/
+	//menuDialog->show();
 	//fps2Label.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 60)));
 	//fps2Label->setTint(Colors::Black);
 	//fps2Label->setScale(Vector2(.5, .5));
 	//fps2Label->setLayerDepth(1);
 
 	//InitializeCriticalSection(&cs_selectingPC);
+
 }
 
 
@@ -68,6 +77,17 @@ GUIOverlay::~GUIOverlay() {
 
 	//DeleteCriticalSection(&cs_selectingPC);
 
+}
+
+void GUIOverlay::initializeTitleScreen() {
+
+	menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());
+	menuDialog->setText(L"Hello Menu");
+	menuDialog->clearSelections();
+	menuDialog->addSelection(L"New Game", true);
+	menuDialog->addSelection(L"Continue Game", false);
+	menuDialog->addSelection(L"Settings", true);
+	menuDialog->addSelection(L"Quit", true);
 }
 
 
@@ -84,27 +104,24 @@ void GUIOverlay::update(double deltaTime) {
 		wss << "frameCount: " << frameCount << " fpsUpdateTime: " << fpsUpdateTime << endl;
 		wss << "fps: " << frameCount / fpsUpdateTime;
 		fpsLabel->setText(wss);
+		fpsLabel->update(deltaTime);
 
 		fpsUpdateTime = 0;
 		frameCount = 0;
 	}
 
-
-	/*for (const auto& slot : playerSlots) {
-		if (slot->joystick->bButtonStates[0]) {
-
-		}
-	}*/
-
-	/*if (waitingForInput.size() > 0) {
-		sharedResource(READ_INPUT, NULL);
-	}*/
 	for (const auto& dialog : lostJoyDialogs) {
 		dialog->update(deltaTime);
 	}
 
 	for (const auto& dialog : hudDialogs)
 		dialog->update(deltaTime);
+
+	/*menuDialog->update(deltaTime);
+	if (menuDialog->selectionMade) {
+		
+
+	}*/
 }
 
 void GUIOverlay::draw(SpriteBatch* batch) {
@@ -115,9 +132,13 @@ void GUIOverlay::draw(SpriteBatch* batch) {
 	for (const auto& dialog : lostJoyDialogs)
 		dialog->draw(batch);
 
-
+	menuDialog->draw(batch);
 	fpsLabel->draw(batch);
 	//fps2Label->draw(batch);
+}
+
+void GUIOverlay::showMenu() {
+	menuDialog->show();
 }
 
 void GUIOverlay::setDialogText(USHORT playerSlotNumber, wstring text) {

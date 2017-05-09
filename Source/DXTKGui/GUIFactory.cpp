@@ -15,8 +15,7 @@ GUIFactory::GUIFactory(HWND h, pugi::xml_node guiAssets) {
 
 
 GUIFactory::~GUIFactory() {
-	// on or off, none of these have an effect on live objects
-	device.Reset();
+	/*device.Reset();
 	deviceContext.Reset();
 	docAssMan.reset();
 	mouseController.reset();
@@ -32,7 +31,7 @@ GUIFactory::~GUIFactory() {
 	for (auto& set : setMap)
 		set.second.reset();
 	setMap.clear();
-	whitePixel.Reset();
+	whitePixel.Reset();*/
 
 }
 

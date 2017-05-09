@@ -4,6 +4,8 @@
 DynamicDialog::DynamicDialog(GUIFactory* factory,
 	shared_ptr<MouseController> mouseController) : Dialog(factory, mouseController) {
 
+	texturePanel.reset(guiFactory->createPanel());
+	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
 }
 
 DynamicDialog::~DynamicDialog() {
@@ -14,8 +16,18 @@ DynamicDialog::~DynamicDialog() {
 void DynamicDialog::initialize(shared_ptr<AssetSet> set, const pugi::char_t* font) {
 
 	assetSet = set;
-	texturePanel.reset(guiFactory->createPanel());
-	hitArea = make_unique<HitArea>(Vector2::Zero, Vector2::Zero);
+	topLeftCorner = assetSet->getAsset("Top Left Corner");
+	topCenter = assetSet->getAsset("Top Center");
+	topRightCorner = assetSet->getAsset("Top Right Corner");
+
+	centerLeft = assetSet->getAsset("Left Center");
+	middle = assetSet->getAsset("Center");
+	centerRight = assetSet->getAsset("Right Center");
+
+	bottomLeftCorner = assetSet->getAsset("Bottom Left Corner");
+	bottomCenter = assetSet->getAsset("Bottom Center");
+	bottomRightCorner = assetSet->getAsset("Bottom Right Corner");
+
 	dialogText.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font));
 
 	setLayerDepth(.95);
@@ -37,17 +49,7 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz) {
 		OutputDebugString(L"\n\t!!Critical Failure in Dynamic Dialog: asset set is NULL!!\n\n");
 		return;
 	}
-	topLeftCorner = assetSet->getAsset("Top Left Corner");
-	topCenter = assetSet->getAsset("Top Center");
-	topRightCorner = assetSet->getAsset("Top Right Corner");
-
-	centerLeft = assetSet->getAsset("Left Center");
-	middle = assetSet->getAsset("Center");
-	centerRight = assetSet->getAsset("Right Center");
-
-	bottomLeftCorner = assetSet->getAsset("Bottom Left Corner");
-	bottomCenter = assetSet->getAsset("Bottom Center");
-	bottomRightCorner = assetSet->getAsset("Bottom Right Corner");
+	
 
 	if (size.x > 0 && size.y > 0) {
 		// adjust to size of images
@@ -82,8 +84,7 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz) {
 
 
 unique_ptr<GraphicsAsset> DynamicDialog::texturize() {
-	unique_ptr<GraphicsAsset> gfxAss = guiFactory->createTextureFromIElement2D(this);
-	return move(gfxAss);
+	return move(guiFactory->createTextureFromIElement2D(this));
 }
 
 

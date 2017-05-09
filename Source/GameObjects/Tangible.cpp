@@ -74,6 +74,7 @@ void Tangible::debugUpdate(Vector2 moveAmount) {
 		testFrame.reset(guiFactory->createRectangleFrame(
 			Vector2(hitbox->position.x, hitbox->position.y), Vector2(hitbox->size.x, hitbox->size.y)));
 
+	testFrame->update();
 	testFrame->moveBy(moveAmount);
 }
 void Tangible::debugDraw(SpriteBatch* batch) {

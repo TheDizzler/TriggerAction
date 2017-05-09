@@ -10,7 +10,7 @@
 
 extern unique_ptr<GUIFactory> guiFactory;
 extern unique_ptr<GFXAssetManager> gfxAssets;
-
+extern bool gameInitialized;
 
 /** The engine to connect higher level game code to the low level
 	graphic and OS software. This class should be reusable for any 2D game,
@@ -93,6 +93,8 @@ public:
 
 	virtual void controllerRemoved(size_t controllerSlot) override;
 	virtual void newController(HANDLE joyHandle) override;
+
+	
 private:
 
 	unique_ptr<AudioEngine> audioEngine;

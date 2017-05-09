@@ -4,7 +4,6 @@
 #include "../GameObjects/PlayerCharacter.h"
 #include "../Managers/MapManager.h"
 
-//static const char_t* characters[] = {"Marle", "Frog"};
 
 extern vector<const Hitbox*> hitboxesAll;
 
@@ -12,11 +11,9 @@ extern vector<const Hitbox*> hitboxesAll;
 class LevelScreen : public Screen {
 public:
 
+	virtual ~LevelScreen();
 
-
-	//LevelScreen(vector<shared_ptr<Joystick>> joystickSlots);
-	~LevelScreen();
-
+	/** Don't need to use in LevelScreen! */
 	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
 	virtual void setGameManager(GameManager* game) override;
 
@@ -34,7 +31,6 @@ private:
 
 	unique_ptr<Map> map;
 
-	//vector<shared_ptr<Joystick>> joystickSlots;
 	vector<unique_ptr<PlayerCharacter>> pcs;
 
 

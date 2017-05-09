@@ -23,6 +23,9 @@ void TileBase::setPosition(const Vector3& newpos) {
 		setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
 
+TileBase::~TileBase() {
+}
+
 void TileBase::update(double deltaTime) {
 }
 
@@ -38,6 +41,9 @@ Tile::Tile() {
 
 	width = 0;
 	height = 0;
+}
+
+Tile::~Tile() {
 }
 
 
@@ -82,6 +88,9 @@ const int Tile::getHeight() const {
 
 
 
+
+TangibleTile::~TangibleTile() {
+}
 
 void TangibleTile::load(TileAsset * const tileAsset) {
 	Tile::load(tileAsset);

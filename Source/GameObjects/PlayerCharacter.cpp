@@ -5,28 +5,24 @@
 PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	playerSlot = slot;
 	joystick = playerSlot->getStick();
-}
 
-PlayerCharacter::~PlayerCharacter() {
-	playerSlot.reset();
-}
-
-#include "../Managers/MapManager.h"
-void PlayerCharacter::initialize(const CharacterData* characterData, int startingPosition) {
-
-	playerNumber = startingPosition;
+	characterData = slot->characterData;
 	name = characterData->name;
 	assetSet = characterData->assets;
 	hitbox = make_unique<Hitbox>(characterData->hitbox.get());
-
-	
 	loadAnimation("stand right");
 	origin = Vector2(0, getHeight());
 }
 
-void PlayerCharacter::setInitialPosition() {
+PlayerCharacter::~PlayerCharacter() {
+}
 
-	setPosition(Vector3(100, 64 * playerNumber, 0));
+#include "../Managers/MapManager.h"
+
+
+void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
+
+	setPosition(Vector3(startingPosition.x, startingPosition.y, 0));
 
 }
 

@@ -18,6 +18,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	quitButton->setActionListener(new OnClickListenerDialogQuitButton(game));
 	//quitButton->setLayerDepth(0.0);
 
+
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 3);
 	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
@@ -30,15 +31,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	noControllerDialog->setLayerDepth(1);
 	noControllerDialog->setText(L"Waiting for controller");
 
-	/*bool noJoys = true;
-	for (const auto& slot : playerSlots) {
-		if (slot->hasJoystick()) {
-			noJoys = false;
-			break;
-		}
-	}
-	if (noJoys)
-		noControllerDialog->show();*/
+
 
 	if (activeSlots.size() == 0)
 		noControllerDialog->show();
@@ -54,12 +47,10 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	pendulum->setRotation(pendulumRotation);
 	pendulum->setLayerDepth(.9);
 
-	Vector2 pos = Vector2::Zero;
-	for (int i = 0; i < 300; ++i) {
 
-
-	}
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
+
+	guiOverlay->initializeTitleScreen();
 
 	return true;
 }
@@ -103,16 +94,39 @@ void TitleScreen::update(double deltaTime) {
 
 	if (noControllerDialog->isOpen()) {
 		noControllerDialog->update(deltaTime);
-		slotManager->waiting();
+		//slotManager->waiting();
 	} else {
-		quitButton->update(deltaTime);
 
+		bool ready = true;
 		for (const auto& slot : activeSlots) {
-			slot->characterSelect(deltaTime);
+			if (!slot->characterSelect(deltaTime))
+				ready = false;
 		}
 
-		slotManager->waiting();
+		if (ready) {
+			guiOverlay->showMenu();
+		}
+		guiOverlay->menuDialog->update(deltaTime);
+		if (guiOverlay->menuDialog->selectionMade) {
+
+			switch (guiOverlay->menuDialog->getSelected()) {
+				case TitleItems::QUIT:
+					game->exit();
+					break;
+				case TitleItems::NEW_GAME:
+					//state = CHARACTER_SELECT;
+					guiOverlay->menuDialog->hide();
+					game->loadLevel("Test Square C");
+					break;
+
+			}
+		}
 	}
+	quitButton->update(deltaTime);
+
+
+	slotManager->waiting();
+
 }
 
 

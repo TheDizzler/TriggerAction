@@ -186,6 +186,9 @@
     <ClCompile Include="Source\DXTKGui\GUIFactory.cpp">
       <Filter>Source Files\DXTGui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUIObjects\MenuDialog.cpp">
+      <Filter>Source Files\GUIObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controls\Button.h">
@@ -328,6 +331,9 @@
     </ClInclude>
     <ClInclude Include="Source\DXTKGui\GUIFactory.h">
       <Filter>Header Files\DXTGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GUIObjects\MenuDialog.h">
+      <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

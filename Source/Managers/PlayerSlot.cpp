@@ -4,12 +4,11 @@
 vector<shared_ptr<PlayerSlot>> activeSlots;
 deque<shared_ptr<PlayerSlot>> waitingSlots;
 
-//#include "../Screens/GUIOverlay.h"
+
 #include "../Engine/GameEngine.h"
-void PlayerSlot::characterSelect(double deltaTime) {
+bool PlayerSlot::characterSelect(double deltaTime) {
 
 	if (characterLocked) {
-
 
 	} else {
 		if (!characterSelected) {
@@ -37,7 +36,7 @@ void PlayerSlot::characterSelect(double deltaTime) {
 	}
 
 
-	if (joystick->bButtonStates[0]) {
+	if (joystick->bButtonStates[ControlButtons::A]) {
 		if (!buttonStillDown) {
 			buttonStillDown = true;
 
@@ -49,9 +48,8 @@ void PlayerSlot::characterSelect(double deltaTime) {
 				pcDialog->setSelected(true);
 			}
 		}
-	} else if (joystick->bButtonStates[1]) {
+	} else if (joystick->bButtonStates[ControlButtons::B]) {
 		if (!buttonStillDown) {
-			buttonStillDown = true;
 			buttonStillDown = true;
 
 			if (characterLocked || characterSelected) {
@@ -65,6 +63,8 @@ void PlayerSlot::characterSelect(double deltaTime) {
 		buttonStillDown = false;
 
 	}
+
+	return characterLocked;
 }
 
 

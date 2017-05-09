@@ -8,6 +8,7 @@ PCSelectDialog::PCSelectDialog(GUIFactory* guiF) : DynamicDialog(guiF, NULL) {
 	magicEnglish = make_unique<Sprite>();
 	weaponType = make_unique<Sprite>();
 	pointer = make_unique<SelectionPointer>();
+	pointer->load(guiFactory->getAsset("Cursor Hand 2"));
 
 }
 
@@ -30,7 +31,6 @@ void PCSelectDialog::pairPlayerSlot(PlayerSlot* slot) {
 void PCSelectDialog::loadPC(CharacterData* pcData) {
 
 	auto pcAssets = pcData->assets;
-	pointer->load(guiFactory->getAsset("Cursor Hand 2"));
 
 	portrait->load(pcAssets->getAsset("portrait"));
 	portrait->setOrigin(Vector2::Zero);

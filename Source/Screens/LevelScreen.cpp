@@ -10,26 +10,10 @@ LevelScreen::~LevelScreen() {
 }
 
 #include "../Engine/GameEngine.h"
-bool LevelScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
+bool LevelScreen::initialize(ComPtr<ID3D11Device> device,
+	shared_ptr<MouseController> mouse) {
 
-	//for (int i = 0; i < joystickSlots; ++i) {
-	int i = 0;
-	//for (const auto& joystick : joystickPorts) {
-		//if (!joystick->getHandle())
-			//continue;
-	for (const auto& slot : activeSlots) {
-		/*if (!slot->hasJoystick())
-			continue;*/
-		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(slot);
-		const CharacterData* dataSet = gfxAssets->getPlayerData(characters[i]);
-		if (!dataSet)
-			return false;
-		newPC->initialize(dataSet, i);
-
-		hitboxesAll.push_back(newPC->getHitbox());
-		pcs.push_back(move(newPC));
-		++i;
-	}
+	
 	return true;
 }
 
@@ -43,8 +27,15 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 	map.reset();
 	map = move(newMap);
 
-	for (const auto& pc : pcs)
-		pc->setInitialPosition();
+	for (const auto& slot : activeSlots) {
+
+		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(slot);
+
+		hitboxesAll.push_back(newPC->getHitbox());
+		newPC->setInitialPosition(Vector2(10, 100));
+		pcs.push_back(move(newPC));
+
+	}
 
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
 }

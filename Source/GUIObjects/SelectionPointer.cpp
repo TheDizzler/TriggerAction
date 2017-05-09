@@ -15,8 +15,6 @@ SelectionPointer::~SelectionPointer() {
 #include "../Engine/Joystick.h"
 void SelectionPointer::update(double deltaTime) {
 
-
-
 	if (!selectedPosition) {
 		// bouncing animation
 		selectingTime += deltaTime;

@@ -9,7 +9,7 @@
 
 class TileAsset : public GraphicsAsset {
 public:
-	~TileAsset();
+	virtual ~TileAsset();
 
 	map<string, string> properties;
 	vector<unique_ptr<Hitbox>> hitboxes;
@@ -22,7 +22,7 @@ class AnimationAsset : public Animation {
 public:
 
 	AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames);
-	~AnimationAsset();
+	virtual ~AnimationAsset();
 
 	map<string, string> properties;
 	vector<unique_ptr<Hitbox>> hitboxes;
@@ -54,7 +54,7 @@ public:
 	public:
 		Layer(string layerName) : name(layerName) {
 		}
-		~Layer();
+		virtual ~Layer();
 
 		string name;
 
@@ -67,7 +67,7 @@ public:
 	};
 
 	Map();
-	~Map();
+	virtual ~Map();
 
 	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
@@ -110,7 +110,7 @@ class MapParser {
 	friend class Hitbox;
 public:
 	MapParser(ComPtr<ID3D11Device> device);
-	//~MapParser();
+	virtual ~MapParser();
 
 
 	bool parseMap(xml_node mapRoot, string mapsDir);

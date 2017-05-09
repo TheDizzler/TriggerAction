@@ -12,11 +12,10 @@ enum Facing {
 
 class PlayerCharacter : public Tangible {
 public:
-	PlayerCharacter(shared_ptr<PlayerSlot> joystick);
+	PlayerCharacter(shared_ptr<PlayerSlot> slot);
 	virtual ~PlayerCharacter();
 
-	virtual void initialize(const CharacterData* characterData, int startingPosition);
-	void setInitialPosition();
+	void setInitialPosition(const Vector2& startingPosition);
 
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
@@ -29,11 +28,11 @@ public:
 	virtual void setPosition(const Vector3 & position) override;
 
 	string name;
-	size_t playerNumber = -1;
 private:
 
 	shared_ptr<PlayerSlot> playerSlot;
 	Joystick* joystick;
+	CharacterData* characterData;
 	shared_ptr<AssetSet> assetSet;
 	shared_ptr<Animation> currentAnimation;
 

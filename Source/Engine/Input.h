@@ -38,7 +38,7 @@ public:
 	/** This is a virtual representation of physical controller ports. */
 	shared_ptr<Joystick> joystickPorts[MAX_PLAYERS];
 protected:
-	bool gameInitialized = false;
+	
 	map<HANDLE, shared_ptr<Joystick>> joystickMap;
 	/** When a new controller is detected, they get placed here until a player "claims" it. */
 	//map<HANDLE, shared_ptr<Joystick>> unclaimedJoysticks;

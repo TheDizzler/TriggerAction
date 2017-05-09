@@ -3,7 +3,7 @@
 
 unique_ptr<GUIFactory> guiFactory;
 unique_ptr<GFXAssetManager> gfxAssets;
-
+bool gameInitialized = false;
 
 
 unique_ptr<PromptDialog> GameEngine::errorDialog;
@@ -122,6 +122,7 @@ bool GameEngine::initStage() {
 		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;
 	}
+
 	return true;
 }
 
@@ -235,8 +236,8 @@ void GameEngine::update(double deltaTime) {
 void GameEngine::render() {
 
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::GhostWhite);
-	/*CommonStates blendState(device.Get());*/
-	batch->Begin(SpriteSortMode_FrontToBack/*, NULL, NULL, NULL, NULL, NULL, camera->translationMatrix()*/);
+	batch->Begin(SpriteSortMode_FrontToBack, blendState->NonPremultiplied(),
+		NULL, NULL, NULL, NULL, camera->translationMatrix() );
 	{
 		game->draw(batch.get());
 	}

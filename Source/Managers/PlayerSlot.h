@@ -4,6 +4,9 @@
 #include "../Engine/Joystick.h"
 #include "../GameObjects/CharacterData.h"
 
+enum ControlButtons {
+	A = 0, B, X, Y, L, R, SELECT, START
+};
 
 const double REPEAT_DELAY = .5;
 
@@ -17,7 +20,7 @@ public:
 	PlayerSlot(size_t slotNum) : slotNumber(slotNum) {
 	}
 
-	void characterSelect(double deltaTime);
+	bool characterSelect(double deltaTime);
 	void waiting();
 
 
@@ -38,14 +41,14 @@ public:
 
 	void setDialogText(wstring text);
 	PCSelectDialog* pcDialog;
+	CharacterData* characterData;
 private:
 	Joystick* joystick = NULL;
 	size_t slotNumber;
 
 	double repeatDelayTime = REPEAT_DELAY;
-	
+
 	int currentCharacterNum = -1;
-	CharacterData* characterData;
 	bool characterSelected = false;
 	bool characterLocked = false;
 	bool buttonStillDown = false;
@@ -63,7 +66,7 @@ public:
 	~PlayerSlotManager();
 
 	void waiting();
-	
+
 
 	void controllerRemoved(size_t playerSlotNumber);
 	void controllerTryingToPair(JoyData* joyData);

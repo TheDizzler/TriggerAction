@@ -248,7 +248,8 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 
 	JoyData* joyData = (JoyData*) pVoid;
 
-	while (guiOverlay == NULL) { // Jus hol up
+	//while (guiOverlay == NULL) { // Jus hol up
+	while(!gameInitialized) {
 		//wostringstream wss;
 		//wss << L"Test Thread #" << GetCurrentThreadId() << endl;
 		//wss << data->joystick->socket << " waiting for HUD." << endl;
