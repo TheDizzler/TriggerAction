@@ -72,16 +72,37 @@ void Tangible::debugUpdate(Vector2 moveAmount) {
 
 	if (!testFrame.get())
 		testFrame.reset(guiFactory->createRectangleFrame(
-			Vector2(hitbox->position.x, hitbox->position.y), Vector2(hitbox->size.x, hitbox->size.y)));
+			Vector2(hitbox->position.x, hitbox->position.y),
+			Vector2(hitbox->size.x, hitbox->size.y)));
 
 	testFrame->update();
 	testFrame->moveBy(moveAmount);
 }
+
 void Tangible::debugDraw(SpriteBatch* batch) {
 
 	if (!testFrame.get())
 		testFrame.reset(guiFactory->createRectangleFrame(
-			Vector2(hitbox->position.x, hitbox->position.y), Vector2(hitbox->size.x, hitbox->size.y)));
+			Vector2(hitbox->position.x, hitbox->position.y),
+			Vector2(hitbox->size.x, hitbox->size.y)));
 
 	testFrame->draw(batch);
+}
+
+void Tangible::debugSetTint(const Color& color) {
+
+	testFrame->setTint(color);
+}
+
+void Tangible::setHitboxPosition(const Vector3& newPosition) {
+
+	hitbox->position = newPosition;
+	testFrame->setPosition(Vector2(newPosition.x, newPosition.y));
+}
+
+void Tangible::moveHitboxBy(const Vector3& moveVector) {
+
+	hitbox->position += moveVector;
+	if (testFrame.get())
+		testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
 }

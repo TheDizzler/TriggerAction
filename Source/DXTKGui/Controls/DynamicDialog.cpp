@@ -9,7 +9,7 @@ DynamicDialog::DynamicDialog(GUIFactory* factory,
 }
 
 DynamicDialog::~DynamicDialog() {
-
+	assetSet.reset();
 }
 
 

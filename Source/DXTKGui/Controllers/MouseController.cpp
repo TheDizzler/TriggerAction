@@ -9,6 +9,7 @@ MouseController::MouseController(HWND h) {
 }
 
 MouseController::~MouseController() {
+	mouse.reset();
 }
 
 

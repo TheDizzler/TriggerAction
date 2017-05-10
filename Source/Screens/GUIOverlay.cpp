@@ -56,12 +56,6 @@ GUIOverlay::GUIOverlay() {
 	menuDialog->setDimensions(
 		Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 2),
 		Vector2(100, 100));
-	/*menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());*/
-	//menuDialog->show();
-	//fps2Label.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 60)));
-	//fps2Label->setTint(Colors::Black);
-	//fps2Label->setScale(Vector2(.5, .5));
-	//fps2Label->setLayerDepth(1);
 
 	//InitializeCriticalSection(&cs_selectingPC);
 
@@ -86,7 +80,7 @@ void GUIOverlay::initializeTitleScreen() {
 	menuDialog->clearSelections();
 	menuDialog->addSelection(L"New Game", true);
 	menuDialog->addSelection(L"Continue Game", false);
-	menuDialog->addSelection(L"Settings", true);
+	menuDialog->addSelection(L"Options", true);
 	menuDialog->addSelection(L"Quit", true);
 }
 
@@ -116,12 +110,6 @@ void GUIOverlay::update(double deltaTime) {
 
 	for (const auto& dialog : hudDialogs)
 		dialog->update(deltaTime);
-
-	/*menuDialog->update(deltaTime);
-	if (menuDialog->selectionMade) {
-		
-
-	}*/
 }
 
 void GUIOverlay::draw(SpriteBatch* batch) {

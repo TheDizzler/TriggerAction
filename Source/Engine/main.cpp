@@ -115,14 +115,8 @@ int messageLoop() {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {	// game code
-			/*frameCount++;
-			if (getSecondsSinceStart() > 1.0f) {
-				frameCount = 0;
-				startTimer();
-			}*/
 
 			double frameTime = getFrameTime();
-			//framesPerSecond = frameTime*1000;
 
 			gameEngine->run(frameTime);
 

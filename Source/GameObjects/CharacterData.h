@@ -1,5 +1,5 @@
 #pragma once
-//#include "PlayerCharacter.h"
+
 
 class AssetSet;
 class Hitbox;
@@ -7,7 +7,7 @@ class Hitbox;
 class CharacterData {
 public:
 	CharacterData(string name);
-	//~CharacterData();
+	virtual ~CharacterData();
 
 	void loadData(xml_node characterDataNode, shared_ptr<AssetSet> assetSet);
 

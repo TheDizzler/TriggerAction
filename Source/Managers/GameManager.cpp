@@ -60,6 +60,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 	}
 
 
+
 	guiOverlay = make_unique<GUIOverlay>();
 
 
@@ -240,9 +241,6 @@ vector<DXGI_MODE_DESC> GameManager::getDisplayModeList(ComPtr<IDXGIOutput> displ
 	return gameEngine->getDisplayModeList(display);
 }
 
-//void GameManager::setDisplayMode(DXGI_MODE_DESC displayMode) {
-//	gameEngine->setDisplayMode(displayMode);
-//}
 
 bool GameManager::setAdapter(size_t adapterIndex) {
 	return gameEngine->setAdapter(adapterIndex);
@@ -268,6 +266,8 @@ size_t GameManager::getSelectedDisplayIndex() {
 size_t GameManager::getSelectedDisplayModeIndex() {
 	return gameEngine->getSelectedDisplayModeIndex();
 }
+
+
 
 void CancelDialogButton::onClick(Button * button) {
 	dialog->hide();

@@ -20,12 +20,14 @@ public:
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
 
-	virtual bool checkCollisionWith(const Hitbox * hitbox) const override;
+	/** NOTE: Currently returns FALSE always! */
+	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
 
 	int getHeight() const;
+	int getWidth() const;
 	virtual const Hitbox* getHitbox() const override;
-	virtual void moveBy(const Vector3 & moveVector) override;
-	virtual void setPosition(const Vector3 & position) override;
+	virtual void moveBy(const Vector3& moveVector) override;
+	virtual void setPosition(const Vector3& position) override;
 
 	string name;
 private:
@@ -73,6 +75,6 @@ private:
 	float runRightSpeed = 100;
 
 
-
+	bool lastHit = false;
 
 };

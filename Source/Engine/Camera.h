@@ -50,10 +50,6 @@ private:
 	Vector2 cameraPosition;
 	float zoom;
 	
-	Vector2 targetResolution = Vector2(256, 224);
-
-	/*float viewX = (viewportWidth / zoom / 2);
-	float viewY = (viewportHeight / zoom / 2);*/
 
 	Vector2* screenToWorld(Vector2 screenPosition);
 	

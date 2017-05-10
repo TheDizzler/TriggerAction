@@ -26,6 +26,7 @@ Sprite::Sprite(const Vector2& pos) {
 
 
 Sprite::~Sprite() {
+	texture.Reset();
 
 }
 

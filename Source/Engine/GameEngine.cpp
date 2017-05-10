@@ -9,8 +9,8 @@ bool gameInitialized = false;
 unique_ptr<PromptDialog> GameEngine::errorDialog;
 unique_ptr<PromptDialog> GameEngine::warningDialog;
 Dialog* GameEngine::showDialog = NULL;
-
-
+bool GameEngine::paused = false;
+bool GameEngine::dialogCustom = false;
 
 GameEngine::GameEngine() {
 }
@@ -44,8 +44,6 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 		return false;
 	}
 
-	//joyListener = make_unique<ControllerListener>(this);
-
 	// Initialize Audio Engine
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	AUDIO_ENGINE_FLAGS audioFlags = AudioEngine_Default;
@@ -68,11 +66,11 @@ bool GameEngine::initEngine(HWND hw, HINSTANCE hInstance) {
 
 
 	if (!initStage()) {
-		//MessageBox(0, L"Stage Initialization Failed", L"Error", MB_OK);
 		GameEngine::errorMessage(L"Stage Initialization Failed");
 		return false;
 	}
 
+	paused = false;
 	gameInitialized = true;
 	return true;
 }
@@ -98,7 +96,6 @@ bool GameEngine::initGFXAssets() {
 	if (!guiFactory->initialize(device, deviceContext,
 		swapChain, batch.get(), mouse)) {
 
-		//MessageBox(0, L"Failed to load GUIFactory", L"Fatal Error", MB_OK);
 		GameEngine::errorMessage(L"Failed to load GUIFactory", L"Fatal Error");
 		return false;
 	}
@@ -196,17 +193,6 @@ void GameEngine::run(double deltaTime) {
 }
 
 
-void GameEngine::controllerRemoved(size_t controllerSlot) {
-
-	game->controllerRemoved(controllerSlot);
-}
-
-void GameEngine::newController(HANDLE joyHandle) {
-
-	game->newController(joyHandle);
-}
-
-
 void GameEngine::update(double deltaTime) {
 
 	mouse->saveMouseState();
@@ -216,13 +202,33 @@ void GameEngine::update(double deltaTime) {
 		keyTracker.Update(state);
 
 		if (showDialog->isOpen()) {
-
-			if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
-				showDialog->hide();
-				paused = false;
-				return;
-			}
 			showDialog->update(deltaTime);
+			if (dialogCustom) {
+				MenuDialog* dialog = (MenuDialog*) showDialog;
+				if (dialog->selectionMade) {
+					switch (dialog->getSelected()) {
+						case PauseMenuItems::QUIT:
+							dialog->hide();
+							paused = false;
+							dialogCustom = false;
+							exit();
+							break;
+						case PauseMenuItems::CONTINUE:
+							dialog->hide();
+							paused = false;
+							dialogCustom = false;
+							break;
+
+					}
+				}
+			} else {
+				if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+					showDialog->hide();
+					paused = false;
+					return;
+				}
+			}
+
 		} else if (keyTracker.IsKeyPressed(Keyboard::Escape))
 			game->confirmExit();
 	} else
@@ -237,7 +243,7 @@ void GameEngine::render() {
 
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::GhostWhite);
 	batch->Begin(SpriteSortMode_FrontToBack, blendState->NonPremultiplied(),
-		NULL, NULL, NULL, NULL, camera->translationMatrix() );
+		NULL, NULL, NULL, NULL, camera->translationMatrix());
 	{
 		game->draw(batch.get());
 	}
@@ -258,7 +264,8 @@ void GameEngine::suspend() {
 
 	stopFullScreen();
 	if (game != NULL) {
-		game->pause();
+		if (!paused)
+			game->pause();
 	}
 	if (audioEngine != NULL)
 		audioEngine->Suspend();
@@ -275,4 +282,15 @@ void GameEngine::exit() {
 	if (swapChain.Get() != NULL)
 		swapChain->SetFullscreenState(false, NULL);
 	DestroyWindow(hwnd);
+}
+
+
+void GameEngine::controllerRemoved(size_t controllerSlot) {
+
+	game->controllerRemoved(controllerSlot);
+}
+
+void GameEngine::newController(HANDLE joyHandle) {
+
+	game->newController(joyHandle);
 }

@@ -65,6 +65,7 @@ double g = GRAVITY;
 float angularAcceleration = 0;
 float damping = .99989;
 bool doneSwinging = false;
+bool openedOnce = false;
 void TitleScreen::update(double deltaTime) {
 
 
@@ -103,14 +104,15 @@ void TitleScreen::update(double deltaTime) {
 				ready = false;
 		}
 
-		if (ready) {
+		if (!openedOnce && ready) {
 			guiOverlay->showMenu();
+			openedOnce = true;
 		}
 		guiOverlay->menuDialog->update(deltaTime);
 		if (guiOverlay->menuDialog->selectionMade) {
 
 			switch (guiOverlay->menuDialog->getSelected()) {
-				case TitleItems::QUIT:
+				case TitleItems::QUIT_GAME:
 					game->exit();
 					break;
 				case TitleItems::NEW_GAME:

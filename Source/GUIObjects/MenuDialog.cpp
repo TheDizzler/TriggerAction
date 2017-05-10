@@ -9,9 +9,11 @@ MenuDialog::MenuDialog(GUIFactory* guiF) : DynamicDialog(guiF, NULL) {
 }
 
 MenuDialog::~MenuDialog() {
-	selections.clear();
 }
 
+void MenuDialog::pairPlayerSlot(PlayerSlot* slot) {
+	playerSlot = slot;
+}
 
 void MenuDialog::setText(wstring text) {
 	dialogText->setText(text);
@@ -20,6 +22,7 @@ void MenuDialog::setText(wstring text) {
 	firstSelectionPosition.y += dialogText->getHeight() + dialogTextMargin.y;
 	pointerPos = firstSelectionPosition;
 	pointerPos.y += dialogText->getHeight() / 2;
+	pointer->setPosition(pointerPos);
 }
 
 void MenuDialog::setDimensions(const Vector2& position, const Vector2& size) {
@@ -33,36 +36,33 @@ void MenuDialog::setDimensions(const Vector2& position, const Vector2& size) {
 
 	pointerPos = firstSelectionPosition;
 	pointerPos.y += dialogText->getHeight() / 2;
-	//pointer->setPosition(pointerPos);
 
 }
 
-void MenuDialog::pairPlayerSlot(PlayerSlot* slot) {
-	playerSlot = slot;
-}
+
 
 void MenuDialog::clearSelections() {
 	selections.clear();
+	selectionsActive.clear();
 	selectionMade = false;
 }
 
 void MenuDialog::addSelection(wstring selection, bool enabled) {
 
-	Vector2 newSize/* = Vector2(dialogText->getWidth() + dialogTextMargin.x * 2,
-		dialogText->getHeight() + dialogTextMargin.y * 2)*/;
+	Vector2 newSize;
 
 	Vector2 pos;
 	size_t numSelections = selections.size();
-	if (numSelections == 0)
+	if (numSelections == 0) {
 		pos = firstSelectionPosition;
-	else {
+		pointer->setPosition(pointerPos);
+	} else {
 		pos = selections[numSelections - 1]->getPosition();
 		pos.y += (selections[numSelections - 1]->getHeight() + dialogTextMargin.y);
 
 		for (const auto& selection : selections) {
 			if (newSize.x < selection->getWidth() + dialogTextMargin.x * 2)
 				newSize.x = selection->getWidth() + dialogTextMargin.x * 2;
-			//newSize.y += selection->getHeight() + dialogTextMargin.y;
 		}
 	}
 	unique_ptr<TextLabel> newLabel;
@@ -70,19 +70,16 @@ void MenuDialog::addSelection(wstring selection, bool enabled) {
 
 	if (newSize.x < newLabel->getWidth() + dialogTextMargin.x * 2)
 		newSize.x = newLabel->getWidth() + dialogTextMargin.x * 2;
-	////if (newSize.y + newLabel->getHeight() + dialogTextMargin.y > size.x)
-	//newSize.y += newLabel->getHeight() + dialogTextMargin.y;
 
 	if (!enabled)
 		newLabel->setTint(Colors::Gray);
 	selections.push_back(move(newLabel));
-
-	pointer->setPosition(pointerPos);
+	selectionsActive.push_back(enabled);
 
 	newSize.y = ((pos.y + selections[selections.size() - 1]->getHeight() + dialogTextMargin.y)
 		- position.y) + dialogTextMargin.y;
-
-
+	if (dialogText->getWidth() + dialogTextMargin.x > newSize.x)
+		newSize.x = dialogText->getWidth() + dialogTextMargin.x;
 
 	if (newSize.x > size.x || newSize.y > size.y) {
 		setDimensions(position, newSize);
@@ -101,9 +98,18 @@ void MenuDialog::update(double deltaTime) {
 
 		repeatDelayTime += deltaTime;
 		if (repeatDelayTime >= REPEAT_DELAY) {
-			++selectedItem;
-			if (selectedItem >= selections.size())
-				selectedItem = 0;
+			bool circle = false;
+			do {
+				++selectedItem;
+				if (selectedItem >= selections.size()) {
+					selectedItem = 0;
+					if (circle) // we have infinite loop
+						break;
+					circle = true;
+
+				}
+			} while (!selectionsActive[selectedItem]);
+
 			Vector2 newpos = selections[selectedItem]->getPosition();
 			newpos.y += selections[selectedItem]->getHeight() / 2;
 			pointer->setPosition(newpos);
@@ -113,9 +119,20 @@ void MenuDialog::update(double deltaTime) {
 
 		repeatDelayTime += deltaTime;
 		if (repeatDelayTime >= REPEAT_DELAY) {
-			--selectedItem;
+			/*--selectedItem;
 			if (selectedItem < 0)
-				selectedItem = selections.size() - 1;
+				selectedItem = selections.size() - 1;*/
+			bool circle = false;
+			do {
+				--selectedItem;
+				if (selectedItem < 0) {
+					selectedItem = selections.size() - 1;
+					if (circle) // we have infinite loop
+						break;
+					circle = true;
+				}
+			} while (!selectionsActive[selectedItem]);
+
 			Vector2 newpos = selections[selectedItem]->getPosition();
 			newpos.y += selections[selectedItem]->getHeight() / 2;
 			pointer->setPosition(newpos);
@@ -130,7 +147,7 @@ void MenuDialog::update(double deltaTime) {
 		playerSlot->getStick()->bButtonStates[ControlButtons::START]) {
 
 		if (released) {
-		// option selected
+			// option selected
 			selectionMade = true;
 		}
 	} else {
@@ -155,6 +172,17 @@ void MenuDialog::draw(SpriteBatch* batch) {
 		selection->draw(batch);
 
 	pointer->draw(batch);
+}
+
+void MenuDialog::show() {
+	DynamicDialog::show();
+
+	released = false;
+}
+
+void MenuDialog::hide() {
+	DynamicDialog::hide();
+
 }
 
 USHORT MenuDialog::getSelected() {

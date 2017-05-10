@@ -47,6 +47,7 @@ ControllerListener::~ControllerListener() {
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 		joystickPorts[i].reset();
 	
+	slotManager.reset();
 
 	endAllThreadsNow = true;
 	joystickMap.clear();

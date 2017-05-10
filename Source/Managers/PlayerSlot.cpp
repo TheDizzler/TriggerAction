@@ -4,8 +4,19 @@
 vector<shared_ptr<PlayerSlot>> activeSlots;
 deque<shared_ptr<PlayerSlot>> waitingSlots;
 
-
+#include "../GUIObjects/MenuDialog.h"
 #include "../Engine/GameEngine.h"
+PlayerSlot::PlayerSlot(size_t slotNum) : slotNumber(slotNum) {
+
+		
+}
+
+
+PlayerSlot::~PlayerSlot() {
+	pauseDialog.reset();
+}
+
+
 bool PlayerSlot::characterSelect(double deltaTime) {
 
 	if (characterLocked) {
@@ -100,6 +111,22 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 	wostringstream wss;
 	wss << L"Connecting Socket " << joystick->socket << L" to Player Slot " << slotNumber << endl;
 	OutputDebugString(wss.str().c_str());
+
+	pauseDialog = make_unique<MenuDialog>(guiFactory.get());
+	pauseDialog->initialize(guiFactory->getAssetSet("Menu BG 1"));
+	pauseDialog->setDimensions(
+		Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 2),
+		Vector2(100, 100));
+
+	pauseDialog->pairPlayerSlot(this);
+	wostringstream woo;
+	woo << L"Player Slot " << slotNumber;
+	pauseDialog->setText(woo.str());
+	pauseDialog->clearSelections();
+	pauseDialog->addSelection(L"Continue", true);
+	pauseDialog->addSelection(L"Settings", false);
+	pauseDialog->addSelection(L"Quit", true);
+
 	return true;
 }
 
@@ -154,6 +181,8 @@ PlayerSlotManager::PlayerSlotManager() {
 }
 
 PlayerSlotManager::~PlayerSlotManager() {
+	waitingSlots.clear();
+	activeSlots.clear();
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		playerSlots[i].reset();
 	}

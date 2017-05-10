@@ -3,6 +3,7 @@
 #include "IElement3D.h"
 
 class Hitbox {
+//friend class Tangible;
 public:
 	Hitbox(int rowdata[5]);
 	Hitbox(const Hitbox* copybox);
@@ -16,6 +17,7 @@ public:
 	/* !! Does not account for z height !! */
 	bool contains(const Vector2& point) const;
 
+//private:
 	/* Position relative to bottom-left of sprite containing this hotbox.
 		position(x, y, height above y)*/
 	Vector3 position;
@@ -31,6 +33,10 @@ public:
 
 	void debugUpdate(Vector2 moveAmount);
 	void debugDraw(SpriteBatch* batch);
+	void debugSetTint(const Color& color);
+
+	void setHitboxPosition(const Vector3& newPosition);
+	void moveHitboxBy(const Vector3& moveVector);
 
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const = 0;
 

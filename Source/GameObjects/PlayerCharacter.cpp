@@ -26,20 +26,32 @@ void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 
 }
 
-
+#include "../GUIObjects/MenuDialog.h"
 #include "../Screens/LevelScreen.h"
+#include "../Engine/GameEngine.h"
 void PlayerCharacter::update(double deltaTime) {
 
 	if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
 
+		bool hit = false;
 		// check for collisions
 		for (const Hitbox* hb : hitboxesAll) {
 			if (hb == hitbox.get())
 				continue;
 			if (hitbox->collision2d(hb)) {
+				//debugSetTint(Color(1, .1, .1, 1));
+				hit = true;
 				int  hit = 69;
 			}
 		}
+
+		if (hit && !lastHit)
+			debugSetTint(Color(1, .1, .1, 1));
+		else if (!hit && lastHit)
+			debugSetTint(Color(1, 1, 1, 1));
+
+		lastHit = hit;
+
 	} else if (!waiting) {
 		waiting = true;
 		moving = false;
@@ -55,6 +67,13 @@ void PlayerCharacter::update(double deltaTime) {
 				loadAnimation("stand up");
 				break;
 		}
+	}
+
+	if (joystick->bButtonStates[ControlButtons::START]) {
+
+		if (!playerSlot->pauseDialog->isOpen())
+			GameEngine::showCustomDialog(playerSlot->pauseDialog.get());
+
 	}
 
 	currentFrameTime += deltaTime;
@@ -76,6 +95,8 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 	batch->Draw(currentAnimation->texture.Get(), /*drawPosition*/ position,
 		&currentAnimation->animationFrames[currentFrameIndex]->sourceRect, tint, rotation,
 		origin, scale, spriteEffects, layerDepth);
+
+	//playerSlot->pauseDialog->draw(batch);
 
 	debugDraw(batch);
 }
@@ -113,6 +134,9 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		if (!moving || facing != Facing::RIGHT) {
 			loadAnimation("walk right");
 			moving = true;
+			Vector3 hbpos = hitbox->position;
+			hbpos.x += getWidth() / 2;
+			setHitboxPosition(hbpos);
 			facing = Facing::RIGHT;
 			spriteEffects = SpriteEffects_None;
 		}
@@ -145,6 +169,9 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			loadAnimation("walk right");
 			moving = true;
 			facing = Facing::LEFT;
+			Vector3 hbpos = Vector3::Zero;
+			hbpos.x -= getWidth()/2;
+			moveHitboxBy(hbpos);
 			spriteEffects = SpriteEffects_FlipHorizontally;
 		}
 
@@ -197,13 +224,18 @@ void PlayerCharacter::loadAnimation(const pugi::char_t* name) {
 		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
 }
 
-bool PlayerCharacter::checkCollisionWith(const Hitbox * hitbox) const {
+bool PlayerCharacter::checkCollisionWith(const Hitbox* hitbox) const {
 	return false;
 }
 
 int PlayerCharacter::getHeight() const {
 	return currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
 		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
+}
+
+int PlayerCharacter::getWidth() const {
+	return currentAnimation->animationFrames[currentFrameIndex]->sourceRect.right
+		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.left;
 }
 
 const Hitbox* PlayerCharacter::getHitbox() const {
@@ -217,6 +249,7 @@ void PlayerCharacter::moveBy(const Vector3& moveVector) {
 	drawPosition.y += moveVector.y - position.z;
 
 	hitbox->position += moveVector;
+	//moveHitboxBy(moveVector);
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
 
@@ -233,6 +266,7 @@ void PlayerCharacter::setPosition(const Vector3& newpos) {
 	drawPosition.y = position.y - position.z;
 
 	hitbox->position += moveBy;
+	//moveHitboxBy(moveBy);
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveBy;
 

@@ -27,8 +27,8 @@ public:
 	void run(double time);
 
 
-	bool paused = false;
-
+	static bool paused;
+	static bool dialogCustom;
 	void suspend();
 	void resume();
 	void exit();
@@ -72,6 +72,7 @@ public:
 
 
 	static void showErrorDialog(wstring message, wstring title, bool outputDebug = true) {
+		dialogCustom = false;
 		errorDialog->show();
 		errorDialog->setTitle(title);
 		errorDialog->setText(message);
@@ -83,18 +84,27 @@ public:
 	}
 
 	static void showWarningDialog(wstring message, wstring title) {
+		dialogCustom = false;
 		warningDialog->show();
 		warningDialog->setTitle(title);
 		warningDialog->setText(message);
 		warningDialog->setTextTint(Color(1, 0, 0, 1));
 		showDialog = warningDialog.get();
 	}
+
+	static void showCustomDialog(Dialog* dialog) {
+		paused = true;
+		dialogCustom = true;
+		showDialog = dialog;
+		showDialog->show();
+	}
+
 	static Dialog* showDialog;
 
 	virtual void controllerRemoved(size_t controllerSlot) override;
 	virtual void newController(HANDLE joyHandle) override;
 
-	
+
 private:
 
 	unique_ptr<AudioEngine> audioEngine;

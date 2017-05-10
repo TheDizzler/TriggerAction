@@ -4,6 +4,8 @@
 #include "../Engine/Joystick.h"
 #include "../GameObjects/CharacterData.h"
 
+class MenuDialog;
+
 enum ControlButtons {
 	A = 0, B, X, Y, L, R, SELECT, START
 };
@@ -17,8 +19,8 @@ class PCSelectDialog;
 	the playerslots for needed data. */
 class PlayerSlot {
 public:
-	PlayerSlot(size_t slotNum) : slotNumber(slotNum) {
-	}
+	PlayerSlot(size_t slotNum);
+	virtual ~PlayerSlot();
 
 	bool characterSelect(double deltaTime);
 	void waiting();
@@ -42,6 +44,8 @@ public:
 	void setDialogText(wstring text);
 	PCSelectDialog* pcDialog;
 	CharacterData* characterData;
+
+	unique_ptr<MenuDialog> pauseDialog;
 private:
 	Joystick* joystick = NULL;
 	size_t slotNumber;

@@ -5,7 +5,11 @@
 #include "SelectionPointer.h"
 
 enum TitleItems {
-	NEW_GAME, CONTINUE, SETTINGS, QUIT
+	NEW_GAME, LOAD_GAME, OPTIONS, QUIT_GAME
+};
+
+enum PauseMenuItems {
+	CONTINUE, SETTINGS, QUIT
 };
 
 class MenuDialog : public DynamicDialog {
@@ -24,6 +28,9 @@ public:
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
+	virtual void show() override;
+	virtual void hide() override;
+
 	USHORT getSelected();
 	bool selectionMade = false;
 private:
@@ -31,6 +38,7 @@ private:
 	PlayerSlot*  playerSlot;
 	unique_ptr<SelectionPointer> pointer;
 	vector<unique_ptr<TextLabel>> selections;
+	vector<bool> selectionsActive;
 	short selectedItem = 0;
 	Vector2 pointerPos;
 	double repeatDelayTime = REPEAT_DELAY;

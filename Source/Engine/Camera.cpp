@@ -9,8 +9,8 @@ Camera::Camera(int vwprtWdth, int vwprtHght) {
 	viewportHeight = vwprtHght;
 	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
 
-	float xZoom = Globals::WINDOW_WIDTH / targetResolution.x;
-	float yZoom = Globals::WINDOW_HEIGHT / targetResolution.y;
+	float xZoom = Globals::WINDOW_WIDTH / Globals::targetResolution.x;
+	float yZoom = Globals::WINDOW_HEIGHT / Globals::targetResolution.y;
 
 	if (xZoom < yZoom)
 		zoom = xZoom;

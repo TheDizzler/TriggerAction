@@ -10,6 +10,9 @@ CharacterData::CharacterData(string nm) {
 	
 }
 
+CharacterData::~CharacterData() {
+}
+
 
 void CharacterData::loadData(xml_node characterDataNode, shared_ptr<AssetSet> assetSet) {
 
