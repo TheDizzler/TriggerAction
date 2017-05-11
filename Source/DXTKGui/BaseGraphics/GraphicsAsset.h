@@ -7,11 +7,13 @@
 
 
 struct Frame {
-	Frame(RECT srcRect, float timeForFrame) : sourceRect(srcRect), frameTime(timeForFrame) {
+	/** If no origin is set in xml Vector2::Zero is assumed. */
+	Frame(RECT srcRect, Vector2 orgn, float timeForFrame)
+		: sourceRect(srcRect), origin(orgn), frameTime(timeForFrame) {
 	}
 	/* Rectangle which contains sprite in spritesheet. */
 	RECT sourceRect;
-
+	Vector2 origin;
 	float frameTime;
 };
 

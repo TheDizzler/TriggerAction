@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<sprite x="" y="" width="" height="" >
+		<origin x="" y="" />
+	</sprite>
+
+	<hitbox x="" y="" width="" height="" z=""/>
+
+	<weaponMenuIcon name="" />
+
+	<spritesheet name="" file=" spritesheet.dds" set="">
+		<sprite name="portrait" x="0" y="2" width="48" height="48" />
+		<sprite name="portrait small" x="0" y="58" width="16" height="16"/>
+		<sprite name="magic kanji" x="54" y="2" width="16" height="16"/>
+		<sprite name="magic english" x="20" y="58" width="48" height="16"/>
+
+
+		<animation name="stand ">
+			<!-- neutral-->
+			<sprite x="" y="" width="" height="" frameTime="1.5">
+				<origin x="" y="" />
+			</sprite>
+
+			<!-- Blinking Animation -->
+			<!-- blinking half-closed -->
+			<sprite x="" y="" width="" height="" frameTime=".125"/>
+			<!-- blinking closed -->
+			<sprite x="" y="" width="" height="" frameTime=".25"/>
+			<!-- blinking half-closed -->
+			<sprite x="" y="" width="" height="" frameTime=".125"/>
+			<!-- Blinking end -->
+
+			<!-- neutral-->
+			<sprite x="" y="" width="" height="" frameTime="1.5"/>
+		</animation>
+
+		<animation name="walk " frameTime=".1">
+			<!-- left mid forward-->
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- left all forward -->
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- right starting forward -->
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- right mid forward -->
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- right all forward -->
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- left starting forward -->
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+
+	</spritesheet>
+</root>

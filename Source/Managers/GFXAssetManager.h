@@ -17,7 +17,7 @@ public:
 
 	CharacterData* getNextCharacter(int* currentPCNum);
 	CharacterData* getPreviousCharacter(int* currentPCNum);
-	const CharacterData* getNextAvailabelCharacter();
+	//const CharacterData* getNextAvailabelCharacter();
 	const CharacterData* getPlayerData(string characterName);
 	
 

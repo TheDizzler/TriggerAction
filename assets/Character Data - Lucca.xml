@@ -1,17 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
 
+	<hitbox x="" y="" width="" height="" z=""/>
 	<weaponMenuIcon name="Gun" />
 
 
 	<spritesheet name="Lucca Sheet" file="Lucca spritesheet.dds" set="Lucca">
 
+		<!-- biggest standard cell 27x39 -->
 		<sprite name="portrait" set="Lucca" x="0" y="2" width="48" height="48" />
 		<sprite name="portrait small" set="Lucca" x="0" y="58" width="16" height="16"/>
 		<sprite name="magic kanji" set="Lucca" x="54" y="2" width="16" height="16"/>
 		<sprite name="magic english" set="Lucca" x="20" y="58" width="48" height="16"/>
 
-		
 
+		<animation name="stand down">
+			<!-- neutral-->
+			<sprite x="126" y="0" width="16" height="32" frameTime="1.5">
+				<origin x="9" y="31" />
+			</sprite>
+
+			<!-- Blinking Animation -->
+			<!-- glasses down -->
+			<sprite x="126" y="80" width="16" height="32" frameTime=".125">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="126" y="40" width="16" height="32" frameTime=".125">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="126" y="80" width="16" height="32" frameTime=".125">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="126" y="40" width="16" height="32" frameTime=".125">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="126" y="80" width="16" height="32" frameTime=".125">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="126" y="40" width="16" height="32" frameTime=".125">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="126" y="80" width="16" height="32" frameTime="1.5">
+				<origin x="9" y="31" />
+			</sprite>
+			<!-- Blinking end -->
+		</animation>
+
+		<animation name="stand left">
+			<!-- neutral-->
+			<sprite x="167" y="0" width="13" height="32" frameTime="1.5">
+				<origin x="6" y="31" />
+			</sprite>
+
+			<!-- Blinking Animation -->
+			<!-- glasses down -->
+			<sprite x="167" y="80" width="13" height="32" frameTime=".125">
+				<origin x="6" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="167" y="40" width="13" height="32" frameTime=".125">
+				<origin x="6" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="167" y="80" width="13" height="32" frameTime=".125">
+				<origin x="6" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="167" y="40" width="13" height="32" frameTime=".125">
+				<origin x="6" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="167" y="80" width="13" height="32" frameTime=".125">
+				<origin x="6" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="167" y="40" width="13" height="32" frameTime=".125">
+				<origin x="6" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="167" y="80" width="13" height="32" frameTime="1.5">
+				<origin x="6" y="31" />
+			</sprite>
+		</animation>
+
+
+		<animation name="stand right">
+			<!-- neutral-->
+			<sprite x="247" y="0" width="13" height="32" frameTime="1.5">
+				<origin x="7" y="31" />
+			</sprite>
+
+			<!-- Blinking Animation -->
+			<!-- glasses down -->
+			<sprite x="247" y="80" width="13" height="32" frameTime=".125">
+				<origin x="7" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="247" y="40" width="13" height="32" frameTime=".125">
+				<origin x="7" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="247" y="80" width="13" height="32" frameTime=".125">
+				<origin x="7" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="247" y="40" width="13" height="32" frameTime=".125">
+				<origin x="7" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="247" y="80" width="13" height="32" frameTime=".125">
+				<origin x="7" y="31" />
+			</sprite>
+			<!-- glasses up -->
+			<sprite x="247" y="40" width="13" height="32" frameTime=".125">
+				<origin x="7" y="31" />
+			</sprite>
+			<!-- glasses down -->
+			<sprite x="247" y="80" width="13" height="32" frameTime="1.5">
+				<origin x="7" y="31" />
+			</sprite>
+		</animation>
+
+
+		<animation name="stand dow">
+			<!-- neutral-->
+			<sprite x="206" y="0" width="15" height="32" frameTime="1.5">
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
 	</spritesheet>
 </root>

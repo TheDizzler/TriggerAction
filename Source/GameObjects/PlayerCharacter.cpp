@@ -57,8 +57,10 @@ void PlayerCharacter::update(double deltaTime) {
 		moving = false;
 		switch (facing) {
 			case Facing::RIGHT:
-			case Facing::LEFT:
 				loadAnimation("stand right");
+				break;
+			case Facing::LEFT:
+				loadAnimation("stand left");
 				break;
 			case Facing::DOWN:
 				loadAnimation("stand down");
@@ -92,11 +94,11 @@ void PlayerCharacter::update(double deltaTime) {
 
 void PlayerCharacter::draw(SpriteBatch* batch) {
 
-	batch->Draw(currentAnimation->texture.Get(), /*drawPosition*/ position,
+	batch->Draw(currentAnimation->texture.Get(), position,
 		&currentAnimation->animationFrames[currentFrameIndex]->sourceRect, tint, rotation,
-		origin, scale, spriteEffects, layerDepth);
+		currentAnimation->animationFrames[currentFrameIndex]->origin, scale,
+		SpriteEffects_None, layerDepth);
 
-	//playerSlot->pauseDialog->draw(batch);
 
 	debugDraw(batch);
 }
@@ -113,21 +115,17 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
-			moveBy(Vector3(moveByX, -moveByY, 0));
+			//moveBy(Vector3(moveByX, -moveByY, 0));
 			layerDepth = Map::getLayerDepth(position.y);
 		} else if (vertDirection > 10) {
 			// moving right & down
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
-			moveBy(Vector3(moveByX, moveByY, 0));
+			//moveBy(Vector3(moveByX, moveByY, 0));
 			layerDepth = Map::getLayerDepth(position.y);
-		/*	wostringstream wss;
-			wss << "moveRightSpeed: " << moveRightSpeed << " moveDownSpeed: " << moveDownSpeed << endl;
-			wss << "moveDiagonalRight: " << moveDiagonalRight << " moveDiagonalDown: " << moveDiagonalDown << endl;
-			OutputDebugString(wss.str().c_str());*/
 		} else {
 			float moveByX = moveRightSpeed*deltaTime;
-			moveBy(Vector3(moveByX, 0, 0));
+			//moveBy(Vector3(moveByX, 0, 0));
 
 		}
 
@@ -138,7 +136,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			hbpos.x += getWidth() / 2;
 			setHitboxPosition(hbpos);
 			facing = Facing::RIGHT;
-			spriteEffects = SpriteEffects_None;
+			//spriteEffects = SpriteEffects_None;
 		}
 		waiting = false;
 		return true;
@@ -151,28 +149,28 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		// moving left & up
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
-			moveBy(Vector3(-moveByX, -moveByY, 0));
+			//moveBy(Vector3(-moveByX, -moveByY, 0));
 			layerDepth = Map::getLayerDepth(position.y);
 		} else if (vertDirection > 10) {
 			// moving left & down
 			float moveByX = moveDiagonalRight*deltaTime;
 			float moveByY = moveDiagonalDown*deltaTime;
-			moveBy(Vector3(-moveByX, moveByY, 0));
+			//moveBy(Vector3(-moveByX, moveByY, 0));
 			layerDepth = Map::getLayerDepth(position.y);
 		} else {
 			float moveByX = moveRightSpeed*deltaTime;
-			moveBy(Vector3(-moveByX, 0, 0));
+			//moveBy(Vector3(-moveByX, 0, 0));
 
 		}
 
 		if (!moving || facing != Facing::LEFT) {
-			loadAnimation("walk right");
+			loadAnimation("walk left");
 			moving = true;
 			facing = Facing::LEFT;
 			Vector3 hbpos = Vector3::Zero;
-			hbpos.x -= getWidth()/2;
+			hbpos.x -= getWidth() / 2;
 			moveHitboxBy(hbpos);
-			spriteEffects = SpriteEffects_FlipHorizontally;
+			//spriteEffects = SpriteEffects_FlipHorizontally;
 		}
 
 		waiting = false;
@@ -183,7 +181,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	if (vertDirection < -10) {
 		// moving up
 		float moveByY = moveDownSpeed*deltaTime;
-		moveBy(Vector3(0, -moveByY, 0));
+		//moveBy(Vector3(0, -moveByY, 0));
 		layerDepth = Map::getLayerDepth(position.y);
 		if (!moving || facing != Facing::UP) {
 			loadAnimation("walk up");
@@ -197,7 +195,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	if (vertDirection > 10) {
 	   // moving down
 		float moveByY = moveDownSpeed*deltaTime;
-		moveBy(Vector3(0, moveByY, 0));
+		//moveBy(Vector3(0, moveByY, 0));
 		layerDepth = Map::getLayerDepth(position.y);
 		if (!moving || facing != Facing::DOWN) {
 			loadAnimation("walk down");

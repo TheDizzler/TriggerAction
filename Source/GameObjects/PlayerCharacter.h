@@ -56,7 +56,7 @@ private:
 	float rotation = 0.0f;
 	float layerDepth = 0.1f;
 	Vector2 scale = Vector2(1, 1);
-	SpriteEffects spriteEffects = SpriteEffects_None;
+	//SpriteEffects spriteEffects = SpriteEffects_None;
 
 	bool moving = false;
 	bool waiting = false;

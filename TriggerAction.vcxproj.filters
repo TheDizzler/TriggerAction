@@ -346,4 +346,9 @@
   <ItemGroup>
     <Text Include="assets\Character Data - Marle.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="assets\Character Data Scheme.xsd">
+      <Filter>Header Files</Filter>
+    </Xsd>
+  </ItemGroup>
 </Project>

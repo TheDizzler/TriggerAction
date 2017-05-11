@@ -278,6 +278,9 @@
       <SubType>Designer</SubType>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="assets\Character Data Scheme.xsd" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\pugixml.1.8.0\build\native\pugixml.targets" Condition="Exists('packages\pugixml.1.8.0\build\native\pugixml.targets')" />

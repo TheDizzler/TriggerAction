@@ -48,8 +48,9 @@ shared_ptr<Animation> GFXAssetManager::getAnimation(const char_t* animationName)
 
 	if (animationMap.find(animationName) == animationMap.end()) {
 		wostringstream ws;
-		ws << "Cannot find asset file: " << animationName << "\n";
-		ws << "Count : " << animationMap.count(animationName) << "\n";
+		ws << "Cannot find asset file: " << animationName << endl;
+		ws << "Creating empty animation." << endl;
+		ws << "Total animations: " << animationMap.count(animationName) << endl;
 		OutputDebugString(ws.str().c_str());
 
 		GraphicsAsset* gfxAsset = getAsset(animationName);
@@ -65,7 +66,7 @@ shared_ptr<Animation> GFXAssetManager::getAnimation(const char_t* animationName)
 		rect.right = gfxAsset->getWidth();
 		rect.bottom = gfxAsset->getHeight();
 		shared_ptr<Frame> frame;
-		frame.reset(new Frame(rect, frameTime));
+		frame.reset(new Frame(rect, Vector2::Zero, frameTime));
 		frames.push_back(move(frame));
 		shared_ptr<Animation> animationAsset;
 		animationAsset.reset(new Animation(gfxAsset->getTexture(), frames));
@@ -217,7 +218,8 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 		}
 
 		unique_ptr<CharacterData> characterData = make_unique<CharacterData>(name);
-		characterData->loadData(characterDataRoot, getAssetSet(characterNode.attribute("name").as_string()));
+		characterData->loadData(characterDataRoot,
+			getAssetSet(characterNode.attribute("name").as_string()));
 		xml_node weaponIconNode = characterDataRoot.child("weaponMenuIcon");
 		characterData->weaponType = weaponIconNode.attribute("name").as_string();
 		characterDataMap[name] = move(characterData);
@@ -241,7 +243,7 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 		string file_s = assetDir + spritesheetNode.attribute("file").as_string();
 		const char_t* file = file_s.c_str();
 
-		
+
 		unique_ptr<GraphicsAsset> masterAsset = make_unique<GraphicsAsset>();
 		if (!masterAsset->load(device, StringHelper::convertCharStarToWCharT(file))) {
 			return false;
@@ -269,8 +271,14 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 					rect.top = spriteNode.attribute("y").as_int();
 					rect.right = rect.left + spriteNode.attribute("width").as_int();
 					rect.bottom = rect.top + spriteNode.attribute("height").as_int();
+					Vector2 origin = Vector2(0, 0);
+					xml_node originNode = spriteNode.child("origin");
+					if (originNode) {
+						origin.x = originNode.attribute("x").as_int();
+						origin.y = originNode.attribute("y").as_int();
+					}
 					shared_ptr<Frame> frame;
-					frame.reset(new Frame(rect, timePerFrame));
+					frame.reset(new Frame(rect, origin, timePerFrame));
 					frames.push_back(move(frame));
 
 				}
@@ -285,11 +293,19 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node g
 					rect.right = rect.left + spriteNode.attribute("width").as_int();
 					rect.bottom = rect.top + spriteNode.attribute("height").as_int();
 
+					Vector2 origin = Vector2(0, 0);
+					xml_node originNode = spriteNode.child("origin");
+					if (originNode) {
+						origin.x = originNode.attribute("x").as_int();
+						origin.y = originNode.attribute("y").as_int();
+					}
+
 					shared_ptr<Frame> frame;
 					if (spriteNode.attribute("frameTime"))
-						frame.reset(new Frame(rect, spriteNode.attribute("frameTime").as_float()));
+						frame.reset(new Frame(rect, origin,
+							spriteNode.attribute("frameTime").as_float()));
 					else
-						frame.reset(new Frame(rect, timePerFrame));
+						frame.reset(new Frame(rect, origin, timePerFrame));
 					frames.push_back(move(frame));
 
 				}
