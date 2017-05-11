@@ -234,7 +234,8 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 }
 
 
-bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node gfxNode, string assetDir) {
+bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
+	xml_node gfxNode, string assetDir) {
 
 
 	for (xml_node spritesheetNode : gfxNode.children("spritesheet")) {

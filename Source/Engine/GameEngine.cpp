@@ -218,6 +218,12 @@ void GameEngine::update(double deltaTime) {
 							paused = false;
 							dialogCustom = false;
 							break;
+						case PauseMenuItems::RELOAD_XML:
+							dialog->hide();
+							paused = false;
+							dialogCustom = false;
+							gfxAssets->initialize(device);
+							break;
 
 					}
 				}

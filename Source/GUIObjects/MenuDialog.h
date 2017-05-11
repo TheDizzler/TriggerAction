@@ -9,7 +9,7 @@ enum TitleItems {
 };
 
 enum PauseMenuItems {
-	CONTINUE, SETTINGS, QUIT
+	CONTINUE, SETTINGS, QUIT, RELOAD_XML
 };
 
 class MenuDialog : public DynamicDialog {

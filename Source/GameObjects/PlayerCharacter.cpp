@@ -71,6 +71,10 @@ void PlayerCharacter::update(double deltaTime) {
 		}
 	}
 
+	if (joystick->bButtonStates[ControlButtons::Y]) {
+		loadAnimation("shoot down");
+	}
+
 	if (joystick->bButtonStates[ControlButtons::START]) {
 
 		if (!playerSlot->pauseDialog->isOpen())
@@ -107,6 +111,10 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 #include <math.h>
 bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertDirection) {
 
+	bool runningNow = joystick->bButtonStates[ControlButtons::B];
+	if (runningNow != running)
+		moving = false;
+	running = runningNow;
 	if (horzDirection > 10) {
 		// moving right
 
@@ -130,7 +138,10 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		}
 
 		if (!moving || facing != Facing::RIGHT) {
-			loadAnimation("walk right");
+			if (runningNow)
+				loadAnimation("run right");
+			else
+				loadAnimation("walk right");
 			moving = true;
 			Vector3 hbpos = hitbox->position;
 			hbpos.x += getWidth() / 2;
@@ -164,7 +175,10 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		}
 
 		if (!moving || facing != Facing::LEFT) {
-			loadAnimation("walk left");
+			if (runningNow)
+				loadAnimation("run left");
+			else
+				loadAnimation("walk left");
 			moving = true;
 			facing = Facing::LEFT;
 			Vector3 hbpos = Vector3::Zero;
@@ -184,7 +198,10 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		//moveBy(Vector3(0, -moveByY, 0));
 		layerDepth = Map::getLayerDepth(position.y);
 		if (!moving || facing != Facing::UP) {
-			loadAnimation("walk up");
+			if (runningNow)
+				loadAnimation("run up");
+			else
+				loadAnimation("walk up");
 			moving = true;
 			facing = Facing::UP;
 		}
@@ -198,7 +215,10 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		//moveBy(Vector3(0, moveByY, 0));
 		layerDepth = Map::getLayerDepth(position.y);
 		if (!moving || facing != Facing::DOWN) {
-			loadAnimation("walk down");
+			if (runningNow)
+				loadAnimation("run down");
+			else
+				loadAnimation("walk down");
 			moving = true;
 			facing = Facing::DOWN;
 		}
@@ -218,7 +238,8 @@ void PlayerCharacter::loadAnimation(const pugi::char_t* name) {
 	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
 
 	drawPosition.x = position.x;
-	drawPosition.y = position.y - currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
+	drawPosition.y = position.y
+		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
 		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
 }
 
@@ -250,8 +271,6 @@ void PlayerCharacter::moveBy(const Vector3& moveVector) {
 	//moveHitboxBy(moveVector);
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
-
-	//layerDepth = Map::getLayerDepth(position.y);
 
 	debugUpdate(Vector2(moveVector.x, moveVector.y));
 }

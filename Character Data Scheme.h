@@ -26,22 +26,27 @@ namespace TriggerAction {
     System::ComponentModel::Design::HelpKeywordAttribute(L"vs.data.DataSet")]
     public ref class root : public ::System::Data::DataSet {
         public : ref class spriteDataTable;
+        public : ref class originDataTable;
         public : ref class hitboxDataTable;
         public : ref class weaponMenuIconDataTable;
         public : ref class spritesheetDataTable;
         public : ref class animationDataTable;
         public : ref class spriteRow;
+        public : ref class originRow;
         public : ref class hitboxRow;
         public : ref class weaponMenuIconRow;
         public : ref class spritesheetRow;
         public : ref class animationRow;
         public : ref class spriteRowChangeEvent;
+        public : ref class originRowChangeEvent;
         public : ref class hitboxRowChangeEvent;
         public : ref class weaponMenuIconRowChangeEvent;
         public : ref class spritesheetRowChangeEvent;
         public : ref class animationRowChangeEvent;
         
         private: TriggerAction::root::spriteDataTable^  tablesprite;
+        
+        private: TriggerAction::root::originDataTable^  tableorigin;
         
         private: TriggerAction::root::hitboxDataTable^  tablehitbox;
         
@@ -55,12 +60,17 @@ namespace TriggerAction {
         
         private: ::System::Data::DataRelation^  relationspritesheet_sprite;
         
+        private: ::System::Data::DataRelation^  relationsprite_origin;
+        
         private: ::System::Data::DataRelation^  relationspritesheet_animation;
         
         private: ::System::Data::SchemaSerializationMode _schemaSerializationMode;
         
         public : [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
         delegate System::Void spriteRowChangeEventHandler(::System::Object^  sender, TriggerAction::root::spriteRowChangeEvent^  e);
+        
+        public : [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+        delegate System::Void originRowChangeEventHandler(::System::Object^  sender, TriggerAction::root::originRowChangeEvent^  e);
         
         public : [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
         delegate System::Void hitboxRowChangeEventHandler(::System::Object^  sender, TriggerAction::root::hitboxRowChangeEvent^  e);
@@ -86,6 +96,14 @@ namespace TriggerAction {
         System::ComponentModel::DesignerSerializationVisibility(::System::ComponentModel::DesignerSerializationVisibility::Content)]
         property TriggerAction::root::spriteDataTable^  sprite {
             TriggerAction::root::spriteDataTable^  get();
+        }
+        
+        public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+        System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0"), 
+        System::ComponentModel::Browsable(false), 
+        System::ComponentModel::DesignerSerializationVisibility(::System::ComponentModel::DesignerSerializationVisibility::Content)]
+        property TriggerAction::root::originDataTable^  origin {
+            TriggerAction::root::originDataTable^  get();
         }
         
         public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
@@ -185,6 +203,10 @@ namespace TriggerAction {
         
         private: [System::Diagnostics::DebuggerNonUserCodeAttribute]
         [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+        ::System::Boolean ShouldSerializeorigin();
+        
+        private: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+        [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
         ::System::Boolean ShouldSerializehitbox();
         
         private: [System::Diagnostics::DebuggerNonUserCodeAttribute]
@@ -213,6 +235,8 @@ namespace TriggerAction {
         [System::Serializable, 
         System::Xml::Serialization::XmlSchemaProviderAttribute(L"GetTypedTableSchema")]
         ref class spriteDataTable : public ::System::Data::DataTable, public ::System::Collections::IEnumerable {
+            
+            private: ::System::Data::DataColumn^  columnsprite_Id;
             
             private: ::System::Data::DataColumn^  columnx;
             
@@ -251,6 +275,12 @@ namespace TriggerAction {
             protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             spriteDataTable(::System::Runtime::Serialization::SerializationInfo^  info, ::System::Runtime::Serialization::StreamingContext context);
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property ::System::Data::DataColumn^  sprite_IdColumn {
+                ::System::Data::DataColumn^  get();
+            }
+            
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
             System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             property ::System::Data::DataColumn^  xColumn {
@@ -379,6 +409,136 @@ namespace TriggerAction {
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             ::System::Void RemovespriteRow(TriggerAction::root::spriteRow^  row);
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            static ::System::Xml::Schema::XmlSchemaComplexType^  GetTypedTableSchema(::System::Xml::Schema::XmlSchemaSet^  xs);
+        };
+        
+        public : /// <summary>
+///Represents the strongly named DataTable class.
+///</summary>
+        [System::Serializable, 
+        System::Xml::Serialization::XmlSchemaProviderAttribute(L"GetTypedTableSchema")]
+        ref class originDataTable : public ::System::Data::DataTable, public ::System::Collections::IEnumerable {
+            
+            private: ::System::Data::DataColumn^  columnx;
+            
+            private: ::System::Data::DataColumn^  columny;
+            
+            private: ::System::Data::DataColumn^  columnsprite_Id;
+            
+            public: [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            event TriggerAction::root::originRowChangeEventHandler^  originRowChanging;
+            
+            public: [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            event TriggerAction::root::originRowChangeEventHandler^  originRowChanged;
+            
+            public: [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            event TriggerAction::root::originRowChangeEventHandler^  originRowDeleting;
+            
+            public: [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            event TriggerAction::root::originRowChangeEventHandler^  originRowDeleted;
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            originDataTable();
+            internal: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            originDataTable(::System::Data::DataTable^  table);
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            originDataTable(::System::Runtime::Serialization::SerializationInfo^  info, ::System::Runtime::Serialization::StreamingContext context);
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property ::System::Data::DataColumn^  xColumn {
+                ::System::Data::DataColumn^  get();
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property ::System::Data::DataColumn^  yColumn {
+                ::System::Data::DataColumn^  get();
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property ::System::Data::DataColumn^  sprite_IdColumn {
+                ::System::Data::DataColumn^  get();
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0"), 
+            System::ComponentModel::Browsable(false)]
+            property ::System::Int32 Count {
+                ::System::Int32 get();
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property TriggerAction::root::originRow^  default [::System::Int32 ] {
+                TriggerAction::root::originRow^  get(::System::Int32 index);
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void AddoriginRow(TriggerAction::root::originRow^  row);
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            TriggerAction::root::originRow^  AddoriginRow(System::String^  x, System::String^  y, TriggerAction::root::spriteRow^  parentspriteRowBysprite_origin);
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Collections::IEnumerator^  GetEnumerator();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Data::DataTable^  Clone() override;
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Data::DataTable^  CreateInstance() override;
+            
+            internal: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void InitVars();
+            
+            private: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void InitClass();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            TriggerAction::root::originRow^  NeworiginRow();
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Data::DataRow^  NewRowFromBuilder(::System::Data::DataRowBuilder^  builder) override;
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Type^  GetRowType() override;
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Void OnRowChanged(::System::Data::DataRowChangeEventArgs^  e) override;
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Void OnRowChanging(::System::Data::DataRowChangeEventArgs^  e) override;
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Void OnRowDeleted(::System::Data::DataRowChangeEventArgs^  e) override;
+            
+            protected: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            virtual ::System::Void OnRowDeleting(::System::Data::DataRowChangeEventArgs^  e) override;
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void RemoveoriginRow(TriggerAction::root::originRow^  row);
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
@@ -795,7 +955,7 @@ namespace TriggerAction {
             
             private: ::System::Data::DataColumn^  columnname;
             
-            private: ::System::Data::DataColumn^  columnframeTime;
+            private: ::System::Data::DataColumn^  columntimePerFrame;
             
             private: ::System::Data::DataColumn^  columnspritesheet_Id;
             
@@ -834,7 +994,7 @@ namespace TriggerAction {
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
             System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
-            property ::System::Data::DataColumn^  frameTimeColumn {
+            property ::System::Data::DataColumn^  timePerFrameColumn {
                 ::System::Data::DataColumn^  get();
             }
             
@@ -863,7 +1023,7 @@ namespace TriggerAction {
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
-            TriggerAction::root::animationRow^  AddanimationRow(System::String^  name, System::String^  frameTime, TriggerAction::root::spritesheetRow^  parentspritesheetRowByspritesheet_animation);
+            TriggerAction::root::animationRow^  AddanimationRow(System::String^  name, System::String^  timePerFrame, TriggerAction::root::spritesheetRow^  parentspritesheetRowByspritesheet_animation);
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
@@ -932,6 +1092,13 @@ namespace TriggerAction {
             internal: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             spriteRow(::System::Data::DataRowBuilder^  rb);
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property System::Int32 sprite_Id {
+                System::Int32 get();
+                System::Void set(System::Int32 value);
+            }
+            
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
             System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             property System::String^  x {
@@ -1065,6 +1232,73 @@ namespace TriggerAction {
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             ::System::Void Setspritesheet_IdNull();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            cli::array< TriggerAction::root::originRow^  >^  GetoriginRows();
+        };
+        
+        public : /// <summary>
+///Represents strongly named DataRow class.
+///</summary>
+        ref class originRow : public ::System::Data::DataRow {
+            
+            private: TriggerAction::root::originDataTable^  tableorigin;
+            
+            internal: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            originRow(::System::Data::DataRowBuilder^  rb);
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property System::String^  x {
+                System::String^  get();
+                System::Void set(System::String^  value);
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property System::String^  y {
+                System::String^  get();
+                System::Void set(System::String^  value);
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property System::Int32 sprite_Id {
+                System::Int32 get();
+                System::Void set(System::Int32 value);
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property TriggerAction::root::spriteRow^  spriteRow {
+                TriggerAction::root::spriteRow^  get();
+                System::Void set(TriggerAction::root::spriteRow^  value);
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Boolean IsxNull();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void SetxNull();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Boolean IsyNull();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void SetyNull();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Boolean Issprite_IdNull();
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            ::System::Void Setsprite_IdNull();
         };
         
         public : /// <summary>
@@ -1276,7 +1510,7 @@ namespace TriggerAction {
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
             System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
-            property System::String^  frameTime {
+            property System::String^  timePerFrame {
                 System::String^  get();
                 System::Void set(System::String^  value);
             }
@@ -1305,11 +1539,11 @@ namespace TriggerAction {
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
-            ::System::Boolean IsframeTimeNull();
+            ::System::Boolean IstimePerFrameNull();
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
-            ::System::Void SetframeTimeNull();
+            ::System::Void SettimePerFrameNull();
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
             [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
@@ -1341,6 +1575,32 @@ namespace TriggerAction {
             System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
             property TriggerAction::root::spriteRow^  Row {
                 TriggerAction::root::spriteRow^  get();
+            }
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property ::System::Data::DataRowAction Action {
+                ::System::Data::DataRowAction get();
+            }
+        };
+        
+        public : /// <summary>
+///Row event argument class
+///</summary>
+        [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+        ref class originRowChangeEvent : public ::System::EventArgs {
+            
+            private: TriggerAction::root::originRow^  eventRow;
+            
+            private: ::System::Data::DataRowAction eventAction;
+            
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute]
+            [System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            originRowChangeEvent(TriggerAction::root::originRow^  row, ::System::Data::DataRowAction action);
+            public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
+            System::CodeDom::Compiler::GeneratedCodeAttribute(L"System.Data.Design.TypedDataSetGenerator", L"4.0.0.0")]
+            property TriggerAction::root::originRow^  Row {
+                TriggerAction::root::originRow^  get();
             }
             
             public: [System::Diagnostics::DebuggerNonUserCodeAttribute, 
@@ -1483,6 +1743,9 @@ namespace TriggerAction {
             if (ds->Tables[L"sprite"] != nullptr) {
                 __super::Tables->Add((gcnew TriggerAction::root::spriteDataTable(ds->Tables[L"sprite"])));
             }
+            if (ds->Tables[L"origin"] != nullptr) {
+                __super::Tables->Add((gcnew TriggerAction::root::originDataTable(ds->Tables[L"origin"])));
+            }
             if (ds->Tables[L"hitbox"] != nullptr) {
                 __super::Tables->Add((gcnew TriggerAction::root::hitboxDataTable(ds->Tables[L"hitbox"])));
             }
@@ -1515,6 +1778,10 @@ namespace TriggerAction {
     
     inline TriggerAction::root::spriteDataTable^  root::sprite::get() {
         return this->tablesprite;
+    }
+    
+    inline TriggerAction::root::originDataTable^  root::origin::get() {
+        return this->tableorigin;
     }
     
     inline TriggerAction::root::hitboxDataTable^  root::hitbox::get() {
@@ -1577,6 +1844,9 @@ namespace TriggerAction {
             if (ds->Tables[L"sprite"] != nullptr) {
                 __super::Tables->Add((gcnew TriggerAction::root::spriteDataTable(ds->Tables[L"sprite"])));
             }
+            if (ds->Tables[L"origin"] != nullptr) {
+                __super::Tables->Add((gcnew TriggerAction::root::originDataTable(ds->Tables[L"origin"])));
+            }
             if (ds->Tables[L"hitbox"] != nullptr) {
                 __super::Tables->Add((gcnew TriggerAction::root::hitboxDataTable(ds->Tables[L"hitbox"])));
             }
@@ -1622,6 +1892,12 @@ namespace TriggerAction {
                 this->tablesprite->InitVars();
             }
         }
+        this->tableorigin = (cli::safe_cast<TriggerAction::root::originDataTable^  >(__super::Tables[L"origin"]));
+        if (initTable == true) {
+            if (this->tableorigin != nullptr) {
+                this->tableorigin->InitVars();
+            }
+        }
         this->tablehitbox = (cli::safe_cast<TriggerAction::root::hitboxDataTable^  >(__super::Tables[L"hitbox"]));
         if (initTable == true) {
             if (this->tablehitbox != nullptr) {
@@ -1648,6 +1924,7 @@ namespace TriggerAction {
         }
         this->relationanimation_sprite = this->Relations[L"animation_sprite"];
         this->relationspritesheet_sprite = this->Relations[L"spritesheet_sprite"];
+        this->relationsprite_origin = this->Relations[L"sprite_origin"];
         this->relationspritesheet_animation = this->Relations[L"spritesheet_animation"];
     }
     
@@ -1658,6 +1935,8 @@ namespace TriggerAction {
         this->SchemaSerializationMode = ::System::Data::SchemaSerializationMode::IncludeSchema;
         this->tablesprite = (gcnew TriggerAction::root::spriteDataTable());
         __super::Tables->Add(this->tablesprite);
+        this->tableorigin = (gcnew TriggerAction::root::originDataTable());
+        __super::Tables->Add(this->tableorigin);
         this->tablehitbox = (gcnew TriggerAction::root::hitboxDataTable());
         __super::Tables->Add(this->tablehitbox);
         this->tableweaponMenuIcon = (gcnew TriggerAction::root::weaponMenuIconDataTable());
@@ -1679,6 +1958,12 @@ namespace TriggerAction {
         fkc->AcceptRejectRule = ::System::Data::AcceptRejectRule::None;
         fkc->DeleteRule = ::System::Data::Rule::Cascade;
         fkc->UpdateRule = ::System::Data::Rule::Cascade;
+        fkc = (gcnew ::System::Data::ForeignKeyConstraint(L"sprite_origin", gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tablesprite->sprite_IdColumn}, 
+            gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tableorigin->sprite_IdColumn}));
+        this->tableorigin->Constraints->Add(fkc);
+        fkc->AcceptRejectRule = ::System::Data::AcceptRejectRule::None;
+        fkc->DeleteRule = ::System::Data::Rule::Cascade;
+        fkc->UpdateRule = ::System::Data::Rule::Cascade;
         fkc = (gcnew ::System::Data::ForeignKeyConstraint(L"spritesheet_animation", gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tablespritesheet->spritesheet_IdColumn}, 
             gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tableanimation->spritesheet_IdColumn}));
         this->tableanimation->Constraints->Add(fkc);
@@ -1693,6 +1978,10 @@ namespace TriggerAction {
             gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tablesprite->spritesheet_IdColumn}, false));
         this->relationspritesheet_sprite->Nested = true;
         this->Relations->Add(this->relationspritesheet_sprite);
+        this->relationsprite_origin = (gcnew ::System::Data::DataRelation(L"sprite_origin", gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tablesprite->sprite_IdColumn}, 
+            gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tableorigin->sprite_IdColumn}, false));
+        this->relationsprite_origin->Nested = true;
+        this->Relations->Add(this->relationsprite_origin);
         this->relationspritesheet_animation = (gcnew ::System::Data::DataRelation(L"spritesheet_animation", gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tablespritesheet->spritesheet_IdColumn}, 
             gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->tableanimation->spritesheet_IdColumn}, false));
         this->relationspritesheet_animation->Nested = true;
@@ -1700,6 +1989,10 @@ namespace TriggerAction {
     }
     
     inline ::System::Boolean root::ShouldSerializesprite() {
+        return false;
+    }
+    
+    inline ::System::Boolean root::ShouldSerializeorigin() {
         return false;
     }
     
@@ -1798,6 +2091,10 @@ namespace TriggerAction {
         this->InitVars();
     }
     
+    inline ::System::Data::DataColumn^  root::spriteDataTable::sprite_IdColumn::get() {
+        return this->columnsprite_Id;
+    }
+    
     inline ::System::Data::DataColumn^  root::spriteDataTable::xColumn::get() {
         return this->columnx;
     }
@@ -1852,13 +2149,13 @@ namespace TriggerAction {
                 TriggerAction::root::animationRow^  parentanimationRowByanimation_sprite, 
                 TriggerAction::root::spritesheetRow^  parentspritesheetRowByspritesheet_sprite) {
         TriggerAction::root::spriteRow^  rowspriteRow = (cli::safe_cast<TriggerAction::root::spriteRow^  >(this->NewRow()));
-        cli::array< ::System::Object^  >^  columnValuesArray = gcnew cli::array< ::System::Object^  >(8) {x, y, width, height, 
-            name, frameTime, nullptr, nullptr};
+        cli::array< ::System::Object^  >^  columnValuesArray = gcnew cli::array< ::System::Object^  >(9) {nullptr, x, y, width, 
+            height, name, frameTime, nullptr, nullptr};
         if (parentanimationRowByanimation_sprite != nullptr) {
-            columnValuesArray[6] = parentanimationRowByanimation_sprite[0];
+            columnValuesArray[7] = parentanimationRowByanimation_sprite[0];
         }
         if (parentspritesheetRowByspritesheet_sprite != nullptr) {
-            columnValuesArray[7] = parentspritesheetRowByspritesheet_sprite[0];
+            columnValuesArray[8] = parentspritesheetRowByspritesheet_sprite[0];
         }
         rowspriteRow->ItemArray = columnValuesArray;
         this->Rows->Add(rowspriteRow);
@@ -1880,6 +2177,7 @@ namespace TriggerAction {
     }
     
     inline ::System::Void root::spriteDataTable::InitVars() {
+        this->columnsprite_Id = __super::Columns[L"sprite_Id"];
         this->columnx = __super::Columns[L"x"];
         this->columny = __super::Columns[L"y"];
         this->columnwidth = __super::Columns[L"width"];
@@ -1891,6 +2189,8 @@ namespace TriggerAction {
     }
     
     inline ::System::Void root::spriteDataTable::InitClass() {
+        this->columnsprite_Id = (gcnew ::System::Data::DataColumn(L"sprite_Id", ::System::Int32::typeid, nullptr, ::System::Data::MappingType::Hidden));
+        __super::Columns->Add(this->columnsprite_Id);
         this->columnx = (gcnew ::System::Data::DataColumn(L"x", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
         __super::Columns->Add(this->columnx);
         this->columny = (gcnew ::System::Data::DataColumn(L"y", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
@@ -1907,6 +2207,11 @@ namespace TriggerAction {
         __super::Columns->Add(this->columnanimation_Id);
         this->columnspritesheet_Id = (gcnew ::System::Data::DataColumn(L"spritesheet_Id", ::System::Int32::typeid, nullptr, ::System::Data::MappingType::Hidden));
         __super::Columns->Add(this->columnspritesheet_Id);
+        this->Constraints->Add((gcnew ::System::Data::UniqueConstraint(L"Constraint1", gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->columnsprite_Id}, 
+                true)));
+        this->columnsprite_Id->AutoIncrement = true;
+        this->columnsprite_Id->AllowDBNull = false;
+        this->columnsprite_Id->Unique = true;
         this->columnx->Namespace = L"";
         this->columny->Namespace = L"";
         this->columnwidth->Namespace = L"";
@@ -1985,6 +2290,209 @@ namespace TriggerAction {
         ::System::Xml::Schema::XmlSchemaAttribute^  attribute2 = (gcnew ::System::Xml::Schema::XmlSchemaAttribute());
         attribute2->Name = L"tableTypeName";
         attribute2->FixedValue = L"spriteDataTable";
+        type->Attributes->Add(attribute2);
+        type->Particle = sequence;
+        ::System::Xml::Schema::XmlSchema^  dsSchema = ds->GetSchemaSerializable();
+        if (xs->Contains(dsSchema->TargetNamespace)) {
+            ::System::IO::MemoryStream^  s1 = (gcnew ::System::IO::MemoryStream());
+            ::System::IO::MemoryStream^  s2 = (gcnew ::System::IO::MemoryStream());
+            try {
+                ::System::Xml::Schema::XmlSchema^  schema = nullptr;
+                dsSchema->Write(s1);
+                for (                ::System::Collections::IEnumerator^  schemas = xs->Schemas(dsSchema->TargetNamespace)->GetEnumerator(); schemas->MoveNext();                 ) {
+                    schema = (cli::safe_cast<::System::Xml::Schema::XmlSchema^  >(schemas->Current));
+                    s2->SetLength(0);
+                    schema->Write(s2);
+                    if (s1->Length == s2->Length) {
+                        s1->Position = 0;
+                        s2->Position = 0;
+                        for (                        ; ((s1->Position != s1->Length) 
+                                    && (s1->ReadByte() == s2->ReadByte()));                         ) {
+                            ;
+                        }
+                        if (s1->Position == s1->Length) {
+                            return type;
+                        }
+                    }
+                }
+            }
+            finally {
+                if (s1 != nullptr) {
+                    s1->Close();
+                }
+                if (s2 != nullptr) {
+                    s2->Close();
+                }
+            }
+        }
+        xs->Add(dsSchema);
+        return type;
+    }
+    
+    
+    inline root::originDataTable::originDataTable() {
+        this->TableName = L"origin";
+        this->BeginInit();
+        this->InitClass();
+        this->EndInit();
+    }
+    
+    inline root::originDataTable::originDataTable(::System::Data::DataTable^  table) {
+        this->TableName = table->TableName;
+        if (table->CaseSensitive != table->DataSet->CaseSensitive) {
+            this->CaseSensitive = table->CaseSensitive;
+        }
+        if (table->Locale->ToString() != table->DataSet->Locale->ToString()) {
+            this->Locale = table->Locale;
+        }
+        if (table->Namespace != table->DataSet->Namespace) {
+            this->Namespace = table->Namespace;
+        }
+        this->Prefix = table->Prefix;
+        this->MinimumCapacity = table->MinimumCapacity;
+    }
+    
+    inline root::originDataTable::originDataTable(::System::Runtime::Serialization::SerializationInfo^  info, ::System::Runtime::Serialization::StreamingContext context) : 
+            ::System::Data::DataTable(info, context) {
+        this->InitVars();
+    }
+    
+    inline ::System::Data::DataColumn^  root::originDataTable::xColumn::get() {
+        return this->columnx;
+    }
+    
+    inline ::System::Data::DataColumn^  root::originDataTable::yColumn::get() {
+        return this->columny;
+    }
+    
+    inline ::System::Data::DataColumn^  root::originDataTable::sprite_IdColumn::get() {
+        return this->columnsprite_Id;
+    }
+    
+    inline ::System::Int32 root::originDataTable::Count::get() {
+        return this->Rows->Count;
+    }
+    
+    inline TriggerAction::root::originRow^  root::originDataTable::default::get(::System::Int32 index) {
+        return (cli::safe_cast<TriggerAction::root::originRow^  >(this->Rows[index]));
+    }
+    
+    inline ::System::Void root::originDataTable::AddoriginRow(TriggerAction::root::originRow^  row) {
+        this->Rows->Add(row);
+    }
+    
+    inline TriggerAction::root::originRow^  root::originDataTable::AddoriginRow(System::String^  x, System::String^  y, TriggerAction::root::spriteRow^  parentspriteRowBysprite_origin) {
+        TriggerAction::root::originRow^  roworiginRow = (cli::safe_cast<TriggerAction::root::originRow^  >(this->NewRow()));
+        cli::array< ::System::Object^  >^  columnValuesArray = gcnew cli::array< ::System::Object^  >(3) {x, y, nullptr};
+        if (parentspriteRowBysprite_origin != nullptr) {
+            columnValuesArray[2] = parentspriteRowBysprite_origin[0];
+        }
+        roworiginRow->ItemArray = columnValuesArray;
+        this->Rows->Add(roworiginRow);
+        return roworiginRow;
+    }
+    
+    inline ::System::Collections::IEnumerator^  root::originDataTable::GetEnumerator() {
+        return this->Rows->GetEnumerator();
+    }
+    
+    inline ::System::Data::DataTable^  root::originDataTable::Clone() {
+        TriggerAction::root::originDataTable^  cln = (cli::safe_cast<TriggerAction::root::originDataTable^  >(__super::Clone()));
+        cln->InitVars();
+        return cln;
+    }
+    
+    inline ::System::Data::DataTable^  root::originDataTable::CreateInstance() {
+        return (gcnew TriggerAction::root::originDataTable());
+    }
+    
+    inline ::System::Void root::originDataTable::InitVars() {
+        this->columnx = __super::Columns[L"x"];
+        this->columny = __super::Columns[L"y"];
+        this->columnsprite_Id = __super::Columns[L"sprite_Id"];
+    }
+    
+    inline ::System::Void root::originDataTable::InitClass() {
+        this->columnx = (gcnew ::System::Data::DataColumn(L"x", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
+        __super::Columns->Add(this->columnx);
+        this->columny = (gcnew ::System::Data::DataColumn(L"y", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
+        __super::Columns->Add(this->columny);
+        this->columnsprite_Id = (gcnew ::System::Data::DataColumn(L"sprite_Id", ::System::Int32::typeid, nullptr, ::System::Data::MappingType::Hidden));
+        __super::Columns->Add(this->columnsprite_Id);
+        this->columnx->Namespace = L"";
+        this->columny->Namespace = L"";
+    }
+    
+    inline TriggerAction::root::originRow^  root::originDataTable::NeworiginRow() {
+        return (cli::safe_cast<TriggerAction::root::originRow^  >(this->NewRow()));
+    }
+    
+    inline ::System::Data::DataRow^  root::originDataTable::NewRowFromBuilder(::System::Data::DataRowBuilder^  builder) {
+        return (gcnew TriggerAction::root::originRow(builder));
+    }
+    
+    inline ::System::Type^  root::originDataTable::GetRowType() {
+        return TriggerAction::root::originRow::typeid;
+    }
+    
+    inline ::System::Void root::originDataTable::OnRowChanged(::System::Data::DataRowChangeEventArgs^  e) {
+        __super::OnRowChanged(e);
+        {
+            this->originRowChanged(this, (gcnew TriggerAction::root::originRowChangeEvent((cli::safe_cast<TriggerAction::root::originRow^  >(e->Row)), 
+                    e->Action)));
+        }
+    }
+    
+    inline ::System::Void root::originDataTable::OnRowChanging(::System::Data::DataRowChangeEventArgs^  e) {
+        __super::OnRowChanging(e);
+        {
+            this->originRowChanging(this, (gcnew TriggerAction::root::originRowChangeEvent((cli::safe_cast<TriggerAction::root::originRow^  >(e->Row)), 
+                    e->Action)));
+        }
+    }
+    
+    inline ::System::Void root::originDataTable::OnRowDeleted(::System::Data::DataRowChangeEventArgs^  e) {
+        __super::OnRowDeleted(e);
+        {
+            this->originRowDeleted(this, (gcnew TriggerAction::root::originRowChangeEvent((cli::safe_cast<TriggerAction::root::originRow^  >(e->Row)), 
+                    e->Action)));
+        }
+    }
+    
+    inline ::System::Void root::originDataTable::OnRowDeleting(::System::Data::DataRowChangeEventArgs^  e) {
+        __super::OnRowDeleting(e);
+        {
+            this->originRowDeleting(this, (gcnew TriggerAction::root::originRowChangeEvent((cli::safe_cast<TriggerAction::root::originRow^  >(e->Row)), 
+                    e->Action)));
+        }
+    }
+    
+    inline ::System::Void root::originDataTable::RemoveoriginRow(TriggerAction::root::originRow^  row) {
+        this->Rows->Remove(row);
+    }
+    
+    inline ::System::Xml::Schema::XmlSchemaComplexType^  root::originDataTable::GetTypedTableSchema(::System::Xml::Schema::XmlSchemaSet^  xs) {
+        ::System::Xml::Schema::XmlSchemaComplexType^  type = (gcnew ::System::Xml::Schema::XmlSchemaComplexType());
+        ::System::Xml::Schema::XmlSchemaSequence^  sequence = (gcnew ::System::Xml::Schema::XmlSchemaSequence());
+        TriggerAction::root^  ds = (gcnew TriggerAction::root());
+        ::System::Xml::Schema::XmlSchemaAny^  any1 = (gcnew ::System::Xml::Schema::XmlSchemaAny());
+        any1->Namespace = L"http://www.w3.org/2001/XMLSchema";
+        any1->MinOccurs = ::System::Decimal(0);
+        any1->MaxOccurs = ::System::Decimal::MaxValue;
+        any1->ProcessContents = ::System::Xml::Schema::XmlSchemaContentProcessing::Lax;
+        sequence->Items->Add(any1);
+        ::System::Xml::Schema::XmlSchemaAny^  any2 = (gcnew ::System::Xml::Schema::XmlSchemaAny());
+        any2->Namespace = L"urn:schemas-microsoft-com:xml-diffgram-v1";
+        any2->MinOccurs = ::System::Decimal(1);
+        any2->ProcessContents = ::System::Xml::Schema::XmlSchemaContentProcessing::Lax;
+        sequence->Items->Add(any2);
+        ::System::Xml::Schema::XmlSchemaAttribute^  attribute1 = (gcnew ::System::Xml::Schema::XmlSchemaAttribute());
+        attribute1->Name = L"namespace";
+        attribute1->FixedValue = ds->Namespace;
+        type->Attributes->Add(attribute1);
+        ::System::Xml::Schema::XmlSchemaAttribute^  attribute2 = (gcnew ::System::Xml::Schema::XmlSchemaAttribute());
+        attribute2->Name = L"tableTypeName";
+        attribute2->FixedValue = L"originDataTable";
         type->Attributes->Add(attribute2);
         type->Particle = sequence;
         ::System::Xml::Schema::XmlSchema^  dsSchema = ds->GetSchemaSerializable();
@@ -2680,8 +3188,8 @@ namespace TriggerAction {
         return this->columnname;
     }
     
-    inline ::System::Data::DataColumn^  root::animationDataTable::frameTimeColumn::get() {
-        return this->columnframeTime;
+    inline ::System::Data::DataColumn^  root::animationDataTable::timePerFrameColumn::get() {
+        return this->columntimePerFrame;
     }
     
     inline ::System::Data::DataColumn^  root::animationDataTable::spritesheet_IdColumn::get() {
@@ -2700,10 +3208,10 @@ namespace TriggerAction {
         this->Rows->Add(row);
     }
     
-    inline TriggerAction::root::animationRow^  root::animationDataTable::AddanimationRow(System::String^  name, System::String^  frameTime, 
+    inline TriggerAction::root::animationRow^  root::animationDataTable::AddanimationRow(System::String^  name, System::String^  timePerFrame, 
                 TriggerAction::root::spritesheetRow^  parentspritesheetRowByspritesheet_animation) {
         TriggerAction::root::animationRow^  rowanimationRow = (cli::safe_cast<TriggerAction::root::animationRow^  >(this->NewRow()));
-        cli::array< ::System::Object^  >^  columnValuesArray = gcnew cli::array< ::System::Object^  >(4) {nullptr, name, frameTime, 
+        cli::array< ::System::Object^  >^  columnValuesArray = gcnew cli::array< ::System::Object^  >(4) {nullptr, name, timePerFrame, 
             nullptr};
         if (parentspritesheetRowByspritesheet_animation != nullptr) {
             columnValuesArray[3] = parentspritesheetRowByspritesheet_animation[0];
@@ -2730,7 +3238,7 @@ namespace TriggerAction {
     inline ::System::Void root::animationDataTable::InitVars() {
         this->columnanimation_Id = __super::Columns[L"animation_Id"];
         this->columnname = __super::Columns[L"name"];
-        this->columnframeTime = __super::Columns[L"frameTime"];
+        this->columntimePerFrame = __super::Columns[L"timePerFrame"];
         this->columnspritesheet_Id = __super::Columns[L"spritesheet_Id"];
     }
     
@@ -2739,8 +3247,8 @@ namespace TriggerAction {
         __super::Columns->Add(this->columnanimation_Id);
         this->columnname = (gcnew ::System::Data::DataColumn(L"name", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
         __super::Columns->Add(this->columnname);
-        this->columnframeTime = (gcnew ::System::Data::DataColumn(L"frameTime", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
-        __super::Columns->Add(this->columnframeTime);
+        this->columntimePerFrame = (gcnew ::System::Data::DataColumn(L"timePerFrame", ::System::String::typeid, nullptr, ::System::Data::MappingType::Attribute));
+        __super::Columns->Add(this->columntimePerFrame);
         this->columnspritesheet_Id = (gcnew ::System::Data::DataColumn(L"spritesheet_Id", ::System::Int32::typeid, nullptr, ::System::Data::MappingType::Hidden));
         __super::Columns->Add(this->columnspritesheet_Id);
         this->Constraints->Add((gcnew ::System::Data::UniqueConstraint(L"Constraint1", gcnew cli::array< ::System::Data::DataColumn^  >(1) {this->columnanimation_Id}, 
@@ -2749,7 +3257,7 @@ namespace TriggerAction {
         this->columnanimation_Id->AllowDBNull = false;
         this->columnanimation_Id->Unique = true;
         this->columnname->Namespace = L"";
-        this->columnframeTime->Namespace = L"";
+        this->columntimePerFrame->Namespace = L"";
     }
     
     inline TriggerAction::root::animationRow^  root::animationDataTable::NewanimationRow() {
@@ -2865,6 +3373,13 @@ namespace TriggerAction {
     inline root::spriteRow::spriteRow(::System::Data::DataRowBuilder^  rb) : 
             ::System::Data::DataRow(rb) {
         this->tablesprite = (cli::safe_cast<TriggerAction::root::spriteDataTable^  >(this->Table));
+    }
+    
+    inline System::Int32 root::spriteRow::sprite_Id::get() {
+        return (cli::safe_cast<::System::Int32 >(this[this->tablesprite->sprite_IdColumn]));
+    }
+    inline System::Void root::spriteRow::sprite_Id::set(System::Int32 value) {
+        this[this->tablesprite->sprite_IdColumn] = value;
     }
     
     inline System::String^  root::spriteRow::x::get() {
@@ -3044,6 +3559,89 @@ namespace TriggerAction {
     
     inline ::System::Void root::spriteRow::Setspritesheet_IdNull() {
         this[this->tablesprite->spritesheet_IdColumn] = ::System::Convert::DBNull;
+    }
+    
+    inline cli::array< TriggerAction::root::originRow^  >^  root::spriteRow::GetoriginRows() {
+        if (this->Table->ChildRelations[L"sprite_origin"] == nullptr) {
+            return gcnew cli::array< TriggerAction::root::originRow^  >(0);
+        }
+        else {
+            return (cli::safe_cast<cli::array< TriggerAction::root::originRow^  >^  >(__super::GetChildRows(this->Table->ChildRelations[L"sprite_origin"])));
+        }
+    }
+    
+    
+    inline root::originRow::originRow(::System::Data::DataRowBuilder^  rb) : 
+            ::System::Data::DataRow(rb) {
+        this->tableorigin = (cli::safe_cast<TriggerAction::root::originDataTable^  >(this->Table));
+    }
+    
+    inline System::String^  root::originRow::x::get() {
+        try {
+            return (cli::safe_cast<::System::String^  >(this[this->tableorigin->xColumn]));
+        }
+        catch (::System::InvalidCastException^ e) {
+            throw (gcnew ::System::Data::StrongTypingException(L"The value for column \'x\' in table \'origin\' is DBNull.", e));
+        }
+    }
+    inline System::Void root::originRow::x::set(System::String^  value) {
+        this[this->tableorigin->xColumn] = value;
+    }
+    
+    inline System::String^  root::originRow::y::get() {
+        try {
+            return (cli::safe_cast<::System::String^  >(this[this->tableorigin->yColumn]));
+        }
+        catch (::System::InvalidCastException^ e) {
+            throw (gcnew ::System::Data::StrongTypingException(L"The value for column \'y\' in table \'origin\' is DBNull.", e));
+        }
+    }
+    inline System::Void root::originRow::y::set(System::String^  value) {
+        this[this->tableorigin->yColumn] = value;
+    }
+    
+    inline System::Int32 root::originRow::sprite_Id::get() {
+        try {
+            return (cli::safe_cast<::System::Int32 >(this[this->tableorigin->sprite_IdColumn]));
+        }
+        catch (::System::InvalidCastException^ e) {
+            throw (gcnew ::System::Data::StrongTypingException(L"The value for column \'sprite_Id\' in table \'origin\' is DBNull.", 
+                e));
+        }
+    }
+    inline System::Void root::originRow::sprite_Id::set(System::Int32 value) {
+        this[this->tableorigin->sprite_IdColumn] = value;
+    }
+    
+    inline TriggerAction::root::spriteRow^  root::originRow::spriteRow::get() {
+        return (cli::safe_cast<TriggerAction::root::spriteRow^  >(this->GetParentRow(this->Table->ParentRelations[L"sprite_origin"])));
+    }
+    inline System::Void root::originRow::spriteRow::set(TriggerAction::root::spriteRow^  value) {
+        this->SetParentRow(value, this->Table->ParentRelations[L"sprite_origin"]);
+    }
+    
+    inline ::System::Boolean root::originRow::IsxNull() {
+        return this->IsNull(this->tableorigin->xColumn);
+    }
+    
+    inline ::System::Void root::originRow::SetxNull() {
+        this[this->tableorigin->xColumn] = ::System::Convert::DBNull;
+    }
+    
+    inline ::System::Boolean root::originRow::IsyNull() {
+        return this->IsNull(this->tableorigin->yColumn);
+    }
+    
+    inline ::System::Void root::originRow::SetyNull() {
+        this[this->tableorigin->yColumn] = ::System::Convert::DBNull;
+    }
+    
+    inline ::System::Boolean root::originRow::Issprite_IdNull() {
+        return this->IsNull(this->tableorigin->sprite_IdColumn);
+    }
+    
+    inline ::System::Void root::originRow::Setsprite_IdNull() {
+        this[this->tableorigin->sprite_IdColumn] = ::System::Convert::DBNull;
     }
     
     
@@ -3301,17 +3899,17 @@ namespace TriggerAction {
         this[this->tableanimation->nameColumn] = value;
     }
     
-    inline System::String^  root::animationRow::frameTime::get() {
+    inline System::String^  root::animationRow::timePerFrame::get() {
         try {
-            return (cli::safe_cast<::System::String^  >(this[this->tableanimation->frameTimeColumn]));
+            return (cli::safe_cast<::System::String^  >(this[this->tableanimation->timePerFrameColumn]));
         }
         catch (::System::InvalidCastException^ e) {
-            throw (gcnew ::System::Data::StrongTypingException(L"The value for column \'frameTime\' in table \'animation\' is DBNull.", 
+            throw (gcnew ::System::Data::StrongTypingException(L"The value for column \'timePerFrame\' in table \'animation\' is DBNull.", 
                 e));
         }
     }
-    inline System::Void root::animationRow::frameTime::set(System::String^  value) {
-        this[this->tableanimation->frameTimeColumn] = value;
+    inline System::Void root::animationRow::timePerFrame::set(System::String^  value) {
+        this[this->tableanimation->timePerFrameColumn] = value;
     }
     
     inline System::Int32 root::animationRow::spritesheet_Id::get() {
@@ -3342,12 +3940,12 @@ namespace TriggerAction {
         this[this->tableanimation->nameColumn] = ::System::Convert::DBNull;
     }
     
-    inline ::System::Boolean root::animationRow::IsframeTimeNull() {
-        return this->IsNull(this->tableanimation->frameTimeColumn);
+    inline ::System::Boolean root::animationRow::IstimePerFrameNull() {
+        return this->IsNull(this->tableanimation->timePerFrameColumn);
     }
     
-    inline ::System::Void root::animationRow::SetframeTimeNull() {
-        this[this->tableanimation->frameTimeColumn] = ::System::Convert::DBNull;
+    inline ::System::Void root::animationRow::SettimePerFrameNull() {
+        this[this->tableanimation->timePerFrameColumn] = ::System::Convert::DBNull;
     }
     
     inline ::System::Boolean root::animationRow::Isspritesheet_IdNull() {
@@ -3378,6 +3976,20 @@ namespace TriggerAction {
     }
     
     inline ::System::Data::DataRowAction root::spriteRowChangeEvent::Action::get() {
+        return this->eventAction;
+    }
+    
+    
+    inline root::originRowChangeEvent::originRowChangeEvent(TriggerAction::root::originRow^  row, ::System::Data::DataRowAction action) {
+        this->eventRow = row;
+        this->eventAction = action;
+    }
+    
+    inline TriggerAction::root::originRow^  root::originRowChangeEvent::Row::get() {
+        return this->eventRow;
+    }
+    
+    inline ::System::Data::DataRowAction root::originRowChangeEvent::Action::get() {
         return this->eventAction;
     }
     

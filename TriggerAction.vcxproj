@@ -268,7 +268,9 @@
     <Xml Include="assets\Character Data - Frog.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="assets\Character Data - Lucca.xml" />
+    <Xml Include="assets\Character Data - Lucca.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="assets\MapManifest.xml">
       <SubType>Designer</SubType>
     </Xml>

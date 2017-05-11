@@ -126,7 +126,7 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 	pauseDialog->addSelection(L"Continue", true);
 	pauseDialog->addSelection(L"Settings", false);
 	pauseDialog->addSelection(L"Quit", true);
-
+	pauseDialog->addSelection(L"Reload XML", true);
 	return true;
 }
 

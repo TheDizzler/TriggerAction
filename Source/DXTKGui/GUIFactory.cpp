@@ -834,11 +834,18 @@ bool GUIFactory::getGUIAssetsFromXML() {
 				rect.top = spriteNode.attribute("y").as_int();
 				rect.right = rect.left + spriteNode.attribute("width").as_int();
 				rect.bottom = rect.top + spriteNode.attribute("height").as_int();
+				Vector2 origin = Vector2(0, 0);
+				xml_node originNode = spriteNode.child("origin");
+				if (originNode) {
+					origin.x = originNode.attribute("x").as_int();
+					origin.y = originNode.attribute("y").as_int();
+				}
 				shared_ptr<Frame> frame;
 				if (spriteNode.attribute("frameTime"))
-					frame.reset(new Frame(rect, spriteNode.attribute("frameTime").as_float()));
+					frame.reset(new Frame(rect, origin,
+						spriteNode.attribute("frameTime").as_float()));
 				else
-					frame.reset(new Frame(rect, timePerFrame));
+					frame.reset(new Frame(rect, origin, timePerFrame));
 				frames.push_back(move(frame));
 
 			}

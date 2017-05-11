@@ -6,6 +6,9 @@
 	<weaponMenuIcon name="Bow" />
 
 	<spritesheet name="Marle Sheet" file="Marle spritesheet b.dds" set="Marle">
+
+		<!-- biggest dimensions 42x45 -->
+		<!-- standard biggest cell 30x36-->
 		<sprite name="portrait" x="0" y="2" width="48" height="48" />
 		<sprite name="portrait small" x="0" y="58" width="16" height="16"/>
 		<sprite name="magic kanji" x="54" y="2" width="16" height="16"/>
@@ -13,6 +16,7 @@
 
 
 		<animation name="stand down">
+			<origin x="" y="" />
 			<!-- neutral-->
 			<sprite x="129" y="0" width="13" height="33" frameTime="1.5"/>
 
@@ -111,7 +115,7 @@
 		<animation name="walk down" timePerFrame=".51">
 			<!-- left mid forward-->
 			<sprite x="285" y="639" width="18" height="35">
-			
+				<origin x="" y="" />
 			</sprite>
 			<!-- left all forward -->
 			<sprite x="288" y="680" width="14" height="33" />

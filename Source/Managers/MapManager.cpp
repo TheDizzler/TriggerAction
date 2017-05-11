@@ -277,9 +277,15 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 					rect.top = frameTile->getPosition().y;
 					rect.right = rect.left + frameTile->getWidth();
 					rect.bottom = rect.top + frameTile->getHeight();
+					Vector2 origin = Vector2(0, 0);
+					xml_node originNode = frameNode.child("origin");
+					if (originNode) {
+						origin.x = originNode.attribute("x").as_int();
+						origin.y = originNode.attribute("y").as_int();
+					}
 					shared_ptr<Frame> frame;
 					float frameTime = frameNode.attribute("duration").as_float() / 1000;
-					frame.reset(new Frame(rect, frameTime));
+					frame.reset(new Frame(rect, origin, frameTime));
 					frames.push_back(move(frame));
 
 					// remove from assets (?)

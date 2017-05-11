@@ -34,7 +34,7 @@
 			<sprite x="" y="" width="" height="" frameTime="1.5"/>
 		</animation>
 
-		<animation name="walk " frameTime=".1">
+		<animation name="walk " timePerFrame=".1">
 			<!-- left mid forward-->
 			<sprite x="" y="" width="" height="" >
 				<origin x="" y="" />

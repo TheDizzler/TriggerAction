@@ -58,6 +58,7 @@ private:
 	Vector2 scale = Vector2(1, 1);
 	//SpriteEffects spriteEffects = SpriteEffects_None;
 
+	bool running = false;
 	bool moving = false;
 	bool waiting = false;
 	float moveRightSpeed = 75;
