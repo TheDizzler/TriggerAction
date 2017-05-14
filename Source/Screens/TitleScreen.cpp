@@ -118,7 +118,7 @@ void TitleScreen::update(double deltaTime) {
 				case TitleItems::NEW_GAME:
 					//state = CHARACTER_SELECT;
 					guiOverlay->menuDialog->hide();
-					game->loadLevel("Test Square C");
+					game->loadLevel(Globals::testLevel);
 					break;
 
 			}

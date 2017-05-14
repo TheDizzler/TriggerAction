@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Marle" dir="assets/gfx/">
 
+	<!-- coords are from -->
 	<hitbox x="6" y="6" width="9" height="6" z="24"/>
 
 	<weaponMenuIcon name="Bow" />

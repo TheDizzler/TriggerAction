@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../GameObjects/CharacterData.h"
-
+#include "../GameObjects/Baddies/Baddie.h"
 
 class GFXAssetManager {
 public:
@@ -19,16 +19,20 @@ public:
 	CharacterData* getPreviousCharacter(int* currentPCNum);
 	//const CharacterData* getNextAvailabelCharacter();
 	const CharacterData* getPlayerData(string characterName);
-	
 
+	unique_ptr<BaddieData> getBaddieData(
+		ComPtr<ID3D11Device> device, string baddieName);
 private:
 	xml_node gfxAssetsNode;
 	xml_node characterDataNode;
+	xml_node baddieDataNode;
 
 	int numPCsAvailable;
 	size_t nextAvaiablePC = 0;
 	CRITICAL_SECTION cs_selectingPC;
 	map<string, unique_ptr<CharacterData>> characterDataMap;
+
+	//map<string, xml_document> baddieDocs
 
 	map<string, unique_ptr<GraphicsAsset> > assetMap;
 	map<string, shared_ptr<Animation> > animationMap;

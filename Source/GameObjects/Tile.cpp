@@ -96,7 +96,8 @@ void TangibleTile::load(TileAsset * const tileAsset) {
 	Tile::load(tileAsset);
 
 	if (tileAsset->hitboxes.size() > 0) {
-		hitbox = make_unique<Hitbox>(tileAsset->hitboxes[0].get());
+		//hitbox = make_unique<Hitbox>(tileAsset->hitboxes[0].get());
+		hitbox = Hitbox(tileAsset->hitboxes[0].get());
 		for (const auto& hitbox : tileAsset->hitboxes) {
 			unique_ptr<Hitbox> hb = make_unique<Hitbox>(hitbox.get());
 			subHitboxes.push_back(move(hb));
@@ -106,8 +107,8 @@ void TangibleTile::load(TileAsset * const tileAsset) {
 
 bool TangibleTile::checkCollisionWith(const Hitbox* other) const {
 	
-	if (hitbox->collision2d(other)) { // first check to see if hitbox overlap on x-y plane
-		if (hitbox->collisionZ(other)) // then check if collide on z-axis as well
+	if (hitbox.collision2d(other)) { // first check to see if hitbox overlap on x-y plane
+		if (hitbox.collisionZ(other)) // then check if collide on z-axis as well
 			return true;
 		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
 			if (subHB->collision(other))
@@ -122,7 +123,7 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 	drawPosition.x += moveVector.x;
 	drawPosition.y += moveVector.y - moveVector.z;
 	
-	hitbox->position += moveVector;
+	hitbox.position += moveVector;
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
 
@@ -136,7 +137,7 @@ void TangibleTile::setPosition(const Vector3& newpos) {
 	drawPosition.x = position.x;
 	drawPosition.y = position.y - position.z;
 
-	hitbox->position += moveBy;
+	hitbox.position += moveBy;
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveBy;
 
@@ -144,6 +145,6 @@ void TangibleTile::setPosition(const Vector3& newpos) {
 }
 
 const Hitbox* TangibleTile::getHitbox() const {
-	return hitbox.get();
+	return &hitbox;
 }
 

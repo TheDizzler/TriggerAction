@@ -5,7 +5,7 @@
 #include "../Managers/GFXAssetManager.h"
 #include "../GameObjects/AnimatedTile.h"
 #include "../GameObjects/Tile.h"
-
+#include "../GameObjects/Baddies/Baddie.h"
 
 class TileAsset : public GraphicsAsset {
 public:
@@ -74,17 +74,21 @@ public:
 
 
 	void loadMapDescription(xml_node mapRoot);
+	void loadBaddieType(USHORT tileId, unique_ptr<BaddieData> baddie);
+	void placeBaddie(xml_node objectNode);
 
 	int mapWidth, mapHeight;
 	/*static*/ int tileWidth, tileHeight;
 	int trueMapWidth, trueMapHeight;
 
 
-
+	map<USHORT, unique_ptr<BaddieData>> baddieDataMap;
 	map<USHORT, shared_ptr<AnimationAsset>> animationMap;
 	map<USHORT, shared_ptr<TileAsset>> assetMap;
 
+
 	map<string, unique_ptr<Map::Layer>> layerMap;
+	vector<unique_ptr<Baddie>> baddies;
 	/* When an object appears on screen, register its hitbox (if it has one) here. */
 	vector<Hitbox> hitboxes;
 

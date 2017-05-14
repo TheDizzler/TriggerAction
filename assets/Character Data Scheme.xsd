@@ -4,6 +4,12 @@
 		<origin x="" y="" />
 	</sprite>
 
+	<animation name="">
+		<sprite x="" y="" width="" height="" >
+			<origin x="" y="" />
+		</sprite>
+	</animation>
+
 	<hitbox x="" y="" width="" height="" z=""/>
 
 	<weaponMenuIcon name="" />

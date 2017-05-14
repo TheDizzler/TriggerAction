@@ -9,7 +9,7 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	characterData = slot->characterData;
 	name = characterData->name;
 	assetSet = characterData->assets;
-	hitbox = make_unique<Hitbox>(characterData->hitbox.get());
+	setHitbox(characterData->hitbox.get());
 	loadAnimation("stand right");
 	origin = Vector2(0, getHeight());
 }
@@ -18,8 +18,6 @@ PlayerCharacter::~PlayerCharacter() {
 }
 
 #include "../Managers/MapManager.h"
-
-
 void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 
 	setPosition(Vector3(startingPosition.x, startingPosition.y, 0));
@@ -36,10 +34,9 @@ void PlayerCharacter::update(double deltaTime) {
 		bool hit = false;
 		// check for collisions
 		for (const Hitbox* hb : hitboxesAll) {
-			if (hb == hitbox.get())
+			if (hb == &hitbox)
 				continue;
-			if (hitbox->collision2d(hb)) {
-				//debugSetTint(Color(1, .1, .1, 1));
+			if (hitbox.collision2d(hb)) {
 				hit = true;
 				int  hit = 69;
 			}
@@ -48,7 +45,7 @@ void PlayerCharacter::update(double deltaTime) {
 		if (hit && !lastHit)
 			debugSetTint(Color(1, .1, .1, 1));
 		else if (!hit && lastHit)
-			debugSetTint(Color(1, 1, 1, 1));
+			debugSetTint(Color(0, 0, 0, 1));
 
 		lastHit = hit;
 
@@ -72,7 +69,8 @@ void PlayerCharacter::update(double deltaTime) {
 	}
 
 	if (joystick->bButtonStates[ControlButtons::Y]) {
-		loadAnimation("shoot down");
+		//loadAnimation("shoot down");
+		startMainAttack();
 	}
 
 	if (joystick->bButtonStates[ControlButtons::START]) {
@@ -89,9 +87,6 @@ void PlayerCharacter::update(double deltaTime) {
 		currentFrameTime = 0;
 		Frame* frame = currentAnimation->animationFrames[currentFrameIndex].get();
 		currentFrameDuration = frame->frameTime;
-		drawPosition.x = position.x;
-		drawPosition.y = position.y - frame->sourceRect.bottom
-			- frame->sourceRect.top;
 	}
 }
 
@@ -115,25 +110,27 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	if (runningNow != running)
 		moving = false;
 	running = runningNow;
+	float speedFactor;
+	if (running)
+		speedFactor = 1.5;
+	else
+		speedFactor = 1;
+
 	if (horzDirection > 10) {
 		// moving right
-
 		if (vertDirection < -10) {
 			// moving right & up
-
-			float moveByX = moveDiagonalRight*deltaTime;
-			float moveByY = moveDiagonalDown*deltaTime;
-			//moveBy(Vector3(moveByX, -moveByY, 0));
-			layerDepth = Map::getLayerDepth(position.y);
+			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
+			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			moveBy(Vector3(moveByX, -moveByY, 0));
 		} else if (vertDirection > 10) {
 			// moving right & down
-			float moveByX = moveDiagonalRight*deltaTime;
-			float moveByY = moveDiagonalDown*deltaTime;
-			//moveBy(Vector3(moveByX, moveByY, 0));
-			layerDepth = Map::getLayerDepth(position.y);
+			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
+			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			moveBy(Vector3(moveByX, moveByY, 0));
 		} else {
-			float moveByX = moveRightSpeed*deltaTime;
-			//moveBy(Vector3(moveByX, 0, 0));
+			float moveByX = moveRightSpeed*deltaTime*speedFactor;
+			moveBy(Vector3(moveByX, 0, 0));
 
 		}
 
@@ -143,11 +140,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			else
 				loadAnimation("walk right");
 			moving = true;
-			Vector3 hbpos = hitbox->position;
-			hbpos.x += getWidth() / 2;
-			setHitboxPosition(hbpos);
 			facing = Facing::RIGHT;
-			//spriteEffects = SpriteEffects_None;
 		}
 		waiting = false;
 		return true;
@@ -157,20 +150,18 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		// moving left
 
 		if (vertDirection < -10) {
-		// moving left & up
-			float moveByX = moveDiagonalRight*deltaTime;
-			float moveByY = moveDiagonalDown*deltaTime;
-			//moveBy(Vector3(-moveByX, -moveByY, 0));
-			layerDepth = Map::getLayerDepth(position.y);
+			// moving left & up
+			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
+			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			moveBy(Vector3(-moveByX, -moveByY, 0));
 		} else if (vertDirection > 10) {
 			// moving left & down
-			float moveByX = moveDiagonalRight*deltaTime;
-			float moveByY = moveDiagonalDown*deltaTime;
-			//moveBy(Vector3(-moveByX, moveByY, 0));
-			layerDepth = Map::getLayerDepth(position.y);
+			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
+			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			moveBy(Vector3(-moveByX, moveByY, 0));
 		} else {
-			float moveByX = moveRightSpeed*deltaTime;
-			//moveBy(Vector3(-moveByX, 0, 0));
+			float moveByX = moveRightSpeed*deltaTime*speedFactor;
+			moveBy(Vector3(-moveByX, 0, 0));
 
 		}
 
@@ -181,10 +172,6 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 				loadAnimation("walk left");
 			moving = true;
 			facing = Facing::LEFT;
-			Vector3 hbpos = Vector3::Zero;
-			hbpos.x -= getWidth() / 2;
-			moveHitboxBy(hbpos);
-			//spriteEffects = SpriteEffects_FlipHorizontally;
 		}
 
 		waiting = false;
@@ -194,9 +181,8 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 	if (vertDirection < -10) {
 		// moving up
-		float moveByY = moveDownSpeed*deltaTime;
-		//moveBy(Vector3(0, -moveByY, 0));
-		layerDepth = Map::getLayerDepth(position.y);
+		float moveByY = moveDownSpeed*deltaTime*speedFactor;
+		moveBy(Vector3(0, -moveByY, 0));
 		if (!moving || facing != Facing::UP) {
 			if (runningNow)
 				loadAnimation("run up");
@@ -211,9 +197,8 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 
 	if (vertDirection > 10) {
 	   // moving down
-		float moveByY = moveDownSpeed*deltaTime;
-		//moveBy(Vector3(0, moveByY, 0));
-		layerDepth = Map::getLayerDepth(position.y);
+		float moveByY = moveDownSpeed*deltaTime*speedFactor;
+		moveBy(Vector3(0, moveByY, 0));
 		if (!moving || facing != Facing::DOWN) {
 			if (runningNow)
 				loadAnimation("run down");
@@ -229,65 +214,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	return false;
 }
 
-
-void PlayerCharacter::loadAnimation(const pugi::char_t* name) {
-
-	currentAnimation = assetSet->getAnimation(name);
-	currentFrameIndex = 0;
-	currentFrameTime = 0;
-	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-
-	drawPosition.x = position.x;
-	drawPosition.y = position.y
-		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
-		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
+void PlayerCharacter::startMainAttack() {
+	// get direction facing
+	loadAnimation("shoot down");
 }
-
-bool PlayerCharacter::checkCollisionWith(const Hitbox* hitbox) const {
-	return false;
-}
-
-int PlayerCharacter::getHeight() const {
-	return currentAnimation->animationFrames[currentFrameIndex]->sourceRect.bottom
-		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.top;
-}
-
-int PlayerCharacter::getWidth() const {
-	return currentAnimation->animationFrames[currentFrameIndex]->sourceRect.right
-		- currentAnimation->animationFrames[currentFrameIndex]->sourceRect.left;
-}
-
-const Hitbox* PlayerCharacter::getHitbox() const {
-	return hitbox.get();
-}
-
-void PlayerCharacter::moveBy(const Vector3& moveVector) {
-
-	position += moveVector;
-	drawPosition.x += moveVector.x;
-	drawPosition.y += moveVector.y - position.z;
-
-	hitbox->position += moveVector;
-	//moveHitboxBy(moveVector);
-	for (const auto& subHB : subHitboxes)
-		subHB->position += moveVector;
-
-	debugUpdate(Vector2(moveVector.x, moveVector.y));
-}
-
-void PlayerCharacter::setPosition(const Vector3& newpos) {
-
-	Vector3 moveBy = newpos - position;
-	position = newpos;
-	drawPosition.x = position.x;
-	drawPosition.y = position.y - position.z;
-
-	hitbox->position += moveBy;
-	//moveHitboxBy(moveBy);
-	for (const auto& subHB : subHitboxes)
-		subHB->position += moveBy;
-
-	layerDepth = Map::getLayerDepth(position.y);
-}
-
-

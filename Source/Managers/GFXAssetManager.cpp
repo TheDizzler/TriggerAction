@@ -4,6 +4,7 @@
 GFXAssetManager::GFXAssetManager(xml_node assetManifestRoot) {
 
 	characterDataNode = assetManifestRoot.child("characterData");
+	baddieDataNode = assetManifestRoot.child("baddieData");
 	gfxAssetsNode = assetManifestRoot.child("gfx");
 }
 
@@ -188,6 +189,47 @@ const CharacterData* GFXAssetManager::getPlayerData(string characterName) {
 	return characterDataMap[characterName].get();
 }
 
+unique_ptr<BaddieData> GFXAssetManager::getBaddieData(
+	ComPtr<ID3D11Device> device, string baddieName) {
+
+	unique_ptr<BaddieData> baddieData = make_unique<BaddieData>();
+
+	for (xml_node baddieDataNode : baddieDataNode.children("baddie")) {
+		string thisBaddie = baddieDataNode.attribute("name").as_string();
+		if (thisBaddie == baddieName) {
+
+			xml_document baddieDoc;
+			string filename = baddieDataNode.attribute("file").as_string();
+			string file = gfxAssetsNode.parent().attribute("dir").as_string() + filename;
+			baddieDoc.load_file(file.c_str());
+
+			xml_node baddieFileroot = baddieDoc.child("root");
+
+			for (xml_node baddieNode : baddieFileroot.children("baddie")) {
+				thisBaddie = baddieNode.attribute("name").as_string();
+				if (thisBaddie == baddieName) {
+
+					//if (getAssetSet(baddieName.c_str()) == NULL) {
+						string assetsDir = baddieFileroot.attribute("dir").as_string();
+						if (!getSpriteSheetData(device, baddieNode, assetsDir)) {
+							wostringstream wss;
+							wss << L"Could not read baddie spritesheet data in ";
+							wss << file.c_str() << L" file!";
+							GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
+							return baddieData;
+						}
+					//}
+					baddieData->loadData(baddieNode, getAssetSet(baddieName.c_str()));
+
+					break;
+				}
+			}
+			break;
+		}
+	}
+	return baddieData;
+}
+
 
 bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 
@@ -245,11 +287,17 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
 		const char_t* file = file_s.c_str();
 
 
-		unique_ptr<GraphicsAsset> masterAsset = make_unique<GraphicsAsset>();
+		unique_ptr<GraphicsAsset> masterAsset;
+		string masterAssetName = spritesheetNode.attribute("name").as_string();
+
+		// check it masterAsset alread exists; if it does, reuse it.
+		masterAsset = move(assetMap[masterAssetName]);
+		if (masterAsset == NULL)
+			masterAsset = make_unique<GraphicsAsset>();
 		if (!masterAsset->load(device, StringHelper::convertCharStarToWCharT(file))) {
 			return false;
 		}
-		string masterAssetName = spritesheetNode.attribute("name").as_string();
+
 
 		// parse all animations from spritesheet
 		for (xml_node animationNode = spritesheetNode.child("animation");
@@ -312,7 +360,6 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
 				}
 			}
 
-			//float frameTime = animationNode.attribute("timePerFrame").as_float();
 			shared_ptr<Animation> animationAsset;
 			animationAsset.reset(new Animation(masterAsset->getTexture(), frames));
 			if (animationNode.attribute("set")) {

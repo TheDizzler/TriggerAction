@@ -17,6 +17,7 @@ namespace Globals {
 	extern bool FULL_SCREEN;
 
 	const static char* mapManifestFile = "assets/MapManifest.xml";
+	const static char_t* testLevel = "Test Square C";
 
 	/* For reference purposes. */
 	/*wostringstream ws;

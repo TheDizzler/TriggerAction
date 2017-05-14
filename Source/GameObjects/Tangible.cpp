@@ -2,6 +2,10 @@
 #include "Tangible.h"
 
 
+Hitbox::Hitbox() {
+	//OutputDebugString(L"Y U RUNNING, HITBOX?!?\n");
+}
+
 Hitbox::Hitbox(int rowdata[5]) {
 
 	position = Vector3(rowdata[0], -rowdata[1], 0);
@@ -63,28 +67,18 @@ bool Hitbox::contains(const Vector2 & point) const {
 
 
 
+#include "../Engine/GameEngine.h"
 Tangible::~Tangible() {
-	subHitboxes.clear();
 }
 
-#include "../Engine/GameEngine.h"
+
 void Tangible::debugUpdate(Vector2 moveAmount) {
 
-	if (!testFrame.get())
-		testFrame.reset(guiFactory->createRectangleFrame(
-			Vector2(hitbox->position.x, hitbox->position.y),
-			Vector2(hitbox->size.x, hitbox->size.y)));
-
 	testFrame->update();
-	testFrame->moveBy(moveAmount);
+	//testFrame->moveBy(moveAmount);
 }
 
 void Tangible::debugDraw(SpriteBatch* batch) {
-
-	if (!testFrame.get())
-		testFrame.reset(guiFactory->createRectangleFrame(
-			Vector2(hitbox->position.x, hitbox->position.y),
-			Vector2(hitbox->size.x, hitbox->size.y)));
 
 	testFrame->draw(batch);
 }
@@ -94,15 +88,28 @@ void Tangible::debugSetTint(const Color& color) {
 	testFrame->setTint(color);
 }
 
+void Tangible::setHitbox(const Hitbox box) {
+
+	hitbox = Hitbox(box);
+	testFrame.reset(guiFactory->createRectangleFrame(
+		Vector2(hitbox.position.x, hitbox.position.y),
+		Vector2(hitbox.size.x, hitbox.size.y)));
+}
+
 void Tangible::setHitboxPosition(const Vector3& newPosition) {
 
-	hitbox->position = newPosition;
-	testFrame->setPosition(Vector2(newPosition.x, newPosition.y));
+	hitbox.position = newPosition;
+	hitbox.position.x -= hitbox.size.x / 2;
+	hitbox.position.y -= hitbox.size.y;
+	for (const auto& subHB : subHitboxes)
+		subHB->position = newPosition;
+	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
 }
 
 void Tangible::moveHitboxBy(const Vector3& moveVector) {
 
-	hitbox->position += moveVector;
-	if (testFrame.get())
-		testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
+	hitbox.position += moveVector;
+	for (const auto& subHB : subHitboxes)
+		subHB->position += moveVector;
+	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
 }

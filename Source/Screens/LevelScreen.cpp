@@ -40,6 +40,12 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
 }
 
+void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
+
+	map.reset();
+	map = move(newMap);
+}
+
 
 void LevelScreen::update(double deltaTime) {
 

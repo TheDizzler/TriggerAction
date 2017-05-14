@@ -8,6 +8,10 @@
 		<player name="Frog" file="Character Data - Frog.xml" />
 	</characterData>
 
+	<baddieData>
+		<baddie name="Blue Imp" file="Baddie Data - Imps.xml" />
+	</baddieData>
+
 	<gfx dir="gfx/" >
 		<spritesheet name="Title Screen" file="Title Screen.dds">
 			<sprite name="Pendulum" x="225" y="17" width="59" height="212" />

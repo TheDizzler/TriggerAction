@@ -58,6 +58,12 @@
     <Filter Include="Header Files\DXTGui\Effects">
       <UniqueIdentifier>{1e1cfee4-a981-44d7-a63e-af9a8908f408}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameObjects\Baddies">
+      <UniqueIdentifier>{470b4eda-5ba8-4611-904a-95c2cb6df944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjects\Baddies">
+      <UniqueIdentifier>{bd250c9e-e11b-46c9-aa3c-1bb000f3f646}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -197,6 +203,12 @@
     </ClCompile>
     <ClCompile Include="Source\GUIObjects\MenuDialog.cpp">
       <Filter>Source Files\GUIObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Baddies\Baddie.cpp">
+      <Filter>Source Files\GameObjects\Baddies</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Creature.cpp">
+      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,6 +356,12 @@
     <ClInclude Include="Source\DXTKGui\BaseGraphics\Sprite.h">
       <Filter>Header Files\DXTGui\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GameObjects\Baddies\Baddie.h">
+      <Filter>Header Files\GameObjects\Baddies</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Creature.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="assets\AssetManifest.xml" />
@@ -351,6 +369,7 @@
     <Xml Include="assets\Character Data - Frog.xml" />
     <Xml Include="assets\Character Data - Chrono.xml" />
     <Xml Include="assets\Character Data - Lucca.xml" />
+    <Xml Include="assets\Baddie Data - Imps.xml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\Character Data - Marle.xml" />

@@ -30,7 +30,9 @@ public:
 	void draw(SpriteBatch* batch);
 
 	void startGame();
-	bool loadLevel(const pugi::char_t* file);
+	bool loadLevel(const pugi::char_t* levelName);
+	bool reloadLevel(const pugi::char_t* levelName);
+
 	void loadMainMenu();
 
 	void controllerRemoved(size_t controllerSlot);
@@ -59,14 +61,14 @@ public:
 	size_t getSelectedDisplayModeIndex();
 
 
-private:
+
 	unique_ptr<xml_document> mapManifest;
 	unique_ptr<xml_document> mapDoc;
 	unique_ptr<MapParser> mapParser;
 
 	string mapsDir;
 	map<string, string> mapFiles;
-
+private:
 	Screen* currentScreen = 0;
 	Screen* lastScreen = 0;
 

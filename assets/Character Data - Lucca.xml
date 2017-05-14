@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
 
-	<hitbox x="" y="" width="" height="" z=""/>
+	<hitbox x="0" y="0" width="10" height="7" z="24"/>
 	<weaponMenuIcon name="Gun" />
 
 
-	<spritesheet name="Lucca Sheet" file="Lucca spritesheet.dds" set="Lucca">
+	<spritesheet name="Lucca Sheet" file="Lucca Spritesheet.dds" set="Lucca">
 
 		<!-- biggest standard cell 27x39 -->
 		<sprite name="portrait" set="Lucca" x="0" y="2" width="48" height="48" />
@@ -422,7 +422,7 @@
 		</animation>
 
 
-		<animation name="combat stance " timePerFrame="1.1">
+		<animation name="combat stance down" timePerFrame="1.1">
 			<sprite x="286" y="80" width="16" height="32" >
 				<origin x="9" y="30" />
 			</sprite>
@@ -446,7 +446,7 @@
 				<origin x="7" y="30" />
 			</sprite>
 		</animation>
-		<animation name="combat stance down" timePerFrame="1.1">
+		<animation name="combat stance right" timePerFrame="1.1">
 			<sprite x="406" y="80" width="16" height="32" >
 				<origin x="7" y="30" />
 			</sprite>
@@ -457,23 +457,102 @@
 
 
 		<animation name="shoot down">
-			<sprite x="286" y="160" width="16" height="31" frameTime="1.5">
+			<sprite x="286" y="160" width="16" height="31" frameTime=".2">
 				<origin x="8" y="29" />
 			</sprite>
-			<sprite x="286" y="198" width="15" height="35" frameTime=".25">
+			<sprite x="286" y="198" width="15" height="35" frameTime=".15">
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="286" y="239" width="15" height="34" frameTime=".1">
 				<origin x="8" y="32" />
 			</sprite>
-			<sprite x="286" y="239" width="15" height="34" frameTime=".5">
-				<origin x="8" y="32" />
+			<sprite x="286" y="279" width="16" height="33" frameTime=".25">
+				<origin x="8" y="31" />
 			</sprite>
-			<sprite x="286" y="279" width="16" height="33" frameTime=".5">
-				<origin x="8" y="32" />
+			<sprite x="286" y="320" width="15" height="31" frameTime=".25">
+				<origin x="8" y="29" />
 			</sprite>
-			<sprite x="286" y="320" width="15" height="31" frameTime=".5">
-				<origin x="8" y="32" />
-			</sprite>
-		
 		</animation>
-
+		<animation name="shoot left" >
+			<sprite x="322" y="160" width="23" height="31" frameTime=".2">
+				<origin x="16" y="30" />
+			</sprite>
+			<sprite x="324" y="200" width="19" height="31" frameTime=".15">
+				<origin x="12" y="30" />
+			</sprite>
+			<sprite x="324" y="240" width="20" height="31" frameTime=".1">
+				<origin x="12" y="30" />
+			</sprite>
+			<sprite x="326" y="279" width="15" height="33" frameTime=".25">
+				<origin x="12" y="32" />
+			</sprite>
+			<sprite x="325" y="320" width="17" height="31" frameTime=".25">
+				<origin x="12" y="30" />
+			</sprite>
+		</animation>
+		<animation name="shoot up">
+			<sprite x="366" y="160" width="15" height="31" frameTime=".2">
+				<origin x="7" y="30" />
+			</sprite>
+			<sprite x="366" y="200" width="16" height="32" frameTime=".15">
+				<origin x="7" y="30" />
+			</sprite>
+			<sprite x="366" y="239" width="16" height="34" frameTime=".1">
+				<origin x="7" y="33" />
+			</sprite>
+			<sprite x="366" y="279" width="16" height="33" frameTime=".25">
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="366" y="320" width="15" height="31" frameTime=".25">
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="shoot right">
+			<sprite x="402" y="160" width="23" height="31" frameTime=".2">
+				<origin x="9" y="30" />
+			</sprite>
+			<sprite x="404" y="200" width="19" height="31" frameTime=".15">
+				<origin x="9" y="30" />
+			</sprite>
+			<sprite x="404" y="240" width="20" height="31" frameTime=".1">
+				<origin x="10" y="30" />
+			</sprite>
+			<sprite x="406" y="279" width="15" height="33" frameTime=".25">
+				<origin x="7" y="32" />
+			</sprite>
+			<sprite x="405" y="320" width="17" height="31" frameTime=".25">
+				<origin x="8" y="30" />
+			</sprite>
+		</animation>
 	</spritesheet>
+
+
+	<spritesheet name="Lucca Weapons" file="Lucca Weapons.dds" set="Lucca" >
+
+		<sprite name="AirGun Bullet Up" x="19" y="21" width="7" height="5" />
+		<sprite name="AirGun Bullet left" x="36" y="20" width="5" height="7" />
+
+		<animation name="AirGun HitEffect">
+			<sprite x="16" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="32" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="48" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="64" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="80" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="96" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+		</animation>
+	</spritesheet>
+
+
 </root>

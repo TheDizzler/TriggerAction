@@ -8,7 +8,6 @@ double Map::depthPerPixel;
 
 
 
-//#include "../GameObjects/Tile.h"
 Map::Map() {
 }
 
@@ -22,16 +21,19 @@ Map::~Map() {
 
 
 void Map::update(double deltaTime) {
-	//layerMap["animated layer"]->update(deltaTime);
+	
 	for (const auto& layer : layerMap) {
 		layer.second->update(deltaTime);
 	}
+
+	for (const auto& baddie : baddies)
+		baddie->update(deltaTime);
 }
 
 
 void Map::draw(SpriteBatch* batch) {
 
-	for (const auto& layer : layerMap) {
+	for (const auto& layer : layerMap) { // using maps are not efficient
 		layer.second->draw(batch);
 	}
 	/* layerMap["ground"]->draw(batch);
@@ -44,7 +46,8 @@ void Map::draw(SpriteBatch* batch) {
 	layerMap["near field"]->draw(batch);
 	layerMap["animated layer"]->draw(batch);*/
 
-
+	for (const auto& baddie : baddies)
+		baddie->draw(batch);
 }
 
 void Map::loadMapDescription(xml_node mapRoot) {
@@ -62,10 +65,25 @@ void Map::loadMapDescription(xml_node mapRoot) {
 }
 
 
+void Map::loadBaddieType(USHORT gid, unique_ptr<BaddieData> baddieData) {
+
+	baddieDataMap[gid] = move(baddieData);
+}
+
+void Map::placeBaddie(xml_node objectNode) {
+	USHORT gid = objectNode.attribute("gid").as_int();
+	Vector3 pos(objectNode.attribute("x").as_int(), objectNode.attribute("y").as_int(), 0);
+
+	unique_ptr<Baddie> baddie = make_unique<Baddie>(baddieDataMap[gid].get());
+	baddie->setPosition(pos);
+
+	baddies.push_back(move(baddie));
+
+}
+
+
 
 TileAsset::~TileAsset() {
-	properties.clear();
-	hitboxes.clear();
 }
 
 AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
@@ -73,13 +91,9 @@ AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
 }
 
 AnimationAsset::~AnimationAsset() {
-	properties.clear();
-	hitboxes.clear();
 }
 
 Map::Layer::~Layer() {
-	tiles.clear();
-	//animations.clear();
 }
 
 void Map::Layer::update(double deltaTime) {
@@ -129,7 +143,21 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 	for (xml_node tilesetNode : mapRoot.children("tileset")) {
 
+		string name = tilesetNode.attribute("name").as_string();
+		USHORT firstGid = tilesetNode.attribute("firstgid").as_int();
+		USHORT gid = firstGid;
 
+		if (name.compare("Baddies") == 0) {
+			for (xml_node tileNode : tilesetNode.children("tile")) {
+
+				string baddieType
+					= tileNode.child("properties").child("property")
+					.attribute("value").as_string();
+				gid = tileNode.attribute("id").as_int() + firstGid;
+				map->loadBaddieType(gid, gfxAssets->getBaddieData(device, baddieType));
+			}
+			continue;
+		}
 		string fileStr = mapsDir
 			+ tilesetNode.child("image").attribute("source").as_string();
 
@@ -146,15 +174,15 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 			return false;
 		}
 
-		USHORT firstGid = tilesetNode.attribute("firstgid").as_int();
-		string name = tilesetNode.attribute("name").as_string();
+
+
 		USHORT columns = tilesetNode.attribute("columns").as_int();
 
 		Vector2 size = Vector2(tileWidth, tileHeight);
 		Vector2 origin = Vector2(0, tileHeight);
 
 		size_t rows = tilesetNode.attribute("tilecount").as_int() / columns;
-		USHORT gid = firstGid;
+
 
 		for (size_t j = 0; j < rows * tileHeight; j += tileHeight) {
 			for (size_t i = 0; i < columns * tileWidth; i += tileWidth) {
@@ -162,7 +190,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 				shared_ptr<TileAsset> spriteAsset;
 				spriteAsset.reset(new TileAsset());
-				spriteAsset->loadAsPartOfSheet(mapAsset->getTexture(), Vector2(i, j), size, origin);
+				spriteAsset->loadAsPartOfSheet(
+					mapAsset->getTexture(), Vector2(i, j), size, origin);
 
 				map->assetMap[gid++] = move(spriteAsset);
 			}
@@ -189,7 +218,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 						string line;
 						vector<vector<int>> data;
 						while (getline(datastream, line)) {
-							line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+							line.erase(remove_if(
+								line.begin(), line.end(), isspace), line.end());
 							if (line.length() <= 0)
 								continue;
 
@@ -201,9 +231,6 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							size_t heightloc = line.find("height=") + 7;
 							size_t zloc = line.find("z") + 2;
 
-							//wostringstream wss;
-
-							//int x; int y; int width; int height; int z;
 							string substr = line.substr(xloc);
 							istringstream(substr) >> rowdata[0];
 							substr = line.substr(yloc);
@@ -218,11 +245,6 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							unique_ptr<Hitbox> hitbox = make_unique<Hitbox>(rowdata);
 							tile->hitboxes.push_back(move(hitbox));
 
-							//wss << x << " " << y << " " << width << " " << height << " " << z << endl;
-							//OutputDebugString(wss.str().c_str());
-
-
-
 						}
 
 					} else if (propertyname.compare("mask") == 0) {
@@ -236,7 +258,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 						string line;
 						vector<vector<int>> data;
 						while (getline(datastream, line)) {
-							line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+							line.erase(remove_if(
+								line.begin(), line.end(), isspace), line.end());
 							if (line.length() <= 0)
 								continue;
 
@@ -294,7 +317,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 
 				shared_ptr<AnimationAsset> animationAsset;
-				animationAsset.reset(new AnimationAsset(mapAsset->getTexture(), frames));
+				animationAsset.reset(
+					new AnimationAsset(mapAsset->getTexture(), frames));
 				animationAsset->mask = tile->mask;
 				for (auto& hb : tile->hitboxes)
 					animationAsset->hitboxes.push_back(move(hb));
@@ -343,7 +367,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 				int gid = data[row][col];
 				if (gid <= 0)
 					continue;
-				Vector3 position = Vector3(col * map->tileWidth, row * map->tileHeight + map->tileHeight, 0);
+				Vector3 position = Vector3(
+					col * map->tileWidth, row * map->tileHeight + map->tileHeight, 0);
 
 				float layerDepth = 0;
 				if (layerName.compare("ground") == 0)
@@ -360,7 +385,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 					if (!map->assetMap[gid]) {
 						wostringstream wss;
 						wss << "Cannot find gid [" << gid << "] in map assets.";
-						GameEngine::showErrorDialog(wss.str(), L"Error finding tile sprite");
+						GameEngine::showErrorDialog(
+							wss.str(), L"Error finding tile sprite");
 						return false;
 					}
 
@@ -397,6 +423,12 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 		map->layerMap[layerName] = move(layer);
 	}
 
+
+	for (xml_node objectGroupNode : mapRoot.children("objectgroup")) {
+		for (xml_node objectNode : objectGroupNode.children("object")) {
+			map->placeBaddie(objectNode);
+		}
+	}
 	return true;
 }
 

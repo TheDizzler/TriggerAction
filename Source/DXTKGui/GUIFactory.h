@@ -143,7 +143,8 @@ private:
 		const char_t* fontName = "Default Font");
 
 	bool getGUIAssetsFromXML();
-	unique_ptr<GraphicsAsset> parseSprite(xml_node spriteNode, ComPtr<ID3D11ShaderResourceView> sheetTexture,
+	unique_ptr<GraphicsAsset> parseSprite(xml_node spriteNode,
+		ComPtr<ID3D11ShaderResourceView> sheetTexture,
 		int xOffset = 0, int yOffset = 0);
 
 	xml_node guiAssetsNode;

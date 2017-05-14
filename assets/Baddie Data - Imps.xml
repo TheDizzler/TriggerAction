@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root game="Trigger Action RPG" xml="Baddie Data - Imps" dir="assets/gfx/">
+
+	<baddie name="Blue Imp">
+		<hitbox x="24" y="36" width="11" height="5" z="17"/>
+
+		<spritesheet name="Baddies - Imps" file="Baddies - Imps.dds" set="Blue Imp" >
+
+			<animation name="walk down" timePerFrame=".2">
+				<sprite x="20" y="19" width="20" height="23" >
+					<origin x="9" y="22" />
+				</sprite>
+				<sprite x="48" y="20" width="20" height="22" >
+					<origin x="9" y="22" />
+				</sprite>
+				<sprite x="78" y="20" width="19" height="22" >
+					<origin x="9" y="22" />
+				</sprite>
+			</animation>
+			<animation name="walk left" timePerFrame=".2" >
+				<sprite x="20" y="51" width="16" height="24" >
+					<origin x="9" y="22" />
+				</sprite>
+				<sprite x="50" y="53" width="16" height="23" >
+					<origin x="9" y="22" />
+				</sprite>
+				<sprite x="80" y="54" width="16" height="23" >
+					<origin x="9" y="22" />
+				</sprite>
+			</animation>
+			<animation name="walk up" timePerFrame=".2" >
+				<sprite x="19" y="85" width="19" height="23" >
+					<origin x="10" y="23" />
+				</sprite>
+				<sprite x="48" y="86" width="19" height="23" >
+					<origin x="10" y="23" />
+				</sprite>
+				<sprite x="79" y="86" width="19" height="23" >
+					<origin x="10" y="23" />
+				</sprite>
+			</animation>
+			<animation name="walk right" timePerFrame=".2" >
+				<sprite x="21" y="121" width="16" height="24" >
+					<origin x="9" y="24" />
+				</sprite>
+				<sprite x="50" y="122" width="16" height="23" >
+					<origin x="9" y="24" />
+				</sprite>
+				<sprite x="80" y="122" width="16" height="23" >
+					<origin x="9" y="24" />
+				</sprite>
+			</animation>
+
+			<animation name="attack down">
+				<sprite x="17" y="153" width="20" height="28" >
+					<origin x="11" y="28" />
+				</sprite>
+				<sprite x="48" y="153" width="19" height="28" >
+					<origin x="10" y="28" />
+				</sprite>
+				<sprite x="79" y="154" width="19" height="23" >
+					<origin x="8" y="23" />
+				</sprite>
+			</animation>
+			<animation name="attack left">
+				<sprite x="20" y="190" width="15" height="31" >
+					<origin x="8" y="31" />
+				</sprite>
+				<sprite x="50" y="190" width="15" height="31" >
+					<origin x="8" y="31" />
+				</sprite>
+				<sprite x="80" y="191" width="16" height="23" >
+					<origin x="8" y="23" />
+				</sprite>
+			</animation>
+			<animation name="attack up">
+				<sprite x="19" y="230" width="21" height="21" >
+					<origin x="10" y="21" />
+				</sprite>
+				<sprite x="49" y="230" width="19" height="21" >
+					<origin x="10" y="21" />
+				</sprite>
+				<sprite x="79" y="229" width="16" height="21" >
+					<origin x="10" y="21" />
+				</sprite>
+			</animation>
+			<animation name="attack right">
+				<sprite x="22" y="262" width="15" height="30" >
+					<origin x="7" y="30" />
+				</sprite>
+				<sprite x="52" y="263" width="15" height="30" >
+					<origin x="7" y="30" />
+				</sprite>
+				<sprite x="80" y="263" width="16" height="23" >
+					<origin x="9" y="23" />
+				</sprite>
+			</animation>
+
+			<animation name="provoke">
+				<sprite x="111" y="145" width="21" height="24" >
+					<origin x="10" y="24" />
+				</sprite>
+				<sprite x="148" y="145" width="27" height="24" >
+					<origin x="13" y="24" />
+				</sprite>
+			</animation>
+
+			<animation name="surprise">
+				<sprite x="112" y="176" width="19" height="31" >
+					<origin x="9" y="31" />
+				</sprite>
+			</animation>
+			<animation name="hit">
+				<sprite x="152" y="177" width="19" height="29" >
+					<origin x="9" y="29" />
+				</sprite>
+			</animation>
+		</spritesheet>
+	</baddie>
+</root>

@@ -1,16 +1,13 @@
 #pragma once
 
 #include "../Managers/GFXAssetManager.h"
-//#include "../Engine/Joystick.h"
 #include "../Managers/PlayerSlot.h"
-#include "Tangible.h"
+#include "Creature.h"
 
 
-enum Facing {
-	RIGHT, DOWN, LEFT, UP
-};
 
-class PlayerCharacter : public Tangible {
+
+class PlayerCharacter : public Creature {
 public:
 	PlayerCharacter(shared_ptr<PlayerSlot> slot);
 	virtual ~PlayerCharacter();
@@ -20,14 +17,7 @@ public:
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
 
-	/** NOTE: Currently returns FALSE always! */
-	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
-
-	int getHeight() const;
-	int getWidth() const;
-	virtual const Hitbox* getHitbox() const override;
-	virtual void moveBy(const Vector3& moveVector) override;
-	virtual void setPosition(const Vector3& position) override;
+	
 
 	string name;
 private:
@@ -35,28 +25,11 @@ private:
 	shared_ptr<PlayerSlot> playerSlot;
 	Joystick* joystick;
 	CharacterData* characterData;
-	shared_ptr<AssetSet> assetSet;
-	shared_ptr<Animation> currentAnimation;
+	
 
 	bool getMovement(double deltaTime, int horzDirection, int vertDirection);
-	void loadAnimation(const pugi::char_t* name);
+	void startMainAttack();
 
-	int facing = RIGHT;
-
-	float currentFrameDuration = 0;
-	double currentFrameTime = -1;
-	int currentFrameIndex = 0;
-
-	/* Top-left corner of current sprite. */
-	Vector2 drawPosition;
-	/* Position is bottom-left corner of sprite. */
-	Vector3 position;
-	Vector2 origin;
-	Color tint = DirectX::Colors::White.v;
-	float rotation = 0.0f;
-	float layerDepth = 0.1f;
-	Vector2 scale = Vector2(1, 1);
-	//SpriteEffects spriteEffects = SpriteEffects_None;
 
 	bool running = false;
 	bool moving = false;

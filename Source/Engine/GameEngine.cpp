@@ -223,6 +223,7 @@ void GameEngine::update(double deltaTime) {
 							paused = false;
 							dialogCustom = false;
 							gfxAssets->initialize(device);
+							game->reloadLevel(Globals::testLevel);
 							break;
 
 					}

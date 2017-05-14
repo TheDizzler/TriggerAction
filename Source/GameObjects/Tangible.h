@@ -5,6 +5,7 @@
 class Hitbox {
 //friend class Tangible;
 public:
+	Hitbox(); // required for use as non-pointer
 	Hitbox(int rowdata[5]);
 	Hitbox(const Hitbox* copybox);
 	virtual ~Hitbox();
@@ -24,17 +25,20 @@ public:
 	Vector3 size; // (width, height, z)
 };
 
+enum Facing {
+	RIGHT, DOWN, LEFT, UP
+};
 
 /* A drawable asset with Hitboxes. */
 class Tangible {
 public:
-
 	virtual ~Tangible();
 
 	void debugUpdate(Vector2 moveAmount);
 	void debugDraw(SpriteBatch* batch);
 	void debugSetTint(const Color& color);
 
+	void setHitbox(const Hitbox hitbox);
 	void setHitboxPosition(const Vector3& newPosition);
 	void moveHitboxBy(const Vector3& moveVector);
 
@@ -44,7 +48,7 @@ public:
 	virtual void moveBy(const Vector3& moveVector) = 0;
 	virtual void setPosition(const Vector3& position) = 0;
 protected:
-	unique_ptr<Hitbox> hitbox;
+	Hitbox hitbox;
 	/** Hit tests should check if objects collide in x and y axii of main hitbox before
 	checking any other hitboxes. */
 	vector<unique_ptr<Hitbox> > subHitboxes;

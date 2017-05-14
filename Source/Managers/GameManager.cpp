@@ -166,6 +166,29 @@ bool GameManager::loadLevel(const pugi::char_t* levelName) {
 	return true;
 }
 
+bool GameManager::reloadLevel(const pugi::char_t* levelName) {
+
+	string mFile = mapFiles[levelName];
+
+	mapDoc.reset(new pugi::xml_document());
+	if (!mapDoc->load_file(mFile.c_str())) {
+		wostringstream wss;
+		wss << "Error trying to read " << mFile.c_str() << ".";
+		GameEngine::showErrorDialog(wss.str(), L"Error reading map file");
+		return false;
+	}
+
+	if (!mapParser->parseMap(mapDoc->child("map"), mapsDir)) {
+		GameEngine::showErrorDialog(L"Map failed to load",
+			L"Error in GameManager::loadLevel()");
+		return false;
+	}
+
+	levelScreen->reloadMap(mapParser->getMap());
+
+	return true;
+}
+
 
 void GameManager::loadMainMenu() {
 

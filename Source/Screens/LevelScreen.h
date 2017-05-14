@@ -18,6 +18,7 @@ public:
 	virtual void setGameManager(GameManager* game) override;
 
 	void loadMap(unique_ptr<Map> map);
+	void reloadMap(unique_ptr<Map> map);
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
