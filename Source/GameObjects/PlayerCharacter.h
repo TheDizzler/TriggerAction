@@ -64,4 +64,6 @@ private: // character specific stuff
 	void loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
 
 	USHORT nextBullet = 0;
+
+	USHORT animationRepeats = 0;
 };

@@ -30,8 +30,8 @@ PlayerCharacter::~PlayerCharacter() {
 
 void PlayerCharacter::reloadData(CharacterData* data) {
 
-	//characterData = data;
-	loadWeapon(data->weaponAssets, data->weaponPositions);
+	characterData = data;
+	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 }
 
 
@@ -43,6 +43,16 @@ void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 
 
 void PlayerCharacter::update(double deltaTime) {
+
+
+	currentFrameTime += deltaTime;
+	if (currentFrameTime >= currentFrameDuration) {
+		if (++currentFrameIndex >= currentAnimation->animationFrames.size())
+			currentFrameIndex = 0;
+		currentFrameTime = 0;
+		Frame* frame = currentAnimation->animationFrames[currentFrameIndex].get();
+		currentFrameDuration = frame->frameTime;
+	}
 
 	switch (action) {
 		case CreatureAction::WAITING_ACTION:
@@ -70,14 +80,6 @@ void PlayerCharacter::update(double deltaTime) {
 
 	}
 
-	currentFrameTime += deltaTime;
-	if (currentFrameTime >= currentFrameDuration) {
-		if (++currentFrameIndex >= currentAnimation->animationFrames.size())
-			currentFrameIndex = 0;
-		currentFrameTime = 0;
-		Frame* frame = currentAnimation->animationFrames[currentFrameIndex].get();
-		currentFrameDuration = frame->frameTime;
-	}
 
 	for (const auto& bullet : projectiles)
 		bullet->update(deltaTime);
@@ -140,33 +142,45 @@ void PlayerCharacter::startMainAttack() {
 		nextBullet = 0;
 }
 
+const int ANIMATION_REPEATS = 3;
 void PlayerCharacter::attackUpdate(double deltaTime) {
 
 	switch (currentFrameIndex) {
 		case 0: // readying attack
+			animationRepeats = 0;
 			break;
 		case 1: // firing bullet 
-
 			break;
 		case 2: // recoil/cooldown
 			break;
 		case 3: // after animations (cancelable)
+			if (++animationRepeats < ANIMATION_REPEATS) {
+				currentFrameIndex = 1;
+				currentFrameDuration =
+					currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				break;
+			}
+			
 			action = CreatureAction::WAITING_ACTION;
 			stillAttacking = true;
 			break;
-		case 4: // fully completed animation
+		case 4:
+			
+			break;
+		case 5:
+			// fully completed animation
 			switch (facing) {
 				case Facing::RIGHT:
-					loadAnimation("stand right");
+					loadAnimation("combat stance right");
 					break;
 				case Facing::LEFT:
-					loadAnimation("stand left");
+					loadAnimation("combat stance left");
 					break;
 				case Facing::DOWN:
-					loadAnimation("stand down");
+					loadAnimation("combat stance down");
 					break;
 				case Facing::UP:
-					loadAnimation("stand up");
+					loadAnimation("combat stance up");
 					break;
 			}
 			stillAttacking = false;
@@ -335,7 +349,8 @@ void PlayerCharacter::loadWeapon(
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
 		unique_ptr<Projectile> proj = make_unique<Projectile>(weaponPositions);
-		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"));
+		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"),
+			weaponSet->getAsset("Bullet Shadow"));
 		proj->loadHitEffect(weaponSet->getAnimation("AirGun HitEffect"));
 		projectiles.push_back(move(proj));
 	}

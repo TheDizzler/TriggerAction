@@ -6,7 +6,7 @@ public:
 	Projectile(Vector3 weaponPositions[4]);
 	virtual ~Projectile();
 
-	void loadBullet(shared_ptr<Animation> bullet);
+	void loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shadow);
 	void loadHitEffect(shared_ptr<Animation> hitEffect);
 
 	/** Returns immediately if not active. */
@@ -24,6 +24,10 @@ protected:
 	Vector3 weaponPositions[4];
 	//shared_ptr<Animation> projectileUp;
 	shared_ptr<Animation> projectileLeft;
+	GraphicsAsset* shadow;
+	Vector3 shadowPosition;
+	Vector2 shadowOrigin;
+	float shadowRotation;
 
 	shared_ptr<Animation> hitEffect;
 

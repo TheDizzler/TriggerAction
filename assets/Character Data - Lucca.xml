@@ -9,7 +9,7 @@
 		<down x="-4" y="0" z="6" />
 		<left x="-19" y="0" z="21" />
 		<up x="3" y="-1" z="19" />
-		<right x="16" y="0" z="15" />
+		<right x="16" y="0" z="14" />
 	</weaponPosition>
 
 
@@ -191,7 +191,7 @@
 				<origin x="9" y="32" />
 			</sprite>
 		</animation>
-		<animation name="walk up" timePerFrame=".51">
+		<animation name="walk up" timePerFrame=".1">
 			<!-- left starting forward -->
 			<sprite x="366" y="520" width="16" height="32" >
 				<origin x="7" y="31" />
@@ -289,7 +289,7 @@
 				<origin x="10" y="30" />
 			</sprite>
 		</animation>
-		<animation name="run up" timePerFrame=".515">
+		<animation name="run up" timePerFrame=".1">
 			<sprite x="366" y="760" width="16" height="32" >
 				<origin x="8" y="31" />
 			</sprite>
@@ -426,7 +426,7 @@
 		</animation>
 
 
-		<animation name="combat stance down" timePerFrame="1.1">
+		<animation name="combat stance down" timePerFrame=".5">
 			<sprite x="286" y="80" width="16" height="32" >
 				<origin x="9" y="30" />
 			</sprite>
@@ -434,7 +434,7 @@
 				<origin x="9" y="30" />
 			</sprite>
 		</animation>
-		<animation name="combat stance left" timePerFrame="1.1">
+		<animation name="combat stance left" timePerFrame=".5">
 			<sprite x="326" y="80" width="16" height="32" >
 				<origin x="9" y="30" />
 			</sprite>
@@ -442,7 +442,7 @@
 				<origin x="9" y="30" />
 			</sprite>
 		</animation>
-		<animation name="combat stance up" timePerFrame="1.1">
+		<animation name="combat stance up" timePerFrame=".5">
 			<sprite x="365" y="80" width="18" height="32" >
 				<origin x="9" y="30" />
 			</sprite>
@@ -450,7 +450,7 @@
 				<origin x="7" y="30" />
 			</sprite>
 		</animation>
-		<animation name="combat stance right" timePerFrame="1.1">
+		<animation name="combat stance right" timePerFrame=".5">
 			<sprite x="406" y="80" width="16" height="32" >
 				<origin x="7" y="30" />
 			</sprite>
@@ -476,6 +476,8 @@
 			<sprite x="286" y="320" width="15" height="31" frameTime=".25">
 				<origin x="8" y="29" />
 			</sprite>
+			<!-- empty frame -->
+			<sprite x="" y="" width="" height="" />
 		</animation>
 		<animation name="shoot left" >
 			<sprite x="322" y="160" width="23" height="31" frameTime=".2">
@@ -493,13 +495,15 @@
 			<sprite x="325" y="320" width="17" height="31" frameTime=".25">
 				<origin x="12" y="30" />
 			</sprite>
+			<!-- empty frame -->
+			<sprite x="" y="" width="" height="" />
 		</animation>
 		<animation name="shoot up">
 			<sprite x="366" y="160" width="15" height="31" frameTime=".2">
 				<origin x="7" y="30" />
 			</sprite>
 			<sprite x="366" y="200" width="16" height="32" frameTime=".15">
-				<origin x="7" y="30" />
+				<origin x="7" y="31" />
 			</sprite>
 			<sprite x="366" y="239" width="16" height="34" frameTime=".1">
 				<origin x="7" y="33" />
@@ -510,6 +514,8 @@
 			<sprite x="366" y="320" width="15" height="31" frameTime=".25">
 				<origin x="8" y="31" />
 			</sprite>
+			<!-- empty frame -->
+			<sprite x="" y="" width="" height="" />
 		</animation>
 		<animation name="shoot right">
 			<sprite x="402" y="160" width="23" height="31" frameTime=".2">
@@ -527,6 +533,8 @@
 			<sprite x="405" y="320" width="17" height="31" frameTime=".25">
 				<origin x="8" y="30" />
 			</sprite>
+			<!-- empty frame -->
+			<sprite x="" y="" width="" height="" />
 		</animation>
 	</spritesheet>
 
@@ -539,6 +547,8 @@
 		<animation name="AirGun Bullet Left">
 			<sprite x="36" y="20" width="5" height="7" />
 		</animation>
+
+		<sprite name="Bullet Shadow" x="48" y="22" width="6" height="3" />
 
 		<animation name="AirGun HitEffect">
 			<sprite x="16" y="32" width="16" height="16" >
