@@ -13,11 +13,12 @@ public:
 	PlayerCharacter(shared_ptr<PlayerSlot> slot);
 	virtual ~PlayerCharacter();
 
+	void reloadData(CharacterData* data);
+
 	void setInitialPosition(const Vector2& startingPosition);
 
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
-
 
 
 	string name;
@@ -60,5 +61,7 @@ protected:
 
 private: // character specific stuff
 	vector<unique_ptr<Projectile>> projectiles;
-	void loadWeapon(shared_ptr<AssetSet> weaponSet);
+	void loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
+
+	USHORT nextBullet = 0;
 };

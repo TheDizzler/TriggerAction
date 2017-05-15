@@ -31,16 +31,19 @@ public:
 	/** Sometimes overlapping tiles have the same y-coord but one should always be on top.
 		Depth nudge makes sure this happens. */
 	virtual void setLayerDepth(const float depth, const float depthNudge);
-	
+
 protected:
-	Vector2 origin;
-	Color tint;
-	float rotation;
-	Vector2 scale;
-	float layerDepth;
+	Vector2 origin = Vector2::Zero;
+	Color tint = Colors::White;
+	float rotation = 0.0f;
+	Vector2 scale = Vector2(1, 1);
+	float layerDepth = 1;
 	float depthNudge = 0;
-	
-	/* Position is bottom left of sprite! 
+
+	/* Position is bottom left of sprite!
 		x, y, and height above y (z). */
 	Vector3 position;
+
+	/* Use this for drawing as it adjusts sprite for z-height. */
+	Vector3 drawPosition;
 };

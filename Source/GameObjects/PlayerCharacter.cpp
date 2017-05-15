@@ -16,16 +16,22 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	characterData = slot->characterData;
 	name = characterData->name;
 	assetSet = characterData->assets;
-	origin = Vector2(0, getHeight());
+
 	setHitbox(characterData->hitbox.get());
 
-	loadWeapon(characterData->weaponAssets);
+	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
 	loadAnimation("stand right");
-
+	origin = Vector2(0, getHeight());
 }
 
 PlayerCharacter::~PlayerCharacter() {
+}
+
+void PlayerCharacter::reloadData(CharacterData* data) {
+
+	//characterData = data;
+	loadWeapon(data->weaponAssets, data->weaponPositions);
 }
 
 
@@ -72,17 +78,21 @@ void PlayerCharacter::update(double deltaTime) {
 		Frame* frame = currentAnimation->animationFrames[currentFrameIndex].get();
 		currentFrameDuration = frame->frameTime;
 	}
+
+	for (const auto& bullet : projectiles)
+		bullet->update(deltaTime);
 }
 
 
 void PlayerCharacter::draw(SpriteBatch* batch) {
 
-	batch->Draw(currentAnimation->texture.Get(), position,
+	batch->Draw(currentAnimation->texture.Get(), drawPosition,
 		&currentAnimation->animationFrames[currentFrameIndex]->sourceRect, tint, rotation,
 		currentAnimation->animationFrames[currentFrameIndex]->origin, scale,
 		SpriteEffects_None, layerDepth);
 
-
+	for (const auto& bullet : projectiles)
+		bullet->draw(batch);
 	debugDraw(batch);
 }
 
@@ -121,6 +131,13 @@ void PlayerCharacter::startMainAttack() {
 
 	action = CreatureAction::ATTACKING_ACTION;
 	currentFrameTime = 0;
+
+	// fire bullet
+
+
+	projectiles[nextBullet++]->fire(facing, position);
+	if (nextBullet >= MAX_PROJECTILES)
+		nextBullet = 0;
 }
 
 void PlayerCharacter::attackUpdate(double deltaTime) {
@@ -311,10 +328,13 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 }
 
 
-void PlayerCharacter::loadWeapon(shared_ptr<AssetSet> weaponSet) {
+void PlayerCharacter::loadWeapon(
+	shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
+
+	projectiles.clear();
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		shared_ptr<Projectile> proj = make_shared<Projectile>();
+		unique_ptr<Projectile> proj = make_unique<Projectile>(weaponPositions);
 		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"));
 		proj->loadHitEffect(weaponSet->getAnimation("AirGun HitEffect"));
 		projectiles.push_back(move(proj));

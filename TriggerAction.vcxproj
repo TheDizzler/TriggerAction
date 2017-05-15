@@ -195,6 +195,7 @@
     <ClCompile Include="Source\GameObjects\Creature.cpp" />
     <ClCompile Include="Source\GameObjects\IElement3D.cpp" />
     <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp" />
+    <ClCompile Include="Source\GameObjects\Projectile.cpp" />
     <ClCompile Include="Source\GameObjects\Tangible.cpp" />
     <ClCompile Include="Source\GameObjects\Tile.cpp" />
     <ClCompile Include="Source\GUIObjects\MenuDialog.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="Source\GameObjects\Creature.h" />
     <ClInclude Include="Source\GameObjects\IElement3D.h" />
     <ClInclude Include="Source\GameObjects\PlayerCharacter.h" />
+    <ClInclude Include="Source\GameObjects\Projectile.h" />
     <ClInclude Include="Source\GameObjects\Tangible.h" />
     <ClInclude Include="Source\GameObjects\Tile.h" />
     <ClInclude Include="Source\globals.h" />

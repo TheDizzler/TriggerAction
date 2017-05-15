@@ -185,7 +185,7 @@ CharacterData* GFXAssetManager::getPreviousCharacter(int* currentPCNum) {
 }
 
 
-const CharacterData* GFXAssetManager::getPlayerData(string characterName) {
+CharacterData* GFXAssetManager::getCharacterData(string characterName) {
 	return characterDataMap[characterName].get();
 }
 

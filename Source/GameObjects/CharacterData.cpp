@@ -26,6 +26,30 @@ void CharacterData::loadData(xml_node characterDataNode,
 
 	hitbox = make_unique<Hitbox>(rowdata);
 
+	xml_node weapPosNode = characterDataNode.child("weaponPosition");
+	xml_node down = weapPosNode.child("down");
+	xml_node left = weapPosNode.child("left");
+	xml_node up = weapPosNode.child("up");
+	xml_node right = weapPosNode.child("right");
+	weaponPositions[Facing::DOWN] = Vector3(down.attribute("x").as_int(),
+		down.attribute("y").as_int(), down.attribute("z").as_int());
+	weaponPositions[Facing::LEFT] = Vector3(left.attribute("x").as_int(),
+		left.attribute("y").as_int(), left.attribute("z").as_int());
+	weaponPositions[Facing::UP] = Vector3(up.attribute("x").as_int(),
+		up.attribute("y").as_int(), up.attribute("z").as_int());
+	weaponPositions[Facing::RIGHT] = Vector3(right.attribute("x").as_int(),
+		right.attribute("y").as_int(), right.attribute("z").as_int());
+	/*weaponPositonDown = Vector3(down.attribute("x").as_int(),
+		down.attribute("y").as_int(), down.attribute("z").as_int());
+	weaponPositonRight = Vector3(left.attribute("x").as_int(),
+		left.attribute("y").as_int(), left.attribute("z").as_int());
+	weaponPositonUp = Vector3(up.attribute("x").as_int(),
+		up.attribute("y").as_int(), up.attribute("z").as_int());
+	weaponPositonLeft = Vector3(right.attribute("x").as_int(),
+		right.attribute("y").as_int(), right.attribute("z").as_int());*/
+
+
+
 	assets = assetSet;
 	weaponAssets = weaponSet;
 }

@@ -26,7 +26,7 @@ public:
 };
 
 enum Facing {
-	RIGHT, DOWN, LEFT, UP
+	LEFT, DOWN, RIGHT, UP
 };
 
 /* A drawable asset with Hitboxes. */
@@ -34,19 +34,17 @@ class Tangible {
 public:
 	virtual ~Tangible();
 
-	void debugUpdate(Vector2 moveAmount);
+	void debugUpdate(/*Vector2 moveAmount*/);
 	void debugDraw(SpriteBatch* batch);
 	void debugSetTint(const Color& color);
 
 	void setHitbox(const Hitbox hitbox);
-	void setHitboxPosition(const Vector3& newPosition);
-	void moveHitboxBy(const Vector3& moveVector);
 
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const = 0;
 
 	virtual const Hitbox* getHitbox() const = 0;
-	virtual void moveBy(const Vector3& moveVector) = 0;
-	virtual void setPosition(const Vector3& position) = 0;
+	void moveHitboxBy(const Vector3& moveVector);
+	void setHitboxPosition(const Vector3& newPosition);
 protected:
 	Hitbox hitbox;
 	/** Hit tests should check if objects collide in x and y axii of main hitbox before
@@ -55,6 +53,8 @@ protected:
 
 	unique_ptr<RectangleFrame> testFrame;
 
+private:
+	//void setHitboxPosition(const Vector3& newPosition);
 };
 
 

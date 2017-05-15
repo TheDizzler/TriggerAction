@@ -18,7 +18,7 @@ public:
 	CharacterData* getNextCharacter(int* currentPCNum);
 	CharacterData* getPreviousCharacter(int* currentPCNum);
 	//const CharacterData* getNextAvailabelCharacter();
-	const CharacterData* getPlayerData(string characterName);
+	CharacterData* getCharacterData(string characterName);
 
 	unique_ptr<BaddieData> getBaddieData(
 		ComPtr<ID3D11Device> device, string baddieName);

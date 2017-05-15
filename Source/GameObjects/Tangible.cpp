@@ -72,7 +72,7 @@ Tangible::~Tangible() {
 }
 
 
-void Tangible::debugUpdate(Vector2 moveAmount) {
+void Tangible::debugUpdate() {
 
 	testFrame->update();
 	//testFrame->moveBy(moveAmount);
@@ -96,6 +96,17 @@ void Tangible::setHitbox(const Hitbox box) {
 		Vector2(hitbox.size.x, hitbox.size.y)));
 }
 
+
+void Tangible::moveHitboxBy(const Vector3& moveVector) {
+
+	hitbox.position += moveVector;
+	for (const auto& subHB : subHitboxes)
+		subHB->position += moveVector;
+	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
+
+	debugUpdate();
+}
+
 void Tangible::setHitboxPosition(const Vector3& newPosition) {
 
 	hitbox.position = newPosition;
@@ -104,12 +115,9 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 	for (const auto& subHB : subHitboxes)
 		subHB->position = newPosition;
 	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
+
+	debugUpdate();
 }
 
-void Tangible::moveHitboxBy(const Vector3& moveVector) {
 
-	hitbox.position += moveVector;
-	for (const auto& subHB : subHitboxes)
-		subHB->position += moveVector;
-	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
-}
+

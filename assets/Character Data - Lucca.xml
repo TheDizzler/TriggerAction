@@ -4,6 +4,14 @@
 	<hitbox x="0" y="0" width="10" height="7" z="24"/>
 	<weaponMenuIcon name="Gun" />
 
+	<!-- Relative to bottom left corner -->
+	<weaponPosition>
+		<down x="-4" y="0" z="6" />
+		<left x="-19" y="0" z="21" />
+		<up x="3" y="-1" z="19" />
+		<right x="16" y="0" z="15" />
+	</weaponPosition>
+
 
 	<spritesheet name="Lucca Sheet" file="Lucca Spritesheet.dds" set="Lucca">
 
@@ -51,7 +59,6 @@
 			</sprite>
 			<!-- Blinking end -->
 		</animation>
-
 		<animation name="stand left">
 			<!-- neutral-->
 			<sprite x="167" y="0" width="13" height="32" frameTime="1.5">
@@ -88,8 +95,6 @@
 				<origin x="6" y="31" />
 			</sprite>
 		</animation>
-
-
 		<animation name="stand right">
 			<!-- neutral-->
 			<sprite x="247" y="0" width="13" height="32" frameTime="1.5">
@@ -126,7 +131,6 @@
 				<origin x="7" y="31" />
 			</sprite>
 		</animation>
-
 		<animation name="stand up">
 			<!-- neutral-->
 			<sprite x="206" y="0" width="15" height="32" frameTime="1.5">
@@ -529,8 +533,12 @@
 
 	<spritesheet name="Lucca Weapons" file="Lucca Weapons.dds" set="Gun" >
 
-		<sprite name="AirGun Bullet Up" x="19" y="21" width="7" height="5" />
-		<sprite name="AirGun Bullet left" x="36" y="20" width="5" height="7" />
+		<animation name="AirGun Bullet Up">
+			<sprite x="19" y="21" width="7" height="5" />
+		</animation>
+		<animation name="AirGun Bullet Left">
+			<sprite x="36" y="20" width="5" height="7" />
+		</animation>
 
 		<animation name="AirGun HitEffect">
 			<sprite x="16" y="32" width="16" height="16" >

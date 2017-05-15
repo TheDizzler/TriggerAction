@@ -13,7 +13,7 @@ LevelScreen::~LevelScreen() {
 bool LevelScreen::initialize(ComPtr<ID3D11Device> device,
 	shared_ptr<MouseController> mouse) {
 
-	
+
 	return true;
 }
 
@@ -44,6 +44,11 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 
 	map.reset();
 	map = move(newMap);
+
+
+	for (const auto& pc : pcs) {
+		pc->reloadData(gfxAssets->getCharacterData(pc->name));
+	}
 }
 
 
