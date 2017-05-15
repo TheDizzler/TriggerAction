@@ -2,10 +2,10 @@
 <root game="Trigger Action RPG" xml="AssetManifest" dir="assets/">
 
 	<characterData>
-		<player name="Chrono" file="Character Data - Chrono.xml" />
-		<player name="Marle" file="Character Data - Marle.xml" />
-		<player name="Lucca" file="Character Data - Lucca.xml" />
-		<player name="Frog" file="Character Data - Frog.xml" />
+		<player name="Chrono" file="Character Data - Chrono.xml" weapon="Katana"/>
+		<player name="Marle" file="Character Data - Marle.xml" weapon="Bow"/>
+		<player name="Lucca" file="Character Data - Lucca.xml" weapon="Gun"/>
+		<player name="Frog" file="Character Data - Frog.xml" weapon="Sword"/>
 	</characterData>
 
 	<baddieData>
@@ -95,7 +95,7 @@
 				<sprite name="Bottom Center" x="25" y="57" width="16" height="8" />
 				<sprite name="Bottom Right Corner" x="57" y="57" width="8" height="8" />
 
-				
+
 			</spriteset>
 		</spritesheet>
 
@@ -103,7 +103,7 @@
 		<spritesheet name="Default GUI Sprites" file ="default gui spritesheet.dds">
 			<sprite name="Spinner Up Button" x="1" y="0" width="30" height="16" />
 			<sprite name="Spinner Down Button" x="33" y="0" width="30" height="16" />
-			
+
 			<spriteset name="Dynamic Dialog">
 				<sprite name="Top Left Corner" x="0" y="17" width="16" height="16" />
 				<sprite name="Top Center" x="20" y="17" width="16" height="16" />

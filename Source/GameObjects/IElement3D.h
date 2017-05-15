@@ -43,9 +43,4 @@ protected:
 	/* Position is bottom left of sprite! 
 		x, y, and height above y (z). */
 	Vector3 position;
-
-	Vector2 drawPosition;
-
-	
-
 };

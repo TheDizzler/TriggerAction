@@ -2,6 +2,7 @@
 
 #include "../Managers/GFXAssetManager.h"
 #include "../Managers/PlayerSlot.h"
+#include "Projectile.h"
 #include "Creature.h"
 
 
@@ -17,10 +18,10 @@ public:
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch);
 
-	
+
 
 	string name;
-private:
+protected:
 
 	shared_ptr<PlayerSlot> playerSlot;
 	Joystick* joystick;
@@ -49,6 +50,15 @@ private:
 	float runRightSpeed = 100;
 
 
-	bool lastHit = false;
+	bool lastCollision = false;
+	bool stillAttacking = false;
+	void attackUpdate(double deltaTime);
 
+	/** Possible actions. */
+	void movement(double deltaTime);
+
+
+private: // character specific stuff
+	vector<unique_ptr<Projectile>> projectiles;
+	void loadWeapon(shared_ptr<AssetSet> weaponSet);
 };

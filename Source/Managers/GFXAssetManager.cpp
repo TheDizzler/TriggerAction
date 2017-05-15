@@ -261,7 +261,8 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 
 		unique_ptr<CharacterData> characterData = make_unique<CharacterData>(name);
 		characterData->loadData(characterDataRoot,
-			getAssetSet(characterNode.attribute("name").as_string()));
+			getAssetSet(characterNode.attribute("name").as_string()),
+			getAssetSet(characterNode.attribute("weapon").as_string()));
 		xml_node weaponIconNode = characterDataRoot.child("weaponMenuIcon");
 		characterData->weaponType = weaponIconNode.attribute("name").as_string();
 		characterDataMap[name] = move(characterData);

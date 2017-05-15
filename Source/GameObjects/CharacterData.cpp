@@ -14,7 +14,8 @@ CharacterData::~CharacterData() {
 }
 
 
-void CharacterData::loadData(xml_node characterDataNode, shared_ptr<AssetSet> assetSet) {
+void CharacterData::loadData(xml_node characterDataNode,
+	shared_ptr<AssetSet> assetSet, shared_ptr<AssetSet> weaponSet) {
 
 	xml_node hitboxNode = characterDataNode.child("hitbox");
 
@@ -26,4 +27,5 @@ void CharacterData::loadData(xml_node characterDataNode, shared_ptr<AssetSet> as
 	hitbox = make_unique<Hitbox>(rowdata);
 
 	assets = assetSet;
+	weaponAssets = weaponSet;
 }

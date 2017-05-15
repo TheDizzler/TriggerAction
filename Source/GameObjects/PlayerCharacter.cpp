@@ -1,6 +1,13 @@
 #include "../pch.h"
 #include "PlayerCharacter.h"
+#include "../Managers/MapManager.h"
+#include "../GUIObjects/MenuDialog.h"
+#include "../Screens/LevelScreen.h"
+#include "../Engine/GameEngine.h"
+#include <math.h>
 
+
+const static USHORT MAX_PROJECTILES = 3;
 
 PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	playerSlot = slot;
@@ -9,68 +16,45 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	characterData = slot->characterData;
 	name = characterData->name;
 	assetSet = characterData->assets;
-	setHitbox(characterData->hitbox.get());
-	loadAnimation("stand right");
 	origin = Vector2(0, getHeight());
+	setHitbox(characterData->hitbox.get());
+
+	loadWeapon(characterData->weaponAssets);
+
+	loadAnimation("stand right");
+
 }
 
 PlayerCharacter::~PlayerCharacter() {
 }
 
-#include "../Managers/MapManager.h"
+
 void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 
 	setPosition(Vector3(startingPosition.x, startingPosition.y, 0));
 
 }
 
-#include "../GUIObjects/MenuDialog.h"
-#include "../Screens/LevelScreen.h"
-#include "../Engine/GameEngine.h"
+
 void PlayerCharacter::update(double deltaTime) {
 
-	if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
+	switch (action) {
+		case CreatureAction::WAITING_ACTION:
+		case CreatureAction::MOVING_ACTION:
+			if (joystick->bButtonStates[ControlButtons::Y]) {
+				startMainAttack();
+			} else {
+				movement(deltaTime);
 
-		bool hit = false;
-		// check for collisions
-		for (const Hitbox* hb : hitboxesAll) {
-			if (hb == &hitbox)
-				continue;
-			if (hitbox.collision2d(hb)) {
-				hit = true;
-				int  hit = 69;
 			}
-		}
-
-		if (hit && !lastHit)
-			debugSetTint(Color(1, .1, .1, 1));
-		else if (!hit && lastHit)
-			debugSetTint(Color(0, 0, 0, 1));
-
-		lastHit = hit;
-
-	} else if (!waiting) {
-		waiting = true;
-		moving = false;
-		switch (facing) {
-			case Facing::RIGHT:
-				loadAnimation("stand right");
+			if (!stillAttacking)
 				break;
-			case Facing::LEFT:
-				loadAnimation("stand left");
-				break;
-			case Facing::DOWN:
-				loadAnimation("stand down");
-				break;
-			case Facing::UP:
-				loadAnimation("stand up");
-				break;
-		}
-	}
+			else
+		case CreatureAction::ATTACKING_ACTION:
+			attackUpdate(deltaTime);
 
-	if (joystick->bButtonStates[ControlButtons::Y]) {
-		//loadAnimation("shoot down");
-		startMainAttack();
+			break;
+
 	}
 
 	if (joystick->bButtonStates[ControlButtons::START]) {
@@ -103,7 +87,120 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 }
 
 
-#include <math.h>
+
+
+void PlayerCharacter::startMainAttack() {
+	// get direction facing
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+
+	if (horzDirection > 10) {
+		facing = Facing::RIGHT;
+	} else if (horzDirection < -10) {
+		facing = Facing::LEFT;
+	} else if (vertDirection < -10) {
+		facing = Facing::UP;
+	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+	}
+
+	switch (facing) {
+		case Facing::LEFT:
+			loadAnimation("shoot left");
+			break;
+		case Facing::DOWN:
+			loadAnimation("shoot down");
+			break;
+		case Facing::RIGHT:
+			loadAnimation("shoot right");
+			break;
+		case Facing::UP:
+			loadAnimation("shoot up");
+			break;
+	}
+
+	action = CreatureAction::ATTACKING_ACTION;
+	currentFrameTime = 0;
+}
+
+void PlayerCharacter::attackUpdate(double deltaTime) {
+
+	switch (currentFrameIndex) {
+		case 0: // readying attack
+			break;
+		case 1: // firing bullet 
+
+			break;
+		case 2: // recoil/cooldown
+			break;
+		case 3: // after animations (cancelable)
+			action = CreatureAction::WAITING_ACTION;
+			stillAttacking = true;
+			break;
+		case 4: // fully completed animation
+			switch (facing) {
+				case Facing::RIGHT:
+					loadAnimation("stand right");
+					break;
+				case Facing::LEFT:
+					loadAnimation("stand left");
+					break;
+				case Facing::DOWN:
+					loadAnimation("stand down");
+					break;
+				case Facing::UP:
+					loadAnimation("stand up");
+					break;
+			}
+			stillAttacking = false;
+			break;
+
+	}
+}
+
+void PlayerCharacter::movement(double deltaTime) {
+	if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
+		stillAttacking = false;
+		bool collision = false;
+		// check for collisions
+		for (const Hitbox* hb : hitboxesAll) {
+			if (hb == &hitbox)
+				continue;
+			if (hitbox.collision2d(hb)) {
+				collision = true;
+				int  hit = 69;
+			}
+		}
+
+		if (collision && !lastCollision)
+			debugSetTint(Color(1, .1, .1, 1));
+		else if (!collision && lastCollision)
+			debugSetTint(Color(0, 0, 0, 1));
+
+		lastCollision = collision;
+
+
+	} else if (!waiting) {
+		waiting = true;
+		moving = false;
+		switch (facing) {
+			case Facing::RIGHT:
+				loadAnimation("stand right");
+				break;
+			case Facing::LEFT:
+				loadAnimation("stand left");
+				break;
+			case Facing::DOWN:
+				loadAnimation("stand down");
+				break;
+			case Facing::UP:
+				loadAnimation("stand up");
+				break;
+		}
+	}
+}
+
+
 bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertDirection) {
 
 	bool runningNow = joystick->bButtonStates[ControlButtons::B];
@@ -131,7 +228,6 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		} else {
 			float moveByX = moveRightSpeed*deltaTime*speedFactor;
 			moveBy(Vector3(moveByX, 0, 0));
-
 		}
 
 		if (!moving || facing != Facing::RIGHT) {
@@ -196,7 +292,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	}
 
 	if (vertDirection > 10) {
-	   // moving down
+		// moving down
 		float moveByY = moveDownSpeed*deltaTime*speedFactor;
 		moveBy(Vector3(0, moveByY, 0));
 		if (!moving || facing != Facing::DOWN) {
@@ -214,7 +310,14 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	return false;
 }
 
-void PlayerCharacter::startMainAttack() {
-	// get direction facing
-	loadAnimation("shoot down");
+
+void PlayerCharacter::loadWeapon(shared_ptr<AssetSet> weaponSet) {
+
+	for (int i = 0; i < MAX_PROJECTILES; ++i) {
+		shared_ptr<Projectile> proj = make_shared<Projectile>();
+		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"));
+		proj->loadHitEffect(weaponSet->getAnimation("AirGun HitEffect"));
+		projectiles.push_back(move(proj));
+	}
+
 }

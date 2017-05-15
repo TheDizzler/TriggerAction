@@ -527,7 +527,7 @@
 	</spritesheet>
 
 
-	<spritesheet name="Lucca Weapons" file="Lucca Weapons.dds" set="Lucca" >
+	<spritesheet name="Lucca Weapons" file="Lucca Weapons.dds" set="Gun" >
 
 		<sprite name="AirGun Bullet Up" x="19" y="21" width="7" height="5" />
 		<sprite name="AirGun Bullet left" x="36" y="20" width="5" height="7" />
