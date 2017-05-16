@@ -210,6 +210,9 @@
     <ClCompile Include="Source\GameObjects\Creature.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GameObjects\Projectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h">
@@ -314,12 +317,6 @@
     <ClInclude Include="Source\DXTKGui\BaseGraphics\GraphicsAsset.h">
       <Filter>Header Files\DXTGui\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DXTKGui\GuiAssets.h">
-      <Filter>Header Files\DXTGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h">
-      <Filter>Header Files\DXTGui\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="Source\DXTKGui\BaseGraphics\IElement2D.h">
       <Filter>Header Files\DXTGui\Base</Filter>
     </ClInclude>
@@ -361,6 +358,15 @@
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Creature.h">
       <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Projectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXTKGui\GuiAssets.h">
+      <Filter>Header Files\DXTGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h">
+      <Filter>Header Files\DXTGui\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

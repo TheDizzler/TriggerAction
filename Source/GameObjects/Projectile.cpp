@@ -1,6 +1,7 @@
 #include "../pch.h"
 #include "Projectile.h"
 #include "../Screens/LevelScreen.h"
+#include "../Engine/GameEngine.h"
 
 Projectile::Projectile(Vector3 wPos[4]) {
 	memmove(weaponPositions, wPos, sizeof(weaponPositions));
@@ -13,8 +14,8 @@ void Projectile::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
 	projectileLeft = bullet;
 	shadow = shd;
 	shadow->getOrigin();
-	//shadowOrigin = Vector2((float) shadow->getWidth()/2, (float) shadow->getHeight()/2);
-	shadowOrigin = Vector2::Zero;
+	shadowOrigin = Vector2((float) shadow->getWidth() / 2, (float) shadow->getHeight() / 2);
+	//shadowOrigin = Vector2::Zero;
 }
 
 void Projectile::loadHitEffect(shared_ptr<Animation> hitFx) {
@@ -25,6 +26,22 @@ void Projectile::update(double deltaTime) {
 	if (!isActive)
 		return;
 
+	Vector2 screenpos = camera->worldToScreen(Vector2(position.x, position.y));
+	if (screenpos.x < 0 || screenpos.x > Globals::WINDOW_WIDTH
+		|| screenpos.y < 0 || screenpos.y > Globals::WINDOW_HEIGHT) {
+
+		isActive = false;
+	}
+
+	// ray-casting hit detection
+	Vector2 p = position; // raystart pos
+	for (const Hitbox* hitbox : hitboxesAll) {
+
+	/*	Vector2 a(hitbox->position.x, hitbox->position.y + hitbox->size.y);
+		Vector2 b(hitbox->position.x + hitbox->size.x, hitbox->position.y);*/
+
+
+	}
 
 	currentFrameTime += deltaTime;
 	if (currentFrameTime >= currentFrameDuration) {
@@ -34,6 +51,9 @@ void Projectile::update(double deltaTime) {
 		Frame* frame = projectileLeft->animationFrames[currentFrameIndex].get();
 		currentFrameDuration = frame->frameTime;
 	}
+
+	moveBy(Vector3(-cos(rotation)*projectileSpeed*deltaTime,
+		sin(-rotation)* projectileSpeed*deltaTime, 0));
 }
 
 void Projectile::draw(SpriteBatch* batch) {
@@ -57,19 +77,18 @@ void Projectile::fire(Facing direction, const Vector3& pos) {
 	rotation = direction * -XM_PIDIV2;
 
 	Vector3 tempos = pos + weaponPositions[direction];
-	setPosition(tempos);
+	IElement3D::setPosition(tempos);
 	shadowPosition = pos;
-	shadowPosition.x = position.x;
+	shadowRotation = rotation;
+
 	switch (direction) {
 		case Facing::LEFT:
 		case Facing::RIGHT:
-			shadowRotation = 0;
+			shadowPosition.x = position.x;
 			break;
 		case Facing::UP:
-			shadowRotation = -rotation;
-			break;
 		case Facing::DOWN:
-			shadowRotation = rotation;
+			shadowPosition.y = position.y;
 			break;
 	}
 	layerDepth = Map::getLayerDepth(position.y);
@@ -78,6 +97,12 @@ void Projectile::fire(Facing direction, const Vector3& pos) {
 void Projectile::store() {
 	isActive = false;
 }
+
+void Projectile::moveBy(const Vector3& moveVector) {
+	IElement3D::moveBy(moveVector);
+	shadowPosition += moveVector;
+}
+
 
 const int Projectile::getWidth() const {
 	return projectileLeft->animationFrames[currentFrameIndex]->sourceRect.right

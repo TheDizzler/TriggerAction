@@ -46,7 +46,7 @@ ControllerListener::~ControllerListener() {
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 		joystickPorts[i].reset();
-	
+
 	slotManager.reset();
 
 	endAllThreadsNow = true;
@@ -87,7 +87,8 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 				OutputDebugString(L"Joystick removed\n");
 
-				slotManager->controllerRemoved(foundJoy->playerSlotNumber);
+				if (foundJoy->playerSlotNumber > -1)
+					slotManager->controllerRemoved(foundJoy->playerSlotNumber);
 				controllerRemoved(foundJoy->socket);
 
 			}
@@ -250,7 +251,7 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 	JoyData* joyData = (JoyData*) pVoid;
 
 	//while (guiOverlay == NULL) { // Jus hol up
-	while(!gameInitialized) {
+	while (!gameInitialized) {
 		//wostringstream wss;
 		//wss << L"Test Thread #" << GetCurrentThreadId() << endl;
 		//wss << data->joystick->socket << " waiting for HUD." << endl;

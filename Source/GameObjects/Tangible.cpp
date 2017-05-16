@@ -75,7 +75,6 @@ Tangible::~Tangible() {
 void Tangible::debugUpdate() {
 
 	testFrame->update();
-	//testFrame->moveBy(moveAmount);
 }
 
 void Tangible::debugDraw(SpriteBatch* batch) {

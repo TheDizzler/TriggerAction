@@ -1,8 +1,10 @@
 #pragma once
 
-//#include <wrl.h>
 #include <d3d11_1.h>
 #include <SimpleMath.h>
+
+
+#include "../globals.h"
 
 using namespace std;
 using namespace DirectX;
@@ -20,7 +22,7 @@ public:
 
 
 	Viewport* viewport;
-	
+
 
 	float rotation = 0.0f;
 
@@ -32,6 +34,8 @@ public:
 	bool viewContains(const Vector2& point);
 
 	float getZoom();
+	void setZoomToResolution(int width = Globals::targetResolution.x,
+		int height = Globals::targetResolution.y);
 	void setZoom(float zoomTo);
 	void adjustZoom(float amount);
 	/** Move the camera in an X and Y amount based on the cameraMovement param.
@@ -49,8 +53,8 @@ private:
 
 	Vector2 cameraPosition;
 	float zoom;
-	
+
 
 	Vector2* screenToWorld(Vector2 screenPosition);
-	
+
 };

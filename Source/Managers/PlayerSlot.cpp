@@ -8,7 +8,7 @@ deque<shared_ptr<PlayerSlot>> waitingSlots;
 #include "../Engine/GameEngine.h"
 PlayerSlot::PlayerSlot(size_t slotNum) : slotNumber(slotNum) {
 
-		
+
 }
 
 
@@ -72,7 +72,6 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 		}
 	} else {
 		buttonStillDown = false;
-
 	}
 
 	return characterLocked;
@@ -81,9 +80,12 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 
 void PlayerSlot::waiting() {
 
-	if (joystick->bButtonStates[0]) {
+	if (joystick->bButtonStates[ControlButtons::A]) {
 		_threadJoystickData->finishFlag = true;
 		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
+		
+		// "lock" A button until released
+		buttonStillDown = true;
 	}
 }
 
@@ -224,7 +226,8 @@ void PlayerSlotManager::finalizePair(JoyData* joyData) {
 	playerSlots[joyData->joystick->playerSlotNumber]->selectCharacter();
 
 	wostringstream ws;
-	ws << L"Player " << (playerSlots[joyData->joystick->playerSlotNumber]->getPlayerSlotNumber() + 1);
+	ws << L"Player ";
+	ws << (playerSlots[joyData->joystick->playerSlotNumber]->getPlayerSlotNumber() + 1);
 	playerSlots[joyData->joystick->playerSlotNumber]->setDialogText(ws.str());
 }
 

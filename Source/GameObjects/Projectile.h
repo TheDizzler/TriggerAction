@@ -17,6 +17,7 @@ public:
 	virtual void fire(Facing direction, const Vector3& position);
 	virtual void store();
 
+	virtual void moveBy(const Vector3& moveVector);
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
 protected:
@@ -36,4 +37,5 @@ protected:
 	int currentFrameIndex = 0;
 
 	bool isActive = false;
+	float projectileSpeed = 100;
 };

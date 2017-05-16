@@ -132,17 +132,15 @@ void PlayerCharacter::startMainAttack() {
 	}
 
 	action = CreatureAction::ATTACKING_ACTION;
-	currentFrameTime = 0;
+	//currentFrameTime = 0;
 
 	// fire bullet
-
-
 	projectiles[nextBullet++]->fire(facing, position);
 	if (nextBullet >= MAX_PROJECTILES)
 		nextBullet = 0;
 }
 
-const int ANIMATION_REPEATS = 3;
+const int ANIMATION_REPEATS = 1;
 void PlayerCharacter::attackUpdate(double deltaTime) {
 
 	switch (currentFrameIndex) {
@@ -154,7 +152,7 @@ void PlayerCharacter::attackUpdate(double deltaTime) {
 		case 2: // recoil/cooldown
 			break;
 		case 3: // after animations (cancelable)
-			if (++animationRepeats < ANIMATION_REPEATS) {
+			if (animationRepeats++ < ANIMATION_REPEATS) {
 				currentFrameIndex = 1;
 				currentFrameDuration =
 					currentAnimation->animationFrames[currentFrameIndex]->frameTime;

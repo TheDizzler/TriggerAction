@@ -37,6 +37,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	}
 
+	camera->setZoomToResolution();
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
 }
 

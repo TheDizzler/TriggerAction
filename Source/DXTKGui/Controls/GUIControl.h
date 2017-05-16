@@ -63,11 +63,13 @@ public:
 
 	const HitArea* getHitArea() const;
 
-	/* Use example:
+	/** Usage example:
 		control->setMatrixFunction([&]() -> Matrix { return camera->translationMatrix(); }); */
 	void setMatrixFunction(function<Matrix()> translationFunction) {
 		translationMatrix = translationFunction;
 	}
+	/** Usage example:
+		control->setCameraZoom([&]()->float { return camera->getZoom(); }); */
 	void setCameraZoom(function<float()> zoomFunction) {
 		cameraZoom = zoomFunction;
 	}

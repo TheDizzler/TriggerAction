@@ -15,9 +15,6 @@ void IElement3D::moveBy(const Vector3& moveVector) {
 	position += moveVector;
 	drawPosition.x += moveVector.x;
 	drawPosition.y += moveVector.y + moveVector.z;
-
-	/*if (layerDepth >= .1 && layerDepth <= .9)
-		setLayerDepth(Map::getLayerDepth(position.y));*/
 }
 
 
@@ -26,9 +23,6 @@ void IElement3D::setPosition(const Vector3& newpos) {
 	position = newpos;
 	drawPosition.x = position.x;
 	drawPosition.y = (position.y - position.z);
-
-	/*if (layerDepth >= .1 && layerDepth <= .9)
-		setLayerDepth(Map::getLayerDepth(position.y));*/
 }
 
 

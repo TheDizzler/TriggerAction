@@ -6,10 +6,10 @@
 
 	<!-- Relative to bottom left corner -->
 	<weaponPosition>
-		<down x="-4" y="0" z="6" />
-		<left x="-19" y="0" z="21" />
-		<up x="3" y="-1" z="19" />
-		<right x="16" y="0" z="14" />
+		<down x="0" y="10" z="18" />
+		<left x="-16" y="1" z="18" />
+		<up x="-1" y="-9" z="18" />
+		<right x="13" y="0" z="18" />
 	</weaponPosition>
 
 
@@ -545,7 +545,9 @@
 			<sprite x="19" y="21" width="7" height="5" />
 		</animation>
 		<animation name="AirGun Bullet Left">
-			<sprite x="36" y="20" width="5" height="7" />
+			<sprite x="36" y="22" width="5" height="3" >
+				<origin x="3" y="2" />
+			</sprite>
 		</animation>
 
 		<sprite name="Bullet Shadow" x="48" y="22" width="6" height="3" />

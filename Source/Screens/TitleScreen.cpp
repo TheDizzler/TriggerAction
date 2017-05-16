@@ -14,14 +14,18 @@ float TOTAL_SWING_TIME;
 #include "../Engine/GameEngine.h"
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
+	camera->setZoom(1);
+
 	quitButton.reset(guiFactory->createButton(Vector2(200, 200), Vector2(10, 10), L"Quit"));
 	quitButton->setActionListener(new OnClickListenerDialogQuitButton(game));
+	quitButton->setMatrixFunction([&]()->Matrix { return camera->translationMatrix(); });
+	quitButton->setCameraZoom([&]()->float { return camera->getZoom(); });
 	//quitButton->setLayerDepth(0.0);
 
 
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 3);
-	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
+	dialogPos = Vector2(Globals::targetResolution.x / 2, Globals::targetResolution.y / 2);
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
 
@@ -30,7 +34,8 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	noControllerDialog->setDimensions(dialogPos, dialogSize);
 	noControllerDialog->setLayerDepth(1);
 	noControllerDialog->setText(L"Waiting for controller");
-
+	noControllerDialog->setMatrixFunction([&]()->Matrix { return camera->translationMatrix(); });
+	noControllerDialog->setCameraZoom([&]()->float { return camera->getZoom(); });
 
 
 	if (activeSlots.size() == 0)
@@ -48,7 +53,8 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	pendulum->setLayerDepth(.9);
 
 
-	camera->centerOn(Vector2(256 / 2, 224 / 2));
+	camera->centerOn(Vector2(
+		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
 
 	guiOverlay->initializeTitleScreen();
 
@@ -145,13 +151,6 @@ void TitleScreen::pause() {
 
 
 void TitleScreen::controllerRemoved(size_t controllerSlot) {
-
-	/*for (const auto& slot : playerSlots) {
-		if (slot->hasJoystick()) {
-			return;
-		}
-	}
-	noControllerDialog->show();*/
 
 	if (activeSlots.size() == 0)
 		noControllerDialog->show();

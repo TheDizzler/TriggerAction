@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "../globals.h"
+
 Camera::Camera(int vwprtWdth, int vwprtHght) {
 
 	zoom = 1.0f;
@@ -9,32 +9,11 @@ Camera::Camera(int vwprtWdth, int vwprtHght) {
 	viewportHeight = vwprtHght;
 	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
 
-	float xZoom = Globals::WINDOW_WIDTH / Globals::targetResolution.x;
-	float yZoom = Globals::WINDOW_HEIGHT / Globals::targetResolution.y;
-
-	if (xZoom < yZoom)
-		zoom = xZoom;
-	else
-		zoom = yZoom;
-		//viewX = (viewportWidth) / zoom / 2;
-		//viewY = (viewportHeight) / zoom / 2;
+	
 
 	cameraPosition = Vector2::Zero;
 }
 
-//Camera::Camera(const Vector2& viewport) {
-//
-//	zoom = 1.0f;
-//
-//	viewportWidth = viewport.x;
-//	viewportHeight = viewport.y;
-//	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
-//
-//	//viewX = (viewportWidth) / zoom / 2;
-//	//viewY = (viewportHeight) / zoom / 2;
-//
-//	cameraPosition = Vector2::Zero;
-//}
 
 Camera::~Camera() {
 }
@@ -46,9 +25,6 @@ void Camera::updateViewport(const Vector2& viewport, const Vector2& viewportPos,
 	viewportPosition = viewportPos;
 	viewportCenter = Vector3((viewportWidth) * .5 + viewportPosition.x,
 		(viewportHeight) * .5 + viewportPosition.y, 0);
-
-	//viewX = (viewportWidth) / zoom / 2;
-	//viewY = (viewportHeight) / zoom / 2;
 
 }
 
@@ -66,15 +42,22 @@ float Camera::getZoom() {
 	return zoom;
 }
 
+void Camera::setZoomToResolution(int width, int height) {
+	float xZoom = Globals::WINDOW_WIDTH / width;
+	float yZoom = Globals::WINDOW_HEIGHT / height;
+
+	if (xZoom < yZoom)
+		zoom = xZoom;
+	else
+		zoom = yZoom;
+}
+
 void Camera::setZoom(float zoomTo) {
 	zoom = zoomTo;
 	if (zoom < 0.2f)
 		zoom = 0.2f;
 	else if (zoom > 2.5f)
 		zoom = 2.5;
-
-	//viewX = (viewportWidth / zoom / 2);
-	//viewY = (viewportHeight / zoom / 2);
 }
 
 void Camera::adjustZoom(float amount) {
@@ -85,8 +68,6 @@ void Camera::adjustZoom(float amount) {
 	else if (zoom > 3.5f)
 		zoom = 3.5;
 
-	//viewX = (viewportWidth / zoom / 2);
-	//viewY = (viewportHeight / zoom / 2);
 }
 
 
