@@ -3,7 +3,6 @@
 
 
 Hitbox::Hitbox() {
-	//OutputDebugString(L"Y U RUNNING, HITBOX?!?\n");
 }
 
 Hitbox::Hitbox(int rowdata[5]) {
@@ -53,12 +52,12 @@ bool Hitbox::collision(_In_ const Hitbox*  other) const {
 	return false;
 }
 
-bool Hitbox::collisionZ(const Hitbox * other) const {
+bool Hitbox::collisionZ(const Hitbox* other) const {
 	return position.z < other->position.z + other->size.z
 		&& position.z + size.z > other->position.z;
 }
 
-bool Hitbox::contains(const Vector2 & point) const {
+bool Hitbox::contains(const Vector2& point) const {
 	return position.x < point.x && position.x + size.x > point.x
 		&& position.y < point.y && position.y + size.y > point.y;
 }
@@ -103,7 +102,7 @@ void Tangible::moveHitboxBy(const Vector3& moveVector) {
 		subHB->position += moveVector;
 	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
 
-	debugUpdate();
+	//debugUpdate();
 }
 
 void Tangible::setHitboxPosition(const Vector3& newPosition) {
@@ -115,7 +114,7 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 		subHB->position = newPosition;
 	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
 
-	debugUpdate();
+	//debugUpdate();
 }
 
 

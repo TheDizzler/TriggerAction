@@ -26,7 +26,7 @@ public:
 
 	float rotation = 0.0f;
 
-	Vector2 viewportPosition;
+	Vector2 viewportPosition = Vector2::Zero;
 	int viewportWidth;
 	int viewportHeight;
 	Vector3 viewportCenter;
@@ -49,12 +49,13 @@ public:
 
 	Matrix translationMatrix();
 	Vector2& worldToScreen(Vector2 worldPosition);
+	Vector2& screenToWorld(Vector2 screenPosition);
 private:
 
 	Vector2 cameraPosition;
 	float zoom;
 
 
-	Vector2* screenToWorld(Vector2 screenPosition);
+	
 
 };

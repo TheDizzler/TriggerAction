@@ -3,8 +3,11 @@
 #include "../Screens/LevelScreen.h"
 #include "../Engine/GameEngine.h"
 
-Projectile::Projectile(Vector3 wPos[4]) {
+Projectile::Projectile(Creature* ownr, Vector3 wPos[4]) {
 	memmove(weaponPositions, wPos, sizeof(weaponPositions));
+
+	owner = ownr;
+	ownerBox = owner->getHitbox();
 }
 
 Projectile::~Projectile() {
@@ -16,6 +19,7 @@ void Projectile::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
 	shadow->getOrigin();
 	shadowOrigin = Vector2((float) shadow->getWidth() / 2, (float) shadow->getHeight() / 2);
 	//shadowOrigin = Vector2::Zero;
+
 }
 
 void Projectile::loadHitEffect(shared_ptr<Animation> hitFx) {
@@ -34,11 +38,16 @@ void Projectile::update(double deltaTime) {
 	}
 
 	// ray-casting hit detection
-	Vector2 p = position; // raystart pos
-	for (const Hitbox* hitbox : hitboxesAll) {
+	for (Tangible* liveObject : hitboxesAll) {
 
-	/*	Vector2 a(hitbox->position.x, hitbox->position.y + hitbox->size.y);
-		Vector2 b(hitbox->position.x + hitbox->size.x, hitbox->position.y);*/
+		if (liveObject == owner)
+			continue;
+		// check if ray intersects with hitbox
+		if (ray.collision2d(liveObject->getHitbox())) {
+			//int i = 0;
+			liveObject->debugSetTint(Colors::Cyan.v);
+		} else
+			liveObject->debugSetTint(Colors::Black.v);
 
 
 	}
@@ -70,27 +79,43 @@ void Projectile::draw(SpriteBatch* batch) {
 		scale, SpriteEffects_None, .1);
 }
 
-void Projectile::fire(Facing direction, const Vector3& pos) {
+void Projectile::fire(Facing dir, const Vector3& pos) {
 	isActive = true;
 	currentFrameTime = 0;
 
+	direction = dir;
 	rotation = direction * -XM_PIDIV2;
 
 	Vector3 tempos = pos + weaponPositions[direction];
 	IElement3D::setPosition(tempos);
 	shadowPosition = pos;
 	shadowRotation = rotation;
-
+	ray.position = position;
+	// multiplier makes the hit detection a little more generous
+	//	if this is changed then the ray.position adjustments belo will
+	//	proportionally need to be changed
+	ray.size = Vector3(getHeight() * 2, getHeight() * 2, getHeight() * 2);
 	switch (direction) {
 		case Facing::LEFT:
-		case Facing::RIGHT:
 			shadowPosition.x = position.x;
+			ray.position.x = camera->screenToWorld(Vector2::Zero).x;
+			ray.size.x = position.x - ray.position.x;
+			break;
+		case Facing::RIGHT:
+			ray.size.x = Globals::WINDOW_WIDTH;
+			ray.position.y -= getHeight();
 			break;
 		case Facing::UP:
-		case Facing::DOWN:
 			shadowPosition.y = position.y;
+			ray.position.y = camera->screenToWorld(Vector2::Zero).y;
+			ray.size.y = position.y - ray.position.y;
+			break;
+		case Facing::DOWN:
+			ray.size.y = Globals::WINDOW_HEIGHT;
+			ray.position.x -= getHeight();
 			break;
 	}
+
 	layerDepth = Map::getLayerDepth(position.y);
 }
 
@@ -105,11 +130,15 @@ void Projectile::moveBy(const Vector3& moveVector) {
 
 
 const int Projectile::getWidth() const {
+
 	return projectileLeft->animationFrames[currentFrameIndex]->sourceRect.right
 		- projectileLeft->animationFrames[currentFrameIndex]->sourceRect.left;
+
 }
 
 const int Projectile::getHeight() const {
+
 	return projectileLeft->animationFrames[currentFrameIndex]->sourceRect.bottom
 		- projectileLeft->animationFrames[currentFrameIndex]->sourceRect.top;
+
 }

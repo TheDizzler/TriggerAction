@@ -1,9 +1,9 @@
 #pragma once
-#include "Tangible.h"
+#include "Creature.h"
 
 class Projectile : public IElement3D {
 public:
-	Projectile(Vector3 weaponPositions[4]);
+	Projectile(Creature* owner, Vector3 weaponPositions[4]);
 	virtual ~Projectile();
 
 	void loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shadow);
@@ -21,6 +21,8 @@ public:
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
 protected:
+	Creature* owner;
+	const Hitbox* ownerBox;
 
 	Vector3 weaponPositions[4];
 	//shared_ptr<Animation> projectileUp;
@@ -29,6 +31,7 @@ protected:
 	Vector3 shadowPosition;
 	Vector2 shadowOrigin;
 	float shadowRotation;
+	Facing direction = Facing::LEFT;
 
 	shared_ptr<Animation> hitEffect;
 
@@ -38,4 +41,6 @@ protected:
 
 	bool isActive = false;
 	float projectileSpeed = 100;
+
+	Hitbox ray;
 };

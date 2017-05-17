@@ -80,6 +80,7 @@ void PlayerCharacter::update(double deltaTime) {
 
 	}
 
+	debugUpdate();
 
 	for (const auto& bullet : projectiles)
 		bullet->update(deltaTime);
@@ -97,7 +98,6 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 		bullet->draw(batch);
 	debugDraw(batch);
 }
-
 
 
 
@@ -132,6 +132,7 @@ void PlayerCharacter::startMainAttack() {
 	}
 
 	action = CreatureAction::ATTACKING_ACTION;
+	moving = false;
 	//currentFrameTime = 0;
 
 	// fire bullet
@@ -192,10 +193,10 @@ void PlayerCharacter::movement(double deltaTime) {
 		stillAttacking = false;
 		bool collision = false;
 		// check for collisions
-		for (const Hitbox* hb : hitboxesAll) {
-			if (hb == &hitbox)
+		for (const Tangible* hb : hitboxesAll) {
+			if (hb->getHitbox() == &hitbox)
 				continue;
-			if (hitbox.collision2d(hb)) {
+			if (hitbox.collision2d(hb->getHitbox())) {
 				collision = true;
 				int  hit = 69;
 			}
@@ -346,7 +347,7 @@ void PlayerCharacter::loadWeapon(
 	projectiles.clear();
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		unique_ptr<Projectile> proj = make_unique<Projectile>(weaponPositions);
+		unique_ptr<Projectile> proj = make_unique<Projectile>(this, weaponPositions);
 		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"),
 			weaponSet->getAsset("Bullet Shadow"));
 		proj->loadHitEffect(weaponSet->getAnimation("AirGun HitEffect"));

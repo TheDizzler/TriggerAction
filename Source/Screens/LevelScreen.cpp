@@ -1,7 +1,7 @@
 #include "../pch.h"
 #include "LevelScreen.h"
 
-vector<const Hitbox*> hitboxesAll;
+vector<Tangible*> hitboxesAll;
 
 
 
@@ -31,7 +31,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(slot);
 
-		hitboxesAll.push_back(newPC->getHitbox());
+		hitboxesAll.push_back(newPC.get());
 		newPC->setInitialPosition(Vector2(10, 100));
 		pcs.push_back(move(newPC));
 

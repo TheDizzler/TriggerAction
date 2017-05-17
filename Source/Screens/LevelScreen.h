@@ -5,7 +5,7 @@
 #include "../Managers/MapManager.h"
 
 
-extern vector<const Hitbox*> hitboxesAll;
+extern vector<Tangible*> hitboxesAll;
 
 
 class LevelScreen : public Screen {

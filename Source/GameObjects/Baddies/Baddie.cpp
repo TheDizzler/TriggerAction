@@ -27,7 +27,7 @@ void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet
 Baddie::Baddie(BaddieData* data) {
 	
 	setHitbox(data->hitbox.get());
-	hitboxesAll.push_back(getHitbox());
+	hitboxesAll.push_back(this);
 
 	shared_ptr<AssetSet> assets = data->assets;
 	walkDown = assets->getAnimation("walk down");
@@ -64,6 +64,9 @@ void Baddie::update(double deltaTime) {
 		Frame* frame = currentAnimation->animationFrames[currentFrameIndex].get();
 		currentFrameDuration = frame->frameTime;
 	}
+
+
+	debugUpdate();
 }
 
 void Baddie::draw(SpriteBatch* batch) {
