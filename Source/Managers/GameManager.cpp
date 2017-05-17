@@ -168,6 +168,8 @@ bool GameManager::loadLevel(const pugi::char_t* levelName) {
 
 bool GameManager::reloadLevel(const pugi::char_t* levelName) {
 
+	hitboxesAll.clear();
+
 	string mFile = mapFiles[levelName];
 
 	mapDoc.reset(new pugi::xml_document());

@@ -40,7 +40,14 @@ protected:
 	int currentFrameIndex = 0;
 
 	bool isActive = false;
-	float projectileSpeed = 100;
+	float projectileSpeed;
+	int damage;
 
 	Hitbox ray;
+	/** Frame length assumed 1/60 second. */
+	double distanceDeltaPerFrame;
+	Vector2 moveInOneFrame;
+
+	void hit(Tangible* liveObject);
+	bool isExploding = false;
 };

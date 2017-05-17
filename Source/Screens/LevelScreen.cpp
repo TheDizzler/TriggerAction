@@ -46,8 +46,10 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 	map.reset();
 	map = move(newMap);
 
+	
 
 	for (const auto& pc : pcs) {
+		hitboxesAll.push_back(pc.get());
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
 	}
 }
