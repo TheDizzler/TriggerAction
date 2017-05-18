@@ -405,7 +405,9 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						tile->setOrigin(Vector2(0, tile->getHeight()));
 						tile->setLayerDepth(layerDepth);
 						tile->setPosition(position);
+						hitboxesAll.push_back(tile.get());
 						layer->tiles.push_back(move(tile));
+						
 					}
 				} else {
 

@@ -54,6 +54,12 @@ public:
 	virtual ~TangibleTile();
 	virtual void load(TileAsset* const tileAsset) override;
 
+	/** Special on-hit effects of object. */
+	virtual void takeDamage(int damage);
+
+	virtual void update(double deltaTime) override;
+	virtual void draw(SpriteBatch* batch) override;
+
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
 
 	virtual void moveBy(const Vector3& moveVector) override;

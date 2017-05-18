@@ -74,14 +74,6 @@ void Projectile::update(double deltaTime) {
 
 		if (liveObject == owner)
 			continue;
-		// check if ray intersects with hitbox
-		/*if (ray.collision2d(liveObject->getHitbox())) {
-		if (ray.collisionZ(liveObject->getHitbox())) {
-		liveObject->debugSetTint(Colors::Crimson.v);
-		} else
-		liveObject->debugSetTint(Colors::Cyan.v);
-		} else
-		liveObject->debugSetTint(Colors::Black.v);*/
 
 		liveObject->debugSetTint(Colors::Black.v);
 		if (ray.collision(liveObject->getHitbox())) {
@@ -90,14 +82,14 @@ void Projectile::update(double deltaTime) {
 			switch (direction) {
 				case Facing::LEFT:
 					xDist = liveObject->getHitbox()->position.x - position.x;
-					if (xDist > moveInOneFrame.x) {
+					if (xDist > moveInOneFrame.x - liveObject->getHitbox()->size.x / 2) {
 						liveObject->debugSetTint(Colors::Crimson.v);
 						hit(liveObject);
 					}
 					break;
 				case Facing::RIGHT:
 					xDist = position.x - liveObject->getHitbox()->position.x;
-					if (xDist > moveInOneFrame.x) {
+					if (xDist > moveInOneFrame.x - liveObject->getHitbox()->size.x) {
 						liveObject->debugSetTint(Colors::Crimson.v);
 						hit(liveObject);
 					}
@@ -105,14 +97,14 @@ void Projectile::update(double deltaTime) {
 
 				case Facing::DOWN:
 					yDist = position.y - liveObject->getHitbox()->position.y;
-					if (yDist > moveInOneFrame.y) {
+					if (yDist > moveInOneFrame.y - liveObject->getHitbox()->size.y / 2) {
 						liveObject->debugSetTint(Colors::Crimson.v);
 						hit(liveObject);
 					}
 					break;
 				case Facing::UP:
 					yDist = liveObject->getHitbox()->position.y - position.y;
-					if (yDist > moveInOneFrame.y) {
+					if (yDist > moveInOneFrame.y - liveObject->getHitbox()->size.z / 2) {
 						liveObject->debugSetTint(Colors::Crimson.v);
 						hit(liveObject);
 					}
@@ -169,11 +161,12 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 		case Facing::LEFT:
 			shadowPosition.x = position.x;
 			ray.position.x = camera->screenToWorld(Vector2::Zero).x;
+			ray.position.y -= getHeight() * 2;
 			ray.size.x = position.x - ray.position.x;
 			break;
 		case Facing::RIGHT:
 			shadowPosition.x = position.x;
-			ray.position.y -= getHeight();
+			ray.position.y -= getHeight()*2;
 			ray.size.x = Globals::WINDOW_WIDTH;
 			break;
 		case Facing::UP:
@@ -195,7 +188,7 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 
 void Projectile::hit(Tangible* liveObject) {
 
-	//liveObject->takeDamage(damage);
+	liveObject->takeDamage(damage);
 	layerDepth = Map::getLayerDepth(liveObject->getHitbox()->position.y
 		+ liveObject->getHitbox()->size.y + 1);
 	isExploding = true;

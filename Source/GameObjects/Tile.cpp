@@ -92,12 +92,13 @@ const int Tile::getHeight() const {
 TangibleTile::~TangibleTile() {
 }
 
-void TangibleTile::load(TileAsset * const tileAsset) {
+void TangibleTile::load(TileAsset* const tileAsset) {
 	Tile::load(tileAsset);
 
 	if (tileAsset->hitboxes.size() > 0) {
 		//hitbox = make_unique<Hitbox>(tileAsset->hitboxes[0].get());
-		hitbox = Hitbox(tileAsset->hitboxes[0].get());
+		//hitbox = Hitbox(tileAsset->hitboxes[0].get());
+		setHitbox(Hitbox(tileAsset->hitboxes[0].get()));
 		for (const auto& hitbox : tileAsset->hitboxes) {
 			unique_ptr<Hitbox> hb = make_unique<Hitbox>(hitbox.get());
 			subHitboxes.push_back(move(hb));
@@ -105,8 +106,25 @@ void TangibleTile::load(TileAsset * const tileAsset) {
 	}
 }
 
+void TangibleTile::takeDamage(int damage) {
+}
+
+void TangibleTile::update(double deltaTime) {
+	//Tile::update(deltaTime);
+	debugUpdate();
+}
+
+
+void TangibleTile::draw(SpriteBatch* batch) {
+	batch->Draw(texture.Get(), drawPosition, &sourceRect, tint, rotation,
+		origin, scale, SpriteEffects_None, layerDepth);
+	debugDraw(batch);
+
+}
+
+
 bool TangibleTile::checkCollisionWith(const Hitbox* other) const {
-	
+
 	if (hitbox.collision2d(other)) { // first check to see if hitbox overlap on x-y plane
 		if (hitbox.collisionZ(other)) // then check if collide on z-axis as well
 			return true;
@@ -122,7 +140,7 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 	position += moveVector;
 	drawPosition.x += moveVector.x;
 	drawPosition.y += moveVector.y - moveVector.z;
-	
+
 	hitbox.position += moveVector;
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
@@ -132,14 +150,11 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 
 void TangibleTile::setPosition(const Vector3& newpos) {
 
-	Vector3 moveBy = newpos - position;
 	position = newpos;
 	drawPosition.x = position.x;
 	drawPosition.y = position.y - position.z;
 
-	hitbox.position += moveBy;
-	for (const auto& subHB : subHitboxes)
-		subHB->position += moveBy;
+	setHitboxPosition(newpos);
 
 	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }

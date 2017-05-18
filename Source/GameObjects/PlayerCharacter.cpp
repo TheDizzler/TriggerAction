@@ -17,12 +17,28 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	name = characterData->name;
 	assetSet = characterData->assets;
 
+	walkDown = assetSet->getAnimation("walk down");
+	walkLeft = assetSet->getAnimation("walk left");
+	walkUp = assetSet->getAnimation("walk up");
+	walkRight = assetSet->getAnimation("walk right");
+
+	attackDown = assetSet->getAnimation("attack down");
+	attackLeft = assetSet->getAnimation("attack left");
+	attackUp = assetSet->getAnimation("attack up");
+	attackRight = assetSet->getAnimation("attack right");
+
+
+	provoke = assetSet->getAnimation("provoke");
+	surprise = assetSet->getAnimation("surprise");
+	hit = assetSet->getAnimation("hit");
+
 	setHitbox(characterData->hitbox.get());
+	radarBox = Hitbox(hitbox);
 
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
 	loadAnimation("stand right");
-	origin = Vector2(0, getHeight());
+	currentFrameTexture = currentAnimation->texture.Get();
 }
 
 PlayerCharacter::~PlayerCharacter() {
@@ -31,6 +47,9 @@ PlayerCharacter::~PlayerCharacter() {
 void PlayerCharacter::reloadData(CharacterData* data) {
 
 	characterData = data;
+	setHitbox(characterData->hitbox.get());
+	setHitboxPosition(position);
+	radarBox = Hitbox(hitbox);
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 }
 
@@ -44,32 +63,36 @@ void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 
 void PlayerCharacter::update(double deltaTime) {
 
-
-	currentFrameTime += deltaTime;
-	if (currentFrameTime >= currentFrameDuration) {
-		if (++currentFrameIndex >= currentAnimation->animationFrames.size())
-			currentFrameIndex = 0;
-		currentFrameTime = 0;
-		Frame* frame = currentAnimation->animationFrames[currentFrameIndex].get();
-		currentFrameDuration = frame->frameTime;
-	}
-
 	switch (action) {
+		case CreatureAction::ATTACKING_ACTION:
+			attackUpdate(deltaTime);
+			if (canCancelAction) {
+				if (joystick->bButtonStates[ControlButtons::Y]) {
+					startMainAttack();
+				} else {
+					movement(deltaTime);
+					moveUpdate(deltaTime);
+				}
+			}
+			break;
 		case CreatureAction::WAITING_ACTION:
+		default:
+			waitUpdate(deltaTime);
 		case CreatureAction::MOVING_ACTION:
 			if (joystick->bButtonStates[ControlButtons::Y]) {
 				startMainAttack();
 			} else {
 				movement(deltaTime);
-
+				moveUpdate(deltaTime);
 			}
-			if (!stillAttacking)
-				break;
-			else
-		case CreatureAction::ATTACKING_ACTION:
-			attackUpdate(deltaTime);
 
 			break;
+
+
+		case CreatureAction::HIT_ACTION:
+			hitUpdate(deltaTime);
+			break;
+
 
 	}
 
@@ -89,9 +112,9 @@ void PlayerCharacter::update(double deltaTime) {
 
 void PlayerCharacter::draw(SpriteBatch* batch) {
 
-	batch->Draw(currentAnimation->texture.Get(), drawPosition,
-		&currentAnimation->animationFrames[currentFrameIndex]->sourceRect, tint, rotation,
-		currentAnimation->animationFrames[currentFrameIndex]->origin, scale,
+	batch->Draw(currentFrameTexture, drawPosition,
+		&currentFrameRect, tint, rotation,
+		currentFrameOrigin, scale,
 		SpriteEffects_None, layerDepth);
 
 	for (const auto& bullet : projectiles)
@@ -130,87 +153,165 @@ void PlayerCharacter::startMainAttack() {
 			loadAnimation("shoot up");
 			break;
 	}
-
+	currentFrameIndex = -1;
+	currentFrameTime = currentFrameDuration;
 	action = CreatureAction::ATTACKING_ACTION;
 	moving = false;
-	//currentFrameTime = 0;
-
-	// fire bullet
-	projectiles[nextBullet++]->fire(facing, position);
-	if (nextBullet >= MAX_PROJECTILES)
-		nextBullet = 0;
+	canCancelAction = false;
+	attackUpdate(0);
 }
 
 const int ANIMATION_REPEATS = 1;
 void PlayerCharacter::attackUpdate(double deltaTime) {
 
-	switch (currentFrameIndex) {
-		case 0: // readying attack
-			animationRepeats = 0;
-			break;
-		case 1: // firing bullet 
-			break;
-		case 2: // recoil/cooldown
-			break;
-		case 3: // after animations (cancelable)
-			if (animationRepeats++ < ANIMATION_REPEATS) {
-				currentFrameIndex = 1;
-				currentFrameDuration =
-					currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-				break;
-			}
-			
-			action = CreatureAction::WAITING_ACTION;
-			stillAttacking = true;
-			break;
-		case 4:
-			
-			break;
-		case 5:
-			// fully completed animation
-			switch (facing) {
-				case Facing::RIGHT:
-					loadAnimation("combat stance right");
-					break;
-				case Facing::LEFT:
-					loadAnimation("combat stance left");
-					break;
-				case Facing::DOWN:
-					loadAnimation("combat stance down");
-					break;
-				case Facing::UP:
-					loadAnimation("combat stance up");
-					break;
-			}
-			stillAttacking = false;
-			break;
+	currentFrameTime += deltaTime;
+	if (currentFrameTime >= currentFrameDuration) {
 
+		switch (++currentFrameIndex) {
+			case 0: // readying attack
+				animationRepeats = 0;
+				fired = false;
+				break;
+			case 1: // firing bullet 
+				if (fired)
+					break;
+				fired = true;
+				projectiles[nextBullet++]->fire(facing, position);
+				if (nextBullet >= MAX_PROJECTILES)
+					nextBullet = 0;
+				break;
+			case 2: // recoil/cooldown
+				break;
+			case 3: // after animations (cancelable from here)
+				if (animationRepeats++ < ANIMATION_REPEATS) {
+					currentFrameIndex = 1;
+					currentFrameDuration = currentFrameTime =
+						currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					return;
+				}
+
+				canCancelAction = true;
+				break;
+			case 4:
+				break;
+			case 5:
+				// fully completed animation
+				switch (facing) {
+					case Facing::RIGHT:
+						loadAnimation("combat stance right");
+						break;
+					case Facing::LEFT:
+						loadAnimation("combat stance left");
+						break;
+					case Facing::DOWN:
+						loadAnimation("combat stance down");
+						break;
+					case Facing::UP:
+						loadAnimation("combat stance up");
+						break;
+				}
+				action = CreatureAction::WAITING_ACTION;
+				return;
+
+		}
+		currentFrameTime = 0;
+		currentFrameDuration
+			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+		currentFrameRect
+			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+		currentFrameOrigin
+			= currentAnimation->animationFrames[currentFrameIndex]->origin;
 	}
 }
 
+
+void PlayerCharacter::waitUpdate(double deltaTime) {
+
+	currentFrameTime += deltaTime;
+	if (currentFrameTime >= currentFrameDuration) {
+		if (++currentFrameIndex >= currentAnimation->animationFrames.size())
+			currentFrameIndex = 0;
+		currentFrameTime = 0;
+		currentFrameDuration
+			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+		currentFrameRect
+			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+		currentFrameOrigin
+			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+	}
+}
+
+
 void PlayerCharacter::movement(double deltaTime) {
-	if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
-		stillAttacking = false;
+
+	Vector3 moveVector = getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY);
+		//if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
+	if (moveVector != Vector3::Zero) {
+
+		radarBox.position = hitbox.position + moveVector * 2;
+
 		bool collision = false;
 		// check for collisions
 		for (const Tangible* hb : hitboxesAll) {
 			if (hb->getHitbox() == &hitbox)
 				continue;
-			if (hitbox.collision2d(hb->getHitbox())) {
+			if (radarBox.collision2d(hb->getHitbox())) {
 				collision = true;
-				int  hit = 69;
+				break;
 			}
 		}
 
-		if (collision && !lastCollision)
+		radarBox.position = hitbox.position;
+		if (collision && moveVector.x != 0 && moveVector.y != 0) {
+			collision = false;
+			//test if can move other directions
+			Vector3 testVector = moveVector;
+			testVector.x = 0;
+			radarBox.position = hitbox.position + testVector * 2;
+			for (const Tangible* hb : hitboxesAll) {
+				if (hb->getHitbox() == &hitbox)
+					continue;
+				if (radarBox.collision2d(hb->getHitbox())) {
+					collision = true;
+					break;
+				}
+			}
+
+			if (!collision)
+				moveBy(testVector);
+			else {
+				collision = false;
+				testVector = moveVector;
+				testVector.y = 0;
+				radarBox.position = hitbox.position + testVector * 2;
+				for (const Tangible* hb : hitboxesAll) {
+					if (hb->getHitbox() == &hitbox)
+						continue;
+					if (radarBox.collision2d(hb->getHitbox())) {
+						collision = true;
+						break;
+					}
+				}
+				if (!collision)
+					moveBy(testVector);
+			}
+
+		/*if (collision && !lastCollision)
 			debugSetTint(Color(1, .1, .1, 1));
-		else if (!collision && lastCollision)
-			debugSetTint(Color(0, 0, 0, 1));
+		*/
+		} else if (!collision) {
+			moveBy(moveVector);
+			//if (lastCollision)
+				//debugSetTint(Color(0, 0, 0, 1));
+		}
+		//lastCollision = collision;
+		action = CreatureAction::MOVING_ACTION;
 
-		lastCollision = collision;
-
-
-	} else if (!waiting) {
+	} else if (!waiting) { // redo this to match current command flow
 		waiting = true;
 		moving = false;
 		switch (facing) {
@@ -231,7 +332,7 @@ void PlayerCharacter::movement(double deltaTime) {
 }
 
 
-bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertDirection) {
+Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertDirection) {
 
 	bool runningNow = joystick->bButtonStates[ControlButtons::B];
 	if (runningNow != running)
@@ -243,21 +344,25 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 	else
 		speedFactor = 1;
 
+	Vector3 moveVector = Vector3::Zero;
 	if (horzDirection > 10) {
 		// moving right
 		if (vertDirection < -10) {
 			// moving right & up
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			moveBy(Vector3(moveByX, -moveByY, 0));
+			//moveBy(Vector3(moveByX, -moveByY, 0));
+			moveVector = Vector3(moveByX, -moveByY, 0);
 		} else if (vertDirection > 10) {
 			// moving right & down
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			moveBy(Vector3(moveByX, moveByY, 0));
+			//moveBy(Vector3(moveByX, moveByY, 0));
+			moveVector = Vector3(moveByX, moveByY, 0);
 		} else {
 			float moveByX = moveRightSpeed*deltaTime*speedFactor;
-			moveBy(Vector3(moveByX, 0, 0));
+			//moveBy(Vector3(moveByX, 0, 0));
+			moveVector = Vector3(moveByX, 0, 0);
 		}
 
 		if (!moving || facing != Facing::RIGHT) {
@@ -269,7 +374,7 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			facing = Facing::RIGHT;
 		}
 		waiting = false;
-		return true;
+		return moveVector;
 	}
 
 	if (horzDirection < -10) {
@@ -279,16 +384,18 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			// moving left & up
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			moveBy(Vector3(-moveByX, -moveByY, 0));
+			//moveBy(Vector3(-moveByX, -moveByY, 0));
+			moveVector = Vector3(-moveByX, -moveByY, 0);
 		} else if (vertDirection > 10) {
 			// moving left & down
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			moveBy(Vector3(-moveByX, moveByY, 0));
+			//moveBy(Vector3(-moveByX, moveByY, 0));
+			moveVector = Vector3(-moveByX, moveByY, 0);
 		} else {
 			float moveByX = moveRightSpeed*deltaTime*speedFactor;
-			moveBy(Vector3(-moveByX, 0, 0));
-
+			//moveBy(Vector3(-moveByX, 0, 0));
+			moveVector = Vector3(-moveByX, 0, 0);
 		}
 
 		if (!moving || facing != Facing::LEFT) {
@@ -301,14 +408,15 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 		}
 
 		waiting = false;
-		return true;
+		return moveVector;
 	}
 
 
 	if (vertDirection < -10) {
 		// moving up
 		float moveByY = moveDownSpeed*deltaTime*speedFactor;
-		moveBy(Vector3(0, -moveByY, 0));
+		//moveBy(Vector3(0, -moveByY, 0));
+		moveVector = Vector3(0, -moveByY, 0);
 		if (!moving || facing != Facing::UP) {
 			if (runningNow)
 				loadAnimation("run up");
@@ -318,13 +426,14 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			facing = Facing::UP;
 		}
 		waiting = false;
-		return true;
+		return moveVector;
 	}
 
 	if (vertDirection > 10) {
 		// moving down
 		float moveByY = moveDownSpeed*deltaTime*speedFactor;
-		moveBy(Vector3(0, moveByY, 0));
+		//moveBy(Vector3(0, moveByY, 0));
+		moveVector = Vector3(0, moveByY, 0);
 		if (!moving || facing != Facing::DOWN) {
 			if (runningNow)
 				loadAnimation("run down");
@@ -334,10 +443,10 @@ bool PlayerCharacter::getMovement(double deltaTime, int horzDirection, int vertD
 			facing = Facing::DOWN;
 		}
 		waiting = false;
-		return true;
+		return moveVector;
 	}
 
-	return false;
+	return moveVector;
 }
 
 

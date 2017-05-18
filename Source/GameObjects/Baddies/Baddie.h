@@ -28,9 +28,11 @@ public:
 
 	//virtual void setPosition(const Vector3& position) override;
 
+protected:
+	virtual void attackUpdate(double deltaTime);
 private:
 
-	shared_ptr<Animation> walkDown;
+	/*shared_ptr<Animation> walkDown;
 	shared_ptr<Animation> walkLeft;
 	shared_ptr<Animation> walkUp;
 	shared_ptr<Animation> walkRight;
@@ -42,7 +44,7 @@ private:
 
 	shared_ptr<Animation> provoke;
 	shared_ptr<Animation> surprise;
-	shared_ptr<Animation> hit;
+	shared_ptr<Animation> hit;*/
 
 	//GraphicsAsset* asset;
 };

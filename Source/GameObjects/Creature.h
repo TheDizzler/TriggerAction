@@ -6,6 +6,8 @@ public:
 	Creature();
 	virtual ~Creature();
 
+	virtual void takeDamage(int damage);
+
 	virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
@@ -29,15 +31,40 @@ protected:
 		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION
 	};
 	CreatureAction action = WAITING_ACTION;
+	bool canCancelAction = true;
+
+	virtual void moveUpdate(double deltaTime);
+	virtual void attackUpdate(double deltaTime) = 0;
+	/** The update for when creature has been hit with an attack. */
+	virtual void hitUpdate(double deltaTime);
 
 	shared_ptr<AssetSet> assetSet;
 	shared_ptr<Animation> currentAnimation;
 
+	shared_ptr<Animation> walkDown;
+	shared_ptr<Animation> walkLeft;
+	shared_ptr<Animation> walkUp;
+	shared_ptr<Animation> walkRight;
+
+	shared_ptr<Animation> attackDown;
+	shared_ptr<Animation> attackLeft;
+	shared_ptr<Animation> attackUp;
+	shared_ptr<Animation> attackRight;
+
+	shared_ptr<Animation> provoke;
+	shared_ptr<Animation> surprise;
+	shared_ptr<Animation> hit;
+
+	void loadAnimation(shared_ptr<Animation> animation);
+	/** Finds animation in a map, therefore not efficient. */
 	void loadAnimation(const pugi::char_t* name);
 
 
 	Facing facing = RIGHT;
 
+	ID3D11ShaderResourceView* currentFrameTexture;
+	RECT currentFrameRect;
+	Vector2 currentFrameOrigin;
 	float currentFrameDuration = 0;
 	double currentFrameTime = -1;
 	int currentFrameIndex = 0;

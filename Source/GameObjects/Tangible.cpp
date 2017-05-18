@@ -89,6 +89,8 @@ void Tangible::debugSetTint(const Color& color) {
 void Tangible::setHitbox(const Hitbox box) {
 
 	hitbox = Hitbox(box);
+	hitboxOffset = box.position;
+
 	testFrame.reset(guiFactory->createRectangleFrame(
 		Vector2(hitbox.position.x, hitbox.position.y),
 		Vector2(hitbox.size.x, hitbox.size.y)));
@@ -107,7 +109,7 @@ void Tangible::moveHitboxBy(const Vector3& moveVector) {
 
 void Tangible::setHitboxPosition(const Vector3& newPosition) {
 
-	hitbox.position = newPosition;
+	hitbox.position = newPosition + hitboxOffset;
 	hitbox.position.x -= hitbox.size.x / 2;
 	hitbox.position.y -= hitbox.size.y;
 	for (const auto& subHB : subHitboxes)

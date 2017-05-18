@@ -27,9 +27,9 @@ protected:
 	shared_ptr<PlayerSlot> playerSlot;
 	Joystick* joystick;
 	CharacterData* characterData;
-	
 
-	bool getMovement(double deltaTime, int horzDirection, int vertDirection);
+
+	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
 	void startMainAttack();
 
 
@@ -52,18 +52,20 @@ protected:
 
 
 	bool lastCollision = false;
-	bool stillAttacking = false;
-	void attackUpdate(double deltaTime);
+	//bool stillAttacking = false;
+	virtual void attackUpdate(double deltaTime) override;
+	virtual void waitUpdate(double deltaTime);
 
 	/** Possible actions. */
 	void movement(double deltaTime);
-
+	/* A temp hitbox to test incoming collisions. */
+	Hitbox radarBox;
 
 private: // character specific stuff
 	vector<unique_ptr<Projectile>> projectiles;
 	void loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
 
 	USHORT nextBullet = 0;
-
+	bool fired = false;
 	USHORT animationRepeats = 0;
 };

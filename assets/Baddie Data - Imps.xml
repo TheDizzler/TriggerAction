@@ -2,7 +2,7 @@
 <root game="Trigger Action RPG" xml="Baddie Data - Imps" dir="assets/gfx/">
 
 	<baddie name="Blue Imp">
-		<hitbox x="24" y="36" width="11" height="8" z="19"/>
+		<hitbox x="0" y="0" width="11" height="8" z="19"/>
 
 		<spritesheet name="Baddies - Imps" file="Baddies - Imps.dds" set="Blue Imp" >
 
@@ -110,7 +110,7 @@
 					<origin x="9" y="31" />
 				</sprite>
 			</animation>
-			<animation name="hit">
+			<animation name="hit" timePerFrame=".25">
 				<sprite x="152" y="177" width="19" height="29" >
 					<origin x="9" y="29" />
 				</sprite>
