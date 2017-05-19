@@ -2,11 +2,12 @@
 #include "LevelScreen.h"
 
 vector<Tangible*> hitboxesAll;
-
+vector<unique_ptr<PlayerCharacter>> pcs;
 
 
 LevelScreen::~LevelScreen() {
 	pcs.clear();
+	hitboxesAll.clear();
 }
 
 #include "../Engine/GameEngine.h"

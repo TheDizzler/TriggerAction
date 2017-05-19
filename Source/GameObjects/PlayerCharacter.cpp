@@ -71,7 +71,6 @@ void PlayerCharacter::update(double deltaTime) {
 					startMainAttack();
 				} else {
 					movement(deltaTime);
-					moveUpdate(deltaTime);
 				}
 			}
 			break;
@@ -199,6 +198,7 @@ void PlayerCharacter::attackUpdate(double deltaTime) {
 			case 4:
 				break;
 			case 5:
+			default:
 				// fully completed animation
 				switch (facing) {
 					case Facing::RIGHT:

@@ -15,6 +15,7 @@ Projectile::~Projectile() {
 
 void Projectile::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
 	projectileLeft = bullet;
+	currentFrameTexture = projectileLeft->texture.Get();
 	shadow = shd;
 	shadow->getOrigin();
 	shadowOrigin = Vector2((float) shadow->getWidth() / 2, (float) shadow->getHeight() / 2);
@@ -62,8 +63,12 @@ void Projectile::update(double deltaTime) {
 		if (++currentFrameIndex >= projectileLeft->animationFrames.size())
 			currentFrameIndex = 0;
 		currentFrameTime = 0;
-		Frame* frame = projectileLeft->animationFrames[currentFrameIndex].get();
-		currentFrameDuration = frame->frameTime;
+		currentFrameDuration
+			= projectileLeft->animationFrames[currentFrameIndex]->frameTime;
+		currentFrameRect
+			= projectileLeft->animationFrames[currentFrameIndex]->sourceRect;
+		currentFrameOrigin
+			= projectileLeft->animationFrames[currentFrameIndex]->origin;
 	}
 
 	moveBy(Vector3(-cos(rotation)*projectileSpeed*deltaTime,
@@ -127,9 +132,9 @@ void Projectile::draw(SpriteBatch* batch) {
 		return;
 	}
 
-	batch->Draw(projectileLeft->texture.Get(), drawPosition,
-		&projectileLeft->animationFrames[currentFrameIndex]->sourceRect, tint, rotation,
-		projectileLeft->animationFrames[currentFrameIndex]->origin, scale,
+	batch->Draw(currentFrameTexture, drawPosition,
+		&currentFrameRect, tint, rotation,
+		currentFrameOrigin, scale,
 		SpriteEffects_None, layerDepth);
 
 	batch->Draw(shadow->getTexture().Get(), shadowPosition,
@@ -143,7 +148,11 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 	currentFrameTime = 0;
 	currentFrameIndex = 0;
 	currentFrameDuration
-		= projectileLeft->animationFrames[currentFrameIndex].get()->frameTime;
+		= projectileLeft->animationFrames[currentFrameIndex]->frameTime;
+	currentFrameRect
+		= projectileLeft->animationFrames[currentFrameIndex]->sourceRect;
+	currentFrameOrigin
+		= projectileLeft->animationFrames[currentFrameIndex]->origin;
 
 	direction = dir;
 	rotation = direction * -XM_PIDIV2;
@@ -192,8 +201,8 @@ void Projectile::hit(Tangible* liveObject) {
 	layerDepth = Map::getLayerDepth(liveObject->getHitbox()->position.y
 		+ liveObject->getHitbox()->size.y + 1);
 	isExploding = true;
-	currentFrameTime = -1;
 	currentFrameTime = 0;
+	currentFrameIndex = 0;
 	currentFrameDuration
 		= hitEffect->animationFrames[currentFrameIndex].get()->frameTime;
 

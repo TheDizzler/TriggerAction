@@ -35,6 +35,9 @@ protected:
 
 	shared_ptr<Animation> hitEffect;
 
+	ID3D11ShaderResourceView* currentFrameTexture;
+	RECT currentFrameRect;
+	Vector2 currentFrameOrigin;
 	float currentFrameDuration = 0;
 	double currentFrameTime = -1;
 	int currentFrameIndex = 0;

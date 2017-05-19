@@ -6,7 +6,7 @@
 
 
 extern vector<Tangible*> hitboxesAll;
-
+extern vector<unique_ptr<PlayerCharacter>> pcs;
 
 class LevelScreen : public Screen {
 public:
@@ -32,7 +32,7 @@ private:
 
 	unique_ptr<Map> map;
 
-	vector<unique_ptr<PlayerCharacter>> pcs;
+	
 
 
 };

@@ -30,21 +30,13 @@ public:
 
 protected:
 	virtual void attackUpdate(double deltaTime);
+
+	Creature* target = NULL;
+	void startMainAttack(Vector3 direction);
 private:
 
-	/*shared_ptr<Animation> walkDown;
-	shared_ptr<Animation> walkLeft;
-	shared_ptr<Animation> walkUp;
-	shared_ptr<Animation> walkRight;
-
-	shared_ptr<Animation> attackDown;
-	shared_ptr<Animation> attackLeft;
-	shared_ptr<Animation> attackUp;
-	shared_ptr<Animation> attackRight;
-
-	shared_ptr<Animation> provoke;
-	shared_ptr<Animation> surprise;
-	shared_ptr<Animation> hit;*/
-
-	//GraphicsAsset* asset;
+	/** Range at which baddie will take an emergency action. */
+	Vector3 threatRange;
+	float jumpSpeed;
+	Vector3 jumpVelocity;
 };

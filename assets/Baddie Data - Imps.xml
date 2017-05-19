@@ -52,46 +52,58 @@
 			</animation>
 
 			<animation name="attack down">
-				<sprite x="17" y="153" width="20" height="28" >
+				<sprite x="79" y="154" width="19" height="23" frameTime=".5">
+					<origin x="8" y="23" />
+				</sprite>
+				<sprite x="17" y="153" width="20" height="28" frameTime=".2">
 					<origin x="11" y="28" />
 				</sprite>
-				<sprite x="48" y="153" width="19" height="28" >
+				<sprite x="48" y="153" width="19" height="28" frameTime=".5">
 					<origin x="10" y="28" />
 				</sprite>
-				<sprite x="79" y="154" width="19" height="23" >
+				<sprite x="79" y="154" width="19" height="23" frameTime=".5">
 					<origin x="8" y="23" />
 				</sprite>
 			</animation>
 			<animation name="attack left">
-				<sprite x="20" y="190" width="15" height="31" >
+				<sprite x="80" y="191" width="16" height="23" frameTime=".5">
+					<origin x="8" y="23" />
+				</sprite>
+				<sprite x="20" y="190" width="15" height="31" frameTime=".2">
 					<origin x="8" y="31" />
 				</sprite>
-				<sprite x="50" y="190" width="15" height="31" >
+				<sprite x="50" y="190" width="15" height="31" frameTime=".5">
 					<origin x="8" y="31" />
 				</sprite>
-				<sprite x="80" y="191" width="16" height="23" >
+				<sprite x="80" y="191" width="16" height="23" frameTime=".5">
 					<origin x="8" y="23" />
 				</sprite>
 			</animation>
 			<animation name="attack up">
-				<sprite x="19" y="230" width="21" height="21" >
+				<sprite x="79" y="229" width="16" height="21" frameTime=".5">
 					<origin x="10" y="21" />
 				</sprite>
-				<sprite x="49" y="230" width="19" height="21" >
+				<sprite x="19" y="230" width="21" height="21" frameTime=".2">
 					<origin x="10" y="21" />
 				</sprite>
-				<sprite x="79" y="229" width="16" height="21" >
+				<sprite x="49" y="230" width="19" height="21" frameTime=".5">
+					<origin x="10" y="21" />
+				</sprite>
+				<sprite x="79" y="229" width="16" height="21" frameTime=".5">
 					<origin x="10" y="21" />
 				</sprite>
 			</animation>
 			<animation name="attack right">
-				<sprite x="22" y="262" width="15" height="30" >
+				<sprite x="80" y="263" width="16" height="23" frameTime=".5">
+					<origin x="9" y="23" />
+				</sprite>
+				<sprite x="22" y="262" width="15" height="30" frameTime=".2">
 					<origin x="7" y="30" />
 				</sprite>
-				<sprite x="52" y="263" width="15" height="30" >
+				<sprite x="52" y="263" width="15" height="30" frameTime=".5">
 					<origin x="7" y="30" />
 				</sprite>
-				<sprite x="80" y="263" width="16" height="23" >
+				<sprite x="80" y="263" width="16" height="23" frameTime=".5">
 					<origin x="9" y="23" />
 				</sprite>
 			</animation>
