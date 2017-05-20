@@ -28,7 +28,7 @@ protected:
 	};
 	CreatureAnimation animation;*/
 	enum CreatureAction {
-		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION
+		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION
 	};
 	CreatureAction action = WAITING_ACTION;
 	bool canCancelAction = true;

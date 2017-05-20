@@ -16,12 +16,6 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 
 	camera->setZoom(1);
 
-	quitButton.reset(guiFactory->createButton(Vector2(200, 200), Vector2(10, 10), L"Quit"));
-	quitButton->setActionListener(new OnClickListenerDialogQuitButton(game));
-	quitButton->setMatrixFunction([&]()->Matrix { return camera->translationMatrix(); });
-	quitButton->setCameraZoom([&]()->float { return camera->getZoom(); });
-	//quitButton->setLayerDepth(0.0);
-
 
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 3);
@@ -130,19 +124,14 @@ void TitleScreen::update(double deltaTime) {
 			}
 		}
 	}
-	quitButton->update(deltaTime);
-
 
 	slotManager->waiting();
-
 }
 
 
 void TitleScreen::draw(SpriteBatch * batch) {
 
-	quitButton->draw(batch);
 	pendulum->draw(batch);
-
 	noControllerDialog->draw(batch);
 }
 

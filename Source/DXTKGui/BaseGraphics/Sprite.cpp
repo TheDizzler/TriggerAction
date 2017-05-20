@@ -49,10 +49,8 @@ void Sprite::load(GraphicsAsset* const graphicsAsset) {
 
 
 void Sprite::draw(SpriteBatch* batch) {
-
 	batch->Draw(texture.Get(), position, &sourceRect, tint, rotation,
 		origin, scale, spriteEffect, layerDepth);
-
 }
 
 
@@ -141,7 +139,6 @@ void Sprite::setPosition(const Vector2& pos) {
 	position = pos;
 	hitArea->position = Vector2(position.x - origin.x*scale.x,
 		position.y - origin.y*scale.y);
-	//hitArea->size = Vector2(width*scale.x, height*scale.y);
 }
 
 

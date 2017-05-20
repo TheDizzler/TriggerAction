@@ -68,11 +68,11 @@ public:
 	bool initRawInput(HWND hwnd);
 
 
-
+	shared_ptr<MouseController> mouse;
 protected:
 
 	unique_ptr<Keyboard> keys;
-	shared_ptr<MouseController> mouse;
+	
 
 
 };

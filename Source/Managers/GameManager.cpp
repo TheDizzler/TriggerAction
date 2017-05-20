@@ -14,8 +14,8 @@ GameManager::~GameManager() {
 }
 
 #include "../Engine/GameEngine.h"
-bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr<MouseController> ms/*,
-	vector<shared_ptr<Joystick>> joystickSlots*/) {
+bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
+	shared_ptr<MouseController> ms) {
 
 	device = dvc;
 	mouse = ms;
@@ -108,7 +108,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc, shared_ptr
 		currentScreen = levelScreen.get();
 
 	}
-	mouse->loadMouseIcon(guiFactory.get(), "Mouse Icon");
+	
 	ShowCursor(false);
 
 	return true;
@@ -194,9 +194,6 @@ bool GameManager::reloadLevel(const pugi::char_t* levelName) {
 
 void GameManager::loadMainMenu() {
 
-	mouse->loadMouseIcon(guiFactory.get(), "Mouse Icon");
-	mouse->setRotation(0);
-
 	lastScreen = currentScreen;
 	currentScreen = levelScreen.get();
 
@@ -232,6 +229,7 @@ void GameManager::confirmExit() {
 	if (!exitDialog->isOpen()) {
 		GameEngine::showDialog = exitDialog.get();
 		exitDialog->show();
+		mouse->show();
 	}
 }
 
@@ -296,6 +294,7 @@ size_t GameManager::getSelectedDisplayModeIndex() {
 
 void CancelDialogButton::onClick(Button * button) {
 	dialog->hide();
+	engine->mouse->hide();
 	engine->paused = false;
 }
 

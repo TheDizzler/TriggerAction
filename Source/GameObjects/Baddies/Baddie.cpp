@@ -80,6 +80,7 @@ void Baddie::update(double deltaTime) {
 
 				if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 					// le petit attaque
+					distance.z = 0;
 					distance.Normalize();
 					startMainAttack(distance);
 				}

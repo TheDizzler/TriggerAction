@@ -28,11 +28,18 @@ protected:
 	Joystick* joystick;
 	CharacterData* characterData;
 
+	shared_ptr<Animation> jumpDown;
+	shared_ptr<Animation> jumpLeft;
+	shared_ptr<Animation> jumpUp;
+	shared_ptr<Animation> jumpRight;
 
 	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
 	void startMainAttack();
+	void startJump();
 
-
+	Vector3 startJumpPosition, endHalfJumpPosition;
+	double jumpTime = 0;
+	bool jumpingRising = true;
 	bool running = false;
 	bool moving = false;
 	bool waiting = false;
@@ -50,11 +57,15 @@ protected:
 	float moveDiagonalDown = radius * sin(Q);
 	float runRightSpeed = 100;
 
+	float jumpByX;
+	float jumpByY;
+
 
 	bool lastCollision = false;
 	//bool stillAttacking = false;
 	virtual void attackUpdate(double deltaTime) override;
 	virtual void waitUpdate(double deltaTime);
+	virtual void jumpUpdate(double deltaTime);
 
 	/** Possible actions. */
 	void movement(double deltaTime);

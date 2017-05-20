@@ -529,6 +529,28 @@
 				<origin x="8" y="30" />
 			</sprite>
 		</animation>
+
+
+		<animation name="jump down">
+			<sprite x="122" y="521" width="22" height="32" frameTime="10">
+				<origin x="13" y="31" />
+			</sprite>
+		</animation>
+		<animation name="jump left">
+			<sprite x="166" y="521" width="13" height="32" frameTime="10">
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="jump up">
+			<sprite x="202" y="520" width="22" height="32" frameTime="10">
+				<origin x="11" y="31" />
+			</sprite>
+		</animation>
+		<animation name="jump right">
+			<sprite x="246" y="521" width="13" height="32" frameTime="10">
+				<origin x="6" y="31" />
+			</sprite>
+		</animation>
 	</spritesheet>
 
 

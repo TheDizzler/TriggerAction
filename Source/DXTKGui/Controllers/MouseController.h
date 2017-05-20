@@ -31,6 +31,10 @@ public:
 
 	void saveMouseState();
 
+	void show();
+	void hide();
+	virtual void draw(SpriteBatch* batch) override;
+
 	int scrollWheelValue();
 	bool leftButton();
 	bool middleButton();
@@ -57,6 +61,7 @@ private:
 	Mouse::State state;
 	Mouse::State lastState;
 
+	bool isShown = true;
 
 	short mouseWheelDelta = 0;
 

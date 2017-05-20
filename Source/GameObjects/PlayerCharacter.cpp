@@ -27,6 +27,10 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	attackUp = assetSet->getAnimation("attack up");
 	attackRight = assetSet->getAnimation("attack right");
 
+	jumpDown = assetSet->getAnimation("jump down");
+	jumpLeft = assetSet->getAnimation("jump left");
+	jumpUp = assetSet->getAnimation("jump up");
+	jumpRight = assetSet->getAnimation("jump right");
 
 	provoke = assetSet->getAnimation("provoke");
 	surprise = assetSet->getAnimation("surprise");
@@ -57,9 +61,7 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 
 
 void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
-
 	setPosition(Vector3(startingPosition.x, startingPosition.y, 0));
-
 }
 
 
@@ -82,6 +84,8 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::MOVING_ACTION:
 			if (joystick->bButtonStates[ControlButtons::Y]) {
 				startMainAttack();
+			} else if (joystick->bButtonStates[ControlButtons::X]) {
+				startJump();
 			} else {
 				movement(deltaTime);
 				moveUpdate(deltaTime);
@@ -89,7 +93,10 @@ void PlayerCharacter::update(double deltaTime) {
 
 			break;
 
+		case CreatureAction::JUMP_ACTION:
 
+			jumpUpdate(deltaTime);
+			break;
 		case CreatureAction::HIT_ACTION:
 			hitUpdate(deltaTime);
 			break;
@@ -120,6 +127,8 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 		currentFrameOrigin, scale,
 		SpriteEffects_None, layerDepth);
 
+	shadow.draw(batch);
+
 	for (const auto& bullet : projectiles)
 		bullet->draw(batch);
 
@@ -127,7 +136,6 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 	debugDraw(batch);
 #endif //  DEBUG_HITBOXES
 }
-
 
 
 void PlayerCharacter::startMainAttack() {
@@ -166,6 +174,110 @@ void PlayerCharacter::startMainAttack() {
 	canCancelAction = false;
 	attackUpdate(0);
 }
+
+const double NORMAL_SPEED = 1.0;
+const double RUN_SPEED = 1.5;
+const double JUMP_TIME = .375;
+const int MAX_JUMP_HEIGHT = 20;
+//const int MAX_JUMP_DISTANCE = 30;
+void PlayerCharacter::startJump() {
+
+	jumpByX = jumpByY = 0;
+
+	float speedFactor;
+	if (running)
+		speedFactor = RUN_SPEED;
+	else
+		speedFactor = NORMAL_SPEED;
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+	if (horzDirection > 10) {
+		// moving right
+		facing = Facing::RIGHT;
+		loadAnimation(jumpRight);
+		if (vertDirection < -10) {
+			// moving right & up
+			jumpByX = moveDiagonalRight*JUMP_TIME*speedFactor;
+			jumpByY = -moveDiagonalDown*JUMP_TIME*speedFactor;
+			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+		} else if (vertDirection > 10) {
+			// moving right & down
+			jumpByX = moveDiagonalRight*JUMP_TIME*speedFactor;
+			jumpByY = moveDiagonalDown*JUMP_TIME*speedFactor;
+			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+		} else {
+			jumpByX = moveRightSpeed*JUMP_TIME*speedFactor;
+			endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+		}
+	} else if (horzDirection < -10) {
+		// moving left
+		loadAnimation(jumpLeft);
+		facing = Facing::LEFT;
+		if (vertDirection < -10) {
+			// moving left & up
+			jumpByX = -moveDiagonalRight*JUMP_TIME*speedFactor;
+			jumpByY = -moveDiagonalDown*JUMP_TIME*speedFactor;
+			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+		} else if (vertDirection > 10) {
+			// moving left & down
+			jumpByX = -moveDiagonalRight*JUMP_TIME*speedFactor;
+			jumpByY = moveDiagonalDown*JUMP_TIME*speedFactor;
+			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+		} else {
+			jumpByX = -moveRightSpeed*JUMP_TIME*speedFactor;
+			endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+		}
+	} else if (vertDirection < -10) {
+		// moving up
+		facing = Facing::UP;
+		loadAnimation(jumpUp);
+		jumpByY = -moveDownSpeed*JUMP_TIME*speedFactor;
+		endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+	} else if (vertDirection > 10) {
+		// moving down
+		facing = Facing::DOWN;
+		loadAnimation(jumpDown);
+		jumpByY = moveDownSpeed*JUMP_TIME*speedFactor;
+		endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+	} else {
+		// no direction input
+
+		switch (facing) {
+			case Facing::LEFT:
+				loadAnimation(jumpLeft);
+				jumpByX = -moveRightSpeed * JUMP_TIME * speedFactor;
+				endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+				break;
+			case Facing::DOWN:
+				// moving down
+				loadAnimation(jumpDown);
+				jumpByY = moveDownSpeed * JUMP_TIME * speedFactor;
+				endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+				break;
+			case Facing::RIGHT:
+				loadAnimation(jumpRight);
+				jumpByX = moveRightSpeed * JUMP_TIME * speedFactor;
+				endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+				break;
+			case Facing::UP:
+				// moving up
+				loadAnimation(jumpUp);
+				jumpByY = -moveDownSpeed * JUMP_TIME * speedFactor;
+				endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+				break;
+		}
+	}
+
+
+	canCancelAction = false;
+	action = CreatureAction::JUMP_ACTION;
+	moving = false;
+	jumpTime = 0;
+	startJumpPosition = position;
+	jumpingRising = true;
+}
+
 
 const int ANIMATION_REPEATS = 1;
 void PlayerCharacter::attackUpdate(double deltaTime) {
@@ -253,10 +365,54 @@ void PlayerCharacter::waitUpdate(double deltaTime) {
 }
 
 
+
+void PlayerCharacter::jumpUpdate(double deltaTime) {
+
+	jumpTime += deltaTime;
+
+	double percentJumped = jumpTime / JUMP_TIME;
+	setPosition(
+		Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
+	if (percentJumped >= 1) {
+		if (jumpingRising) {
+			jumpingRising = false;
+			jumpTime = 0;
+			startJumpPosition = endHalfJumpPosition;
+			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, -MAX_JUMP_HEIGHT);
+		} else {
+			double percentJumped = jumpTime / JUMP_TIME;
+			setPosition(
+				Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
+			if (percentJumped >= 1) {
+				// landed
+				switch (facing) {
+					case Facing::RIGHT:
+						loadAnimation("combat stance right");
+						break;
+					case Facing::LEFT:
+						loadAnimation("combat stance left");
+						break;
+					case Facing::DOWN:
+						loadAnimation("combat stance down");
+						break;
+					case Facing::UP:
+						loadAnimation("combat stance up");
+						break;
+				}
+				action = CreatureAction::WAITING_ACTION;
+				canCancelAction = true;
+				moving = false;
+			}
+		}
+	}
+
+
+}
+
+
 void PlayerCharacter::movement(double deltaTime) {
 
 	Vector3 moveVector = getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY);
-		//if (getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY)) {
 	if (moveVector != Vector3::Zero) {
 
 		radarBox.position = hitbox.position + moveVector * 2;
@@ -341,9 +497,9 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 	running = runningNow;
 	float speedFactor;
 	if (running)
-		speedFactor = 1.5;
+		speedFactor = RUN_SPEED;
 	else
-		speedFactor = 1;
+		speedFactor = NORMAL_SPEED;
 
 	Vector3 moveVector = Vector3::Zero;
 	if (horzDirection > 10) {
@@ -367,7 +523,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			if (runningNow)
 				loadAnimation("run right");
 			else
-				loadAnimation("walk right");
+				loadAnimation(walkRight);
 			moving = true;
 			facing = Facing::RIGHT;
 		}
@@ -397,7 +553,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			if (runningNow)
 				loadAnimation("run left");
 			else
-				loadAnimation("walk left");
+				loadAnimation(walkLeft);
 			moving = true;
 			facing = Facing::LEFT;
 		}
@@ -415,7 +571,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			if (runningNow)
 				loadAnimation("run up");
 			else
-				loadAnimation("walk up");
+				loadAnimation(walkUp);
 			moving = true;
 			facing = Facing::UP;
 		}
@@ -431,7 +587,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			if (runningNow)
 				loadAnimation("run down");
 			else
-				loadAnimation("walk down");
+				loadAnimation(walkDown);
 			moving = true;
 			facing = Facing::DOWN;
 		}

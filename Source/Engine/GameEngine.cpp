@@ -115,7 +115,7 @@ bool GameEngine::initGFXAssets() {
 bool GameEngine::initStage() {
 
 	game = make_unique<GameManager>(this);
-	if (!game->initializeGame(hwnd, device, mouse/*, joystickSlots*/)) {
+	if (!game->initializeGame(hwnd, device, mouse)) {
 		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;
 	}
@@ -163,6 +163,8 @@ void GameEngine::initErrorDialogs() {
 
 	showDialog = warningDialog.get();
 
+	mouse->loadMouseIcon(guiFactory.get(), "Mouse Arrow");
+	mouse->hide();
 	blendState = new CommonStates(device.Get());
 }
 
@@ -195,7 +197,7 @@ void GameEngine::run(double deltaTime) {
 
 void GameEngine::update(double deltaTime) {
 
-	mouse->saveMouseState();
+	
 
 	if (paused) {
 		auto state = Keyboard::Get().GetState();
@@ -229,9 +231,11 @@ void GameEngine::update(double deltaTime) {
 					}
 				}
 			} else {
+				mouse->saveMouseState();
 				if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
 					showDialog->hide();
 					paused = false;
+					mouse->hide();
 					return;
 				}
 			}

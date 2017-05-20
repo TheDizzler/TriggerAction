@@ -24,8 +24,8 @@ public:
 	~GameManager();
 
 
-	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse/*,
-		vector<shared_ptr<Joystick>> joystickSlots*/);
+	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device,
+	shared_ptr<MouseController> mouse);
 
 
 	void update(double deltaTime);

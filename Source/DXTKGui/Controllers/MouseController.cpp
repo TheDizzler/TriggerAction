@@ -62,6 +62,19 @@ void MouseController::saveMouseState() {
 	isMiddleClicked = lastState.middleButton && !state.middleButton;
 }
 
+void MouseController::show() {
+	isShown = true;
+}
+
+void MouseController::hide() {
+	isShown = false;
+}
+
+void MouseController::draw(SpriteBatch* batch) {
+	if (isShown)
+		Sprite::draw(batch);
+}
+
 
 int MouseController::scrollWheelValue() {
 

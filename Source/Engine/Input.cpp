@@ -22,8 +22,6 @@ bool Input::initRawInput(HWND hwnd) {
 
 	keys = make_unique<Keyboard>();
 	mouse = make_shared<MouseController>(hwnd);
-	if (guiFactory != NULL)
-		mouse->loadMouseIcon(guiFactory.get(), "Mouse Icon");
 
 	return true;
 }
