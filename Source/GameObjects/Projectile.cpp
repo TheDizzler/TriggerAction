@@ -80,22 +80,31 @@ void Projectile::update(double deltaTime) {
 		if (liveObject == owner)
 			continue;
 
+#ifdef  DEBUG_HITBOXES
 		liveObject->debugSetTint(Colors::Black.v);
+#endif //  DEBUG_HITBOXES
+
 		if (ray.collision(liveObject->getHitbox())) {
+#ifdef  DEBUG_HITBOXES
 			liveObject->debugSetTint(Colors::Cyan.v);
+#endif //  DEBUG_HITBOXES
 			int xDist, yDist;
 			switch (direction) {
 				case Facing::LEFT:
 					xDist = liveObject->getHitbox()->position.x - position.x;
 					if (xDist > moveInOneFrame.x - liveObject->getHitbox()->size.x / 2) {
+#ifdef  DEBUG_HITBOXES
 						liveObject->debugSetTint(Colors::Crimson.v);
+#endif //  DEBUG_HITBOXES
 						hit(liveObject);
 					}
 					break;
 				case Facing::RIGHT:
 					xDist = position.x - liveObject->getHitbox()->position.x;
 					if (xDist > moveInOneFrame.x - liveObject->getHitbox()->size.x) {
+#ifdef  DEBUG_HITBOXES
 						liveObject->debugSetTint(Colors::Crimson.v);
+#endif //  DEBUG_HITBOXES
 						hit(liveObject);
 					}
 					break;
@@ -103,14 +112,18 @@ void Projectile::update(double deltaTime) {
 				case Facing::DOWN:
 					yDist = position.y - liveObject->getHitbox()->position.y;
 					if (yDist > moveInOneFrame.y - liveObject->getHitbox()->size.y / 2) {
+#ifdef  DEBUG_HITBOXES
 						liveObject->debugSetTint(Colors::Crimson.v);
+#endif //  DEBUG_HITBOXES
 						hit(liveObject);
 					}
 					break;
 				case Facing::UP:
 					yDist = liveObject->getHitbox()->position.y - position.y;
 					if (yDist > moveInOneFrame.y - liveObject->getHitbox()->size.z / 2) {
+#ifdef  DEBUG_HITBOXES
 						liveObject->debugSetTint(Colors::Crimson.v);
+#endif //  DEBUG_HITBOXES
 						hit(liveObject);
 					}
 					break;
@@ -175,7 +188,7 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 			break;
 		case Facing::RIGHT:
 			shadowPosition.x = position.x;
-			ray.position.y -= getHeight()*2;
+			ray.position.y -= getHeight() * 2;
 			ray.size.x = Globals::WINDOW_WIDTH;
 			break;
 		case Facing::UP:

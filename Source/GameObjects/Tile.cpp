@@ -1,8 +1,7 @@
 #include "../pch.h"
 #include "Tile.h"
+#include "../Managers/GameManager.h"
 
-
-#include "../Managers/MapManager.h"
 void TileBase::moveBy(const Vector3 & moveVector) {
 
 	position += moveVector;
@@ -111,15 +110,20 @@ void TangibleTile::takeDamage(int damage) {
 
 void TangibleTile::update(double deltaTime) {
 	//Tile::update(deltaTime);
+
+#ifdef  DEBUG_HITBOXES
 	debugUpdate();
+#endif //  DEBUG_HITBOXES
 }
 
 
 void TangibleTile::draw(SpriteBatch* batch) {
 	batch->Draw(texture.Get(), drawPosition, &sourceRect, tint, rotation,
 		origin, scale, SpriteEffects_None, layerDepth);
-	debugDraw(batch);
 
+#ifdef  DEBUG_HITBOXES
+	debugDraw(batch);
+#endif //  DEBUG_HITBOXES
 }
 
 

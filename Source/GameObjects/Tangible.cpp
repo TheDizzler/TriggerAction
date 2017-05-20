@@ -91,9 +91,11 @@ void Tangible::setHitbox(const Hitbox box) {
 	hitbox = Hitbox(box);
 	hitboxOffset = box.position;
 
+#ifdef  DEBUG_HITBOXES
 	testFrame.reset(guiFactory->createRectangleFrame(
 		Vector2(hitbox.position.x, hitbox.position.y),
 		Vector2(hitbox.size.x, hitbox.size.y)));
+#endif //  DEBUG_HITBOXES
 }
 
 
@@ -102,9 +104,10 @@ void Tangible::moveHitboxBy(const Vector3& moveVector) {
 	hitbox.position += moveVector;
 	for (const auto& subHB : subHitboxes)
 		subHB->position += moveVector;
-	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
 
-	//debugUpdate();
+#ifdef  DEBUG_HITBOXES
+	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
+#endif //  DEBUG_HITBOXES
 }
 
 void Tangible::setHitboxPosition(const Vector3& newPosition) {
@@ -114,9 +117,10 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 	hitbox.position.y -= hitbox.size.y;
 	for (const auto& subHB : subHitboxes)
 		subHB->position = newPosition;
-	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
 
-	//debugUpdate();
+#ifdef  DEBUG_HITBOXES
+	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
+#endif //  DEBUG_HITBOXES
 }
 
 

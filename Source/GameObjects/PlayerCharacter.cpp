@@ -32,6 +32,8 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	surprise = assetSet->getAnimation("surprise");
 	hit = assetSet->getAnimation("hit");
 
+	shadow.load(assetSet->getAsset("shadow"));
+
 	setHitbox(characterData->hitbox.get());
 	radarBox = Hitbox(hitbox);
 
@@ -102,7 +104,9 @@ void PlayerCharacter::update(double deltaTime) {
 
 	}
 
+#ifdef  DEBUG_HITBOXES
 	debugUpdate();
+#endif //  DEBUG_HITBOXES
 
 	for (const auto& bullet : projectiles)
 		bullet->update(deltaTime);
@@ -118,7 +122,10 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 
 	for (const auto& bullet : projectiles)
 		bullet->draw(batch);
+
+#ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
+#endif //  DEBUG_HITBOXES
 }
 
 
@@ -299,16 +306,10 @@ void PlayerCharacter::movement(double deltaTime) {
 				if (!collision)
 					moveBy(testVector);
 			}
-
-		/*if (collision && !lastCollision)
-			debugSetTint(Color(1, .1, .1, 1));
-		*/
 		} else if (!collision) {
 			moveBy(moveVector);
-			//if (lastCollision)
-				//debugSetTint(Color(0, 0, 0, 1));
 		}
-		//lastCollision = collision;
+
 		action = CreatureAction::MOVING_ACTION;
 
 	} else if (!waiting) { // redo this to match current command flow
@@ -351,17 +352,14 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			// moving right & up
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			//moveBy(Vector3(moveByX, -moveByY, 0));
 			moveVector = Vector3(moveByX, -moveByY, 0);
 		} else if (vertDirection > 10) {
 			// moving right & down
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			//moveBy(Vector3(moveByX, moveByY, 0));
 			moveVector = Vector3(moveByX, moveByY, 0);
 		} else {
 			float moveByX = moveRightSpeed*deltaTime*speedFactor;
-			//moveBy(Vector3(moveByX, 0, 0));
 			moveVector = Vector3(moveByX, 0, 0);
 		}
 
@@ -384,17 +382,14 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			// moving left & up
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			//moveBy(Vector3(-moveByX, -moveByY, 0));
 			moveVector = Vector3(-moveByX, -moveByY, 0);
 		} else if (vertDirection > 10) {
 			// moving left & down
 			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
 			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
-			//moveBy(Vector3(-moveByX, moveByY, 0));
 			moveVector = Vector3(-moveByX, moveByY, 0);
 		} else {
 			float moveByX = moveRightSpeed*deltaTime*speedFactor;
-			//moveBy(Vector3(-moveByX, 0, 0));
 			moveVector = Vector3(-moveByX, 0, 0);
 		}
 
@@ -415,7 +410,6 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 	if (vertDirection < -10) {
 		// moving up
 		float moveByY = moveDownSpeed*deltaTime*speedFactor;
-		//moveBy(Vector3(0, -moveByY, 0));
 		moveVector = Vector3(0, -moveByY, 0);
 		if (!moving || facing != Facing::UP) {
 			if (runningNow)
@@ -432,7 +426,6 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 	if (vertDirection > 10) {
 		// moving down
 		float moveByY = moveDownSpeed*deltaTime*speedFactor;
-		//moveBy(Vector3(0, moveByY, 0));
 		moveVector = Vector3(0, moveByY, 0);
 		if (!moving || facing != Facing::DOWN) {
 			if (runningNow)

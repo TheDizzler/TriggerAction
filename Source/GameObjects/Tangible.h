@@ -36,7 +36,7 @@ public:
 
 	virtual void takeDamage(int damage) = 0;
 
-	void debugUpdate(/*Vector2 moveAmount*/);
+	void debugUpdate();
 	void debugDraw(SpriteBatch* batch);
 	void debugSetTint(const Color& color);
 

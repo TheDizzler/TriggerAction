@@ -2,7 +2,6 @@
 
 #define MAX_PLAYERS 3
 
-
 namespace Globals {
 
 	extern int WINDOW_WIDTH;	// in pixels

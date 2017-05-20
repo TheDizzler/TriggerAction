@@ -1,6 +1,7 @@
 #include "../../pch.h"
 #include "Baddie.h"
-#include "../../Managers/MapManager.h"
+//#include "../../Managers/MapManager.h"
+#include "../../Managers/GameManager.h"
 
 BaddieData::BaddieData() {
 }
@@ -46,6 +47,8 @@ Baddie::Baddie(BaddieData* data) {
 	provoke = assetSet->getAnimation("provoke");
 	surprise = assetSet->getAnimation("surprise");
 	hit = assetSet->getAnimation("hit");
+
+	shadow.load(assetSet->getAsset("shadow"));
 
 	loadAnimation(walkLeft);
 	currentFrameTexture = currentAnimation->texture.Get();
@@ -96,8 +99,11 @@ void Baddie::update(double deltaTime) {
 
 	}
 
+#ifdef  DEBUG_HITBOXES
 	debugUpdate();
+#endif //  DEBUG_HITBOXES
 }
+
 
 void Baddie::draw(SpriteBatch* batch) {
 
@@ -106,9 +112,13 @@ void Baddie::draw(SpriteBatch* batch) {
 		currentFrameOrigin, scale,
 		SpriteEffects_None, layerDepth);
 
+	shadow.draw(batch);
 
+#ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
+#endif //  DEBUG_HITBOXES
 }
+
 
 void Baddie::attackUpdate(double deltaTime) {
 	currentFrameTime += deltaTime;

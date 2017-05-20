@@ -1,5 +1,7 @@
 #pragma once
 
+//#define DEBUG_HITBOXES
+
 #include <Keyboard.h>
 
 #include "../Screens/TitleScreen.h"

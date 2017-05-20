@@ -51,7 +51,7 @@ void Sprite::load(GraphicsAsset* const graphicsAsset) {
 void Sprite::draw(SpriteBatch* batch) {
 
 	batch->Draw(texture.Get(), position, &sourceRect, tint, rotation,
-		origin, scale, SpriteEffects_None, layerDepth);
+		origin, scale, spriteEffect, layerDepth);
 
 }
 

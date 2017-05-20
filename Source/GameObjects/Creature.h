@@ -55,6 +55,8 @@ protected:
 	shared_ptr<Animation> surprise;
 	shared_ptr<Animation> hit;
 
+	Sprite shadow;
+
 	void loadAnimation(shared_ptr<Animation> animation);
 	/** Finds animation in a map, therefore not efficient. */
 	void loadAnimation(const pugi::char_t* name);

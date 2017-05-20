@@ -39,7 +39,7 @@ void Creature::loadAnimation(const pugi::char_t* name) {
 	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
 	currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
 	currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
-	//currentFrameTexture = currentAnimation->texture.Get();
+	//currentFrameTexture = currentAnimation->texture.Get(); // shouldn't change
 }
 
 bool Creature::checkCollisionWith(const Hitbox* hitbox) const {
@@ -69,6 +69,7 @@ void Creature::moveBy(const Vector3& moveVector) {
 void Creature::setPosition(const Vector3& newpos) {
 	IElement3D::setPosition(newpos);
 	setHitboxPosition(newpos);
+	//shadow.setPosition(Vector2(newpos.x, newpos.y));
 
 	layerDepth = Map::getLayerDepth(position.y);
 

@@ -21,6 +21,7 @@
 		<sprite name="magic kanji" set="Lucca" x="54" y="2" width="16" height="16"/>
 		<sprite name="magic english" set="Lucca" x="20" y="58" width="48" height="16"/>
 
+		<sprite name="shadow" x="88" y="73" width="13" height="3" />
 
 		<animation name="stand down">
 			<!-- neutral-->

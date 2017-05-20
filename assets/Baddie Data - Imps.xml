@@ -127,6 +127,8 @@
 					<origin x="9" y="29" />
 				</sprite>
 			</animation>
+
+			<sprite name="shadow" x="24" y="217" width="8" height="4" />
 		</spritesheet>
 	</baddie>
 </root>
