@@ -10,6 +10,8 @@
 
 	<baddieData>
 		<baddie name="Blue Imp" file="Baddie Data - Imps.xml" />
+		<baddie name="Blue Eaglet" file="Baddie Data - Blue Eaglet.xml" />
+		<baddie name="Gato" file="Baddie Data - Gato.xml" />
 	</baddieData>
 
 	<gfx dir="gfx/" >

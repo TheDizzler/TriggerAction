@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root game="Trigger Action RPG" xml="Baddie Data - Millenial Fair" dir="assets/gfx/">
+
+	<baddie name="Blue Eaglet">
+		<hitbox x="8" y="0" width="15" height="10" z="23"/>
+
+		<spritesheet name="Baddies - Millenial Fair"
+			file="Baddies - Millenial Fair sheet.dds" set="Blue Eaglet" >
+
+			<animation name="flying with imp">
+				<sprite x="4" y="211" width="31" height="42" >
+					<origin x="16" y="41" />
+				</sprite>
+				<sprite x="44" y="211" width="31" height="42" >
+					<origin x="16" y="41" />
+				</sprite>
+				<sprite x="85" y="211" width="29" height="42" >
+					<origin x="14" y="41" />
+				</sprite>
+			</animation>
+
+			<animation name="surprise with imp">
+				<sprite x="127" y="211" width="25" height="41" frameTime="1.5">
+					<origin x="13" y="41" />
+				</sprite>
+			</animation>
+
+			<animation name="surprise with imp 2">
+				<sprite x="164" y="211" width="31" height="41" frameTime="1.5">
+					<origin x="16" y="40" />
+				</sprite>
+			</animation>
+
+
+			<animation name="flying">
+				<sprite x="44" y="168" width="31" height="25" >
+					<origin x="16" y="24" />
+				</sprite>
+				<sprite x="4" y="168" width="31" height="25" >
+					<origin x="16" y="24" />
+				</sprite>
+				<sprite x="85" y="168" width="29" height="25" >
+					<origin x="15" y="24" />
+				</sprite>
+				<sprite x="4" y="168" width="31" height="25" >
+					<origin x="16" y="24" />
+				</sprite>
+			</animation>
+
+			<animation name="attack">
+				<sprite x="127" y="169" width="25" height="23" >
+					<origin x="13" y="22" />
+				</sprite>
+				<sprite x="164" y="168" width="31" height="25" >
+					<origin x="16" y="24" />
+				</sprite>
+				<sprite x="204" y="168" width="31" height="25" >
+					<origin x="16" y="24" />
+				</sprite>
+				<sprite x="244" y="169" width="31" height="24" >
+					<origin x="16" y="23" />
+				</sprite>
+				<sprite x="292" y="161" width="15" height="48" >
+					<origin x="8" y="48" />
+				</sprite>
+			</animation>
+
+			<animation name="hit">
+				<sprite x="324" y="166" width="31" height="30"/>
+				<sprite x="364" y="171" width="31" height="19" >
+					<origin x="16" y="18" />
+				</sprite>
+			</animation>
+
+			<sprite name="shadow" x="292" y="212" width="14" height="3" />
+
+		</spritesheet>
+	</baddie>
+</root>

@@ -376,6 +376,8 @@
     <Xml Include="assets\Character Data - Chrono.xml" />
     <Xml Include="assets\Character Data - Lucca.xml" />
     <Xml Include="assets\Baddie Data - Imps.xml" />
+    <Xml Include="assets\Baddie Data - Blue Eaglet.xml" />
+    <Xml Include="assets\Baddie Data - Gato.xml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\Character Data - Marle.xml" />
