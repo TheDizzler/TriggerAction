@@ -1,8 +1,9 @@
-#include "../pch.h"
+#include "../../pch.h"
 #include "CharacterData.h"
+#include "../../Engine/GameEngine.h"
+#include "../../Managers/GFXAssetManager.h"
 
-#include "../Engine/GameEngine.h"
-#include "../Managers/GFXAssetManager.h"
+
 CharacterData::CharacterData(string nm) {
 
 	name = nm;

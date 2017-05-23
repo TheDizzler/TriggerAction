@@ -23,6 +23,8 @@ void LevelScreen::setGameManager(GameManager* gm) {
 	game = gm;
 }
 
+#include "../GameObjects/Characters/Lucca.h"
+#include "../GameObjects/Characters/Marle.h"
 void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	map.reset();
@@ -30,12 +32,18 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	for (const auto& slot : activeSlots) {
 
-		unique_ptr<PlayerCharacter> newPC = make_unique<PlayerCharacter>(slot);
+		if (slot->characterData->name == "Lucca") {
+			unique_ptr<Lucca> newPC = make_unique<Lucca>(slot);
+			hitboxesAll.push_back(newPC.get());
+			newPC->setInitialPosition(Vector2(10, 100));
+			pcs.push_back(move(newPC));
+		} else if (slot->characterData->name == "Marle") {
+			unique_ptr<Marle> newPC = make_unique<Marle>(slot);
+			hitboxesAll.push_back(newPC.get());
+			newPC->setInitialPosition(Vector2(10, 100));
+			pcs.push_back(move(newPC));
 
-		hitboxesAll.push_back(newPC.get());
-		newPC->setInitialPosition(Vector2(10, 100));
-		pcs.push_back(move(newPC));
-
+		}
 	}
 
 	camera->setZoomToResolution();
@@ -47,7 +55,7 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 	map.reset();
 	map = move(newMap);
 
-	
+
 
 	for (const auto& pc : pcs) {
 		hitboxesAll.push_back(pc.get());

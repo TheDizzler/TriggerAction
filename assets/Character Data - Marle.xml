@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Marle" dir="assets/gfx/">
 
-	<!-- coords are from -->
+	<!-- coords are from bottom left -->
 	<hitbox x="6" y="6" width="9" height="6" z="24"/>
 
 	<weaponMenuIcon name="Bow" />
 
-	<spritesheet name="Marle Sheet" file="Marle spritesheet b.dds" set="Marle">
+	<spritesheet name="Marle Sheet" file="Marle spritesheet.dds" set="Marle">
 
 		<!-- biggest dimensions 42x45 -->
 		<!-- standard biggest cell 30x36-->
@@ -16,23 +16,7 @@
 		<sprite name="magic english" x="20" y="58" width="48" height="16"/>
 
 
-		<animation name="stand down">
-			<origin x="" y="" />
-			<!-- neutral-->
-			<sprite x="129" y="0" width="13" height="33" frameTime="1.5"/>
 
-			<!-- Blinking Animation -->
-			<!-- blinking half-closed -->
-			<sprite x="129" y="40" width="13" height="33" frameTime=".125"/>
-			<!-- blinking closed -->
-			<sprite x="129" y="80" width="13" height="33" frameTime=".25"/>
-			<!-- blinking half-closed -->
-			<sprite x="129" y="40" width="13" height="33" frameTime=".125"/>
-			<!-- Blinking end -->
-
-			<!-- neutral-->
-			<sprite x="129" y="0" width="13" height="33" frameTime="1.5"/>
-		</animation>
 
 		<animation name="waiting down">
 			<!-- look down-->
@@ -72,7 +56,23 @@
 			<sprite x="129" y="361" width="13" height="32" frameTime=".25"/>
 		</animation>
 
+		<animation name="stand down">
+			<origin x="" y="" />
+			<!-- neutral-->
+			<sprite x="129" y="0" width="13" height="33" frameTime="1.5"/>
 
+			<!-- Blinking Animation -->
+			<!-- blinking half-closed -->
+			<sprite x="129" y="40" width="13" height="33" frameTime=".125"/>
+			<!-- blinking closed -->
+			<sprite x="129" y="80" width="13" height="33" frameTime=".25"/>
+			<!-- blinking half-closed -->
+			<sprite x="129" y="40" width="13" height="33" frameTime=".125"/>
+			<!-- Blinking end -->
+
+			<!-- neutral-->
+			<sprite x="129" y="0" width="13" height="33" frameTime="1.5"/>
+		</animation>
 		<animation name="stand left">
 			<!-- neutral-->
 			<sprite x="168" y="1" width="16" height="32" frameTime="1.5"/>
@@ -89,7 +89,6 @@
 			<!-- neutral-->
 			<sprite x="168" y="1" width="16" height="32" frameTime="1.5"/>
 		</animation>
-
 		<animation name="stand right">
 			<!-- neutral-->
 			<sprite x="248" y="1" width="16" height="32" frameTime="1.5"/>
@@ -106,7 +105,6 @@
 			<!-- neutral-->
 			<sprite x="248" y="1" width="16" height="32" frameTime="1.5"/>
 		</animation>
-
 		<animation name="stand up">
 			<!-- neutral-->
 			<sprite x="210" y="1" width="12" height="32" frameTime="1.5"/>
@@ -115,21 +113,30 @@
 
 		<animation name="walk down" timePerFrame=".51">
 			<!-- left mid forward-->
-			<sprite x="285" y="639" width="18" height="35">
-				<origin x="" y="" />
+			<sprite x="288" y="639" width="15" height="35">
+				<origin x="7" y="34" />
 			</sprite>
 			<!-- left all forward -->
-			<sprite x="288" y="680" width="14" height="33" />
+			<sprite x="289" y="680" width="14" height="33" >
+				<origin x="7" y="32" />
+			</sprite>
 			<!-- right starting forward -->
-			<sprite x="287" y="719" width="16" height="35" />
+			<sprite x="288" y="719" width="16" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
 			<!-- right mid forward -->
-			<sprite x="287" y="759" width="15" height="35" />
+			<sprite x="288" y="759" width="15" height="36" >
+				<origin x="7" y="35" />
+			</sprite>
 			<!-- right all forward -->
-			<sprite x="288" y="800" width="14" height="33" />
+			<sprite x="289" y="800" width="14" height="33" >
+				<origin x="7" y="32" />
+			</sprite>
 			<!-- left starting forward -->
-			<sprite x="288" y="839" width="16" height="35" />
+			<sprite x="288" y="839" width="16" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
 		</animation>
-
 		<animation name="walk left" timePerFrame=".51">
 			<!-- left mid forward-->
 			<sprite x="329" y="643" width="18" height="30" />
@@ -144,7 +151,6 @@
 			<!-- left starting forward -->
 			<sprite x="327" y="840" width="18" height="32" />
 		</animation>
-
 		<animation name="walk right" timePerFrame=".51">
 			<!-- left mid forward-->
 			<sprite x="405" y="642" width="18" height="31" />
@@ -159,7 +165,6 @@
 			<!-- left starting forward -->
 			<sprite x="408" y="840" width="17" height="32" />
 		</animation>
-
 		<animation name="walk up" timePerFrame=".51">
 			<!-- left mid forward-->
 			<sprite x="369" y="640" width="14" height="33" />
@@ -175,28 +180,361 @@
 			<sprite x="368" y="840" width="16" height="33" />
 		</animation>
 
+		<animation name="run down" timePerFrame=".1" >
+			<sprite x="288" y="878" width="15" height="38" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="288" y="919" width="16" height="36" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="288" y="958" width="16" height="36" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="288" y="998" width="15" height="38" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="288" y="1039" width="16" height="36" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="288" y="1079" width="16" height="36" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+		<animation name="run left" timePerFrame=".1" >
+			<sprite x="324" y="880" width="23" height="33" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="324" y="921" width="23" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="324" y="960" width="24" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="324" y="1000" width="23" height="33" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="324" y="1041" width="23" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="324" y="1081" width="24" height="32" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+		<animation name="run up" timePerFrame=".1">
+			<sprite x="368" y="881" width="16" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="369" y="921" width="14" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="366" y="957" width="19" height="37" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="368" y="1001" width="16" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="369" y="1041" width="14" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="366" y="1079" width="19" height="36" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+		<animation name="run right" timePerFrame=".1">
+			<sprite x="404" y="880" width="23" height="33" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="404" y="921" width="23" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="404" y="960" width="24" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="404" y="1000" width="23" height="33" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="404" y="1041" width="23" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="404" y="1081" width="24" height="32" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+
+		<animation name="melee attack down">
+			<sprite x="287" y="361" width="17" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="287" y="401" width="17" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="melee attack left">
+			<sprite x="327" y="359" width="17" height="35" frameTime=".5">
+				<origin x="9" y="34" />
+			</sprite>
+			<sprite x="328" y="399" width="16" height="35" frameTime=".5">
+				<origin x="8" y="34" />
+			</sprite>
+		</animation>
+		<animation name="melee attack up">
+			<sprite x="366" y="361" width="19" height="32" frameTime=".5">
+				<origin x="11" y="31" />
+			</sprite>
+			<sprite x="366" y="401" width="19" height="32" frameTime=".5">
+				<origin x="11" y="31" />
+			</sprite>
+		</animation>
+		<animation name="melee attack right">
+			<sprite x="407" y="359" width="17" height="35" frameTime=".5">
+				<origin x="7" y="34" />
+			</sprite>
+			<sprite x="408" y="399" width="16" height="35" frameTime=".5">
+				<origin x="7" y="34" />
+			</sprite>
+		</animation>
+
+		<animation name="shoot down">
+			<sprite x="285" y="320" width="21" height="33" frameTime=".5">
+				<origin x="14" y="32" />
+			</sprite>
+			<sprite x="285" y="280" width="21" height="33" frameTime=".5">
+				<origin x="14" y="32" />
+			</sprite>
+			<sprite x="285" y="320" width="21" height="33" frameTime=".5">
+				<origin x="14" y="32" />
+			</sprite>
+		</animation>
+		<animation name="shoot left">
+			<sprite x="321" y="321" width="29" height="32" frameTime=".5">
+				<origin x="22" y="31" />
+			</sprite>
+			<sprite x="321" y="281" width="30" height="32" frameTime=".5">
+				<origin x="22" y="31" />
+			</sprite>
+			<sprite x="321" y="321" width="29" height="32" frameTime=".5">
+				<origin x="22" y="31" />
+			</sprite>
+		</animation>
+		<animation name="shoot up">
+			<sprite x="365" y="321" width="21" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="365" y="281" width="22" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="365" y="321" width="21" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="shoot right">
+			<sprite x="401" y="321" width="29" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="401" y="281" width="30" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="401" y="321" width="29" height="32" frameTime=".5">
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+
+		<animation name="block down">
+			<sprite x="283" y="161" width="25" height="32" frameTime=".5">
+				<origin x="14" y="31" />
+			</sprite>
+		</animation>
+		<animation name="block left">
+			<sprite x="324" y="161" width="24" height="32" frameTime=".5">
+				<origin x="10" y="31" />
+			</sprite>
+		</animation>
+		<animation name="block up">
+			<sprite x="364" y="161" width="24" height="32" frameTime=".5">
+				<origin x="11" y="32" />
+			</sprite>
+		</animation>
+		<animation name="block right">
+			<sprite x="404" y="161" width="24" height="32" frameTime=".5">
+				<origin x="13" y="32" />
+			</sprite>
+		</animation>
+
+		<animation name="draw weapon down" timePerFrame=".5">
+			<sprite x="285" y="1" width="21" height="32" >
+				<origin x="11" y="31" />
+			</sprite>
+			<sprite x="284" y="41" width="23" height="32" >
+				<origin x="11" y="31" />
+			</sprite>
+			<sprite x="287" y="81" width="17" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="286" y="120" width="19" height="33" >
+				<origin x="9" y="32" />
+			</sprite>
+		</animation>
+		<animation name="draw weapon left" timePerFrame=".5">
+			<sprite x="324" y="1" width="24" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="324" y="41" width="24" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="324" y="81" width="24" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="321" y="121" width="30" height="32" >
+				<origin x="14" y="31" />
+			</sprite>
+		</animation>
+		<animation name="draw weapon up" timePerFrame=".5">
+			<sprite x="364" y="1" width="24" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="365" y="41" width="22" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="368" y="81" width="15" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="368" y="121" width="16" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+		</animation>
+		<animation name="draw weapon right" timePerFrame=".5">
+			<sprite x="404" y="1" width="24" height="32" >
+				<origin x="15" y="31" />
+			</sprite>
+			<sprite x="404" y="41" width="24" height="32" >
+				<origin x="15" y="31" />
+			</sprite>
+			<sprite x="404" y="81" width="24" height="32" >
+				<origin x="15" y="31" />
+			</sprite>
+			<sprite x="401" y="121" width="30" height="32" >
+				<origin x="15" y="31" />
+			</sprite>
+		</animation>
+
+		<animation name="combat stance down" timePerFrame=".5">
+			<sprite x="284" y="521" width="23" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="284" y="561" width="23" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="284" y="601" width="24" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+		</animation>
+		<animation name="combat stance left" timePerFrame=".5">
+			<sprite x="325" y="521" width="21" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="326" y="560" width="20" height="33" >
+				<origin x="8" y="32" />
+			</sprite>
+			<sprite x="325" y="601" width="21" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="combat stance up" timePerFrame=".5">
+			<sprite x="365" y="521" width="22" height="31" >
+				<origin x="16" y="30" />
+			</sprite>
+			<sprite x="365" y="561" width="22" height="32" >
+				<origin x="16" y="31" />
+			</sprite>
+			<sprite x="364" y="601" width="23" height="31" >
+				<origin x="23" y="30" />
+			</sprite>
+		</animation>
+		<animation name="combat stance right" timePerFrame=".5">
+			<sprite x="406" y="521" width="20" height="32" >
+				<origin x="12" y="31" />
+			</sprite>
+			<sprite x="406" y="560" width="20" height="33" >
+				<origin x="12" y="32" />
+			</sprite>
+			<sprite x="405" y="601" width="21" height="32" >
+				<origin x="12" y="31" />
+			</sprite>
+		</animation>
+
+
 
 		<animation name="cartwheel down">
-			<sprite x="129" y="519" width="14" height="33" />
-			<sprite x="128" y="560" width="16" height="32" />
+			<sprite x="129" y="519" width="14" height="33" frameTime=".5"/>
+			<sprite x="128" y="560" width="16" height="32" frameTime=".5"/>
 		</animation>
-
 		<animation name="cartwheel left">
-			<sprite x="168" y="521" width="16" height="31" />
-			<sprite x="165" y="561" width="22" height="31" />
+			<sprite x="168" y="521" width="16" height="31" frameTime=".5"/>
+			<sprite x="165" y="561" width="22" height="31" frameTime=".5"/>
 		</animation>
-
 		<animation name="cartwheel right">
-			<sprite x="248" y="521" width="16" height="31" />
-			<sprite x="245" y="561" width="22" height="31" />
+			<sprite x="248" y="521" width="16" height="31" frameTime=".5"/>
+			<sprite x="245" y="561" width="22" height="31" frameTime=".5"/>
 		</animation>
-
 		<animation name="cartwheel up">
-			<sprite x="208" y="521" width="15" height="32" />
-			<sprite x="208" y="561" width="16" height="31" />
+			<sprite x="208" y="521" width="15" height="32" frameTime=".5"/>
+			<sprite x="208" y="561" width="16" height="31" frameTime=".5"/>
 		</animation>
 
+
+		<animation name="hit down">
+			<sprite x="128" y="441" width="16" height="28" frameTime=".5">
+				<origin x="8" y="27" />
+			</sprite>
+		</animation>
+		<animation name="hit left">
+			<sprite x="166" y="441" width="19" height="31" frameTime=".5">
+				<origin x="11" y="30" />
+			</sprite>
+		</animation>
+		<animation name="hit up">
+			<sprite x="208" y="441" width="16" height="30" frameTime=".5">
+				<origin x="8" y="29" />
+			</sprite>
+		</animation>
+		<animation name="hit right">
+			<sprite x="246" y="441" width="19" height="31" frameTime=".5">
+				<origin x="8" y="30" />
+			</sprite>
+		</animation>
+
+		<sprite name="shadow" x="86" y="218" width="16" height="6" />
 	</spritesheet>
 
-	
+	<spritesheet name="Marle Weapons" file="Marle Weapons.dds" set="Bow" >
+		
+		<animation name="Bronze Bow Left">
+			<sprite x="18" y="22" width="10" height="3" >
+				<origin x="9" y="2" />
+			</sprite>
+		</animation>
+		<animation name="Bronze Bow HitEffect" timePerFrame=".1">
+			<sprite x="16" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="32" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="48" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="64" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="80" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="96" y="32" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+		</animation>
+
+		<sprite name="Bullet Shadow" x="48" y="22" width="6" height="3" />
+
+	</spritesheet>
 </root>

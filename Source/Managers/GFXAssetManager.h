@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../GameObjects/CharacterData.h"
+#include "../GameObjects/Characters/CharacterData.h"
 #include "../GameObjects/Baddies/Baddie.h"
 
 class GFXAssetManager {

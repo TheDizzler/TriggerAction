@@ -139,7 +139,6 @@
 			</sprite>
 		</animation>
 
-
 		<animation name="walk down" timePerFrame=".1">
 			<!-- right starting forward -->
 			<sprite x="286" y="640" width="16" height="32" >
@@ -245,7 +244,6 @@
 			</sprite>
 		</animation>
 
-
 		<animation name="run down" timePerFrame=".1">
 			<!-- right starting forward -->
 			<sprite x="286" y="640" width="16" height="32" >
@@ -325,7 +323,6 @@
 			</sprite>
 		</animation>
 
-
 		<animation name="melee attack down" >
 			<sprite x="281" y="400" width="25" height="32" frameTime=".5" >
 				<origin x="20" y="31" />
@@ -370,96 +367,6 @@
 				<origin x="6" y="31" />
 			</sprite>
 		</animation>
-
-		<animation name="block down">
-			<sprite x="283" y="360" width="22" height="31" >
-				<origin x="11" y="31" />
-			</sprite>
-		</animation>
-		<animation name="block left">
-			<sprite  x="324" y="360" width="20" height="31" >
-				<origin x="7" y="30" />
-			</sprite>
-		</animation>
-		<animation name="block up">
-			<sprite x="363" y="360" width="21" height="31" >
-				<origin x="13" y="28" />
-			</sprite>
-		</animation>
-		<animation name="block right" >
-			<sprite x="404" y="360" width="20" height="31" >
-				<origin x="15" y="30" />
-			</sprite>
-		</animation>
-
-
-		<animation name="draw weapon down" timePerFrame="1.1">
-			<sprite x="285" y="0" width="16" height="32" >
-				<origin x="8" y="29" />
-			</sprite>
-			<sprite x="284" y="40" width="20" height="32" >
-				<origin x="12" y="29" />
-			</sprite>
-		</animation>
-		<animation name="draw weapon left" timePerFrame="1.1">
-			<sprite x="326" y="0" width="15" height="32" >
-				<origin x="10" y="29" />
-			</sprite>
-			<sprite x="324" y="40" width="20" height="31" >
-				<origin x="15" y="28" />
-			</sprite>
-		</animation>
-		<animation name="draw weapon up" timePerFrame="1.1">
-			<sprite x="366" y="0" width="15" height="32" >
-				<origin x="7" y="31" />
-			</sprite>
-			<sprite x="364" y="40" width="20" height="32" >
-				<origin x="7" y="31" />
-			</sprite>
-		</animation>
-		<animation name="draw weapon right" timePerFrame="1.1">
-			<sprite x="406" y="0" width="15" height="32" >
-				<origin x="3" y="29" />
-			</sprite>
-			<sprite x="404" y="40" width="20" height="31" >
-				<origin x="3" y="29" />
-			</sprite>
-		</animation>
-
-
-		<animation name="combat stance down" timePerFrame=".5">
-			<sprite x="286" y="80" width="16" height="32" >
-				<origin x="9" y="30" />
-			</sprite>
-			<sprite x="286" y="120" width="16" height="32" >
-				<origin x="9" y="30" />
-			</sprite>
-		</animation>
-		<animation name="combat stance left" timePerFrame=".5">
-			<sprite x="326" y="80" width="16" height="32" >
-				<origin x="8" y="31" />
-			</sprite>
-			<sprite x="326" y="120" width="15" height="32" >
-				<origin x="8" y="31" />
-			</sprite>
-		</animation>
-		<animation name="combat stance up" timePerFrame=".5">
-			<sprite x="365" y="80" width="18" height="32" >
-				<origin x="9" y="31" />
-			</sprite>
-			<sprite x="366" y="120" width="16" height="32" >
-				<origin x="7" y="31" />
-			</sprite>
-		</animation>
-		<animation name="combat stance right" timePerFrame=".5">
-			<sprite x="406" y="80" width="16" height="32" >
-				<origin x="8" y="31" />
-			</sprite>
-			<sprite x="406" y="120" width="15" height="32" >
-				<origin x="7" y="31" />
-			</sprite>
-		</animation>
-
 
 		<animation name="shoot down">
 			<sprite x="286" y="160" width="16" height="31" frameTime=".2">
@@ -530,6 +437,92 @@
 			</sprite>
 		</animation>
 
+		<animation name="block down">
+			<sprite x="283" y="360" width="22" height="31" >
+				<origin x="11" y="31" />
+			</sprite>
+		</animation>
+		<animation name="block left">
+			<sprite  x="324" y="360" width="20" height="31" >
+				<origin x="7" y="30" />
+			</sprite>
+		</animation>
+		<animation name="block up">
+			<sprite x="363" y="360" width="21" height="31" >
+				<origin x="13" y="28" />
+			</sprite>
+		</animation>
+		<animation name="block right" >
+			<sprite x="404" y="360" width="20" height="31" >
+				<origin x="15" y="30" />
+			</sprite>
+		</animation>
+
+		<animation name="draw weapon down" timePerFrame="1.1">
+			<sprite x="285" y="0" width="16" height="32" >
+				<origin x="8" y="29" />
+			</sprite>
+			<sprite x="284" y="40" width="20" height="32" >
+				<origin x="12" y="29" />
+			</sprite>
+		</animation>
+		<animation name="draw weapon left" timePerFrame="1.1">
+			<sprite x="326" y="0" width="15" height="32" >
+				<origin x="10" y="29" />
+			</sprite>
+			<sprite x="324" y="40" width="20" height="31" >
+				<origin x="15" y="28" />
+			</sprite>
+		</animation>
+		<animation name="draw weapon up" timePerFrame="1.1">
+			<sprite x="366" y="0" width="15" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="364" y="40" width="20" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+		</animation>
+		<animation name="draw weapon right" timePerFrame="1.1">
+			<sprite x="406" y="0" width="15" height="32" >
+				<origin x="3" y="29" />
+			</sprite>
+			<sprite x="404" y="40" width="20" height="31" >
+				<origin x="3" y="29" />
+			</sprite>
+		</animation>
+
+		<animation name="combat stance down" timePerFrame=".5">
+			<sprite x="286" y="80" width="16" height="32" >
+				<origin x="9" y="30" />
+			</sprite>
+			<sprite x="286" y="120" width="16" height="32" >
+				<origin x="9" y="30" />
+			</sprite>
+		</animation>
+		<animation name="combat stance left" timePerFrame=".5">
+			<sprite x="326" y="80" width="16" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="326" y="120" width="15" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="combat stance up" timePerFrame=".5">
+			<sprite x="365" y="80" width="18" height="32" >
+				<origin x="9" y="31" />
+			</sprite>
+			<sprite x="366" y="120" width="16" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+		</animation>
+		<animation name="combat stance right" timePerFrame=".5">
+			<sprite x="406" y="80" width="16" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="406" y="120" width="15" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+		</animation>
 
 		<animation name="jump down">
 			<sprite x="122" y="521" width="22" height="32" frameTime="10">
@@ -564,9 +557,6 @@
 				<origin x="3" y="2" />
 			</sprite>
 		</animation>
-
-		<sprite name="Bullet Shadow" x="48" y="22" width="6" height="3" />
-
 		<animation name="AirGun HitEffect" timePerFrame=".1">
 			<sprite x="16" y="32" width="16" height="16" >
 				<origin x="8" y="8" />
@@ -587,6 +577,11 @@
 				<origin x="8" y="8" />
 			</sprite>
 		</animation>
+
+
+		<sprite name="Bullet Shadow" x="48" y="22" width="6" height="3" />
+
+		
 	</spritesheet>
 
 

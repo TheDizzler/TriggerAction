@@ -2,7 +2,8 @@
 
 #include "../globals.h"
 #include "../Engine/Joystick.h"
-#include "../GameObjects/CharacterData.h"
+#include "../GameObjects/Characters/CharacterData.h"
+#include <deque>
 
 class MenuDialog;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../DXTKGui/Controls/DynamicDialog.h"
-#include "../GameObjects/PlayerCharacter.h"
+#include "../GameObjects/Characters/PlayerCharacter.h"
 #include "SelectionPointer.h"
 
 

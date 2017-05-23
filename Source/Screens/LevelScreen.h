@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../DXTKGui/BaseGraphics/screen.h"
-#include "../GameObjects/PlayerCharacter.h"
+#include "../GameObjects/Characters/PlayerCharacter.h"
 #include "../Managers/MapManager.h"
 
 

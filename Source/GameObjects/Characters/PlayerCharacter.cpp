@@ -1,13 +1,13 @@
-#include "../pch.h"
+#include "../../pch.h"
 #include "PlayerCharacter.h"
-#include "../Managers/MapManager.h"
-#include "../GUIObjects/MenuDialog.h"
-#include "../Screens/LevelScreen.h"
-#include "../Engine/GameEngine.h"
+#include "../../Managers/MapManager.h"
+#include "../../GUIObjects/MenuDialog.h"
+#include "../../Screens/LevelScreen.h"
+#include "../../Engine/GameEngine.h"
 #include <math.h>
 
 
-const static USHORT MAX_PROJECTILES = 3;
+
 
 PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	playerSlot = slot;
@@ -41,7 +41,7 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	setHitbox(characterData->hitbox.get());
 	radarBox = Hitbox(hitbox);
 
-	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
+	
 
 	loadAnimation("stand right");
 	currentFrameTexture = currentAnimation->texture.Get();
@@ -115,8 +115,6 @@ void PlayerCharacter::update(double deltaTime) {
 	debugUpdate();
 #endif //  DEBUG_HITBOXES
 
-	for (const auto& bullet : projectiles)
-		bullet->update(deltaTime);
 }
 
 
@@ -129,51 +127,11 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 
 	shadow.draw(batch);
 
-	for (const auto& bullet : projectiles)
-		bullet->draw(batch);
-
 #ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
 #endif //  DEBUG_HITBOXES
 }
 
-
-void PlayerCharacter::startMainAttack() {
-	// get direction facing
-	int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-	}
-
-	switch (facing) {
-		case Facing::LEFT:
-			loadAnimation("shoot left");
-			break;
-		case Facing::DOWN:
-			loadAnimation("shoot down");
-			break;
-		case Facing::RIGHT:
-			loadAnimation("shoot right");
-			break;
-		case Facing::UP:
-			loadAnimation("shoot up");
-			break;
-	}
-	currentFrameIndex = -1;
-	currentFrameTime = currentFrameDuration;
-	action = CreatureAction::ATTACKING_ACTION;
-	moving = false;
-	canCancelAction = false;
-	attackUpdate(0);
-}
 
 const double NORMAL_SPEED = 1.0;
 const double RUN_SPEED = 1.5;
@@ -279,75 +237,6 @@ void PlayerCharacter::startJump() {
 }
 
 
-const int ANIMATION_REPEATS = 1;
-void PlayerCharacter::attackUpdate(double deltaTime) {
-
-	currentFrameTime += deltaTime;
-	if (currentFrameTime >= currentFrameDuration) {
-
-		switch (++currentFrameIndex) {
-			case 0: // readying attack
-				animationRepeats = 0;
-				fired = false;
-				break;
-			case 1: // firing bullet 
-				if (fired)
-					break;
-				fired = true;
-				projectiles[nextBullet++]->fire(facing, position);
-				if (nextBullet >= MAX_PROJECTILES)
-					nextBullet = 0;
-				break;
-			case 2: // recoil/cooldown
-				break;
-			case 3: // after animations (cancelable from here)
-				if (animationRepeats++ < ANIMATION_REPEATS) {
-					currentFrameIndex = 1;
-					currentFrameDuration = currentFrameTime =
-						currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-					currentFrameRect
-						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-					currentFrameOrigin
-						= currentAnimation->animationFrames[currentFrameIndex]->origin;
-					return;
-				}
-
-				canCancelAction = true;
-				break;
-			case 4:
-				break;
-			case 5:
-			default:
-				// fully completed animation
-				switch (facing) {
-					case Facing::RIGHT:
-						loadAnimation("combat stance right");
-						break;
-					case Facing::LEFT:
-						loadAnimation("combat stance left");
-						break;
-					case Facing::DOWN:
-						loadAnimation("combat stance down");
-						break;
-					case Facing::UP:
-						loadAnimation("combat stance up");
-						break;
-				}
-				action = CreatureAction::WAITING_ACTION;
-				return;
-
-		}
-		currentFrameTime = 0;
-		currentFrameDuration
-			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-		currentFrameRect
-			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-		currentFrameOrigin
-			= currentAnimation->animationFrames[currentFrameIndex]->origin;
-	}
-}
-
-
 void PlayerCharacter::waitUpdate(double deltaTime) {
 
 	currentFrameTime += deltaTime;
@@ -363,7 +252,6 @@ void PlayerCharacter::waitUpdate(double deltaTime) {
 			= currentAnimation->animationFrames[currentFrameIndex]->origin;
 	}
 }
-
 
 
 void PlayerCharacter::jumpUpdate(double deltaTime) {
@@ -596,20 +484,4 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 	}
 
 	return moveVector;
-}
-
-
-void PlayerCharacter::loadWeapon(
-	shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
-
-	projectiles.clear();
-
-	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		unique_ptr<Projectile> proj = make_unique<Projectile>(this, weaponPositions);
-		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"),
-			weaponSet->getAsset("Bullet Shadow"));
-		proj->loadHitEffect(weaponSet->getAnimation("AirGun HitEffect"));
-		projectiles.push_back(move(proj));
-	}
-
 }

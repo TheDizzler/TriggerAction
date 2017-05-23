@@ -64,6 +64,12 @@
     <Filter Include="Source Files\GameObjects\Baddies">
       <UniqueIdentifier>{bd250c9e-e11b-46c9-aa3c-1bb000f3f646}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameObjects\Characters">
+      <UniqueIdentifier>{dd693e50-256a-4a7a-a9eb-81caf1145292}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjects\Characters">
+      <UniqueIdentifier>{31cda343-abc2-429a-88e4-05907ec49740}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -153,9 +159,6 @@
     <ClCompile Include="Source\Engine\Joystick.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GameObjects\PlayerCharacter.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Screens\LevelScreen.cpp">
       <Filter>Source Files\Screens</Filter>
     </ClCompile>
@@ -172,9 +175,6 @@
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameObjects\Tangible.cpp">
-      <Filter>Source Files\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameObjects\CharacterData.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Source\Screens\GUIOverlay.cpp">
@@ -210,8 +210,20 @@
     <ClCompile Include="Source\GameObjects\Creature.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GameObjects\Characters\Lucca.cpp">
+      <Filter>Source Files\GameObjects\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Characters\CharacterData.cpp">
+      <Filter>Source Files\GameObjects\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Characters\PlayerCharacter.cpp">
+      <Filter>Source Files\GameObjects\Characters</Filter>
+    </ClCompile>
     <ClCompile Include="Source\GameObjects\Projectile.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Characters\Marle.cpp">
+      <Filter>Source Files\GameObjects\Characters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -251,9 +263,6 @@
     <ClInclude Include="Source\Screens\LevelScreen.h">
       <Filter>Header Files\Screens</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GameObjects\PlayerCharacter.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Managers\MapManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
@@ -267,9 +276,6 @@
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Tangible.h">
-      <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameObjects\CharacterData.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Source\Screens\GUIOverlay.h">
@@ -359,14 +365,26 @@
     <ClInclude Include="Source\GameObjects\Creature.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GameObjects\Projectile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\DXTKGui\GuiAssets.h">
       <Filter>Header Files\DXTGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h">
       <Filter>Header Files\DXTGui\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Characters\Lucca.h">
+      <Filter>Header Files\GameObjects\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Characters\CharacterData.h">
+      <Filter>Header Files\GameObjects\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Projectile.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Characters\PlayerCharacter.h">
+      <Filter>Header Files\GameObjects\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Characters\Marle.h">
+      <Filter>Header Files\GameObjects\Characters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

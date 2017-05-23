@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../Managers/GFXAssetManager.h"
-#include "../Managers/PlayerSlot.h"
-#include "Projectile.h"
-#include "Creature.h"
+#include "../../Managers/GFXAssetManager.h"
+#include "../../Managers/PlayerSlot.h"
+#include "../Projectile.h"
+#include "../Creature.h"
+#include "CharacterData.h"
 
-
+const static USHORT MAX_PROJECTILES = 3;
 
 
 class PlayerCharacter : public Creature {
@@ -34,7 +35,7 @@ protected:
 	shared_ptr<Animation> jumpRight;
 
 	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
-	void startMainAttack();
+	virtual void startMainAttack() = 0;
 	void startJump();
 
 	Vector3 startJumpPosition, endHalfJumpPosition;
@@ -51,8 +52,9 @@ protected:
 			r = (a*b) / sqrt( pow(a, 2) * pow(sin(Q), 2) + pow (b, 2) * pow (cos(Q), 2))
 	*/
 	float Q = XM_PIDIV4;
-	float radius = (moveRightSpeed*moveDownSpeed)
-		/ sqrt(pow(moveRightSpeed, 2) * pow(sin(Q), 2) + pow(moveDownSpeed, 2) * pow(cos(Q), 2));
+	float radius = (moveRightSpeed * moveDownSpeed)
+		/ sqrt(pow(moveRightSpeed, 2) * pow(sin(Q), 2)
+			+ pow(moveDownSpeed, 2) * pow(cos(Q), 2));
 	float moveDiagonalRight = radius * cos(Q);
 	float moveDiagonalDown = radius * sin(Q);
 	float runRightSpeed = 100;
@@ -63,7 +65,7 @@ protected:
 
 	bool lastCollision = false;
 	//bool stillAttacking = false;
-	virtual void attackUpdate(double deltaTime) override;
+	//virtual void attackUpdate(double deltaTime) override;
 	virtual void waitUpdate(double deltaTime);
 	virtual void jumpUpdate(double deltaTime);
 
@@ -72,11 +74,6 @@ protected:
 	/* A temp hitbox to test incoming collisions. */
 	Hitbox radarBox;
 
-private: // character specific stuff
-	vector<unique_ptr<Projectile>> projectiles;
-	void loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
-
-	USHORT nextBullet = 0;
-	bool fired = false;
-	USHORT animationRepeats = 0;
+	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
+		Vector3 weaponPositions[4]) = 0;
 };
