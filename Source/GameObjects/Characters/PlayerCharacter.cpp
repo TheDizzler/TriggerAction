@@ -15,33 +15,13 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 
 	characterData = slot->characterData;
 	name = characterData->name;
-	assetSet = characterData->assets;
 
-	walkDown = assetSet->getAnimation("walk down");
-	walkLeft = assetSet->getAnimation("walk left");
-	walkUp = assetSet->getAnimation("walk up");
-	walkRight = assetSet->getAnimation("walk right");
 
-	attackDown = assetSet->getAnimation("attack down");
-	attackLeft = assetSet->getAnimation("attack left");
-	attackUp = assetSet->getAnimation("attack up");
-	attackRight = assetSet->getAnimation("attack right");
-
-	jumpDown = assetSet->getAnimation("jump down");
-	jumpLeft = assetSet->getAnimation("jump left");
-	jumpUp = assetSet->getAnimation("jump up");
-	jumpRight = assetSet->getAnimation("jump right");
-
-	provoke = assetSet->getAnimation("provoke");
-	surprise = assetSet->getAnimation("surprise");
-	hit = assetSet->getAnimation("hit");
-
-	shadow.load(assetSet->getAsset("shadow"));
+	initializeAssets();
 
 	setHitbox(characterData->hitbox.get());
 	radarBox = Hitbox(hitbox);
 
-	
 
 	loadAnimation("stand right");
 	currentFrameTexture = currentAnimation->texture.Get();
@@ -53,6 +33,7 @@ PlayerCharacter::~PlayerCharacter() {
 void PlayerCharacter::reloadData(CharacterData* data) {
 
 	characterData = data;
+	initializeAssets();
 	setHitbox(characterData->hitbox.get());
 	setHitboxPosition(position);
 	radarBox = Hitbox(hitbox);
@@ -130,6 +111,30 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 #ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
 #endif //  DEBUG_HITBOXES
+}
+
+void PlayerCharacter::initializeAssets() {
+	assetSet = characterData->assets;
+	walkDown = assetSet->getAnimation("walk down");
+	walkLeft = assetSet->getAnimation("walk left");
+	walkUp = assetSet->getAnimation("walk up");
+	walkRight = assetSet->getAnimation("walk right");
+
+	attackDown = assetSet->getAnimation("attack down");
+	attackLeft = assetSet->getAnimation("attack left");
+	attackUp = assetSet->getAnimation("attack up");
+	attackRight = assetSet->getAnimation("attack right");
+
+	jumpDown = assetSet->getAnimation("jump down");
+	jumpLeft = assetSet->getAnimation("jump left");
+	jumpUp = assetSet->getAnimation("jump up");
+	jumpRight = assetSet->getAnimation("jump right");
+
+	provoke = assetSet->getAnimation("provoke");
+	surprise = assetSet->getAnimation("surprise");
+	hit = assetSet->getAnimation("hit");
+
+	shadow.load(assetSet->getAsset("shadow"));
 }
 
 
@@ -257,7 +262,6 @@ void PlayerCharacter::waitUpdate(double deltaTime) {
 void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 	jumpTime += deltaTime;
-
 	double percentJumped = jumpTime / JUMP_TIME;
 	setPosition(
 		Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
@@ -294,6 +298,25 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 		}
 	}
 
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+	if (horzDirection > 10) {
+		facing = Facing::RIGHT;
+		loadAnimation(jumpRight);
+	} else if (horzDirection < -10) {
+		facing = Facing::LEFT;
+		loadAnimation(jumpLeft);
+
+	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+		loadAnimation(jumpDown);
+
+	} else if (vertDirection < -10) {
+		facing = Facing::UP;
+		loadAnimation(jumpUp);
+
+	}
 
 }
 

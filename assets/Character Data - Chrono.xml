@@ -11,8 +11,9 @@
 		<sprite name="magic kanji" set="Chrono" x="54" y="2" width="16" height="16"/>
 		<sprite name="magic english" set="Chrono" x="20" y="58" width="48" height="16"/>
 
+		<sprite name="shadow" x="56" y="43" width="14" height="6" />
 
-		<animation name="stand down" num="3">
+		<animation name="stand down">
 			<!-- Looking straight -->
 			<sprite x="126" y="0" width="16" height="35" frameTime="1.5"/>
 			<!-- Eyes half-closed -->
@@ -39,7 +40,6 @@
 			<!-- Looking straight -->
 			<sprite x="126" y="0" width="16" height="35" frameTime="1.5"/>
 		</animation>
-
 		<animation name="stand up" timePerFrame=".5" num="1">
 			<sprite x="206" y="1" width="16" height="33" />
 			<sprite x="206" y="41" width="16" height="33" />
@@ -47,7 +47,6 @@
 			<sprite x="206" y="81" width="16" height="34" />
 			<sprite x="206" y="121" width="16" height="33" />
 		</animation>
-
 		<animation name="stand right" timePerFrame=".5" num="3" interval="4">
 			<!-- Looking straight -->
 			<sprite x="247" y="1" width="14" height="34" frameTime="1.5" />
@@ -76,7 +75,26 @@
 
 
 		</animation>
-
+		<animation name="stand left" timePerFrame=".5" >
+			<sprite x="167" y="1" width="14" height="34" >
+				<origin x="7" y="33" />
+			</sprite>
+			<sprite x="167" y="41" width="14" height="33" >
+				<origin x="7" y="32" />
+			</sprite>
+			<sprite x="167" y="81" width="14" height="34" >
+				<origin x="7" y="33" />
+			</sprite>
+			<sprite x="167" y="122" width="14" height="32" >
+				<origin x="7" y="31" />
+			</sprite>
+			<sprite x="167" y="161" width="14" height="34" >
+				<origin x="7" y="33" />
+			</sprite>
+			<sprite x="167" y="201" width="14" height="34" >
+				<origin x="7" y="33" />
+			</sprite>
+		</animation>
 
 		<animation name="walk down" timePerFrame=".1" >
 			<sprite x="125" y="600" width="18" height="35" />
@@ -86,7 +104,6 @@
 			<sprite x="126" y="761" width="16" height="34" />
 			<sprite x="125" y="802" width="17" height="32" />
 		</animation>
-
 		<animation name="walk up" timePerFrame=".1" >
 			<sprite x="205" y="601" width="18" height="33" />
 			<sprite x="206" y="640" width="16" height="35" />
@@ -95,7 +112,6 @@
 			<sprite x="206" y="760" width="16" height="35" />
 			<sprite x="206" y="802" width="18" height="32" />
 		</animation>
-
 		<animation name="walk right" timePerFrame=".1">
 			<sprite x="246" y="601" width="15" height="34" />
 			<sprite x="243" y="642" width="21" height="32" />
@@ -103,6 +119,26 @@
 			<sprite x="247" y="721" width="14" height="34" />
 			<sprite x="243" y="726" width="22" height="32" />
 			<sprite x="247" y="801" width="14" height="33" />
+		</animation>
+		<animation name="walk left">
+			<sprite x="166" y="601" width="15" height="34" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="163" y="642" width="21" height="32" >
+				<origin x="11" y="32" />
+			</sprite>
+			<sprite x="166" y="681" width="14" height="33" >
+				<origin x="7" y="32" />
+			</sprite>
+			<sprite x="167" y="721" width="14" height="34" >
+				<origin x="7" y="33" />
+			</sprite>
+			<sprite x="163" y="762" width="22" height="32" >
+				<origin x="11" y="31" />
+			</sprite>
+			<sprite x="167" y="801" width="14" height="33" >
+				<origin x="7" y="32" />
+			</sprite>
 		</animation>
 
 		<animation name="run down" timePerFrame=".1" >
@@ -116,7 +152,6 @@
 			<sprite x="125" y="802" width="17" height="32" />
 			<sprite x="125" y="600" width="18" height="35" />
 		</animation>
-
 		<animation name="run up" timePerFrame=".1" >
 			<sprite x="205" y="601" width="18" height="33" />
 			<sprite x="206" y="640" width="16" height="35" />
@@ -128,7 +163,6 @@
 			<sprite x="206" y="802" width="18" height="32" />
 
 		</animation>
-
 		<animation name="run right" timePerFrame=".1" >
 			<sprite x="246" y="601" width="15" height="34" />
 			<sprite x="243" y="642" width="21" height="32" />
@@ -147,13 +181,11 @@
 			<sprite x="284" y="81" width="20" height="34" />
 			<sprite x="285" y="122" width="17" height="32" />
 		</animation>
-
 		<animation name="draw weapon up" timePerFrame=".4" >
 			<sprite x="366" y="3" width="15" height="30" />
 			<sprite x="366" y="62" width="16" height="31" />
 			<sprite x="363" y="122" width="22" height="31" />
 		</animation>
-
 		<animation name="draw weapon right" timePerFrame=".4" >
 			<sprite x="402" y="2" width="24" height="32" />
 			<sprite x="399" y="42" width="30" height="32" />
@@ -161,25 +193,33 @@
 			<sprite x="399" y="122" width="28" height="31" />
 		</animation>
 
-		<animation name="battle stance down" timePerFrame=".3" >
+		<animation name="combat stance down" timePerFrame=".3" >
 			<sprite x="285" y="817" width="17" height="31" />
 			<sprite x="285" y="857" width="18" height="31" />
 		</animation>
-
-		<animation name="battle stance up" timePerFrame=".3" >
+		<animation name="combat stance up" timePerFrame=".3" >
 			<sprite x="365" y="818" width="18" height="29" />
 			<sprite x="365" y="858" width="17" height="29" />
 		</animation>
-
-		<animation name="battle stance right" timePerFrame=".3" >
+		<animation name="combat stance right" timePerFrame=".3" >
 			<sprite x="399" y="818" width="28" height="30" />
 			<sprite x="400" y="858" width="26" height="30" />
 		</animation>
 
 
-		<sprite name="injured right" x="244" y="923" width="20" height="30" />
-		<sprite name="injured up" x="203" y="922" width="22" height="32" />
-		<sprite name="injured down" x="125" y="922" width="18" height="32" />
+		<animation name="injured down">
+			<sprite  x="125" y="922" width="18" height="32" frameTime=".5"/>
+		</animation>
+		<animation name="injured left">
+			<sprite x="164" y="923" width="20" height="30" frameTime=".5"/>
+		</animation>
+		<animation name="injured up">
+			<sprite x="203" y="922" width="22" height="32" frameTime=".5" />
+		</animation>
+		<animation name="injured right">
+			<sprite x="244" y="923" width="20" height="30" frameTime=".5" />
+		</animation>
+
 
 		<animation name="main attack down"  >
 			<sprite x="286" y="245" width="16" height="46" timePerFrame=".25"/>
@@ -199,6 +239,42 @@
 			<sprite x="398" y="393" width="31" height="30" />
 		</animation>
 
+		<animation name="block down">
+			<sprite x="280" y="562" width="28" height="32" >
+				<origin x="17" y="31" />
+			</sprite>
+		</animation>
+		<animation name="block left">
+			<sprite x="323" y="562" width="23" height="32" >
+				<origin x="10" y="31" />
+			</sprite>
+		</animation>
+		<animation name="block up">
+			<sprite x="362" y="562" width="24" height="32" >
+				<origin x="10" y="31" />
+			</sprite>
+		</animation>
+		<animation name="block right">
+			<sprite x="403" y="562" width="22" height="32" >
+				<origin x="8" y="32" />
+			</sprite>
+		</animation>
+
+		<animation name="cyclone">
+			<sprite x="286" y="519" width="16" height="38" >
+				<origin x="9" y="8" />
+			</sprite>
+			<!-- flame starts here -->
+			<sprite x="318" y="522" width="31" height="32" >
+				<origin x="24" y="7" />
+			</sprite>
+			<sprite x="403" y="642" width="22" height="32" >
+				<origin x="12" y="32" />
+			</sprite>
+			<sprite x="398" y="522" width="32" height="32" >
+				<origin x="9" y="32" />
+			</sprite>
+		</animation>
 
 		<animation name="near attack down" timePerFrame=".25" >
 			<sprite x="316" y="248" width="35" height="40" />
@@ -213,6 +289,30 @@
 			<sprite x="283" y="429" width="22" height="37" />
 		</animation>
 
-		<!-- sprite x="" y="" width="" height="" /-->
+		<animation name="jump down">
+			<sprite x="284" y="600" width="20" height="35" >
+				<origin x="11" y="34" />
+			</sprite>
+		</animation>
+		<animation name="jump left">
+			<sprite x="320" y="602" width="28" height="31" >
+				<origin x="16" y="30" />
+			</sprite>
+		</animation>
+		<animation name="jump up">
+			<sprite x="363" y="601" width="21" height="34" >
+				<origin x="10" y="33" />
+			</sprite>
+		</animation>
+		<animation name="jump right">
+			<sprite x="401" y="602" width="27" height="31" >
+				<origin x="12" y="30" />
+			</sprite>
+		</animation>
+
+	</spritesheet>
+
+	<spritesheet name="Crono Techs" file="Crono Techs.dds" set="Lightning" >
+		<sprite name="cyclone flame" x="16" y="38" width="23" height="24" />
 	</spritesheet>
 </root>

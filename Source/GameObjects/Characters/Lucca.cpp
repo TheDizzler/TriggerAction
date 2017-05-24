@@ -4,6 +4,17 @@
 Lucca::Lucca(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
+
+
+	// Flame Toss -> Fire Whirl (Chrono)
+	// Hypno Wave
+	// Fire - > Antipode (Marle) -> Fire Sword(Chrono)
+	// Napalm
+	// Protect
+	// Fire 2
+	// Mega Bomb
+	// Flare
+
 }
 
 Lucca::~Lucca() {

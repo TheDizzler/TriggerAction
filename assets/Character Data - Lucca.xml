@@ -549,7 +549,7 @@
 
 	<spritesheet name="Lucca Weapons" file="Lucca Weapons.dds" set="Gun" >
 
-		<animation name="AirGun Bullet Up">
+		<animation name="AirGun Bullet Up" timePerFrame=".5">
 			<sprite x="19" y="21" width="7" height="5" />
 		</animation>
 		<animation name="AirGun Bullet Left">
@@ -578,7 +578,29 @@
 			</sprite>
 		</animation>
 
-
+		<animation name="DartGun Left" timePerFrame=".5">
+			<sprite x="38" y="103" width="5" height="3" />
+		</animation>
+		<animation name="DartGun HitEffect" timePerFrame=".1">
+			<sprite x="16" y="112" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="32" y="112" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="48" y="112" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="64" y="112" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="80" y="112" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+			<sprite x="96" y="112" width="16" height="16" >
+				<origin x="8" y="8" />
+			</sprite>
+		</animation>
 		<sprite name="Bullet Shadow" x="48" y="22" width="6" height="3" />
 
 		

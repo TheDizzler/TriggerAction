@@ -3,6 +3,25 @@
 
 Marle::Marle(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
+
+	HP = 65;
+	MP = 12;
+	PWR = 2;
+	HIT = 10;
+	MAG = 8;
+	SPD = 8;
+	EV = 8;
+	STAM = 6;
+	MDEF = 8;
+
+	// Aura (9TP) -> Aura Whirl (Chrono)
+	// Provoke
+	// Ice -> Ice Sword (Chrono) -> Antipode (Lucca)
+	// Cure
+	// Haste
+	// Ice 2
+	// Cure 2
+	// Life 2
 }
 
 Marle::~Marle() {

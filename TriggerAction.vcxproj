@@ -192,6 +192,7 @@
     <ClCompile Include="Source\GameObjects\AnimatedTile.cpp" />
     <ClCompile Include="Source\GameObjects\Baddies\Baddie.cpp" />
     <ClCompile Include="Source\GameObjects\Characters\CharacterData.cpp" />
+    <ClCompile Include="Source\GameObjects\Characters\Chrono.cpp" />
     <ClCompile Include="Source\GameObjects\Characters\Lucca.cpp" />
     <ClCompile Include="Source\GameObjects\Characters\Marle.cpp" />
     <ClCompile Include="Source\GameObjects\Characters\PlayerCharacter.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="Source\GameObjects\AnimatedTile.h" />
     <ClInclude Include="Source\GameObjects\Baddies\Baddie.h" />
     <ClInclude Include="Source\GameObjects\Characters\CharacterData.h" />
+    <ClInclude Include="Source\GameObjects\Characters\Chrono.h" />
     <ClInclude Include="Source\GameObjects\Characters\Lucca.h" />
     <ClInclude Include="Source\GameObjects\Characters\Marle.h" />
     <ClInclude Include="Source\GameObjects\Characters\PlayerCharacter.h" />

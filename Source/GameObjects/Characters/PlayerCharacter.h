@@ -23,7 +23,31 @@ public:
 
 
 	string name;
+	USHORT HP;
+	USHORT MP;
+	/** Damage from physical attacks. */
+	USHORT PWR;
+	/** Damage from ranged attacks. */
+	USHORT HIT;
+	/** Damage from magical attacks. */
+	USHORT MAG;
+	/** Move speed and cast times. */
+	USHORT SPD;
+	/** Defense against physical and ranged attacks. */
+	USHORT EV;
+	/** Damage reduction and HP. */
+	USHORT STAM;
+	/** Defense against magical attacks. */
+	USHORT MDEF;
+
+	/** Total attack power: PWR + WPN damage. */
+	USHORT ATKPWR;
+	/** Total defense power: EV + ARM. */
+	USHORT DEFPWR;
+
+	USHORT EXP = 0;
 protected:
+	virtual void initializeAssets();
 
 	shared_ptr<PlayerSlot> playerSlot;
 	Joystick* joystick;

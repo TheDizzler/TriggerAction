@@ -25,6 +25,7 @@ void LevelScreen::setGameManager(GameManager* gm) {
 
 #include "../GameObjects/Characters/Lucca.h"
 #include "../GameObjects/Characters/Marle.h"
+#include "../GameObjects/Characters/Chrono.h"
 void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	map.reset();
@@ -43,6 +44,12 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 			newPC->setInitialPosition(Vector2(10, 100));
 			pcs.push_back(move(newPC));
 
+		} else if (slot->characterData->name == "Chrono") {
+			unique_ptr<Chrono> newPC = make_unique<Chrono>(slot);
+			hitboxesAll.push_back(newPC.get());
+			newPC->setInitialPosition(Vector2(10, 100));
+			pcs.push_back(move(newPC));
+
 		}
 	}
 
@@ -56,10 +63,10 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 	map = move(newMap);
 
 
-
-	for (const auto& pc : pcs) {
-		hitboxesAll.push_back(pc.get());
+	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
+		hitboxesAll.push_back(pc.get());
+		
 	}
 }
 

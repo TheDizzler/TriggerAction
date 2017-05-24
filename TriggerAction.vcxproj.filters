@@ -225,6 +225,9 @@
     <ClCompile Include="Source\GameObjects\Characters\Marle.cpp">
       <Filter>Source Files\GameObjects\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GameObjects\Characters\Chrono.cpp">
+      <Filter>Source Files\GameObjects\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h">
@@ -384,6 +387,9 @@
       <Filter>Header Files\GameObjects\Characters</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Characters\Marle.h">
+      <Filter>Header Files\GameObjects\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Characters\Chrono.h">
       <Filter>Header Files\GameObjects\Characters</Filter>
     </ClInclude>
   </ItemGroup>
