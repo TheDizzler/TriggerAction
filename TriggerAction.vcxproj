@@ -204,6 +204,7 @@
     <ClCompile Include="Source\GUIObjects\MenuDialog.cpp" />
     <ClCompile Include="Source\GUIObjects\PCCombatDialog.cpp" />
     <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp" />
+    <ClCompile Include="Source\GUIObjects\PCStatusDialog.cpp" />
     <ClCompile Include="Source\GUIObjects\SelectionPointer.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
@@ -260,6 +261,7 @@
     <ClInclude Include="Source\GUIObjects\MenuDialog.h" />
     <ClInclude Include="Source\GUIObjects\PCCombatDialog.h" />
     <ClInclude Include="Source\GUIObjects\PCSelectDialog.h" />
+    <ClInclude Include="Source\GUIObjects\PCStatusDialog.h" />
     <ClInclude Include="Source\GUIObjects\SelectionPointer.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
@@ -277,7 +279,9 @@
     <Xml Include="assets\Baddie Data - Blue Eaglet.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="assets\Baddie Data - Gato.xml" />
+    <Xml Include="assets\Baddie Data - Gato.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="assets\Baddie Data - Imps.xml">
       <SubType>Designer</SubType>
     </Xml>

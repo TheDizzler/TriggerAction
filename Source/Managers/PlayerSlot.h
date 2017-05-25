@@ -27,7 +27,7 @@ public:
 	void waiting();
 
 
-	void pairWithDialog(PCSelectDialog* dialog);
+	void pairWithDialog(DynamicDialog* dialog);
 
 	/** Returns true if pair was succesful. Returns false if slot already paired. */
 	bool pairWithSocket(JoyData* joyData);
@@ -43,7 +43,7 @@ public:
 	void selectCharacter();
 
 	void setDialogText(wstring text);
-	PCSelectDialog* pcDialog;
+	DynamicDialog* pcDialog;
 	CharacterData* characterData;
 
 	unique_ptr<MenuDialog> pauseDialog;

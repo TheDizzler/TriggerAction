@@ -4,7 +4,15 @@
 Lucca::Lucca(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
-
+	//currentHP = maxHP = 
+	//currentMP = maxMP = 
+	//PWR = ;
+	//HIT = ;
+	//MAG = ;
+	//SPD = ;
+	//EV = ;
+	//STAM = ;
+	//MDEF = ;
 
 	// Flame Toss -> Fire Whirl (Chrono)
 	// Hypno Wave
@@ -120,16 +128,16 @@ void Lucca::attackUpdate(double deltaTime) {
 				// fully completed animation
 				switch (facing) {
 					case Facing::RIGHT:
-						loadAnimation("combat stance right");
+						loadAnimation(combatStanceRight);
 						break;
 					case Facing::LEFT:
-						loadAnimation("combat stance left");
+						loadAnimation(combatStanceLeft);
 						break;
 					case Facing::DOWN:
-						loadAnimation("combat stance down");
+						loadAnimation(combatStanceDown);
 						break;
 					case Facing::UP:
-						loadAnimation("combat stance up");
+						loadAnimation(combatStanceUp);
 						break;
 				}
 				action = CreatureAction::WAITING_ACTION;

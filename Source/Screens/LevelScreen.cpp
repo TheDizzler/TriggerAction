@@ -36,22 +36,39 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		if (slot->characterData->name == "Lucca") {
 			unique_ptr<Lucca> newPC = make_unique<Lucca>(slot);
 			hitboxesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, 100));
+			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100));
+
+			pcStatusDialogs[slot->getPlayerSlotNumber()] =
+				guiOverlay->createPCStatusDialog(
+					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
+			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
+
 			pcs.push_back(move(newPC));
+
 		} else if (slot->characterData->name == "Marle") {
 			unique_ptr<Marle> newPC = make_unique<Marle>(slot);
 			hitboxesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, 100));
+			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100));
+			pcStatusDialogs[slot->getPlayerSlotNumber()] =
+				guiOverlay->createPCStatusDialog(
+					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
+			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
 			pcs.push_back(move(newPC));
 
 		} else if (slot->characterData->name == "Chrono") {
 			unique_ptr<Chrono> newPC = make_unique<Chrono>(slot);
 			hitboxesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, 100));
+			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100));
+			pcStatusDialogs[slot->getPlayerSlotNumber()] =
+				guiOverlay->createPCStatusDialog(
+					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
+			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
 			pcs.push_back(move(newPC));
 
 		}
 	}
+
+	guiOverlay->initializeLevelScreen(pcStatusDialogs);
 
 	camera->setZoomToResolution();
 	camera->centerOn(Vector2(256 / 2, 224 / 2));
@@ -66,7 +83,7 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
 		hitboxesAll.push_back(pc.get());
-		
+
 	}
 }
 
@@ -92,8 +109,6 @@ void LevelScreen::draw(SpriteBatch * batch) {
 }
 
 void LevelScreen::pause() {
-
-// open player menu
 
 	game->confirmExit();
 }

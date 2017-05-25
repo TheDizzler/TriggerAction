@@ -67,6 +67,8 @@ void PlayerCharacter::update(double deltaTime) {
 				startMainAttack();
 			} else if (joystick->bButtonStates[ControlButtons::X]) {
 				startJump();
+			} else if (joystick->bButtonStates[ControlButtons::L]) {
+				startBlock();
 			} else {
 				movement(deltaTime);
 				moveUpdate(deltaTime);
@@ -74,6 +76,9 @@ void PlayerCharacter::update(double deltaTime) {
 
 			break;
 
+		case CreatureAction::BLOCK_ACTION:
+			blockUpdate(deltaTime);
+			break;
 		case CreatureAction::JUMP_ACTION:
 
 			jumpUpdate(deltaTime);
@@ -130,11 +135,54 @@ void PlayerCharacter::initializeAssets() {
 	jumpUp = assetSet->getAnimation("jump up");
 	jumpRight = assetSet->getAnimation("jump right");
 
+	combatStanceDown = assetSet->getAnimation("combat stance down");
+	combatStanceLeft = assetSet->getAnimation("combat stance left");
+	combatStanceUp = assetSet->getAnimation("combat stance up");
+	combatStanceRight = assetSet->getAnimation("combat stance right");
+
 	provoke = assetSet->getAnimation("provoke");
 	surprise = assetSet->getAnimation("surprise");
 	hit = assetSet->getAnimation("hit");
 
+	blockDown = assetSet->getAnimation("block down");
+	blockLeft = assetSet->getAnimation("block left");
+	blockUp = assetSet->getAnimation("block up");
+	blockRight = assetSet->getAnimation("block right");
+
 	shadow.load(assetSet->getAsset("shadow"));
+}
+
+
+void PlayerCharacter::startBlock() {
+
+	action = CreatureAction::BLOCK_ACTION;
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+
+	if (horzDirection > 10) {
+		facing = Facing::RIGHT;
+	} else if (horzDirection < -10) {
+		facing = Facing::LEFT;
+	} else if (vertDirection < -10) {
+		facing = Facing::UP;
+	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+	}
+	switch (facing) {
+		case Facing::DOWN:
+			loadAnimation(blockDown);
+			break;
+		case Facing::LEFT:
+			loadAnimation(blockLeft);
+			break;
+		case Facing::UP:
+			loadAnimation(blockUp);
+			break;
+		case Facing::RIGHT:
+			loadAnimation(blockRight);
+			break;
+	}
 }
 
 
@@ -259,6 +307,43 @@ void PlayerCharacter::waitUpdate(double deltaTime) {
 }
 
 
+void PlayerCharacter::blockUpdate(double deltaTime) {
+
+	if (!joystick->bButtonStates[ControlButtons::L]) {
+		// end block
+		action = CreatureAction::WAITING_ACTION;
+		switch (facing) {
+			case Facing::DOWN:
+				loadAnimation(combatStanceDown);
+				break;
+			case Facing::LEFT:
+				loadAnimation(combatStanceLeft);
+				break;
+			case Facing::UP:
+				loadAnimation(combatStanceUp);
+				break;
+			case Facing::RIGHT:
+				loadAnimation(combatStanceRight);
+				break;
+		}
+		return;
+	}
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+
+	if (horzDirection > 10) {
+		// hop right
+	} else if (horzDirection < -10) {
+		// hop left
+	} else if (vertDirection < -10) {
+		// hop up
+	} else if (vertDirection > 10) {
+		// hop down
+	}
+}
+
+
 void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 	jumpTime += deltaTime;
@@ -279,16 +364,16 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 				// landed
 				switch (facing) {
 					case Facing::RIGHT:
-						loadAnimation("combat stance right");
+						loadAnimation(combatStanceRight);
 						break;
 					case Facing::LEFT:
-						loadAnimation("combat stance left");
+						loadAnimation(combatStanceLeft);
 						break;
 					case Facing::DOWN:
-						loadAnimation("combat stance down");
+						loadAnimation(combatStanceDown);
 						break;
 					case Facing::UP:
-						loadAnimation("combat stance up");
+						loadAnimation(combatStanceUp);
 						break;
 				}
 				action = CreatureAction::WAITING_ACTION;

@@ -4,8 +4,8 @@
 Marle::Marle(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
-	HP = 65;
-	MP = 12;
+	currentHP = maxHP = 65;
+	currentMP = maxMP = 12;
 	PWR = 2;
 	HIT = 10;
 	MAG = 8;
@@ -95,16 +95,16 @@ void Marle::attackUpdate(double deltaTime) {
 				// fully completed animation
 				switch (facing) {
 					case Facing::RIGHT:
-						loadAnimation("combat stance right");
+						loadAnimation(combatStanceRight);
 						break;
 					case Facing::LEFT:
-						loadAnimation("combat stance left");
+						loadAnimation(combatStanceLeft);
 						break;
 					case Facing::DOWN:
-						loadAnimation("combat stance down");
+						loadAnimation(combatStanceDown);
 						break;
 					case Facing::UP:
-						loadAnimation("combat stance up");
+						loadAnimation(combatStanceUp);
 						break;
 				}
 				canCancelAction = true;

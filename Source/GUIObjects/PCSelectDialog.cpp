@@ -22,30 +22,12 @@ void PCSelectDialog::reset() {
 }
 
 
-void PCSelectDialog::pairPlayerSlot(PlayerSlot* slot) {
+//void PCSelectDialog::pairPlayerSlot(PlayerSlot* slot) {
+//
+//	playerSlot = slot;
+//}
 
-	playerSlot = slot;
-}
 
-
-void PCSelectDialog::loadPC(CharacterData* pcData) {
-
-	auto pcAssets = pcData->assets;
-
-	portrait->load(pcAssets->getAsset("portrait"));
-	portrait->setOrigin(Vector2::Zero);
-	portrait->setPosition(portraitPos);
-
-	magicEnglish->load(pcAssets->getAsset("magic english"));
-	magicEnglish->setOrigin(Vector2::Zero);
-	magicEnglish->setPosition(magicPos);
-
-	weaponType->load(guiFactory->getAssetSet("Menu Icons")->getAsset(pcData->weaponType.c_str()));
-	weaponType->setOrigin(Vector2::Zero);
-	weaponType->setPosition(weaponTypePos);
-
-	playerReady = true;
-}
 
 
 const int PORTRAIT_WIDTH = 48;
@@ -76,6 +58,25 @@ void PCSelectDialog::setDimensions(const Vector2& position, const Vector2 & size
 	readyLabel->setText(L"Ready!");
 }
 
+
+void PCSelectDialog::loadPC(CharacterData* pcData) {
+
+	auto pcAssets = pcData->assets;
+
+	portrait->load(pcAssets->getAsset("portrait"));
+	portrait->setOrigin(Vector2::Zero);
+	portrait->setPosition(portraitPos);
+
+	magicEnglish->load(pcAssets->getAsset("magic english"));
+	magicEnglish->setOrigin(Vector2::Zero);
+	magicEnglish->setPosition(magicPos);
+
+	weaponType->load(guiFactory->getAssetSet("Menu Icons")->getAsset(pcData->weaponType.c_str()));
+	weaponType->setOrigin(Vector2::Zero);
+	weaponType->setPosition(weaponTypePos);
+
+	playerReady = true;
+}
 
 
 #include "../Screens/GUIOverlay.h"

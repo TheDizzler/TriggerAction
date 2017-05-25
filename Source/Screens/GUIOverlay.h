@@ -2,6 +2,7 @@
 
 #include "../GUIObjects/MenuDialog.h"
 #include "../GUIObjects/PCSelectDialog.h"
+#include "../GUIObjects//PCStatusDialog.h"
 #include "../Engine/Joystick.h"
 
 #include "../globals.h"
@@ -12,7 +13,9 @@ public:
 	GUIOverlay();
 	virtual ~GUIOverlay();
 
-	void initializeTitleScreen();
+	void initializeTitleScreen(unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS]);
+	void initializeLevelScreen(unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS]);
+
 
 	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
@@ -21,40 +24,38 @@ public:
 
 	void setDialogText(USHORT playerSlotNumber, wstring text);
 
-	void reportLostJoystick(size_t playerSlotNumber);
+	void reportLostJoystick(size_t playerSlotNumber); // currently does nothing
 
-	
-	//void readyPCSelect(shared_ptr<PlayerSlot> playerSlot);
+	unique_ptr<PCStatusDialog> createPCStatusDialog(
+		shared_ptr<AssetSet> dialogImageSet,
+		const USHORT playerNumber, const char_t* fontName = "Default Font");
 
-	//unique_ptr<TextLabel> fps2Label;
+	unique_ptr<PCSelectDialog> createPCSelectDialog(shared_ptr<AssetSet> dialogImageSet,
+		const USHORT playerNumber, const char_t* fontName = "Default Font");
 
 	/** Displayed by GUIOverlay but controlled by it's associated screen. */
 	unique_ptr<MenuDialog> menuDialog;
 private:
 
-	/*int numPCsAvailable = 2;
-	size_t nextAvaiablePC = 0;*/
-
 	/** The order of these is important!! */
 	enum HUDDIALOG {
 		ENEMIES, PLAYERSTATS, PLAYER1, PLAYER2, PLAYER3
 	};
-	unique_ptr<PCSelectDialog> hudDialogs[HUDDIALOG::PLAYER3 + 1];
-
-	
+	DynamicDialog* hudDialogs[HUDDIALOG::PLAYER3 + 1];
+	Vector2 dialogPositions[HUDDIALOG::PLAYER3 + 1];
+	Vector2 dialogSize;
 	unique_ptr<TextLabel> fpsLabel;
-	
 
 
-	//CRITICAL_SECTION cs_selectingPC;
-	////vector<JoyData*> waitingForInput;
+	unique_ptr<DynamicDialog> dummyDialog;
+
 
 	vector<unique_ptr<Dialog>> lostJoyDialogs;
 	vector<int> displayingLostJoys;
 
-	
 
-	unique_ptr<PCSelectDialog> createPCDialog(shared_ptr<AssetSet> dialogImageSet,
+
+	unique_ptr<PCSelectDialog> createPCSelectDialog(shared_ptr<AssetSet> dialogImageSet,
 		const Vector2& position, const Vector2& size, const char_t* fontName = "Default Font");
 };
 

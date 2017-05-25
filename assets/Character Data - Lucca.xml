@@ -458,6 +458,12 @@
 			</sprite>
 		</animation>
 
+		<animation name="block jump">
+			<sprite x="" y="" width="" height="" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+
 		<animation name="draw weapon down" timePerFrame="1.1">
 			<sprite x="285" y="0" width="16" height="32" >
 				<origin x="8" y="29" />

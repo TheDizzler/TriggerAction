@@ -21,14 +21,10 @@ public:
 	virtual void setPosition(const Vector3& position);
 
 protected:
-	/*
-	const char_t* animations[4] = {"waiting", "moving",
-	enum CreatureAnimation {
-		WAITING_ANIM, MOVING_ANIM, ATTACKING_ANIM, HIT_ANIM
-	};
-	CreatureAnimation animation;*/
+
 	enum CreatureAction {
-		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION
+		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION,
+		BLOCK_ACTION
 	};
 	CreatureAction action = WAITING_ACTION;
 	bool canCancelAction = true;

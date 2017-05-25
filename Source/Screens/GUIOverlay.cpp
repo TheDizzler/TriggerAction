@@ -1,9 +1,10 @@
 #include "../pch.h"
 #include "GUIOverlay.h"
+#include "../Engine/GameEngine.h"
+#include "../DXTKGui/StringHelper.h"
 
 const int TEXT_MARGIN = 10;
 const int TEST_BOX_MARGIN = 16;
-#include "../Engine/GameEngine.h"
 GUIOverlay::GUIOverlay() {
 
 
@@ -14,41 +15,52 @@ GUIOverlay::GUIOverlay() {
 	Vector2 textMeasure = textLabel->measureString(L"TECH");
 	// should be enough to fit 4 lines of text + margin
 	int windowHeight = textMeasure.y * 4 + TEXT_MARGIN;
-	Vector2 pos, size;
-	size = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
-	pos = Vector2(Globals::WINDOW_WIDTH - size.x, TEST_BOX_MARGIN);
-	hudDialogs[HUDDIALOG::PLAYERSTATS] = createPCDialog(guiFactory->getAssetSet("Menu BG 1"), pos, size);
-	hudDialogs[HUDDIALOG::ENEMIES] = createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
-	//hudDialogs[HUDDIALOG::PLAYERSTATS]->setDimensions(pos, size);
+	Vector2 pos;
+	dialogSize = Vector2(Globals::WINDOW_WIDTH * 2 / 3, windowHeight);
+	pos = Vector2(Globals::WINDOW_WIDTH - dialogSize.x, TEST_BOX_MARGIN);
+	//hudDialogs[HUDDIALOG::PLAYERSTATS]
+		//= createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+	dialogPositions[HUDDIALOG::PLAYERSTATS] = pos;
+	/*hudDialogs[HUDDIALOG::ENEMIES]
+		= createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);*/
+	dialogPositions[HUDDIALOG::ENEMIES] = pos;
 	pos = Vector2(TEST_BOX_MARGIN * 2, TEST_BOX_MARGIN);
-	//hudDialogs[HUDDIALOG::ENEMIES]->setDimensions(pos, size);
 
 	// should be wide enough to fit four letter word and the hand icon
-	size.x = textMeasure.x * 2 + guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
+	dialogSize.x = textMeasure.x * 2
+		+ guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
 
 	pos.y = TEST_BOX_MARGIN;
+	dummyDialog = createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, dialogSize);
+	hudDialogs[HUDDIALOG::PLAYERSTATS] = dummyDialog.get();
+	hudDialogs[HUDDIALOG::ENEMIES] = dummyDialog.get();
+
 	hudDialogs[HUDDIALOG::PLAYER1]
-		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
-	pos.x += hudDialogs[HUDDIALOG::PLAYER1]->getWidth();
+		//= createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+		= dummyDialog.get();
+
+	dialogPositions[HUDDIALOG::PLAYER1] = pos;
+	pos.x += dialogSize.x;
 
 	hudDialogs[HUDDIALOG::PLAYER2]
-		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
-
-	pos.x += hudDialogs[HUDDIALOG::PLAYER2]->getWidth();
+		//= createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+		= dummyDialog.get();
+	dialogPositions[HUDDIALOG::PLAYER2] = pos;
+	pos.x += dialogSize.x;
 
 	hudDialogs[HUDDIALOG::PLAYER3]
-		= createPCDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+		//= createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, size);
+		= dummyDialog.get();
+	dialogPositions[HUDDIALOG::PLAYER3] = pos;
 
-
-	for (int i = 0; i < MAX_PLAYERS; ++i) {
+	/*for (int i = 0; i < MAX_PLAYERS; ++i) {
 		slotManager->playerSlots[i]->pairWithDialog(hudDialogs[HUDDIALOG::PLAYER1 + i].get());
 
-	}
+	}*/
 
 	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
 	fpsLabel->setTint(Colors::Black);
 	fpsLabel->setScale(Vector2(.5, .5));
-	//fpsLabel->setLayerDepth(1);
 
 
 	menuDialog = make_unique<MenuDialog>(guiFactory.get());
@@ -64,17 +76,21 @@ GUIOverlay::GUIOverlay() {
 
 GUIOverlay::~GUIOverlay() {
 
-
 	lostJoyDialogs.clear();
-	for (auto& dialog : hudDialogs)
-		dialog.reset();
+	/*for (auto& dialog : hudDialogs)
+		dialog.reset();*/
 
 	//DeleteCriticalSection(&cs_selectingPC);
 
 }
 
-void GUIOverlay::initializeTitleScreen() {
+void GUIOverlay::initializeTitleScreen(
+	unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS]) {
 
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		slotManager->playerSlots[i]->pairWithDialog(pcSelectDialogs[i].get());
+		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcSelectDialogs[i].get();
+	}
 	menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());
 	menuDialog->setText(L"Hello Menu");
 	menuDialog->clearSelections();
@@ -82,6 +98,18 @@ void GUIOverlay::initializeTitleScreen() {
 	menuDialog->addSelection(L"Continue Game", false);
 	menuDialog->addSelection(L"Options", true);
 	menuDialog->addSelection(L"Quit", true);
+}
+
+
+void GUIOverlay::initializeLevelScreen(unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS]) {
+
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		if (pcStatusDialogs[i].get() == NULL)
+			continue;
+		slotManager->playerSlots[i]->pairWithDialog(pcStatusDialogs[i].get());
+		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcStatusDialogs[i].get();
+		hudDialogs[HUDDIALOG::PLAYER1 + i]->show();
+	}
 }
 
 
@@ -122,7 +150,6 @@ void GUIOverlay::draw(SpriteBatch* batch) {
 
 	menuDialog->draw(batch);
 	fpsLabel->draw(batch);
-	//fps2Label->draw(batch);
 }
 
 void GUIOverlay::showMenu() {
@@ -135,7 +162,7 @@ void GUIOverlay::setDialogText(USHORT playerSlotNumber, wstring text) {
 	hudDialogs[PLAYER1 + playerSlotNumber]->show();
 }
 
-#include "../DXTKGui/StringHelper.h"
+
 void GUIOverlay::reportLostJoystick(size_t playerSlotNumber) {
 
 	//displayingLostJoys.push_back(joystickSocket);
@@ -177,25 +204,30 @@ void GUIOverlay::reportLostJoystick(size_t playerSlotNumber) {
 	//lostJoyDialogs.push_back(move(joyLostDialog));
 }
 
+unique_ptr<PCStatusDialog> GUIOverlay::createPCStatusDialog(
+	shared_ptr<AssetSet> dialogImageSet, const USHORT playerNumber, const char_t* fontName) {
+
+	unique_ptr<PCStatusDialog> dialog = make_unique<PCStatusDialog>(guiFactory.get());
+	dialog->initialize(dialogImageSet, fontName);
+	dialog->setDimensions(dialogPositions[PLAYER1 + playerNumber], dialogSize);
+	return move(dialog);
+
+}
 
 
-//void GUIOverlay::readyPCSelect(shared_ptr<PlayerSlot> playerSlot) {
-//
-//	wostringstream ws;
-//	ws << L"Player " << (playerSlot->getPlayerSlotNumber() + 1);
-//	playerSlot->setDialogText(ws.str());
-//
-//	/*EnterCriticalSection(&cs_selectingPC);
-//	{
-//		playerSlot->pcDialog->loadPC(gfxAssets->getAssetSet(pcs[nextAvaiablePC++]));
-//		if (nextAvaiablePC > numPCsAvailable - 1)
-//			nextAvaiablePC = 0;
-//	}
-//	LeaveCriticalSection(&cs_selectingPC);*/
-//}
+unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
+	shared_ptr<AssetSet> dialogImageSet,
+	const USHORT playerNumber, const char_t* fontName) {
+
+	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(guiFactory.get());
+	dialog->initialize(dialogImageSet, fontName);
+	dialog->setDimensions(dialogPositions[PLAYER1 + playerNumber], dialogSize);
+	return move(dialog);
+}
 
 
-unique_ptr<PCSelectDialog> GUIOverlay::createPCDialog(shared_ptr<AssetSet> dialogImageSet,
+unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
+	shared_ptr<AssetSet> dialogImageSet,
 	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
 	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(guiFactory.get());

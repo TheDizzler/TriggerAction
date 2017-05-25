@@ -94,7 +94,9 @@ unique_ptr<FontSet> GUIFactory::getFont(const char_t* fontName) {
 
 		unique_ptr<FontSet> defaultFont;
 		defaultFont.reset(new FontSet());
-		defaultFont->load(device, StringHelper::convertCharStarToWCharT(defaultFontFile));
+		defaultFont->load(device,
+			StringHelper::convertCharStarToWCharT(defaultFontFile),
+			"Default Font");
 
 		return move(defaultFont);
 	}
@@ -103,7 +105,9 @@ unique_ptr<FontSet> GUIFactory::getFont(const char_t* fontName) {
 
 	unique_ptr<FontSet> font;
 	font.reset(new FontSet());
-	font->load(device, StringHelper::convertCharStarToWCharT(fontFile));
+	font->load(device,
+		StringHelper::convertCharStarToWCharT(fontFile),
+		fontName);
 	return move(font);
 }
 
@@ -199,7 +203,8 @@ TriangleFrame* GUIFactory::createTriangleFrame(const Vector2& pt1, const Vector2
 TextLabel* GUIFactory::createTextLabel(const Vector2& position,
 	wstring text, const char_t* fontName, bool useTexture) {
 
-	TextLabel* label = new TextLabel(this, mouseController, position, text, fontName, useTexture);
+	TextLabel* label = new TextLabel(this, mouseController,
+		position, text, fontName, useTexture);
 	return label;
 }
 
@@ -447,7 +452,7 @@ PromptDialog* GUIFactory::createDialog(const Vector2& position, const Vector2& s
 	return dialog;
 }
 
-DynamicDialog * GUIFactory::createDynamicDialog(const char_t* imageSet,
+DynamicDialog* GUIFactory::createDynamicDialog(const char_t* imageSet,
 	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
 	DynamicDialog* dialog = new DynamicDialog(this, mouseController);

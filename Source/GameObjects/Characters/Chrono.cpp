@@ -4,8 +4,8 @@
 Chrono::Chrono(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
-	HP = 70;
-	MP = 8;
+	currentHP = maxHP = 70;
+	currentMP = maxMP = 8;
 	PWR = 5;
 	HIT = 8;
 	MAG = 5;

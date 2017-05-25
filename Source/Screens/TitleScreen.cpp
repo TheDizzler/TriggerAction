@@ -1,11 +1,7 @@
 #include "../pch.h"
 #include "TitleScreen.h"
 
-//TitleScreen::TitleScreen() {
-//}
-
 TitleScreen::~TitleScreen() {
-
 }
 
 const float GRAVITY = 981; // assume 1 pixel == 1 cm, therefore gravity is in 1/100 of a pixel per second squared
@@ -50,7 +46,11 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	camera->centerOn(Vector2(
 		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
 
-	guiOverlay->initializeTitleScreen();
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+		pcSelectDialogs[i] = guiOverlay->createPCSelectDialog(
+			guiFactory->getAssetSet("Menu BG 0"), i);
+
+	guiOverlay->initializeTitleScreen(pcSelectDialogs);
 
 	return true;
 }

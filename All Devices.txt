@@ -93,7 +93,7 @@ Version No:259
 Usage for the device: 61938
 Usage Page for the device: 61938
 
-(???)
+(??? intelLink USB ???)
 
 ***********************
 Device Name: \\?\HID#VID_062A&PID_4182&MI_01&Col02#7&2fb43fbd&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}

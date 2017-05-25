@@ -1,4 +1,4 @@
-Number of devices: 12
+Number of devices: 14
 ***********************
 Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col01#7&362e5ea4&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}
 ID for Mouse:256
@@ -68,6 +68,22 @@ Product Id:16770
 Version No:259
 Usage for the device: 1
 Usage Page for the device: 12
+***********************
+
+Device Name: \\?\HID#{0000110e-0000-1000-8000-00805f9b34fb}_VID&00010002_PID&0001&Col01#a&3b4ede3&3&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1118
+Product Id:1575
+Version No:2560
+Usage for the device: 1
+Usage Page for the device: 12
+***********************
+
+Device Name: \\?\HID#VID_0583&PID_2060#6&1632129d&2&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1411
+Product Id:8288
+Version No:256
+Usage for the device: 4
+Usage Page for the device: 1
 ***********************
 
 Device Name: \\?\HID#ATK4002#3&34245a86&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}

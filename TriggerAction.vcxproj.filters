@@ -228,6 +228,9 @@
     <ClCompile Include="Source\GameObjects\Characters\Chrono.cpp">
       <Filter>Source Files\GameObjects\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUIObjects\PCStatusDialog.cpp">
+      <Filter>Source Files\GUIObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h">
@@ -391,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Characters\Chrono.h">
       <Filter>Header Files\GameObjects\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GUIObjects\PCStatusDialog.h">
+      <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

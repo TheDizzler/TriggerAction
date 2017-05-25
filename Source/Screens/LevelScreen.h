@@ -2,7 +2,9 @@
 
 #include "../DXTKGui/BaseGraphics/screen.h"
 #include "../GameObjects/Characters/PlayerCharacter.h"
+#include "../GUIObjects//PCStatusDialog.h"
 #include "../Managers/MapManager.h"
+
 
 
 extern vector<Tangible*> hitboxesAll;
@@ -32,7 +34,7 @@ private:
 
 	unique_ptr<Map> map;
 
-	
-
+	unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS];
+	//unique_ptr<PCTechDialog> pcTechDialogs[MAX_PLAYERS];
 
 };

@@ -36,4 +36,6 @@ private:
 
 	float angularVelocity = 0;
 
+	unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS];
+
 };

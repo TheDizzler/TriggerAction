@@ -3,8 +3,14 @@
 
 	<!-- coords are from bottom left -->
 	<hitbox x="6" y="6" width="9" height="6" z="24"/>
-
 	<weaponMenuIcon name="Bow" />
+	<!-- Relative to bottom left corner -->
+	<weaponPosition>
+		<down x="0" y="10" z="18" />
+		<left x="-16" y="1" z="18" />
+		<up x="-1" y="-9" z="18" />
+		<right x="13" y="0" z="18" />
+	</weaponPosition>
 
 	<spritesheet name="Marle Sheet" file="Marle spritesheet.dds" set="Marle">
 
@@ -583,9 +589,7 @@
 	<spritesheet name="Marle Weapons" file="Marle Weapons.dds" set="Bow" >
 
 		<animation name="Bronze Bow Left" timePerFrame=".5">
-			<sprite x="18" y="22" width="10" height="3" >
-				<origin x="9" y="2" />
-			</sprite>
+			<sprite x="18" y="22" width="10" height="3" />
 		</animation>
 		<animation name="Bronze Bow HitEffect" timePerFrame=".1">
 			<sprite x="16" y="32" width="16" height="16" >

@@ -19,16 +19,18 @@ PlayerSlot::~PlayerSlot() {
 
 bool PlayerSlot::characterSelect(double deltaTime) {
 
+	PCSelectDialog* dialog = (PCSelectDialog*) pcDialog;
 	if (characterLocked) {
 
 	} else {
+		
 		if (!characterSelected) {
 			if (joystick->lAxisX < -10) {
 				repeatDelayTime += deltaTime;
 				if (repeatDelayTime >= REPEAT_DELAY) {
 					// select character to left
 					characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
-					pcDialog->loadPC(characterData);
+					dialog->loadPC(characterData);
 					repeatDelayTime = 0;
 				}
 
@@ -37,7 +39,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				if (repeatDelayTime >= REPEAT_DELAY) {
 					// select character to right
 					characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-					pcDialog->loadPC(characterData);
+					dialog->loadPC(characterData);
 					repeatDelayTime = 0;
 				}
 			} else {
@@ -53,10 +55,10 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 
 			if (characterSelected) {
 				characterLocked = true;
-				pcDialog->setReady(true);
+				dialog->setReady(true);
 			} else {
 				characterSelected = true;
-				pcDialog->setSelected(true);
+				dialog->setSelected(true);
 			}
 		}
 	} else if (joystick->bButtonStates[ControlButtons::B]) {
@@ -66,8 +68,8 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 			if (characterLocked || characterSelected) {
 				characterLocked = false;
 				characterSelected = false;
-				pcDialog->setSelected(false);
-				pcDialog->setReady(false);
+				dialog->setSelected(false);
+				dialog->setReady(false);
 			}
 		}
 	} else {
@@ -83,16 +85,15 @@ void PlayerSlot::waiting() {
 	if (joystick->bButtonStates[ControlButtons::A]) {
 		_threadJoystickData->finishFlag = true;
 		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
-		
+
 		// "lock" A button until released
 		buttonStillDown = true;
 	}
 }
 
 
-void PlayerSlot::pairWithDialog(PCSelectDialog* dialog) {
+void PlayerSlot::pairWithDialog(DynamicDialog* dialog) {
 	pcDialog = dialog;
-	pcDialog->pairPlayerSlot(this);
 }
 
 
@@ -162,7 +163,7 @@ Joystick* PlayerSlot::getStick() {
 void PlayerSlot::selectCharacter() {
 
 	characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-	pcDialog->loadPC(characterData);
+	((PCSelectDialog*) pcDialog)->loadPC(characterData);
 }
 
 void PlayerSlot::setDialogText(wstring text) {

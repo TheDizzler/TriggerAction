@@ -23,8 +23,8 @@ public:
 
 
 	string name;
-	USHORT HP;
-	USHORT MP;
+	USHORT currentHP, maxHP;
+	USHORT currentMP, maxMP;
 	/** Damage from physical attacks. */
 	USHORT PWR;
 	/** Damage from ranged attacks. */
@@ -60,6 +60,7 @@ protected:
 
 	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
 	virtual void startMainAttack() = 0;
+	void startBlock();
 	void startJump();
 
 	Vector3 startJumpPosition, endHalfJumpPosition;
@@ -91,6 +92,7 @@ protected:
 	//bool stillAttacking = false;
 	//virtual void attackUpdate(double deltaTime) override;
 	virtual void waitUpdate(double deltaTime);
+	virtual void blockUpdate(double deltaTime);
 	virtual void jumpUpdate(double deltaTime);
 
 	/** Possible actions. */
@@ -100,4 +102,15 @@ protected:
 
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) = 0;
+
+
+	shared_ptr<Animation> blockDown;
+	shared_ptr<Animation> blockLeft;
+	shared_ptr<Animation> blockUp;
+	shared_ptr<Animation> blockRight;
+
+	shared_ptr<Animation> combatStanceDown;
+	shared_ptr<Animation> combatStanceLeft;
+	shared_ptr<Animation> combatStanceUp;
+	shared_ptr<Animation> combatStanceRight;
 };

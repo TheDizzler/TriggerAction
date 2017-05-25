@@ -166,6 +166,7 @@ bool GameManager::loadLevel(const pugi::char_t* levelName) {
 	return true;
 }
 
+
 bool GameManager::reloadLevel(const pugi::char_t* levelName) {
 
 	hitboxesAll.clear();
