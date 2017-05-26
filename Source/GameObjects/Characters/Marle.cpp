@@ -4,6 +4,11 @@
 Marle::Marle(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
+	initializeAssets();
+
+	loadAnimation(standRight);
+	currentFrameTexture = currentAnimation->texture.Get();
+
 	currentHP = maxHP = 65;
 	currentMP = maxMP = 12;
 	PWR = 2;
@@ -27,15 +32,34 @@ Marle::Marle(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 Marle::~Marle() {
 }
 
+void Marle::update(double deltaTime) {
+	PlayerCharacter::update(deltaTime);
+	for (const auto& bullet : projectiles)
+		bullet->update(deltaTime);
+}
+
+void Marle::draw(SpriteBatch* batch) {
+	PlayerCharacter::draw(batch);
+	for (const auto& bullet : projectiles)
+		bullet->draw(batch);
+}
+
+void Marle::initializeAssets() {
+	PlayerCharacter::initializeAssets();
+
+	shootLeft = assetSet->getAnimation("shoot left");
+	shootDown = assetSet->getAnimation("shoot down");
+	shootRight = assetSet->getAnimation("shoot right");
+	shootUp = assetSet->getAnimation("shoot up");
+}
+
 void Marle::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
 
 	projectiles.clear();
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		unique_ptr<Projectile> proj = make_unique<Projectile>(this, weaponPositions);
-		proj->loadBullet(weaponSet->getAnimation("Bronze Bow Left"),
-			weaponSet->getAsset("Bullet Shadow"));
-		proj->loadHitEffect(weaponSet->getAnimation("Bronze Bow HitEffect"));
+		unique_ptr<BronzeBow> proj = make_unique<BronzeBow>
+			(this, weaponSet, weaponPositions);
 		projectiles.push_back(move(proj));
 	}
 }
@@ -56,16 +80,16 @@ void Marle::startMainAttack() {
 
 	switch (facing) {
 		case Facing::LEFT:
-			loadAnimation("shoot left");
+			loadAnimation(shootLeft);
 			break;
 		case Facing::DOWN:
-			loadAnimation("shoot down");
+			loadAnimation(shootDown);
 			break;
 		case Facing::RIGHT:
-			loadAnimation("shoot right");
+			loadAnimation(shootRight);
 			break;
 		case Facing::UP:
-			loadAnimation("shoot up");
+			loadAnimation(shootUp);
 			break;
 	}
 	currentFrameIndex = -1;
@@ -83,12 +107,13 @@ void Marle::attackUpdate(double deltaTime) {
 		switch (++currentFrameIndex) {
 			case 0: // readying attack
 				break;
-			case 1: // firing bullet 
+			case 1: // firing bullet // recoil/cooldown
 				projectiles[nextBullet++]->fire(facing, position);
 				if (nextBullet >= MAX_PROJECTILES)
 					nextBullet = 0;
 				break;
-			case 2: // recoil/cooldown
+			case 2:
+				canCancelAction = true;
 				break;
 			case 3:
 			default:
@@ -107,7 +132,6 @@ void Marle::attackUpdate(double deltaTime) {
 						loadAnimation(combatStanceUp);
 						break;
 				}
-				canCancelAction = true;
 				action = CreatureAction::WAITING_ACTION;
 				return;
 

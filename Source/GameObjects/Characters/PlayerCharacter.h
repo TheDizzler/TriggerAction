@@ -51,12 +51,7 @@ protected:
 
 	shared_ptr<PlayerSlot> playerSlot;
 	Joystick* joystick;
-	CharacterData* characterData;
-
-	shared_ptr<Animation> jumpDown;
-	shared_ptr<Animation> jumpLeft;
-	shared_ptr<Animation> jumpUp;
-	shared_ptr<Animation> jumpRight;
+	CharacterData* characterData;	
 
 	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
 	virtual void startMainAttack() = 0;
@@ -103,6 +98,16 @@ protected:
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) = 0;
 
+
+	shared_ptr<Animation> standDown;
+	shared_ptr<Animation> standLeft;
+	shared_ptr<Animation> standUp;
+	shared_ptr<Animation> standRight;
+
+	shared_ptr<Animation> jumpDown;
+	shared_ptr<Animation> jumpLeft;
+	shared_ptr<Animation> jumpUp;
+	shared_ptr<Animation> jumpRight;
 
 	shared_ptr<Animation> blockDown;
 	shared_ptr<Animation> blockLeft;

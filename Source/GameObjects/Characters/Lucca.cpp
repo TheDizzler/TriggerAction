@@ -4,6 +4,11 @@
 Lucca::Lucca(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
+	initializeAssets();
+
+	loadAnimation(standRight);
+	currentFrameTexture = currentAnimation->texture.Get();
+
 	//currentHP = maxHP = 
 	//currentMP = maxMP = 
 	//PWR = ;
@@ -41,15 +46,22 @@ void Lucca::draw(SpriteBatch * batch) {
 		bullet->draw(batch);
 }
 
+void Lucca::initializeAssets() {
+	PlayerCharacter::initializeAssets();
+
+	shootLeft = assetSet->getAnimation("shoot left");
+	shootDown = assetSet->getAnimation("shoot down");
+	shootRight = assetSet->getAnimation("shoot right");
+	shootUp = assetSet->getAnimation("shoot up");
+}
+
 void Lucca::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
 
 	projectiles.clear();
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		unique_ptr<Projectile> proj = make_unique<Projectile>(this, weaponPositions);
-		proj->loadBullet(weaponSet->getAnimation("AirGun Bullet Left"),
-			weaponSet->getAsset("Bullet Shadow"));
-		proj->loadHitEffect(weaponSet->getAnimation("AirGun HitEffect"));
+		unique_ptr<AirGun> proj = make_unique<AirGun>
+			(this, weaponSet, weaponPositions);
 		projectiles.push_back(move(proj));
 	}
 }
@@ -71,16 +83,16 @@ void Lucca::startMainAttack() {
 
 	switch (facing) {
 		case Facing::LEFT:
-			loadAnimation("shoot left");
+			loadAnimation(shootLeft);
 			break;
 		case Facing::DOWN:
-			loadAnimation("shoot down");
+			loadAnimation(shootDown);
 			break;
 		case Facing::RIGHT:
-			loadAnimation("shoot right");
+			loadAnimation(shootRight);
 			break;
 		case Facing::UP:
-			loadAnimation("shoot up");
+			loadAnimation(shootUp);
 			break;
 	}
 	currentFrameIndex = -1;

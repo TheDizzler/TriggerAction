@@ -1,13 +1,11 @@
 #pragma once
 #include "Creature.h"
 
-class Projectile : public IElement3D {
+interface Projectile : public IElement3D {
 public:
 	Projectile(Creature* owner, Vector3 weaponPositions[4]);
 	virtual ~Projectile();
 
-	void loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shadow);
-	void loadHitEffect(shared_ptr<Animation> hitEffect);
 
 	/** Returns immediately if not active. */
 	virtual void update(double deltaTime);
@@ -25,12 +23,10 @@ protected:
 	const Hitbox* ownerBox;
 
 	Vector3 weaponPositions[4];
-	//shared_ptr<Animation> projectileUp;
 	shared_ptr<Animation> projectileLeft;
 	GraphicsAsset* shadow;
 	Vector3 shadowPosition;
-	Vector2 shadowOrigin;
-	float shadowRotation;
+
 	Facing direction = Facing::LEFT;
 
 	shared_ptr<Animation> hitEffect;
@@ -51,6 +47,35 @@ protected:
 	double distanceDeltaPerFrame;
 	Vector2 moveInOneFrame;
 
+
+	virtual void loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shadow) = 0;
+	void loadHitEffect(shared_ptr<Animation> hitEffect);
+
 	void hit(Tangible* liveObject);
 	bool isExploding = false;
+};
+
+/** ***** Marle's Bows ***** **/
+class BronzeBow : public Projectile {
+public:
+	BronzeBow(Creature* owner,
+		shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
+	virtual ~BronzeBow();
+
+private:
+	virtual void loadBullet(shared_ptr<Animation> bullet,
+		GraphicsAsset* shadow) override;
+};
+
+
+/** ***** Lucca's Guns. ***** **/
+class AirGun : public Projectile {
+public:
+	AirGun(Creature* owner,
+		shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
+	virtual ~AirGun();
+
+private:
+	virtual void loadBullet(shared_ptr<Animation> bullet,
+		GraphicsAsset* shadow) override;
 };

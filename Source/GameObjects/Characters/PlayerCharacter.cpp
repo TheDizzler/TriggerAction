@@ -17,14 +17,11 @@ PlayerCharacter::PlayerCharacter(shared_ptr<PlayerSlot> slot) {
 	name = characterData->name;
 
 
-	initializeAssets();
-
 	setHitbox(characterData->hitbox.get());
 	radarBox = Hitbox(hitbox);
 
 
-	loadAnimation("stand right");
-	currentFrameTexture = currentAnimation->texture.Get();
+
 }
 
 PlayerCharacter::~PlayerCharacter() {
@@ -54,6 +51,10 @@ void PlayerCharacter::update(double deltaTime) {
 			if (canCancelAction) {
 				if (joystick->bButtonStates[ControlButtons::Y]) {
 					startMainAttack();
+				} else if (joystick->bButtonStates[ControlButtons::X]) {
+					startJump();
+				} else if (joystick->bButtonStates[ControlButtons::L]) {
+					startBlock();
 				} else {
 					movement(deltaTime);
 				}
@@ -120,6 +121,12 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 
 void PlayerCharacter::initializeAssets() {
 	assetSet = characterData->assets;
+
+	standDown = assetSet->getAnimation("stand down");
+	standLeft = assetSet->getAnimation("stand left");
+	standUp = assetSet->getAnimation("stand up");
+	standRight = assetSet->getAnimation("stand right");
+
 	walkDown = assetSet->getAnimation("walk down");
 	walkLeft = assetSet->getAnimation("walk left");
 	walkUp = assetSet->getAnimation("walk up");
@@ -469,16 +476,16 @@ void PlayerCharacter::movement(double deltaTime) {
 		moving = false;
 		switch (facing) {
 			case Facing::RIGHT:
-				loadAnimation("stand right");
+				loadAnimation(standRight);
 				break;
 			case Facing::LEFT:
-				loadAnimation("stand left");
+				loadAnimation(standLeft);
 				break;
 			case Facing::DOWN:
-				loadAnimation("stand down");
+				loadAnimation(standDown);
 				break;
 			case Facing::UP:
-				loadAnimation("stand up");
+				loadAnimation(standUp);
 				break;
 		}
 	}

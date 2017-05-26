@@ -8,6 +8,7 @@ public:
 
 
 private:
+	virtual void initializeAssets() override;
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) override;
 	virtual void attackUpdate(double deltaTime) override;

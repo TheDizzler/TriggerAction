@@ -36,7 +36,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		if (slot->characterData->name == "Lucca") {
 			unique_ptr<Lucca> newPC = make_unique<Lucca>(slot);
 			hitboxesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100));
+			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
 
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
@@ -48,7 +48,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		} else if (slot->characterData->name == "Marle") {
 			unique_ptr<Marle> newPC = make_unique<Marle>(slot);
 			hitboxesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100));
+			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
@@ -58,7 +58,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		} else if (slot->characterData->name == "Chrono") {
 			unique_ptr<Chrono> newPC = make_unique<Chrono>(slot);
 			hitboxesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100));
+			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());

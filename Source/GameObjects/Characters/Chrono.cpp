@@ -4,6 +4,11 @@
 Chrono::Chrono(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
+	initializeAssets();
+
+	loadAnimation(standRight);
+	currentFrameTexture = currentAnimation->texture.Get();
+
 	currentHP = maxHP = 70;
 	currentMP = maxMP = 8;
 	PWR = 5;
@@ -31,6 +36,10 @@ void Chrono::attackUpdate(double deltaTime) {
 }
 
 void Chrono::startMainAttack() {
+}
+
+void Chrono::initializeAssets() {
+	PlayerCharacter::initializeAssets();
 }
 
 void Chrono::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
