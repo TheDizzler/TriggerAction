@@ -65,7 +65,8 @@ void PlayerCharacter::update(double deltaTime) {
 			waitUpdate(deltaTime);
 		case CreatureAction::MOVING_ACTION:
 			if (joystick->bButtonStates[ControlButtons::Y]) {
-				startMainAttack();
+				//startMainAttack();
+				startDrawWeapon();
 			} else if (joystick->bButtonStates[ControlButtons::X]) {
 				startJump();
 			} else if (joystick->bButtonStates[ControlButtons::L]) {
@@ -87,7 +88,9 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::HIT_ACTION:
 			hitUpdate(deltaTime);
 			break;
-
+		case CreatureAction::DRAWING_ACTION:
+			drawWeaponUpdate(deltaTime);
+			break;
 
 	}
 
@@ -296,6 +299,61 @@ void PlayerCharacter::startJump() {
 	jumpingRising = true;
 }
 
+
+void PlayerCharacter::startDrawWeapon() {
+
+	action = CreatureAction::DRAWING_ACTION;
+	canCancelAction = false;
+
+	switch (facing) {
+		case Facing::RIGHT:
+			loadAnimation("draw weapon right");
+			break;
+		case Facing::LEFT:
+			loadAnimation("draw weapon left");
+			break;
+		case Facing::DOWN:
+			loadAnimation("draw weapon down");
+			break;
+		case Facing::UP:
+			loadAnimation("draw weapon up");
+			break;
+	}
+
+}
+
+
+void PlayerCharacter::drawWeaponUpdate(double deltaTime) {
+
+	currentFrameTime += deltaTime;
+	if (currentFrameTime >= currentFrameDuration) {
+		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+			switch (facing) {
+				case Facing::RIGHT:
+					loadAnimation(combatStanceRight);
+					break;
+				case Facing::LEFT:
+					loadAnimation(combatStanceLeft);
+					break;
+				case Facing::DOWN:
+					loadAnimation(combatStanceDown);
+					break;
+				case Facing::UP:
+					loadAnimation(combatStanceUp);
+					break;
+			}
+			action = CreatureAction::WAITING_ACTION;
+			canCancelAction = true;
+		}
+		currentFrameTime = 0;
+		currentFrameDuration
+			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+		currentFrameRect
+			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+		currentFrameOrigin
+			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+	}
+}
 
 void PlayerCharacter::waitUpdate(double deltaTime) {
 
@@ -600,3 +658,6 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 
 	return moveVector;
 }
+
+
+

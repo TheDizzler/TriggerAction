@@ -22,7 +22,7 @@
 		<sprite name="magic kanji" x="54" y="2" width="16" height="16"/>
 		<sprite name="magic english" x="20" y="58" width="48" height="16"/>
 
-
+		<sprite name="shadow" x="86" y="218" width="16" height="6" />
 
 
 		<animation name="waiting down">
@@ -596,7 +596,36 @@
 			</sprite>
 		</animation>
 
-		<sprite name="shadow" x="86" y="218" width="16" height="6" />
+		<animation name="use item">
+			<sprite x="127" y="642" width="17" height="30" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="128" y="1170" width="15" height="33" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- get item animation if using on self-->
+
+			<!-- End pose -->
+			<sprite x="284" y="521" width="23" height="32" >
+				<origin x="" y="" />
+			</sprite>
+		</animation>
+		<animation name="get item">
+			<!-- Repeat x2 -->
+			<sprite x="129" y="0" width="13" height="33" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="168" y="1" width="16" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="210" y="1" width="12" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<sprite x="248" y="1" width="16" height="32" >
+				<origin x="" y="" />
+			</sprite>
+			<!-- End Repeat -->
+		</animation>
 	</spritesheet>
 
 	<spritesheet name="Marle Weapons" file="Marle Weapons.dds" set="Bow" >

@@ -24,7 +24,7 @@ protected:
 
 	enum CreatureAction {
 		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION,
-		BLOCK_ACTION
+		BLOCK_ACTION, DRAWING_ACTION
 	};
 	CreatureAction action = WAITING_ACTION;
 	bool canCancelAction = true;
@@ -33,6 +33,7 @@ protected:
 	virtual void attackUpdate(double deltaTime) = 0;
 	/** The update for when creature has been hit with an attack. */
 	virtual void hitUpdate(double deltaTime);
+	
 
 	shared_ptr<AssetSet> assetSet;
 	shared_ptr<Animation> currentAnimation;

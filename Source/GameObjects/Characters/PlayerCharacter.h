@@ -54,6 +54,7 @@ protected:
 	CharacterData* characterData;	
 
 	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
+	void startDrawWeapon();
 	virtual void startMainAttack() = 0;
 	void startBlock();
 	void startJump();
@@ -84,8 +85,8 @@ protected:
 
 
 	bool lastCollision = false;
-	//bool stillAttacking = false;
 	//virtual void attackUpdate(double deltaTime) override;
+	void drawWeaponUpdate(double deltaTime);
 	virtual void waitUpdate(double deltaTime);
 	virtual void blockUpdate(double deltaTime);
 	virtual void jumpUpdate(double deltaTime);
