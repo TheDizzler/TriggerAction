@@ -65,6 +65,12 @@ protected:
 	bool running = false;
 	bool moving = false;
 	bool waiting = false;
+
+	const double NORMAL_SPEED = 1.0;
+	const double RUN_SPEED = 1.75;
+	const double JUMP_TIME = .375;
+	const int MAX_JUMP_HEIGHT = 20;
+	//const int MAX_JUMP_DISTANCE = 30;
 	float moveRightSpeed = 75;
 	float moveDownSpeed = moveRightSpeed * 2 / 3;
 	/* Precalculate diagonal radius (at 45 degree) since it will always be the same

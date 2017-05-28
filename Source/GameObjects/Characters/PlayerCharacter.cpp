@@ -196,11 +196,6 @@ void PlayerCharacter::startBlock() {
 }
 
 
-const double NORMAL_SPEED = 1.0;
-const double RUN_SPEED = 1.5;
-const double JUMP_TIME = .375;
-const int MAX_JUMP_HEIGHT = 20;
-//const int MAX_JUMP_DISTANCE = 30;
 void PlayerCharacter::startJump() {
 
 	jumpByX = jumpByY = 0;

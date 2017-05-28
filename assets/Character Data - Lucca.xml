@@ -21,7 +21,8 @@
 		<sprite name="magic kanji" set="Lucca" x="54" y="2" width="16" height="16"/>
 		<sprite name="magic english" set="Lucca" x="20" y="58" width="48" height="16"/>
 
-		<sprite name="shadow" x="88" y="73" width="13" height="3" />
+		<!-- Center point of shadow considered the origin of all sprites -->
+		<sprite name="shadow" x="88" y="71" width="14" height="6" />
 
 		<animation name="stand down">
 			<!-- neutral-->
@@ -439,7 +440,7 @@
 
 		<animation name="block down">
 			<sprite x="283" y="360" width="22" height="31" >
-				<origin x="11" y="31" />
+				<origin x="11" y="29" />
 			</sprite>
 		</animation>
 		<animation name="block left">
@@ -449,12 +450,12 @@
 		</animation>
 		<animation name="block up">
 			<sprite x="363" y="360" width="21" height="31" >
-				<origin x="13" y="28" />
+				<origin x="11" y="30" />
 			</sprite>
 		</animation>
 		<animation name="block right" >
 			<sprite x="404" y="360" width="20" height="31" >
-				<origin x="15" y="30" />
+				<origin x="13" y="30" />
 			</sprite>
 		</animation>
 
@@ -474,10 +475,10 @@
 		</animation>
 		<animation name="draw weapon left" timePerFrame="1.1">
 			<sprite x="326" y="0" width="15" height="32" >
-				<origin x="10" y="29" />
+				<origin x="13" y="30" />
 			</sprite>
 			<sprite x="324" y="40" width="20" height="31" >
-				<origin x="15" y="28" />
+				<origin x="18" y="29" />
 			</sprite>
 		</animation>
 		<animation name="draw weapon up" timePerFrame="1.1">

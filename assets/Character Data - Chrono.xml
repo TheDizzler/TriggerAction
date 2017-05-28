@@ -12,6 +12,7 @@
 		<sprite name="magic kanji" set="Chrono" x="54" y="2" width="16" height="16"/>
 		<sprite name="magic english" set="Chrono" x="20" y="58" width="48" height="16"/>
 
+		<!-- Center point of shadow considered the origin of all sprites -->
 		<sprite name="shadow" x="56" y="43" width="14" height="6" />
 
 		<animation name="stand down">
@@ -148,17 +149,29 @@
 		</animation>
 
 
-		<animation name="walk down" timePerFrame=".51" >
-			<sprite x="125" y="600" width="18" height="35" />
-			<sprite x="126" y="641" width="16" height="34" />
-			<sprite x="125" y="682" width="17" height="32" />
-			<sprite x="125" y="720" width="18" height="35" />
-			<sprite x="126" y="761" width="16" height="34" />
-			<sprite x="125" y="802" width="17" height="32" />
-		</animation>
-		<animation name="walk left" timePerFrame=".51">
-			<sprite x="166" y="601" width="15" height="34" >
+		<animation name="walk down" timePerFrame=".1" >
+			<sprite x="125" y="600" width="18" height="35" >
 				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="126" y="641" width="16" height="34" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="125" y="682" width="17" height="32" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="125" y="720" width="18" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="126" y="761" width="16" height="34" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="125" y="802" width="17" height="32" >
+				<origin x="8" y="34" />
+			</sprite>
+		</animation>
+		<animation name="walk left" timePerFrame=".1">
+			<sprite x="166" y="601" width="15" height="34" >
+				<origin x="8" y="33" />
 			</sprite>
 			<sprite x="163" y="642" width="21" height="32" >
 				<origin x="11" y="32" />
@@ -176,17 +189,29 @@
 				<origin x="7" y="32" />
 			</sprite>
 		</animation>
-		<animation name="walk up" timePerFrame=".51" >
-			<sprite x="205" y="601" width="18" height="33" />
-			<sprite x="206" y="640" width="16" height="35" />
-			<sprite x="205" y="682" width="18" height="32" />
-			<sprite x="205" y="721" width="18" height="33" />
-			<sprite x="206" y="760" width="16" height="35" />
-			<sprite x="206" y="802" width="18" height="32" />
-		</animation>
-		<animation name="walk right" timePerFrame=".51">
-			<sprite x="246" y="601" width="15" height="34" >
+		<animation name="walk up" timePerFrame=".1" >
+			<sprite x="205" y="601" width="18" height="33" >
+				<origin x="10" y="34" />
+			</sprite>
+			<sprite x="206" y="640" width="16" height="35" >
 				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="205" y="682" width="18" height="32" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="205" y="721" width="18" height="33" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="206" y="760" width="16" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="206" y="802" width="18" height="32" >
+				<origin x="8" y="34" />
+			</sprite>
+		</animation>
+		<animation name="walk right" timePerFrame=".1">
+			<sprite x="246" y="601" width="15" height="34" >
+				<origin x="8" y="33" />
 			</sprite>
 			<sprite x="243" y="642" width="21" height="32" >
 				<origin x="11" y="32" />
@@ -197,8 +222,8 @@
 			<sprite x="247" y="721" width="14" height="34" >
 				<origin x="7" y="33" />
 			</sprite>
-			<sprite x="243" y="726" width="22" height="32" >
-				<origin x="11" y="31" />
+			<sprite x="243" y="762" width="22" height="32" >
+				<origin x="8" y="31" />
 			</sprite>
 			<sprite x="247" y="801" width="14" height="33" >
 				<origin x="7" y="32" />
@@ -206,46 +231,38 @@
 		</animation>
 
 
-		<animation name="run down" timePerFrame=".51" >
+		<animation name="run down" timePerFrame=".1" >
 			<!-- Right leg forward-->
-			<sprite x="125" y="841" width="18" height="34" />
-			<sprite x="125" y="682" width="17" height="32" />
-			<sprite x="125" y="720" width="18" height="35" />
-			<!-- Left leg forward-->
-			<sprite x="125" y="881" width="18" height="34" />
-			<sprite x="125" y="802" width="17" height="32" />
-			<sprite x="125" y="600" width="18" height="35" />
-		</animation>
-		<animation name="run up" timePerFrame=".51" >
-			<sprite x="205" y="601" width="18" height="33" />
-			<sprite x="206" y="640" width="16" height="35" />
-			<sprite x="205" y="839" width="17" height="38" />
-			<sprite x="205" y="682" width="18" height="32" />
-			<sprite x="205" y="721" width="18" height="33" />
-			<sprite x="206" y="760" width="16" height="35" />
-			<sprite x="205" y="879" width="17" height="38" />
-			<sprite x="206" y="802" width="18" height="32" />
-		</animation>
-		<animation name="run right" timePerFrame=".51" >
-			<sprite x="246" y="601" width="15" height="34" />
-			<sprite x="243" y="642" width="21" height="32" />
-			<sprite x="240" y="842" width="28" height="32" />
-			<sprite x="247" y="681" width="14" height="33" />
-			<sprite x="247" y="721" width="14" height="34" />
-			<sprite x="243" y="726" width="22" height="32" />
-			<sprite x="240" y="882" width="28" height="32" />
-			<sprite x="247" y="801" width="14" height="33" />
-		</animation>
-		<animation name="run left" timePerFrame=".51" >
-			<sprite x="166" y="601" width="15" height="34" >
+			<sprite x="125" y="841" width="18" height="34" >
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="125" y="682" width="17" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="125" y="720" width="18" height="35" >
 				<origin x="8" y="34" />
 			</sprite>
+			<!-- Left leg forward-->
+			<sprite x="125" y="881" width="18" height="34" >
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="125" y="802" width="17" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="125" y="600" width="18" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
+		</animation>
+		<animation name="run left" timePerFrame=".1" >
+			<sprite x="166" y="601" width="15" height="34" >
+				<origin x="8" y="33" />
+			</sprite>
 			<sprite x="163" y="642" width="21" height="32" >
-				<origin x="11" y="32" />
+				<origin x="11" y="31" />
 			</sprite>
 			<!-- Right all forward -->
 			<sprite x="160" y="842" width="28" height="32" >
-				<origin x="" y="" />
+				<origin x="11" y="31" />
 			</sprite>
 			<sprite x="166" y="681" width="14" height="33" >
 				<origin x="7" y="32" />
@@ -258,12 +275,65 @@
 			</sprite>
 			<!-- Left all forward -->
 			<sprite x="160" y="882" width="28" height="32" >
-				<origin x="" y="" />
+				<origin x="11" y="31" />
 			</sprite>
 			<sprite x="167" y="801" width="14" height="33" >
 				<origin x="7" y="32" />
 			</sprite>
 		</animation>
+		<animation name="run up" timePerFrame=".1" >
+			<sprite x="205" y="601" width="18" height="33" >
+				<origin x="8" y="32" />
+			</sprite>
+			<sprite x="206" y="640" width="16" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="205" y="839" width="17" height="38" >
+				<origin x="8" y="37" />
+			</sprite>
+			<sprite x="205" y="682" width="18" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="205" y="721" width="18" height="33" >
+				<origin x="8" y="32" />
+			</sprite>
+			<sprite x="206" y="760" width="16" height="35" >
+				<origin x="8" y="34" />
+			</sprite>
+			<sprite x="205" y="879" width="17" height="38" >
+				<origin x="8" y="37" />
+			</sprite>
+			<sprite x="206" y="802" width="18" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+		</animation>
+		<animation name="run right" timePerFrame=".1" >
+			<sprite x="246" y="601" width="15" height="34" >
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="243" y="642" width="21" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="240" y="842" width="28" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="247" y="681" width="14" height="33" >
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="247" y="721" width="14" height="34" >
+				<origin x="8" y="33" />
+			</sprite>
+			<sprite x="243" y="762" width="22" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="240" y="882" width="28" height="32" >
+				<origin x="8" y="31" />
+			</sprite>
+			<sprite x="247" y="801" width="14" height="33" >
+				<origin x="8" y="32" />
+			</sprite>
+		</animation>
+		
 
 		<animation name="draw weapon down" timePerFrame=".4" >
 			<sprite x="286" y="2" width="15" height="32" >
@@ -310,7 +380,7 @@
 			</sprite>
 		</animation>
 
-		<animation name="combat stance down" timePerFrame=".75" >
+		<animation name="combat stance down" timePerFrame=".25" >
 			<sprite x="285" y="122" width="17" height="32" >
 				<origin x="8" y="31" />
 			</sprite>
@@ -324,7 +394,7 @@
 				<origin x="8" y="30" />
 			</sprite>
 		</animation>
-		<animation name="combat stance left" timePerFrame=".75" >
+		<animation name="combat stance left" timePerFrame=".25" >
 			<sprite x="319" y="122" width="29" height="31" >
 				<origin x="16" y="30" />
 			</sprite>
@@ -338,7 +408,7 @@
 				<origin x="14" y="29" />
 			</sprite>
 		</animation>
-		<animation name="combat stance up" timePerFrame=".75" >
+		<animation name="combat stance up" timePerFrame=".25" >
 			<sprite x="365" y="818" width="18" height="29"  >
 				<origin x="9" y="28" />
 			</sprite>
@@ -346,7 +416,7 @@
 				<origin x="8" y="28" />
 			</sprite>
 		</animation>
-		<animation name="combat stance right" timePerFrame=".75" >
+		<animation name="combat stance right" timePerFrame=".25" >
 			<sprite x="399" y="122" width="28" height="31" >
 				<origin x="13" y="30" />
 			</sprite>
@@ -417,12 +487,12 @@
 
 		<animation name="block down">
 			<sprite x="280" y="562" width="28" height="32" >
-				<origin x="17" y="31" />
+				<origin x="16" y="31" />
 			</sprite>
 		</animation>
 		<animation name="block left">
-			<sprite x="323" y="562" width="23" height="32" >
-				<origin x="10" y="31" />
+			<sprite x="323" y="562" width="22" height="32" >
+				<origin x="9" y="31" />
 			</sprite>
 		</animation>
 		<animation name="block up">
@@ -432,7 +502,7 @@
 		</animation>
 		<animation name="block right">
 			<sprite x="403" y="562" width="22" height="32" >
-				<origin x="8" y="32" />
+				<origin x="13" y="31" />
 			</sprite>
 		</animation>
 
