@@ -10,17 +10,14 @@ class PlayerCharacter;
 class Joystick {
 public:
 
-	/*static enum dpad {
-		RIGHT, DOWN, LEFT, UP
-	};*/
-
-	Joystick( size_t controllerSlot);
+	Joystick(size_t controllerSlot);
 	~Joystick();
 
 	void registerNewHandle(HANDLE handle);
 	HANDLE getHandle();
 
 	BOOL bButtonStates[MAX_BUTTONS];
+	BOOL lastButtonStates[MAX_BUTTONS];
 	LONG lAxisX = 0;
 	LONG lAxisY = 0;
 	LONG lAxisZ = 0;
@@ -33,7 +30,13 @@ public:
 
 	size_t socket;
 	short playerSlotNumber = -1;
-	//PlayerCharacter* pc;
+
+	bool yButton();
+	bool xButton();
+	bool aButton();
+	bool bButton();
+	bool lButton();
+	bool rButton();
 	
 private:
 	HANDLE handle = NULL;

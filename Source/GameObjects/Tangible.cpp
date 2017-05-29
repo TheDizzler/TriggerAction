@@ -95,6 +95,7 @@ void Tangible::setHitbox(const Hitbox box) {
 	testFrame.reset(guiFactory->createRectangleFrame(
 		Vector2(hitbox.position.x, hitbox.position.y),
 		Vector2(hitbox.size.x, hitbox.size.y)));
+		testFrame->setAlpha(.5);
 #endif //  DEBUG_HITBOXES
 }
 

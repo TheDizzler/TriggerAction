@@ -49,9 +49,9 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::ATTACKING_ACTION:
 			attackUpdate(deltaTime);
 			if (canCancelAction) {
-				if (joystick->bButtonStates[ControlButtons::Y]) {
+				if (joystick->yButton()) {
 					startMainAttack();
-				} else if (joystick->bButtonStates[ControlButtons::X]) {
+				} else if (joystick->xButton()) {
 					startJump();
 				} else if (joystick->bButtonStates[ControlButtons::L]) {
 					startBlock();
@@ -64,10 +64,10 @@ void PlayerCharacter::update(double deltaTime) {
 		default:
 			waitUpdate(deltaTime);
 		case CreatureAction::MOVING_ACTION:
-			if (joystick->bButtonStates[ControlButtons::Y]) {
-				//startMainAttack();
-				startDrawWeapon();
-			} else if (joystick->bButtonStates[ControlButtons::X]) {
+			if (joystick->yButton()) {
+				startMainAttack();
+				//startDrawWeapon();
+			} else if (joystick->xButton()) {
 				startJump();
 			} else if (joystick->bButtonStates[ControlButtons::L]) {
 				startBlock();
@@ -121,6 +121,7 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 	debugDraw(batch);
 #endif //  DEBUG_HITBOXES
 }
+
 
 void PlayerCharacter::initializeAssets() {
 	assetSet = characterData->assets;

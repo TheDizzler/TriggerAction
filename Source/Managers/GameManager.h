@@ -1,6 +1,6 @@
 #pragma once
 
-//#define DEBUG_HITBOXES
+#define DEBUG_HITBOXES
 
 #include <Keyboard.h>
 

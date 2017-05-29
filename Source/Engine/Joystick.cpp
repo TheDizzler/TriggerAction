@@ -65,6 +65,7 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	USAGE                usage[MAX_BUTTONS];
 	ULONG                i, usageLength, value;
 
+	memmove(lastButtonStates, bButtonStates, sizeof(bButtonStates));
 	hHeap = GetProcessHeap();
 
 	//
@@ -212,7 +213,7 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	/*double fpsUpdateTime = getTimeSinceStart();
 	++frames;
 	if (fpsUpdateTime > 1.0f) {
-		
+
 		wostringstream wss;
 		wss << "Joystick: " << endl;
 		wss << "frameCount: " << frames << " fpsUpdateTime: " << fpsUpdateTime << endl;
@@ -221,4 +222,28 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 		frames = 0;
 		start();
 	}*/
+}
+
+bool Joystick::yButton() {
+	return bButtonStates[ControlButtons::Y] && !lastButtonStates[ControlButtons::Y];
+}
+
+bool Joystick::xButton() {
+	return bButtonStates[ControlButtons::X] && !lastButtonStates[ControlButtons::X];
+}
+
+bool Joystick::aButton() {
+	return bButtonStates[ControlButtons::A] && !lastButtonStates[ControlButtons::A];
+}
+
+bool Joystick::bButton() {
+	return bButtonStates[ControlButtons::B] && !lastButtonStates[ControlButtons::B];
+}
+
+bool Joystick::lButton() {
+	return bButtonStates[ControlButtons::L] && !lastButtonStates[ControlButtons::L];
+}
+
+bool Joystick::rButton() {
+	return bButtonStates[ControlButtons::R] && !lastButtonStates[ControlButtons::R];
 }

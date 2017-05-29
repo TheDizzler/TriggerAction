@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
 
-	<hitbox x="6" y="6" width="9" height="6" z="24"/>
+	<hitbox x="0" y="0" width="13" height="8" z="24"/>
 	<weaponMenuIcon name="Katana" />
 
 
@@ -361,10 +361,10 @@
 			<sprite x="366" y="3" width="15" height="30" >
 				<origin x="6" y="28" />
 			</sprite>
-			<sprite x="366" y="62" width="16" height="31" >
+			<sprite x="366" y="41" width="16" height="31" >
 				<origin x="6" y="29" />
 			</sprite>
-			<sprite x="363" y="122" width="22" height="31" >
+			<sprite x="360" y="82" width="22" height="31" >
 				<origin x="12" y="29" />
 			</sprite>
 		</animation>
@@ -396,38 +396,44 @@
 		</animation>
 		<animation name="combat stance left" timePerFrame=".25" >
 			<sprite x="319" y="122" width="29" height="31" >
-				<origin x="16" y="30" />
+				<origin x="16" y="28" />
 			</sprite>
 			<sprite x="319" y="818" width="29" height="30" >
-				<origin x="17" y="29" />
+				<origin x="17" y="27" />
 			</sprite>
 			<sprite x="319" y="122" width="29" height="31" >
-				<origin x="16" y="30" />
+				<origin x="16" y="28" />
 			</sprite>
 			<sprite x="320" y="858" width="28" height="30" >
-				<origin x="14" y="29" />
+				<origin x="14" y="27" />
 			</sprite>
 		</animation>
-		<animation name="combat stance up" timePerFrame=".25" >
+		<animation name="combat stance up" timePerFrame=".5" >
+			<sprite x="367" y="123" width="17" height="30"  >
+				<origin x="9" y="29" />
+			</sprite>
 			<sprite x="365" y="818" width="18" height="29"  >
-				<origin x="9" y="28" />
+				<origin x="10" y="28" />
+			</sprite>
+			<sprite x="367" y="123" width="17" height="30"  >
+				<origin x="9" y="29" />
 			</sprite>
 			<sprite x="365" y="858" width="17" height="29"  >
-				<origin x="8" y="28" />
+				<origin x="9" y="28" />
 			</sprite>
 		</animation>
 		<animation name="combat stance right" timePerFrame=".25" >
 			<sprite x="399" y="122" width="28" height="31" >
-				<origin x="13" y="30" />
+				<origin x="13" y="28" />
 			</sprite>
 			<sprite x="399" y="818" width="28" height="30"  >
-				<origin x="12" y="29" />
+				<origin x="12" y="27" />
 			</sprite>
 			<sprite x="399" y="122" width="28" height="31" >
-				<origin x="13" y="30" />
+				<origin x="13" y="28" />
 			</sprite>
 			<sprite x="400" y="858" width="26" height="30"  >
-				<origin x="14" y="29" />
+				<origin x="14" y="27" />
 			</sprite>
 		</animation>
 
@@ -446,43 +452,80 @@
 		</animation>
 
 
-		<animation name="main attack down" >
+		<animation name="attack down" >
 			<!-- pre-attack -->
-			<sprite x="286" y="245" width="16" height="46" timePerFrame=".5"/>
+			<sprite x="286" y="245" width="16" height="46" frameTime=".25">
+				<origin x="8" y="45" />
+			</sprite>
 			<!-- first-attack -->
-			<sprite x="284" y="298" width="19" height="40" timePerFrame=".5"/>
+			<sprite x="284" y="298" width="19" height="40" frameTime=".5">
+				<origin x="8" y="29" />
+			</sprite>
 			<!-- first-attack cool-down -->
-			<sprite x="284" y="338" width="19" height="40" timePerFrame=".5"/>
-			<sprite x="280" y="381" width="27" height="33" timePerFrame=".5"/>
-		</animation>
-		<animation name="main attack left">
-			<sprite x="326" y="245" width="16" height="47" timePerFrame=".5" >
-				<origin x="" y="" />
+			<sprite x="284" y="338" width="19" height="40" frameTime=".5">
+				<origin x="8" y="29" />
 			</sprite>
-			<sprite x="320" y="303" width="29" height="30" timePerFrame=".5" >
-				<origin x="" y="" />
-			</sprite>
-			<sprite x="320" y="343" width="29" height="30" timePerFrame=".5" >
-				<origin x="" y="" />
-			</sprite>
-			<sprite x="325" y="380" width="28" height="34" timePerFrame=".5" >
-				<origin x="" y="" />
+			<sprite x="280" y="381" width="27" height="33" frameTime=".5">
+				<origin x="8" y="30" />
 			</sprite>
 			<!-- critical -->
-			<sprite x="325" y="380" width="28" height="34" timePerFrame=".5" >
-				<origin x="" y="" />
+			<sprite x="274" y="423" width="35" height="40" frameTime=".5" >
+				<origin x="28" y="37" />
 			</sprite>
 		</animation>
-		<animation name="main attack up" >
-			<sprite x="365" y="243" width="17" height="30" timePerFrame=".5" />
-			<sprite x="366" y="284" width="16" height="48" timePerFrame=".5" />
-			<sprite x="364" y="342" width="19" height="31" timePerFrame=".5" />
-			<sprite x="364" y="383" width="20" height="29" timePerFrame=".5" />
+		<animation name="attack left">
+			<sprite x="326" y="245" width="16" height="47" frameTime=".25" >
+				<origin x="8" y="46" />
+			</sprite>
+			<sprite x="318" y="303" width="31" height="30" frameTime=".5" >
+				<origin x="22" y="29" />
+			</sprite>
+			<sprite x="318" y="343" width="31" height="30" frameTime=".5" >
+				<origin x="22" y="29" />
+			</sprite>
+			<sprite x="325" y="380" width="28" height="34" frameTime=".5" >
+				<origin x="8" y="32" />
+			</sprite>
+			<!-- critical -->
+			<sprite x="325" y="423" width="22" height="37" frameTime=".5" >
+				<origin x="13" y="36" />
+			</sprite>
 		</animation>
-		<animation name="main attack right" >
-			<sprite x="406" y="294" width="16" height="48" timePerFrame=".5"/>
-			<sprite x="398" y="353" width="31" height="30" timePerFrame=".5"/>
-			<sprite x="398" y="393" width="31" height="30" timePerFrame=".5"/>
+		<animation name="attack up" >
+			<sprite x="365" y="245" width="16" height="47" frameTime=".25" >
+				<origin x="8" y="44" />
+			</sprite>
+			<sprite x="364" y="302" width="20" height="31" frameTime=".5" >
+				<origin x="11" y="28" />
+			</sprite>
+			<sprite x="365" y="343" width="20" height="29" frameTime=".5" >
+				<origin x="11" y="26" />
+			</sprite>
+			<sprite x="358" y="384" width="27" height="29" frameTime=".5" >
+				<origin x="18" y="26" />
+			</sprite>
+			<!-- critical -->
+			<sprite x="358" y="423" width="32" height="36" frameTime=".5" >
+				<origin x="8" y="33" />
+			</sprite>
+		</animation>
+		<animation name="attack right" >
+			<sprite x="406" y="244" width="16" height="48" frameTime=".25" >
+				<origin x="8" y="47" />
+			</sprite>
+			<sprite x="398" y="303" width="31" height="30" frameTime=".5" >
+				<origin x="8" y="29" />
+			</sprite>
+			<sprite x="398" y="343" width="31" height="30" frameTime=".5" >
+				<origin x="8" y="29" />
+			</sprite>
+			<sprite x="399" y="381" width="29" height="33" frameTime=".5" >
+				<origin x="21" y="29" />
+			</sprite>
+			<!-- critical -->
+			<sprite x="403" y="423" width="22" height="37" frameTime=".5" >
+				<origin x="8" y="34" />
+			</sprite>
 		</animation>
 
 		<animation name="block down">
@@ -492,7 +535,7 @@
 		</animation>
 		<animation name="block left">
 			<sprite x="323" y="562" width="22" height="32" >
-				<origin x="9" y="31" />
+				<origin x="9" y="29" />
 			</sprite>
 		</animation>
 		<animation name="block up">
@@ -502,7 +545,7 @@
 		</animation>
 		<animation name="block right">
 			<sprite x="403" y="562" width="22" height="32" >
-				<origin x="13" y="31" />
+				<origin x="13" y="29" />
 			</sprite>
 		</animation>
 
