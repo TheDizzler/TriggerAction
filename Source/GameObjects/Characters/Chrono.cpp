@@ -47,10 +47,10 @@ Chrono::~Chrono() {
 }
 
 
-
-
 void Chrono::update(double deltaTime) {
 	PlayerCharacter::update(deltaTime);
+	hitEffectManager.update(deltaTime);
+
 #ifdef  DEBUG_HITBOXES
 	attackFrame->update();
 #endif //  DEBUG_HITBOXES
@@ -58,6 +58,8 @@ void Chrono::update(double deltaTime) {
 
 void Chrono::draw(SpriteBatch * batch) {
 	PlayerCharacter::draw(batch);
+
+	hitEffectManager.draw(batch);
 #ifdef  DEBUG_HITBOXES
 	if (drawAttack)
 		attackFrame->draw(batch);
@@ -67,11 +69,13 @@ void Chrono::draw(SpriteBatch * batch) {
 int repeatAttackCycles = 0;
 void Chrono::attackUpdate(double deltaTime) {
 
+	attackLogged = attackLogged || joystick->yButton();
 	currentFrameTime += deltaTime;
 	if (currentFrameTime >= currentFrameDuration) {
 		switch (++currentFrameIndex) {
 			case 1: // first attack
 				if (repeatAttackCycles == 0) {
+					attackLogged = false;
 					attackBox.size = attackBoxSizes[facing];
 					attackBox.position = position;
 					switch (facing) {
@@ -102,7 +106,7 @@ void Chrono::attackUpdate(double deltaTime) {
 						attackBox.position.x, attackBox.position.y));
 #endif //  DEBUG_HITBOXES
 
-				// hit detection
+					// hit detection
 					for (Tangible* object : hitboxesAll) {
 						if (object == this) {
 							continue;
@@ -111,56 +115,77 @@ void Chrono::attackUpdate(double deltaTime) {
 						if (attackBox.collisionZ(object->getHitbox())) {
 							object->takeDamage(5);
 							// slash effect
-
+							hitEffectManager.newEffect(facing, position);
 						}
 					}
 
 					break;
 				} else {
 
-
-
 					break;
 				}
 			case 2:
-
+				if (attackLogged)
+					repeatAttackCycles = 6;
 #ifdef  DEBUG_HITBOXES
 				drawAttack = false;
 #endif //  DEBUG_HITBOXES
 				break;
 			case 3:
+				if (attackLogged) {
+					repeatAttackCycles = 6;
+					attackLogged = false;
+				}
 				if (++repeatAttackCycles < 5) {
 					currentFrameIndex = 1;
 					currentFrameDuration = .2;
-					break;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					return;
+				}
+
+				// if no input yet finish combo
+				endAttack();
+				return;
+			case 4:
+				if (attackLogged) {
+					attackLogged = false;
 				}
 				break;
 			case 5:
-				switch (facing) {
-					case Facing::RIGHT:
-						loadAnimation(combatStanceRight);
-						break;
-					case Facing::LEFT:
-						loadAnimation(combatStanceLeft);
-						break;
-					case Facing::DOWN:
-						loadAnimation(combatStanceDown);
-						break;
-					case Facing::UP:
-						loadAnimation(combatStanceUp);
-						break;
-				}
-				action = CreatureAction::WAITING_ACTION;
-				canCancelAction = true;
+				endAttack();
 				return;
 		}
 		currentFrameTime = 0;
 
+		currentFrameDuration
+			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
 		currentFrameRect
 			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
 		currentFrameOrigin
 			= currentAnimation->animationFrames[currentFrameIndex]->origin;
 	}
+}
+
+void Chrono::endAttack() {
+	switch (facing) {
+		case Facing::RIGHT:
+			loadAnimation(combatStanceRight);
+			break;
+		case Facing::LEFT:
+			loadAnimation(combatStanceLeft);
+			break;
+		case Facing::DOWN:
+			loadAnimation(combatStanceDown);
+			break;
+		case Facing::UP:
+			loadAnimation(combatStanceUp);
+			break;
+	}
+	action = CreatureAction::WAITING_ACTION;
+	canCancelAction = true;
 }
 
 void Chrono::startMainAttack() {
@@ -204,4 +229,105 @@ void Chrono::initializeAssets() {
 }
 
 void Chrono::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
+	hitEffectManager.loadHitEffects(weaponSet);
+}
+
+
+
+
+HitEffect::HitEffect(const Vector3& pos) {
+	position = pos;
+}
+
+HitEffect::~HitEffect() {
+}
+
+void HitEffect::load(GraphicsAsset* const graphicsAsset) {
+	texture = graphicsAsset->getTexture();
+	width = graphicsAsset->getWidth();
+	height = graphicsAsset->getHeight();
+
+	origin = graphicsAsset->getOrigin();
+
+	sourceRect = graphicsAsset->getSourceRect();
+}
+
+const float MAX_LIVE_TIME = 1.5;
+bool HitEffect::update(double deltaTime) {
+	timeLive += deltaTime;
+	if (timeLive >= MAX_LIVE_TIME) {
+		// die die die
+
+		return false;
+	}
+	return true;
+}
+
+void HitEffect::draw(SpriteBatch* batch) {
+
+
+	batch->Draw(texture.Get(), position,
+		&sourceRect, tint, rotation,
+		origin, scale, spriteEffect, layerDepth);
+}
+
+const int HitEffect::getWidth() const {
+	return sourceRect.right - sourceRect.left;
+}
+
+const int HitEffect::getHeight() const {
+	return sourceRect.bottom - sourceRect.top;
+}
+
+
+
+void HitEffectManager::loadHitEffects(shared_ptr<AssetSet> weaponSet) {
+
+	hitEffects[Facing::DOWN].clear();
+	hitEffects[Facing::DOWN].push_back(weaponSet->getAsset("Wooden Sword Down 1"));
+	hitEffects[Facing::DOWN].push_back(weaponSet->getAsset("Wooden Sword Down 2"));
+	hitEffects[Facing::DOWN].push_back(weaponSet->getAsset("Wooden Sword Down 3"));
+
+	hitEffects[Facing::LEFT].clear();
+	hitEffects[Facing::LEFT].push_back(weaponSet->getAsset("Wooden Sword Left 1"));
+	hitEffects[Facing::LEFT].push_back(weaponSet->getAsset("Wooden Sword Left 2"));
+	hitEffects[Facing::LEFT].push_back(weaponSet->getAsset("Wooden Sword Left 3"));
+
+	hitEffects[Facing::UP].clear();
+	hitEffects[Facing::UP].push_back(weaponSet->getAsset("Wooden Sword Up 1"));
+	hitEffects[Facing::UP].push_back(weaponSet->getAsset("Wooden Sword Up 2"));
+	hitEffects[Facing::UP].push_back(weaponSet->getAsset("Wooden Sword Up 3"));
+
+	hitEffects[Facing::RIGHT].clear();
+	hitEffects[Facing::RIGHT].push_back(weaponSet->getAsset("Wooden Sword Right 1"));
+	hitEffects[Facing::RIGHT].push_back(weaponSet->getAsset("Wooden Sword Right 2"));
+	hitEffects[Facing::RIGHT].push_back(weaponSet->getAsset("Wooden Sword Right 3"));
+}
+
+void HitEffectManager::update(double deltaTime) {
+	for (auto it = liveEffects.begin(); it != liveEffects.end(); ) {
+		if (!(*it).update(deltaTime)) {
+			// swap and pop
+			swap(*it, liveEffects.back());
+			liveEffects.pop_back();
+			if (liveEffects.size() == 0)
+				break;
+			continue;
+		}
+		++it;
+	}
+}
+
+void HitEffectManager::draw(SpriteBatch* batch) {
+	for (HitEffect hitEffect : liveEffects) {
+		hitEffect.draw(batch);
+	}
+}
+
+void HitEffectManager::newEffect(Facing facing, const Vector3& position) {
+
+	HitEffect fx(position);
+	fx.load(hitEffects[facing][0]);
+
+	liveEffects.push_back(fx);
 }

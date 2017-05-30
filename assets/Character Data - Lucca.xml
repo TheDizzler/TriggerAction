@@ -551,6 +551,27 @@
 				<origin x="6" y="31" />
 			</sprite>
 		</animation>
+
+		<animation name="hit down">
+			<sprite x="126" y="1040" width="16" height="31" >
+				<origin x="8" y="27" />
+			</sprite>
+		</animation>
+		<animation name="hit left">
+			<sprite x="165" y="1041" width="18" height="29" >
+				<origin x="7" y="28" />
+			</sprite>
+		</animation>
+		<animation name="hit up">
+			<sprite x="206" y="1046" width="16" height="28" >
+				<origin x="9" y="24" />
+			</sprite>
+		</animation>
+		<animation name="hit right">
+			<sprite x="245" y="1041" width="18" height="29" >
+				<origin x="12" y="27" />
+			</sprite>
+		</animation>
 	</spritesheet>
 
 

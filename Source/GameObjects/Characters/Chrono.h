@@ -1,6 +1,53 @@
 #pragma once
 #include "PlayerCharacter.h"
 
+
+class HitEffect : public IElement3D {
+public:
+	HitEffect(const Vector3& position);
+	virtual ~HitEffect();
+
+	/* GraphicsAsset is not stored in HitEffect. */
+	virtual void load(GraphicsAsset* const graphicsAsset);
+
+	bool update(double deltaTime);
+	virtual void draw(SpriteBatch* batch) override;
+
+
+	virtual const int getWidth() const override;
+	virtual const int getHeight() const override;
+
+private:
+
+
+	ComPtr<ID3D11ShaderResourceView> texture;
+	RECT sourceRect;
+
+	double timeLive = 0;
+
+	UINT width;
+	UINT height;
+	SpriteEffects spriteEffect = SpriteEffects_None;
+
+};
+
+/** Don't really need this. Just made implementatino easier. */
+class HitEffectManager {
+public:
+
+	void loadHitEffects(shared_ptr<AssetSet> weaponSet);
+
+	void update(double deltaTime);
+	void draw(SpriteBatch* bacth);
+
+	void newEffect(Facing facing, const Vector3& position);
+
+	vector<GraphicsAsset*> hitEffects[4];
+private:
+	vector<HitEffect> liveEffects;
+};
+
+
 class Chrono : public PlayerCharacter {
 public:
 	Chrono(shared_ptr<PlayerSlot> slot);
@@ -13,7 +60,10 @@ private:
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) override;
 	virtual void attackUpdate(double deltaTime) override;
+	void endAttack();
 	virtual void startMainAttack() override;
+
+	bool attackLogged = false;
 
 	Hitbox attackBox;
 	Vector3 attackBoxSizes[4];
@@ -21,4 +71,7 @@ private:
 	bool drawAttack = false;
 	unique_ptr<RectangleFrame> attackFrame;
 
+	HitEffectManager hitEffectManager;
 };
+
+

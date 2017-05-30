@@ -214,7 +214,7 @@ void GameEngine::update(double deltaTime) {
 							paused = false;
 							dialogCustom = false;
 							exit();
-							break;
+							return;
 						case PauseMenuItems::CONTINUE:
 							dialog->hide();
 							paused = false;
