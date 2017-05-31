@@ -40,7 +40,7 @@ public:
 	void update(double deltaTime);
 	void draw(SpriteBatch* bacth);
 
-	void newEffect(Facing facing, const Vector3& position);
+	void newEffect(Facing facing, const Vector3& position, USHORT hitNumber);
 
 	vector<GraphicsAsset*> hitEffects[4];
 private:
@@ -63,7 +63,28 @@ private:
 	void endAttack();
 	virtual void startMainAttack() override;
 
-	bool attackLogged = false;
+	USHORT currentComboAttack = 0;
+	void firstAttack();
+	void secondAttackStart();
+	void secondAttack();
+	void thirdAttackStart();
+	void thirdAttack();
+	double moveTime = 0;
+	bool yetAttacked = false;
+	bool yetAttackedThird = false;
+	bool finishedJump = false;
+	/** Position vector for lerp movement. */
+	Vector3 moveStart;
+	/** Position vectors for lerp movement. */
+	Vector3 moveEnd;
+
+
+
+	bool attackQueued = false;
+	enum AttackCombo {
+		NONE = -1, FIRST_ATTACK, SECOND_ATTACK, THIRD_ATTACK, AWAIT_INPUT
+	};
+	AttackCombo currentAttack = NONE;
 
 	Hitbox attackBox;
 	Vector3 attackBoxSizes[4];

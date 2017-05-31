@@ -66,107 +66,250 @@ void Chrono::draw(SpriteBatch * batch) {
 #endif //  DEBUG_HITBOXES
 }
 
-int repeatAttackCycles = 0;
+int awaitInputCycles = 0;
 void Chrono::attackUpdate(double deltaTime) {
 
-	attackLogged = attackLogged || joystick->yButton();
 	currentFrameTime += deltaTime;
-	if (currentFrameTime >= currentFrameDuration) {
-		switch (++currentFrameIndex) {
-			case 1: // first attack
-				if (repeatAttackCycles == 0) {
-					attackLogged = false;
-					attackBox.size = attackBoxSizes[facing];
-					attackBox.position = position;
-					switch (facing) {
-						case Facing::LEFT:
-							attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
-							attackBox.position.y += 5;
-							break;
-						case Facing::DOWN:
-							attackBox.position.y += attackBoxOffset.y;
-							attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
-							break;
-						case Facing::RIGHT:
-							attackBox.position.x += (currentFrameOrigin.x);
-							attackBox.position.y += 5;
-							break;
-						case Facing::UP:
-							attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
-							break;
-					}
-
-
-					attackBox.position.y -= attackBox.size.y;
-
-#ifdef  DEBUG_HITBOXES
-					drawAttack = true;
-					attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
-					attackFrame->setPosition(Vector2(
-						attackBox.position.x, attackBox.position.y));
-#endif //  DEBUG_HITBOXES
-
-					// hit detection
-					for (Tangible* object : hitboxesAll) {
-						if (object == this) {
-							continue;
-						}
-
-						if (attackBox.collisionZ(object->getHitbox())) {
-							object->takeDamage(5);
-							// slash effect
-							hitEffectManager.newEffect(facing, position);
-						}
-					}
-
-					break;
-				} else {
-
-					break;
+	//attackQueued = attackQueued || joystick->yButton();
+	switch (currentAttack) {
+		case FIRST_ATTACK:
+			if (currentFrameTime >= currentFrameDuration) {
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				if (++currentFrameIndex == 1) { // finished wind-up
+					firstAttack();
+				} else { // finished attack frame
+					currentAttack = AWAIT_INPUT;
+					canCancelAction = true;
 				}
-			case 2:
-				if (attackLogged)
-					repeatAttackCycles = 6;
+			}
+			break;
+		case AWAIT_INPUT:
+			// cycles 5 times between frame 2 and 1 until attack button pressed
+			//attackQueued = attackQueued || joystick->yButton();
+			if (joystick->bButtonStates[ControlButtons::Y]) {
+				canCancelAction = false;
+				switch (++currentComboAttack) {
+					case 3:
+						thirdAttackStart();
+						break;
+					case 2:
+					default:
+						currentComboAttack = 2;
+						secondAttackStart();
+						break;
+				}
 #ifdef  DEBUG_HITBOXES
 				drawAttack = false;
 #endif //  DEBUG_HITBOXES
-				break;
-			case 3:
-				if (attackLogged) {
-					repeatAttackCycles = 6;
-					attackLogged = false;
-				}
-				if (++repeatAttackCycles < 5) {
+			} else if (currentFrameTime >= currentFrameDuration) {
+				if (currentFrameIndex == 2) {
+					if (++awaitInputCycles > 2) {
+						endAttack();
+						return;
+					}
 					currentFrameIndex = 1;
-					currentFrameDuration = .2;
-					currentFrameRect
-						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-					currentFrameOrigin
-						= currentAnimation->animationFrames[currentFrameIndex]->origin;
-					return;
-				}
+				} else
+					currentFrameIndex = 2;
 
-				// if no input yet finish combo
-				endAttack();
-				return;
-			case 4:
-				if (attackLogged) {
-					attackLogged = false;
-				}
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+
+			}
+			break;
+		case SECOND_ATTACK:
+		{
+			moveTime += deltaTime;
+			double percentDone = moveTime / currentFrameDuration;
+			if (percentDone < 1) {
+				setPosition(Vector3::Lerp(moveStart, moveEnd, percentDone));
 				break;
-			case 5:
-				endAttack();
-				return;
-		}
-		currentFrameTime = 0;
+			} else if (!yetAttacked) {
+				yetAttacked = true;
+				currentFrameIndex = 4;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				secondAttack();
+				break;
+			}
 
-		currentFrameDuration
-			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-		currentFrameRect
-			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-		currentFrameOrigin
-			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+			if (currentFrameTime >= currentFrameDuration) {
+				currentAttack = AWAIT_INPUT;
+				currentFrameIndex = 1;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+			}
+
+		}
+		break;
+		case THIRD_ATTACK:
+			moveTime += deltaTime;
+			double percentMoved = moveTime / currentFrameDuration;
+			if (percentMoved < 1) {
+				setPosition(Vector3::Lerp(moveStart, moveEnd, percentMoved));
+				break;
+			} else if (percentMoved >= 1 && !finishedJump) {
+				moveTime = 0;
+				Vector3 temp = moveStart;
+				moveStart = position;
+				Vector3 temp2 = (moveEnd - temp);
+				moveEnd = position - temp2;
+				finishedJump = true;
+				break;
+			} else if (!yetAttackedThird) {
+				yetAttackedThird = true;
+				currentFrameIndex = 1;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				thirdAttack();
+
+				break;
+			}
+
+			if (currentFrameTime >= currentFrameDuration) {
+				currentAttack = AWAIT_INPUT;
+				currentFrameIndex = 1;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+			}
+
+			break;
 	}
+
+	//	if (currentFrameTime >= currentFrameDuration) {
+	//		switch (++currentFrameIndex) {
+	//			case 1: // first attack
+	//				if (repeatAttackCycles == 0) {
+	//					attackQueued = false;
+	//					attackBox.size = attackBoxSizes[facing];
+	//					attackBox.position = position;
+	//					switch (facing) {
+	//						case Facing::LEFT:
+	//							attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
+	//							attackBox.position.y += 5;
+	//							break;
+	//						case Facing::DOWN:
+	//							attackBox.position.y += attackBoxOffset.y;
+	//							attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+	//							break;
+	//						case Facing::RIGHT:
+	//							attackBox.position.x += (currentFrameOrigin.x);
+	//							attackBox.position.y += 5;
+	//							break;
+	//						case Facing::UP:
+	//							attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+	//							break;
+	//					}
+	//
+	//
+	//					attackBox.position.y -= attackBox.size.y;
+	//
+	//#ifdef  DEBUG_HITBOXES
+	//					drawAttack = true;
+	//					attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+	//					attackFrame->setPosition(Vector2(
+	//						attackBox.position.x, attackBox.position.y));
+	//#endif //  DEBUG_HITBOXES
+	//
+	//					// hit detection
+	//					for (Tangible* object : hitboxesAll) {
+	//						if (object == this) {
+	//							continue;
+	//						}
+	//
+	//						if (attackBox.collision(object->getHitbox())) {
+	//							object->takeDamage(5);
+	//							// slash effect
+	//							hitEffectManager.newEffect(facing, position);
+	//						}
+	//					}
+	//
+	//					break;
+	//				} else {
+	//
+	//					break;
+	//				}
+	//			case 2:
+	//				/*if (attackQueued)
+	//					repeatAttackCycles = 6;*/
+	//#ifdef  DEBUG_HITBOXES
+	//				drawAttack = false;
+	//#endif //  DEBUG_HITBOXES
+	//				break;
+	//			case 3:
+	//				if (attackQueued) {
+	//					repeatAttackCycles = 6;
+	//					attackQueued = false;
+	//
+	//				} else if (++repeatAttackCycles < 5) {
+	//					currentFrameIndex = 1;
+	//					currentFrameTime = 0;
+	//					currentFrameDuration
+	//						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+	//					currentFrameRect
+	//						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+	//					currentFrameOrigin
+	//						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+	//					return;
+	//				} else {
+	//					// if no input yet finish combo
+	//					endAttack();
+	//					return;
+	//				}
+	//				// next attack
+	//
+	//
+	//
+	//
+	//				break;
+	//			case 4:
+	//				if (attackQueued) {
+	//					attackQueued = false;
+	//				}
+	//				break;
+	//			case 5:
+	//				endAttack();
+	//				return;
+	//		}
+	//		currentFrameTime = 0;
+	//
+	//		currentFrameDuration
+	//			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+	//		currentFrameRect
+	//			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+	//		currentFrameOrigin
+	//			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+	//	}
 }
 
 void Chrono::endAttack() {
@@ -186,7 +329,258 @@ void Chrono::endAttack() {
 	}
 	action = CreatureAction::WAITING_ACTION;
 	canCancelAction = true;
+	currentAttack = NONE;
+#ifdef  DEBUG_HITBOXES
+	drawAttack = false;
+#endif //  DEBUG_HITBOXES
 }
+
+void Chrono::firstAttack() {
+
+	awaitInputCycles = 0;
+	attackQueued = false;
+	attackBox.size = attackBoxSizes[facing];
+	attackBox.position = position;
+	switch (facing) {
+		case Facing::LEFT:
+			attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
+			attackBox.position.y += 5;
+			break;
+		case Facing::DOWN:
+			attackBox.position.y += attackBoxOffset.y;
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			break;
+		case Facing::RIGHT:
+			attackBox.position.x += (currentFrameOrigin.x);
+			attackBox.position.y += 5;
+			break;
+		case Facing::UP:
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			break;
+	}
+
+
+	attackBox.position.y -= attackBox.size.y;
+
+#ifdef  DEBUG_HITBOXES
+	drawAttack = true;
+	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+	attackFrame->setPosition(Vector2(
+		attackBox.position.x, attackBox.position.y));
+#endif //  DEBUG_HITBOXES
+
+					// hit detection
+	for (Tangible* object : hitboxesAll) {
+		if (object == this) {
+			continue;
+		}
+
+		if (attackBox.collision(object->getHitbox())) {
+			object->takeDamage(5);
+			// slash effect
+			hitEffectManager.newEffect(facing, position, 0);
+		}
+	}
+
+}
+
+
+void Chrono::secondAttackStart() {
+
+	currentFrameIndex = 3;
+	currentAttack = SECOND_ATTACK;
+	yetAttacked = false;
+	attackQueued = false;
+	moveTime = 0;
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+
+	if (horzDirection > 10) {
+		facing = Facing::RIGHT;
+	} else if (horzDirection < -10) {
+		facing = Facing::LEFT;
+	} else if (vertDirection < -10) {
+		facing = Facing::UP;
+	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+	}
+
+
+
+	moveStart = position;
+	switch (facing) {
+		case Facing::LEFT:
+			moveEnd = position + Vector3(-15, 0, 0);
+			currentAnimation = attackLeft;
+			break;
+		case Facing::DOWN:
+			moveEnd = position + Vector3(0, 15, 0);
+			currentAnimation = attackDown;
+			break;
+		case Facing::RIGHT:
+			moveEnd = position + Vector3(15, 0, 0);
+			currentAnimation = attackRight;
+			break;
+		case Facing::UP:
+			moveEnd = position + Vector3(0, -15, 0);
+			currentAnimation = attackUp;
+			break;
+	}
+
+	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+	currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+	currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+
+}
+
+
+void Chrono::secondAttack() {
+
+	awaitInputCycles = 0;
+	attackQueued = false;
+	attackBox.size = attackBoxSizes[facing];
+	attackBox.position = position;
+	switch (facing) {
+		case Facing::LEFT:
+			attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
+			attackBox.position.y += 5;
+			break;
+		case Facing::DOWN:
+			attackBox.position.y += attackBoxOffset.y;
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			break;
+		case Facing::RIGHT:
+			attackBox.position.x += (currentFrameOrigin.x);
+			attackBox.position.y += 5;
+			break;
+		case Facing::UP:
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			break;
+	}
+
+
+	attackBox.position.y -= attackBox.size.y;
+
+#ifdef  DEBUG_HITBOXES
+	drawAttack = true;
+	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+	attackFrame->setPosition(Vector2(
+		attackBox.position.x, attackBox.position.y));
+#endif //  DEBUG_HITBOXES
+
+	// hit detection
+	for (Tangible* object : hitboxesAll) {
+		if (object == this) {
+			continue;
+		}
+
+		if (attackBox.collision(object->getHitbox())) {
+			object->takeDamage(5);
+			// slash effect
+			hitEffectManager.newEffect(facing, position, 1);
+		}
+	}
+}
+
+void Chrono::thirdAttackStart() {
+
+	currentFrameIndex = 0;
+	currentAttack = THIRD_ATTACK;
+	yetAttackedThird = false;
+	attackQueued = false;
+	finishedJump = false;
+	moveTime = 0;
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+
+	if (horzDirection > 10) {
+		facing = Facing::RIGHT;
+	} else if (horzDirection < -10) {
+		facing = Facing::LEFT;
+	} else if (vertDirection < -10) {
+		facing = Facing::UP;
+	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+	}
+
+
+
+	moveStart = position;
+	switch (facing) {
+		case Facing::LEFT:
+			moveEnd = position + Vector3(-15, 0, 10);
+			currentAnimation = attackLeft;
+			break;
+		case Facing::DOWN:
+			moveEnd = position + Vector3(0, 15, 10);
+			currentAnimation = attackDown;
+			break;
+		case Facing::RIGHT:
+			moveEnd = position + Vector3(15, 0, 10);
+			currentAnimation = attackRight;
+			break;
+		case Facing::UP:
+			moveEnd = position + Vector3(0, -15, 0);
+			currentAnimation = attackUp;
+			break;
+	}
+
+	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+	currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+	currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+
+}
+
+void Chrono::thirdAttack() {
+
+	awaitInputCycles = 0;
+	attackQueued = false;
+	attackBox.size = attackBoxSizes[facing];
+	attackBox.position = position;
+	switch (facing) {
+		case Facing::LEFT:
+			attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
+			attackBox.position.y += 5;
+			break;
+		case Facing::DOWN:
+			attackBox.position.y += attackBoxOffset.y;
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			break;
+		case Facing::RIGHT:
+			attackBox.position.x += (currentFrameOrigin.x);
+			attackBox.position.y += 5;
+			break;
+		case Facing::UP:
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			break;
+	}
+
+
+	attackBox.position.y -= attackBox.size.y;
+
+#ifdef  DEBUG_HITBOXES
+	drawAttack = true;
+	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+	attackFrame->setPosition(Vector2(
+		attackBox.position.x, attackBox.position.y));
+#endif //  DEBUG_HITBOXES
+
+	// hit detection
+	for (Tangible* object : hitboxesAll) {
+		if (object == this) {
+			continue;
+		}
+
+		if (attackBox.collision(object->getHitbox())) {
+			object->takeDamage(5);
+			// slash effect
+			hitEffectManager.newEffect(facing, position, 1);
+		}
+	}
+}
+
 
 void Chrono::startMainAttack() {
 
@@ -218,9 +612,13 @@ void Chrono::startMainAttack() {
 			break;
 	}
 
-	repeatAttackCycles = 0;
+	currentAttack = FIRST_ATTACK;
+	awaitInputCycles = 0;
 	action = CreatureAction::ATTACKING_ACTION;
 	canCancelAction = false;
+	currentComboAttack = 1;
+	yetAttacked = false;
+	yetAttackedThird = false;
 }
 
 
@@ -305,16 +703,13 @@ void HitEffectManager::loadHitEffects(shared_ptr<AssetSet> weaponSet) {
 }
 
 void HitEffectManager::update(double deltaTime) {
-	for (auto it = liveEffects.begin(); it != liveEffects.end(); ) {
-		if (!(*it).update(deltaTime)) {
-			// swap and pop
-			swap(*it, liveEffects.back());
+	for (int i = 0; i < liveEffects.size(); ) {
+		if (!liveEffects[i].update(deltaTime)) {
+			swap(liveEffects[i], liveEffects.back());
 			liveEffects.pop_back();
-			if (liveEffects.size() == 0)
-				break;
 			continue;
 		}
-		++it;
+		++i;
 	}
 }
 
@@ -324,10 +719,10 @@ void HitEffectManager::draw(SpriteBatch* batch) {
 	}
 }
 
-void HitEffectManager::newEffect(Facing facing, const Vector3& position) {
+void HitEffectManager::newEffect(Facing facing, const Vector3& position, USHORT hitNumber) {
 
 	HitEffect fx(position);
-	fx.load(hitEffects[facing][0]);
+	fx.load(hitEffects[facing][hitNumber]);
 
 	liveEffects.push_back(fx);
 }
