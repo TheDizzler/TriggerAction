@@ -408,7 +408,7 @@
 				<origin x="14" y="27" />
 			</sprite>
 		</animation>
-		<animation name="combat stance up" timePerFrame=".5" >
+		<animation name="combat stance up" timePerFrame=".25" >
 			<sprite x="367" y="123" width="17" height="30"  >
 				<origin x="9" y="29" />
 			</sprite>
@@ -649,10 +649,10 @@
 			<origin x="-18" y="33" />
 		</sprite>
 		<sprite name="Wooden Sword Right 2" x="475" y="59" width="11" height="22" >
-			<origin x="" y="" />
+			<origin x="-8" y="20" />
 		</sprite>
 		<sprite name="Wooden Sword Right 3" x="473" y="95" width="16" height="32" >
-			<origin x="" y="" />
+			<origin x="-18" y="33" />
 		</sprite>
 	</spritesheet>
 

@@ -53,6 +53,11 @@ protected:
 	Joystick* joystick;
 	CharacterData* characterData;	
 
+	/* A temp hitbox to test incoming collisions. */
+	Hitbox radarBox;
+
+	/** Possible actions. */
+	void movement(double deltaTime/*, int horzDirection, int vertDirection*/);
 	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
 	void startDrawWeapon();
 	virtual void startMainAttack() = 0;
@@ -97,14 +102,16 @@ protected:
 	virtual void blockUpdate(double deltaTime);
 	virtual void jumpUpdate(double deltaTime);
 
-	/** Possible actions. */
-	void movement(double deltaTime);
-	/* A temp hitbox to test incoming collisions. */
-	Hitbox radarBox;
+	
 
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) = 0;
 
+
+	shared_ptr<Animation> runDown;
+	shared_ptr<Animation> runLeft;
+	shared_ptr<Animation> runUp;
+	shared_ptr<Animation> runRight;
 
 	shared_ptr<Animation> standDown;
 	shared_ptr<Animation> standLeft;

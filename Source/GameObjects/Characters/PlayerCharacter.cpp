@@ -49,20 +49,42 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::ATTACKING_ACTION:
 			attackUpdate(deltaTime);
 			if (canCancelAction) {
-				if (joystick->yButton()) {
-					startMainAttack();
-				} else if (joystick->xButton()) {
+				if (joystick->xButton()) {
 					startJump();
 				} else if (joystick->bButtonStates[ControlButtons::L]) {
 					startBlock();
 				} else {
-					movement(deltaTime);
+					int horzDirection = joystick->lAxisX;
+					int vertDirection = joystick->lAxisY;
+
+					if (horzDirection > 10 || horzDirection < -10
+						|| vertDirection < -10 || vertDirection > 10) {
+						movement(deltaTime/*, horzDirection, vertDirection*/);
+					}
 				}
 			}
 			break;
 		case CreatureAction::WAITING_ACTION:
 		default:
 			waitUpdate(deltaTime);
+			if (joystick->yButton()) {
+				startMainAttack();
+				//startDrawWeapon();
+			} else if (joystick->xButton()) {
+				startJump();
+			} else if (joystick->bButtonStates[ControlButtons::L]) {
+				startBlock();
+			} else {
+				int horzDirection = joystick->lAxisX;
+				int vertDirection = joystick->lAxisY;
+				if (horzDirection > 10 || horzDirection < -10
+					|| vertDirection < -10 || vertDirection > 10) {
+					movement(deltaTime/*, horzDirection, vertDirection*/);
+
+				}
+				//moveUpdate(deltaTime);
+			}
+			break;
 		case CreatureAction::MOVING_ACTION:
 			if (joystick->yButton()) {
 				startMainAttack();
@@ -72,7 +94,13 @@ void PlayerCharacter::update(double deltaTime) {
 			} else if (joystick->bButtonStates[ControlButtons::L]) {
 				startBlock();
 			} else {
-				movement(deltaTime);
+				/*int horzDirection = joystick->lAxisX;
+				int vertDirection = joystick->lAxisY;
+				if (horzDirection > 10 || horzDirection < -10
+					|| vertDirection < -10 || vertDirection > 10) {*/
+					movement(deltaTime/*, horzDirection, vertDirection*/);
+
+				//} 
 				moveUpdate(deltaTime);
 			}
 
@@ -130,6 +158,11 @@ void PlayerCharacter::initializeAssets() {
 	standLeft = assetSet->getAnimation("stand left");
 	standUp = assetSet->getAnimation("stand up");
 	standRight = assetSet->getAnimation("stand right");
+
+	runDown = assetSet->getAnimation("run down");
+	runLeft = assetSet->getAnimation("run left");
+	runUp = assetSet->getAnimation("run up");
+	runRight = assetSet->getAnimation("run right");
 
 	walkDown = assetSet->getAnimation("walk down");
 	walkLeft = assetSet->getAnimation("walk left");
@@ -467,9 +500,11 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 }
 
 
-void PlayerCharacter::movement(double deltaTime) {
+void PlayerCharacter::movement(double deltaTime/*, int horzDirection, int vertDirection*/) {
 
-	Vector3 moveVector = getMovement(deltaTime, joystick->lAxisX, joystick->lAxisY);
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+	Vector3 moveVector = getMovement(deltaTime, horzDirection, vertDirection);
 	if (moveVector != Vector3::Zero) {
 
 		radarBox.position = hitbox.position + moveVector * 2;
@@ -530,16 +565,16 @@ void PlayerCharacter::movement(double deltaTime) {
 		moving = false;
 		switch (facing) {
 			case Facing::RIGHT:
-				loadAnimation(standRight);
+				loadAnimation(combatStanceRight);
 				break;
 			case Facing::LEFT:
-				loadAnimation(standLeft);
+				loadAnimation(combatStanceLeft);
 				break;
 			case Facing::DOWN:
-				loadAnimation(standDown);
+				loadAnimation(combatStanceDown);
 				break;
 			case Facing::UP:
-				loadAnimation(standUp);
+				loadAnimation(combatStanceUp);
 				break;
 		}
 	}
@@ -578,7 +613,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 
 		if (!moving || facing != Facing::RIGHT) {
 			if (runningNow)
-				loadAnimation("run right");
+				loadAnimation(runRight);
 			else
 				loadAnimation(walkRight);
 			moving = true;
@@ -608,7 +643,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 
 		if (!moving || facing != Facing::LEFT) {
 			if (runningNow)
-				loadAnimation("run left");
+				loadAnimation(runLeft);
 			else
 				loadAnimation(walkLeft);
 			moving = true;
@@ -626,7 +661,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 		moveVector = Vector3(0, -moveByY, 0);
 		if (!moving || facing != Facing::UP) {
 			if (runningNow)
-				loadAnimation("run up");
+				loadAnimation(runUp);
 			else
 				loadAnimation(walkUp);
 			moving = true;
@@ -642,7 +677,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 		moveVector = Vector3(0, moveByY, 0);
 		if (!moving || facing != Facing::DOWN) {
 			if (runningNow)
-				loadAnimation("run down");
+				loadAnimation(runDown);
 			else
 				loadAnimation(walkDown);
 			moving = true;

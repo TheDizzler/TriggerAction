@@ -69,6 +69,8 @@ private:
 	void secondAttack();
 	void thirdAttackStart();
 	void thirdAttack();
+	void fourthAttackStart();
+	void fourthAttack();
 	double moveTime = 0;
 	bool yetAttacked = false;
 	bool yetAttackedThird = false;
@@ -80,9 +82,9 @@ private:
 
 
 
-	bool attackQueued = false;
+	//bool attackQueued = false;
 	enum AttackCombo {
-		NONE = -1, FIRST_ATTACK, SECOND_ATTACK, THIRD_ATTACK, AWAIT_INPUT
+		NONE = -1, FIRST_ATTACK, SECOND_ATTACK, THIRD_ATTACK, FOURTH_ATTACK, AWAIT_INPUT
 	};
 	AttackCombo currentAttack = NONE;
 
