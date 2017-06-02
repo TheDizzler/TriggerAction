@@ -78,8 +78,7 @@ void Chrono::attackUpdate(double deltaTime) {
 			drawAttack = false;
 #endif //  DEBUG_HITBOXES
 
-			//attackQueued = attackQueued || joystick->yButton();
-			//if (joystick->bButtonStates[ControlButtons::Y]) {
+			waitingTime += deltaTime;
 			if (joystick->yButton()) {
 				canCancelAction = false;
 				switch (++currentComboAttack) {
@@ -93,9 +92,6 @@ void Chrono::attackUpdate(double deltaTime) {
 						fourthAttackStart();
 						break;
 
-						/*default:
-						endAttack();
-						*/
 				}
 			} else if (currentFrameTime >= currentFrameDuration) {
 				if (currentFrameIndex == 2) {
@@ -115,6 +111,9 @@ void Chrono::attackUpdate(double deltaTime) {
 				currentFrameOrigin
 					= currentAnimation->animationFrames[currentFrameIndex]->origin;
 			}
+
+			if (waitingTime >= CAN_CANCEL_COOLDOWN_TIME)
+				canCancelAction = true;
 			break;
 		case FIRST_ATTACK:
 			if (currentFrameTime >= currentFrameDuration) {
@@ -182,10 +181,10 @@ void Chrono::attackUpdate(double deltaTime) {
 		{
 			moveTime += deltaTime;
 			double percentMoved = moveTime / currentFrameDuration;
-			if (percentMoved < 1) {
+			if (percentMoved <= 1) {
 				setPosition(Vector3::Lerp(moveStart, moveEnd, percentMoved));
 				break;
-			} else if (percentMoved >= 1 && !finishedJump) {
+			} else if (percentMoved > 1 && !finishedJump) {
 				finishedJump = true;
 				moveTime = 0;
 				moveStart = position;
@@ -205,6 +204,9 @@ void Chrono::attackUpdate(double deltaTime) {
 				}
 				break;
 			} else if (!yetAttackedThird) {
+				Vector3 newPos = position;
+				newPos.z = 0;
+				setPosition(newPos); // insures we end on z = 0;
 				yetAttackedThird = true;
 				currentFrameIndex = 1;
 				currentFrameTime = 0;
@@ -233,19 +235,62 @@ void Chrono::attackUpdate(double deltaTime) {
 		}
 		break;
 		case FOURTH_ATTACK:
-			if (currentFrameTime >= currentFrameDuration * 2) {
-				endAttack();
-			} else if (currentFrameTime >= currentFrameDuration) {
-				if (++currentFrameIndex == 4) { // finished wind-up
-					currentFrameTime = 0;
-					currentFrameDuration
-						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-					currentFrameRect
-						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-					currentFrameOrigin
-						= currentAnimation->animationFrames[currentFrameIndex]->origin;
-					firstAttack();
+			if (!yetFourthAttack) {
+				fourthAttack();
+				yetFourthAttack = true;
+			}
+			moveTime += deltaTime;
+			double percentMoved = moveTime / currentFrameDuration;
+			if (percentMoved <= 1) {
+				setPosition(Vector3::Lerp(position, moveEnd, percentMoved));
+				currentFrameTime = 0;
+				break;
+			} else if (percentMoved > 1 && !finishedJump) {
+				finishedJump = true;
+				moveTime = 0;
+				moveStart = position;
+				currentFrameTime = 0;
+				currentFrameIndex = 1;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+
+				switch (facing) {
+					case Facing::LEFT:
+						moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
+						break;
+					case Facing::DOWN:
+						moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
+						break;
+					case Facing::RIGHT:
+						moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
+						break;
+					case Facing::UP:
+						moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
+						break;
 				}
+				break;
+			}
+			Vector3 newPos = position;
+			newPos.z = 0;
+			setPosition(newPos); // insures we end on z = 0;
+			if (currentFrameTime >= currentFrameDuration) {
+				if (++currentFrameIndex > 2)
+					currentFrameIndex = 1;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+			}
+			fourthAttackCooldownTime += deltaTime;
+			if (fourthAttackCooldownTime >= FOURTH_ATTACK_COOLDOWN_MAX) {
+				endAttack();
 			}
 			break;
 	}
@@ -269,6 +314,7 @@ void Chrono::endAttack() {
 	action = CreatureAction::WAITING_ACTION;
 	canCancelAction = true;
 	currentAttack = NONE;
+
 #ifdef  DEBUG_HITBOXES
 	drawAttack = false;
 #endif //  DEBUG_HITBOXES
@@ -328,39 +374,21 @@ void Chrono::secondAttackStart() {
 	currentAttack = SECOND_ATTACK;
 	yetAttacked = false;
 	moveTime = 0;
-
-	/*int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-	}*/
-
-
+	waitingTime = 0;
 
 	moveStart = position;
 	switch (facing) {
 		case Facing::LEFT:
 			moveEnd = position + Vector3(-15, 0, 0);
-			//currentAnimation = attackLeft;
 			break;
 		case Facing::DOWN:
 			moveEnd = position + Vector3(0, 15, 0);
-			//currentAnimation = attackDown;
 			break;
 		case Facing::RIGHT:
 			moveEnd = position + Vector3(15, 0, 0);
-			//currentAnimation = attackRight;
 			break;
 		case Facing::UP:
 			moveEnd = position + Vector3(0, -15, 0);
-			//currentAnimation = attackUp;
 			break;
 	}
 
@@ -425,20 +453,7 @@ void Chrono::thirdAttackStart() {
 	yetAttackedThird = false;
 	finishedJump = false;
 	moveTime = 0;
-
-	/*int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-	}
-*/
+	waitingTime = 0;
 
 
 	moveStart = position;
@@ -513,16 +528,25 @@ void Chrono::thirdAttack() {
 		}
 	}
 	hitEffectManager.newEffect(facing, position, 0);
+
 }
 
 void Chrono::fourthAttackStart() {
 
-	currentFrameIndex = 3;
+	currentFrameIndex = 4;
 	currentAttack = FOURTH_ATTACK;
 
 	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
 	currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
 	currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+
+	fourthAttackCooldownTime = 0;
+	waitingTime = 0;
+	moveTime = 0;
+	moveStart = position;
+	moveEnd = position + Vector3(0, 0, FOURTH_ATTACK_JUMP_HEIGHT);
+	yetFourthAttack = false;
+	finishedJump = false;
 }
 
 void Chrono::fourthAttack() {
@@ -570,7 +594,7 @@ void Chrono::fourthAttack() {
 			/*hitEffectManager.newEffect(facing, position, 3);*/
 		}
 	}
-	hitEffectManager.newEffect(facing, position, 3);
+	hitEffectManager.newEffect(facing, position, 2);
 }
 
 

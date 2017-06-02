@@ -63,6 +63,8 @@ private:
 	void endAttack();
 	virtual void startMainAttack() override;
 
+	double waitingTime = 0;
+	double CAN_CANCEL_COOLDOWN_TIME = .3;
 	USHORT currentComboAttack = 0;
 	void firstAttack();
 	void secondAttackStart();
@@ -71,9 +73,14 @@ private:
 	void thirdAttack();
 	void fourthAttackStart();
 	void fourthAttack();
+	int FOURTH_ATTACK_JUMP_HEIGHT = 20;
+	double FOURTH_ATTACK_COOLDOWN_MAX = 1.0;
+	double fourthAttackCooldownTime = 0;
+	double fourthAttackDuration = .5;
 	double moveTime = 0;
 	bool yetAttacked = false;
 	bool yetAttackedThird = false;
+	bool yetFourthAttack = false;
 	bool finishedJump = false;
 	/** Position vector for lerp movement. */
 	Vector3 moveStart;

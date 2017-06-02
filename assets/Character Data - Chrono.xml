@@ -619,30 +619,30 @@
 			<origin x="2" y="10" />
 		</sprite>
 		<sprite name="Wooden Sword Down 2" x="85" y="69" width="16" height="16" >
-			<origin x="0" y="0" />
+			<origin x="5" y="15" />
 		</sprite>
 		<sprite name="Wooden Sword Down 3" x="74" y="103" width="32" height="32" >
-			<origin x="0" y="0" />
+			<origin x="23" y="26" />
 		</sprite>
 
 		<sprite name="Wooden Sword Left 1" x="126" y="46" width="11" height="22" >
 			<origin x="29" y="34" />
 		</sprite>
 		<sprite name="Wooden Sword Left 2" x="187" y="59" width="11" height="22" >
-			<origin x="" y="" />
+			<origin x="29" y="17" />
 		</sprite>
 		<sprite name="Wooden Sword Left 3" x="184" y="95" width="16" height="32" >
-			<origin x="" y="" />
+			<origin x="29" y="34" />
 		</sprite>
 
 		<sprite name="Wooden Sword Up 1" x="258" y="42" width="11" height="29" >
 			<origin x="10" y="40" />
 		</sprite>
 		<sprite name="Wooden Sword Up 2" x="314" y="35" width="16" height="11" >
-			<origin x="8" y="37" />
+			<origin x="12" y="34" />
 		</sprite>
 		<sprite name="Wooden Sword Up 3" x="313" y="84" width="32" height="16" >
-			<origin x="" y="" />
+			<origin x="10" y="40" />
 		</sprite>
 
 		<sprite name="Wooden Sword Right 1" x="409" y="52" width="11" height="22" >
