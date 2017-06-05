@@ -22,8 +22,9 @@ public:
 	virtual void draw(SpriteBatch* batch);
 
 
-	string name;
-	USHORT currentHP, maxHP;
+	virtual void takeDamage(int damage) override;
+
+	
 	USHORT currentMP, maxMP;
 	/** Damage from physical attacks. */
 	USHORT PWR;
@@ -37,15 +38,9 @@ public:
 	USHORT EV;
 	/** Damage reduction and HP. */
 	USHORT STAM;
-	/** Defense against magical attacks. */
-	USHORT MDEF;
+	
 
-	/** Total attack power: PWR + WPN damage. */
-	USHORT ATKPWR;
-	/** Total defense power: EV + ARM. */
-	USHORT DEFPWR;
-
-	USHORT EXP = 0;
+	
 protected:
 	virtual void initializeAssets();
 

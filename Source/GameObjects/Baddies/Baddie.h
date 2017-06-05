@@ -22,21 +22,39 @@ public:
 	Baddie(BaddieData* baddieData);
 	virtual ~Baddie();
 
-	virtual void update(double deltaTime);
-	virtual void draw(SpriteBatch* batch);
+	virtual void update(double deltaTime) override;
+	virtual void draw(SpriteBatch* batch) override;
 
 
-	//virtual void setPosition(const Vector3& position) override;
+	virtual void takeDamage(int damage);
 
+
+	USHORT GOLD = 0;
 protected:
-	virtual void attackUpdate(double deltaTime);
 
 	Creature* target = NULL;
-	void startMainAttack(Vector3 direction);
-private:
+	virtual void startMainAttack(Vector3 direction) = 0;
+	virtual void attackUpdate(double deltaTime) = 0;
 
-	/** Range at which baddie will take an emergency action. */
+	const double TIME_TO_DIE = 1.5;
+	Color startTint;
+
+protected: // creature unique stuff
+
+	/** Range at which baddie will take an opportunity action. */
 	Vector3 threatRange;
 	float jumpSpeed;
 	Vector3 jumpVelocity;
+};
+
+
+
+class BlueImp : public Baddie {
+public:
+	BlueImp(BaddieData* baddieData);
+	virtual ~BlueImp();
+
+protected:
+	virtual void startMainAttack(Vector3 direction) override;
+	virtual void attackUpdate(double deltaTime) override;
 };

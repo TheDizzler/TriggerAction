@@ -11,14 +11,7 @@ Creature::~Creature() {
 }
 
 
-void Creature::takeDamage(int damage) {
 
-	hp -= damage;
-
-	action = CreatureAction::HIT_ACTION;
-	canCancelAction = false;
-	loadAnimation(hit);
-}
 
 
 void Creature::loadAnimation(shared_ptr<Animation> animation) {

@@ -332,14 +332,14 @@ void Chrono::firstAttack() {
 			break;
 		case Facing::DOWN:
 			attackBox.position.y += attackBoxOffset.y;
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 - 2;
 			break;
 		case Facing::RIGHT:
 			attackBox.position.x += (currentFrameOrigin.x);
 			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 -2;
 			break;
 	}
 
@@ -410,14 +410,14 @@ void Chrono::secondAttack() {
 			break;
 		case Facing::DOWN:
 			attackBox.position.y += attackBoxOffset.y;
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (/*getWidth() + */currentFrameOrigin.x) / 2;
 			break;
 		case Facing::RIGHT:
 			attackBox.position.x += (currentFrameOrigin.x);
 			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (/*getWidth() + */currentFrameOrigin.x) / 2 + 6;
 			break;
 	}
 
@@ -493,15 +493,19 @@ void Chrono::thirdAttack() {
 			attackBox.position.y += 5;
 			break;
 		case Facing::DOWN:
+			attackBox.size.x /= 2;
 			attackBox.position.y += attackBoxOffset.y;
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			//attackBox.position.x -= (getWidth() /*+ currentFrameOrigin.x*/) / 2;
+			attackBox.position.x -= attackBox.size.x/2;
 			break;
 		case Facing::RIGHT:
 			attackBox.position.x += (currentFrameOrigin.x);
 			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.size.x /= 2;
+			//attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= attackBox.size.x / 2;
 			break;
 	}
 
@@ -561,14 +565,14 @@ void Chrono::fourthAttack() {
 			break;
 		case Facing::DOWN:
 			attackBox.position.y += attackBoxOffset.y;
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (/*getWidth() + */currentFrameOrigin.x) / 2 - 2;
 			break;
 		case Facing::RIGHT:
 			attackBox.position.x += (currentFrameOrigin.x);
 			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (getWidth() /*+ currentFrameOrigin.x*/) / 2 - 4;
 			break;
 	}
 

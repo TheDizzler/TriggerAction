@@ -11,6 +11,7 @@ BaddieData::~BaddieData() {
 
 void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet) {
 
+	type = baddieDataNode.attribute("name").as_string();
 	xml_node hitboxNode = baddieDataNode.child("hitbox");
 
 	int rowdata[5] = {
@@ -60,49 +61,60 @@ Baddie::~Baddie() {
 
 void Baddie::update(double deltaTime) {
 
-	switch (action) {
-		case CreatureAction::WAITING_ACTION:
-			currentFrameTime += deltaTime;
-			if (currentFrameTime >= currentFrameDuration) {
-				if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
-					currentFrameIndex = 0;
+	if (isAlive) {
+		switch (action) {
+			case CreatureAction::WAITING_ACTION:
+				currentFrameTime += deltaTime;
+				if (currentFrameTime >= currentFrameDuration) {
+					if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+						currentFrameIndex = 0;
+					}
+					currentFrameTime = 0;
+					currentFrameDuration
+						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
 				}
-				currentFrameTime = 0;
-				currentFrameDuration
-					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-				currentFrameRect
-					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-				currentFrameOrigin
-					= currentAnimation->animationFrames[currentFrameIndex]->origin;
-			}
-			for (const auto& pc : pcs) {
-				Vector3 distance = pc->getHitbox()->position - hitbox.position;
+				for (const auto& pc : pcs) {
+					Vector3 distance = pc->getHitbox()->position - hitbox.position;
 
-				if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
-					// le petit attaque
-					distance.z = 0;
-					distance.Normalize();
-					startMainAttack(distance);
+					if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
+						// le petit attaque
+						distance.z = 0;
+						distance.Normalize();
+						startMainAttack(distance);
+					}
+
 				}
+				break;
+			case CreatureAction::MOVING_ACTION:
+				break;
+			case CreatureAction::ATTACKING_ACTION:
+				attackUpdate(deltaTime);
 
-			}
-			break;
-		case CreatureAction::MOVING_ACTION:
-			break;
-		case CreatureAction::ATTACKING_ACTION:
-			attackUpdate(deltaTime);
+				break;
 
-			break;
+			case CreatureAction::HIT_ACTION:
+				hitUpdate(deltaTime);
+				break;
 
-		case CreatureAction::HIT_ACTION:
-			hitUpdate(deltaTime);
-			break;
-
-	}
+		}
 
 #ifdef  DEBUG_HITBOXES
-	debugUpdate();
+		debugUpdate();
 #endif //  DEBUG_HITBOXES
+	} else {
+		timeSinceDeath += deltaTime;
+
+		double percentDead = timeSinceDeath / TIME_TO_DIE;
+		tint = Color::Lerp(startTint, Color(0, 0, 0, 0), percentDead);
+		if (percentDead >= 1) {
+			// finish off creature
+
+		}
+	}
 }
 
 
@@ -121,43 +133,39 @@ void Baddie::draw(SpriteBatch* batch) {
 }
 
 
-void Baddie::attackUpdate(double deltaTime) {
-	currentFrameTime += deltaTime;
-	if (currentFrameTime >= currentFrameDuration) {
-		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
-			// attack sequence completed
-			canCancelAction = true;
-			loadAnimation(walkLeft);
-			action = CreatureAction::WAITING_ACTION;
-			return;
-		}
-		currentFrameTime = 0;
-		currentFrameDuration
-			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-		currentFrameRect
-			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-		currentFrameOrigin
-			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+void Baddie::takeDamage(int damage) {
+
+	if ((hp -= damage) < 0) {
+		hp = 0;
+		isAlive = false;
+		timeSinceDeath = 0;
+		startTint = tint;
 	}
 
-
-	switch (currentFrameIndex) {
-		case 0:
-			break;
-		case 1:
-			// jump forward
-			moveBy(jumpVelocity * deltaTime);
-			/*for (auto& pc : pcs) {
-				if (hitbox.collision
-
-			}*/
-			break;
-
-
-	}
+	action = CreatureAction::HIT_ACTION;
+	canCancelAction = false;
+	loadAnimation(hit);
 }
 
-void Baddie::startMainAttack(Vector3 direction) {
+
+
+
+BlueImp::BlueImp(BaddieData* baddieData) : Baddie(baddieData) {
+
+	name = baddieData->type;
+	hp = 13;
+	DEFPWR = 127;
+	MDEF = 50;
+	EXP = 2;
+	TP = 1;
+	GOLD = 12;
+}
+
+BlueImp::~BlueImp() {
+}
+
+
+void BlueImp::startMainAttack(Vector3 direction) {
 
 	action = CreatureAction::ATTACKING_ACTION;
 	canCancelAction = false;
@@ -197,4 +205,41 @@ void Baddie::startMainAttack(Vector3 direction) {
 		= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
 	currentFrameOrigin
 		= currentAnimation->animationFrames[currentFrameIndex]->origin;
+}
+
+
+void BlueImp::attackUpdate(double deltaTime) {
+	currentFrameTime += deltaTime;
+	if (currentFrameTime >= currentFrameDuration) {
+		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+			// attack sequence completed
+			canCancelAction = true;
+			loadAnimation(walkLeft);
+			action = CreatureAction::WAITING_ACTION;
+			return;
+		}
+		currentFrameTime = 0;
+		currentFrameDuration
+			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+		currentFrameRect
+			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+		currentFrameOrigin
+			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+	}
+
+
+	switch (currentFrameIndex) {
+		case 0:
+			break;
+		case 1:
+			// jump forward
+			moveBy(jumpVelocity * deltaTime);
+			/*for (auto& pc : pcs) {
+			if (hitbox.collision
+
+			}*/
+			break;
+
+
+	}
 }

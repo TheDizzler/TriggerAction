@@ -150,6 +150,19 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 #endif //  DEBUG_HITBOXES
 }
 
+void PlayerCharacter::takeDamage(int damage) {
+
+	if ((hp -= damage) < 0) {
+		hp = 0;
+		isAlive = false;
+		timeSinceDeath = 0;
+	}
+
+	action = CreatureAction::HIT_ACTION;
+	canCancelAction = false;
+	loadAnimation(hit);
+}
+
 
 void PlayerCharacter::initializeAssets() {
 	assetSet = characterData->assets;

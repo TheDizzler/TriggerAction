@@ -209,7 +209,6 @@ unique_ptr<BaddieData> GFXAssetManager::getBaddieData(
 				thisBaddie = baddieNode.attribute("name").as_string();
 				if (thisBaddie == baddieName) {
 
-					//if (getAssetSet(baddieName.c_str()) == NULL) {
 						string assetsDir = baddieFileroot.attribute("dir").as_string();
 						if (!getSpriteSheetData(device, baddieNode, assetsDir)) {
 							wostringstream wss;
@@ -218,7 +217,6 @@ unique_ptr<BaddieData> GFXAssetManager::getBaddieData(
 							GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
 							return baddieData;
 						}
-					//}
 					baddieData->loadData(baddieNode, getAssetSet(baddieName.c_str()));
 
 					break;

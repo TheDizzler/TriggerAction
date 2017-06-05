@@ -6,12 +6,12 @@ public:
 	Creature();
 	virtual ~Creature();
 
-	virtual void takeDamage(int damage);
-
 	virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
-	/** NOTE: Currently returns FALSE always! */
+	virtual void takeDamage(int damage) = 0;
+
+	/** NOTE: NOT USED! Currently returns FALSE always! */
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
 
 	virtual const int getHeight() const;
@@ -20,6 +20,19 @@ public:
 	virtual void moveBy(const Vector3& moveVector);
 	virtual void setPosition(const Vector3& position);
 
+	string name;
+	USHORT currentHP = 0, maxHP = 0;
+	/** Total attack power: PWR + WPN damage. */
+	USHORT ATKPWR = 0;
+	/** Total defense power: EV + ARM. */
+	USHORT DEFPWR = 0;
+	/** Defense against magical attacks. */
+	USHORT MDEF = 0;
+	/** Amount given when Baddie killed or current exp of PC */
+	USHORT EXP = 0;
+	/** Amont given when Baddie killed or current TP of PC. */
+	USHORT TP = 0;
+	
 protected:
 
 	enum CreatureAction {
@@ -28,6 +41,8 @@ protected:
 	};
 	CreatureAction action = WAITING_ACTION;
 	bool canCancelAction = true;
+
+	bool isAlive = true;
 
 	virtual void moveUpdate(double deltaTime);
 	virtual void attackUpdate(double deltaTime) = 0;
@@ -68,4 +83,5 @@ protected:
 	double currentFrameTime = -1;
 	int currentFrameIndex = 0;
 
+	double timeSinceDeath = 0;
 };

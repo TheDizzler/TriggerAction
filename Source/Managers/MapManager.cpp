@@ -21,7 +21,7 @@ Map::~Map() {
 
 
 void Map::update(double deltaTime) {
-	
+
 	for (const auto& layer : layerMap) {
 		layer.second->update(deltaTime);
 	}
@@ -74,10 +74,16 @@ void Map::placeBaddie(xml_node objectNode) {
 	USHORT gid = objectNode.attribute("gid").as_int();
 	Vector3 pos(objectNode.attribute("x").as_int(), objectNode.attribute("y").as_int(), 0);
 
-	unique_ptr<Baddie> baddie = make_unique<Baddie>(baddieDataMap[gid].get());
+	if (baddieDataMap[gid]->type == "Blue Imp") {
+		unique_ptr<Baddie> baddie = make_unique<BlueImp>(baddieDataMap[gid].get());
+		baddie->setPosition(pos);
+
+		baddies.push_back(move(baddie));
+	}
+	/*unique_ptr<Baddie> baddie = make_unique<Baddie>(baddieDataMap[gid].get());
 	baddie->setPosition(pos);
 
-	baddies.push_back(move(baddie));
+	baddies.push_back(move(baddie));*/
 
 }
 
@@ -407,7 +413,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						tile->setPosition(position);
 						hitboxesAll.push_back(tile.get());
 						layer->tiles.push_back(move(tile));
-						
+
 					}
 				} else {
 
