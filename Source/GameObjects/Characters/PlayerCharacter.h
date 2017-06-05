@@ -19,7 +19,7 @@ public:
 	void setInitialPosition(const Vector2& startingPosition);
 
 	virtual void update(double deltaTime);
-	virtual void draw(SpriteBatch* batch);
+	virtual void draw(SpriteBatch* batch) override;
 
 
 	virtual void takeDamage(int damage) override;

@@ -1,8 +1,7 @@
 #include "../pch.h"
 #include "MapManager.h"
+#include "../Engine/GameEngine.h"
 
-//map<int, float> Map::layerDepthMap;
-//int Map::tileWidth, Map::tileHeight;
 double Map::depthPerTile;
 double Map::depthPerPixel;
 
@@ -26,8 +25,18 @@ void Map::update(double deltaTime) {
 		layer.second->update(deltaTime);
 	}
 
-	for (const auto& baddie : baddies)
-		baddie->update(deltaTime);
+	for (int i = 0; i < baddies.size(); ) {
+		if (baddies[i]->update(deltaTime)) {
+			vector<Tangible*>::iterator it =
+				find(hitboxesAll.begin(), hitboxesAll.end(), baddies[i].get());
+			hitboxesAll.erase(it);
+
+			swap(baddies[i], baddies.back());
+			baddies.pop_back();
+			continue;
+		}
+		++i;
+	}
 }
 
 
@@ -36,15 +45,7 @@ void Map::draw(SpriteBatch* batch) {
 	for (const auto& layer : layerMap) { // using maps are not efficient
 		layer.second->draw(batch);
 	}
-	/* layerMap["ground"]->draw(batch);
-	layerMap["far field"]->draw(batch);
-	layerMap["collision objects"]->draw(batch);
-	layerMap["useable objects"]->draw(batch);
-	layerMap["collision objects 2"]->draw(batch);
-	layerMap["cover objects 2"]->draw(batch);
-	layerMap["cover objects"]->draw(batch);
-	layerMap["near field"]->draw(batch);
-	layerMap["animated layer"]->draw(batch);*/
+
 
 	for (const auto& baddie : baddies)
 		baddie->draw(batch);
@@ -123,7 +124,7 @@ MapParser::MapParser(ComPtr<ID3D11Device> dev) {
 MapParser::~MapParser() {
 }
 
-#include "../Engine/GameEngine.h"
+
 bool MapParser::parseMap(xml_node mapRoot, string mapsDir) {
 
 	map = make_unique<Map>();

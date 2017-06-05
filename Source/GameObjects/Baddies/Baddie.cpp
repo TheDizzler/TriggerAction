@@ -59,7 +59,7 @@ Baddie::~Baddie() {
 }
 
 
-void Baddie::update(double deltaTime) {
+bool Baddie::update(double deltaTime) {
 
 	if (isAlive) {
 		switch (action) {
@@ -112,9 +112,11 @@ void Baddie::update(double deltaTime) {
 		tint = Color::Lerp(startTint, Color(0, 0, 0, 0), percentDead);
 		if (percentDead >= 1) {
 			// finish off creature
-
+			return true;
 		}
 	}
+
+	return false;
 }
 
 

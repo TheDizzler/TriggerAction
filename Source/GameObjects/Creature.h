@@ -6,7 +6,7 @@ public:
 	Creature();
 	virtual ~Creature();
 
-	virtual void update(double deltaTime) = 0;
+	//virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
 	virtual void takeDamage(int damage) = 0;

@@ -22,7 +22,7 @@ public:
 	Baddie(BaddieData* baddieData);
 	virtual ~Baddie();
 
-	virtual void update(double deltaTime) override;
+	bool update(double deltaTime);
 	virtual void draw(SpriteBatch* batch) override;
 
 
