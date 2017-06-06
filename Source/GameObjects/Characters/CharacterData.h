@@ -20,6 +20,7 @@ public:
 
 	unique_ptr<Hitbox> hitbox;
 	Vector3 weaponPositions[4];
+	Vector3 attackBoxSizes[4];
 
 
 	string weaponType;

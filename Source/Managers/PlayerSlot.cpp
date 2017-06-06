@@ -1,11 +1,14 @@
 #include "../pch.h"
 #include "PlayerSlot.h"
+#include "../GUIObjects/MenuDialog.h"
+#include "../GUIObjects/PCStatusDialog.h"
+#include "../Engine/GameEngine.h"
+
 
 vector<shared_ptr<PlayerSlot>> activeSlots;
 deque<shared_ptr<PlayerSlot>> waitingSlots;
 
-#include "../GUIObjects/MenuDialog.h"
-#include "../Engine/GameEngine.h"
+
 PlayerSlot::PlayerSlot(size_t slotNum) : slotNumber(slotNum) {
 
 
@@ -23,7 +26,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 	if (characterLocked) {
 
 	} else {
-		
+
 		if (!characterSelected) {
 			if (joystick->lAxisX < -10) {
 				repeatDelayTime += deltaTime;
@@ -94,6 +97,10 @@ void PlayerSlot::waiting() {
 
 void PlayerSlot::pairWithDialog(DynamicDialog* dialog) {
 	pcDialog = dialog;
+}
+
+void PlayerSlot::pairWithStatusDialog(PCStatusDialog* dialog) {
+	statusDialog = dialog;
 }
 
 

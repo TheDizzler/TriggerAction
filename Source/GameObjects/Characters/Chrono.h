@@ -81,7 +81,7 @@ private:
 	bool yetAttacked = false;
 	bool yetAttackedThird = false;
 	bool yetFourthAttack = false;
-	bool finishedJump = false;
+	//bool finishedJump = false;
 	/** Position vector for lerp movement. */
 	Vector3 moveStart;
 	/** Position vectors for lerp movement. */

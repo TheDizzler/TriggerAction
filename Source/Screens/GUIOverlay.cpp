@@ -101,12 +101,13 @@ void GUIOverlay::initializeTitleScreen(
 }
 
 
-void GUIOverlay::initializeLevelScreen(unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS]) {
+void GUIOverlay::initializeLevelScreen(
+	unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS]) {
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		if (pcStatusDialogs[i].get() == NULL)
 			continue;
-		slotManager->playerSlots[i]->pairWithDialog(pcStatusDialogs[i].get());
+		slotManager->playerSlots[i]->pairWithStatusDialog(pcStatusDialogs[i].get());
 		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcStatusDialogs[i].get();
 		hudDialogs[HUDDIALOG::PLAYER1 + i]->show();
 	}

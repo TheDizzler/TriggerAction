@@ -95,25 +95,32 @@ void Creature::moveUpdate(double deltaTime) {
 	}
 }
 
+
 void Creature::hitUpdate(double deltaTime) {
 
-	currentFrameTime += deltaTime;
-	if (currentFrameTime >= currentFrameDuration) {
-		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
-			// hit sequence done
-			canCancelAction = true;
-			loadAnimation(walkLeft);
-			action = CreatureAction::WAITING_ACTION;
-			return;
+	if (knockBackVelocity != Vector3::Zero) {
+		moveBy(knockBackVelocity);
+		knockBackVelocity += GRAVITY * deltaTime;
+		if (position.z <= 0) {
+			knockBackVelocity = Vector3::Zero;
 		}
-		currentFrameTime = 0;
-		currentFrameDuration
-			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-		currentFrameRect
-			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-		currentFrameOrigin
-			= currentAnimation->animationFrames[currentFrameIndex]->origin;
-
+	} else {
+		currentFrameTime += deltaTime;
+		if (currentFrameTime >= currentFrameDuration) {
+			if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+				// hit sequence done
+				canCancelAction = true;
+				loadAnimation(walkLeft);
+				action = CreatureAction::WAITING_ACTION;
+				return;
+			}
+			currentFrameTime = 0;
+			currentFrameDuration
+				= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+			currentFrameRect
+				= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+			currentFrameOrigin
+				= currentAnimation->animationFrames[currentFrameIndex]->origin;
+		}
 	}
-
 }

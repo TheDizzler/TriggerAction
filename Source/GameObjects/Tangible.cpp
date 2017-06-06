@@ -95,7 +95,7 @@ void Tangible::setHitbox(const Hitbox box) {
 	testFrame.reset(guiFactory->createRectangleFrame(
 		Vector2(hitbox.position.x, hitbox.position.y),
 		Vector2(hitbox.size.x, hitbox.size.y)));
-		testFrame->setAlpha(.5);
+	testFrame->setAlpha(.5);
 #endif //  DEBUG_HITBOXES
 }
 
@@ -122,6 +122,12 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 #ifdef  DEBUG_HITBOXES
 	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
 #endif //  DEBUG_HITBOXES
+}
+
+void Tangible::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
+
+	velocityOfHit.Normalize();
+	knockBackVelocity = velocityOfHit * weightOfHit / weight;
 }
 
 

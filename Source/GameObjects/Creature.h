@@ -9,7 +9,6 @@ public:
 	//virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
-	virtual void takeDamage(int damage) = 0;
 
 	/** NOTE: NOT USED! Currently returns FALSE always! */
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
@@ -21,7 +20,7 @@ public:
 	virtual void setPosition(const Vector3& position);
 
 	string name;
-	USHORT currentHP = 0, maxHP = 0;
+	SHORT currentHP = 0, maxHP = 0;
 	/** Total attack power: PWR + WPN damage. */
 	USHORT ATKPWR = 0;
 	/** Total defense power: EV + ARM. */
@@ -43,6 +42,8 @@ protected:
 	bool canCancelAction = true;
 
 	bool isAlive = true;
+	// use this whenever gravity is doing its business
+	bool falling = false;
 
 	virtual void moveUpdate(double deltaTime);
 	virtual void attackUpdate(double deltaTime) = 0;

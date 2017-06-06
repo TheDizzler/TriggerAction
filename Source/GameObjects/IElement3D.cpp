@@ -14,7 +14,7 @@ void IElement3D::moveBy(const Vector3& moveVector) {
 
 	position += moveVector;
 	drawPosition.x += moveVector.x;
-	drawPosition.y += moveVector.y + moveVector.z;
+	drawPosition.y += moveVector.y - moveVector.z;
 }
 
 

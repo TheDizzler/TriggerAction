@@ -79,3 +79,15 @@ void PCStatusDialog::draw(SpriteBatch* batch) {
 	hpLabel->draw(batch);
 	mpLabel->draw(batch);
 }
+
+void PCStatusDialog::updateHP() {
+	wostringstream woo;
+	woo << "HP: " << player->currentHP << "/" << player->maxHP;
+	hpLabel->setText(woo.str());
+}
+
+void PCStatusDialog::updateMP() {
+	wostringstream woo;
+	woo << "MP: " << player->currentMP << "/" << player->maxMP;
+	mpLabel->setText(woo.str());
+}

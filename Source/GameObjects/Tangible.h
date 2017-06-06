@@ -2,8 +2,9 @@
 
 #include "IElement3D.h"
 
+const Vector3 GRAVITY(0, 0, -9.8);
+
 class Hitbox {
-//friend class Tangible;
 public:
 	Hitbox(); // required for use as non-pointer
 	Hitbox(int rowdata[5]);
@@ -29,12 +30,11 @@ enum Facing {
 	LEFT, DOWN, RIGHT, UP
 };
 
-/* A drawable asset with Hitboxes and HP (optional?). */
+/* A drawable asset with Hitboxes. */
 class Tangible {
 public:
 	virtual ~Tangible();
 
-	virtual void takeDamage(int damage) = 0;
 
 	void debugUpdate();
 	void debugDraw(SpriteBatch* batch);
@@ -47,8 +47,11 @@ public:
 	virtual const Hitbox* getHitbox() const = 0;
 	void moveHitboxBy(const Vector3& moveVector);
 	void setHitboxPosition(const Vector3& newPosition);
+
+	virtual void takeDamage(int damage) = 0;
+	/** This assumes zero defender initial velocity. */
+	virtual void knockBack(Vector3 velocityOfHit, USHORT weightOfHit);
 protected:
-	int hp;
 
 	Hitbox hitbox;
 	/** Hit tests should check if objects collide in x and y axii of main hitbox before
@@ -56,6 +59,10 @@ protected:
 	vector<unique_ptr<Hitbox> > subHitboxes;
 
 	unique_ptr<RectangleFrame> testFrame;
+
+	/** Used to calculate knockback. */
+	USHORT weight = 1;
+	Vector3 knockBackVelocity = Vector3::Zero;
 
 private:
 	Vector3 hitboxOffset;

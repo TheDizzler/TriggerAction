@@ -91,12 +91,11 @@ protected:
 
 
 	bool lastCollision = false;
-	//virtual void attackUpdate(double deltaTime) override;
 	void drawWeaponUpdate(double deltaTime);
 	virtual void waitUpdate(double deltaTime);
 	virtual void blockUpdate(double deltaTime);
 	virtual void jumpUpdate(double deltaTime);
-
+	virtual void hitUpdate(double deltaTime);
 	
 
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
@@ -127,4 +126,9 @@ protected:
 	shared_ptr<Animation> combatStanceLeft;
 	shared_ptr<Animation> combatStanceUp;
 	shared_ptr<Animation> combatStanceRight;
+
+	shared_ptr<Animation> hitDown;
+	shared_ptr<Animation> hitLeft;
+	shared_ptr<Animation> hitUp;
+	shared_ptr<Animation> hitRight;
 };

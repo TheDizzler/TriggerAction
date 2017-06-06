@@ -1,7 +1,7 @@
 #include "../../pch.h"
 #include "Baddie.h"
-//#include "../../Managers/MapManager.h"
 #include "../../Managers/GameManager.h"
+#include "../../Engine/GameEngine.h"
 
 BaddieData::BaddieData() {
 }
@@ -19,8 +19,37 @@ void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet
 		hitboxNode.attribute("width").as_int(), hitboxNode.attribute("height").as_int(),
 		hitboxNode.attribute("z").as_int()
 	};
-
 	hitbox = make_unique<Hitbox>(rowdata);
+
+	xml_node weapPosNode = baddieDataNode.child("weaponPosition");
+	xml_node down = weapPosNode.child("down");
+	xml_node left = weapPosNode.child("left");
+	xml_node up = weapPosNode.child("up");
+	xml_node right = weapPosNode.child("right");
+	weaponPositions[Facing::DOWN] = Vector3(down.attribute("x").as_int(),
+		down.attribute("y").as_int(), down.attribute("z").as_int());
+	weaponPositions[Facing::LEFT] = Vector3(left.attribute("x").as_int(),
+		left.attribute("y").as_int(), left.attribute("z").as_int());
+	weaponPositions[Facing::UP] = Vector3(up.attribute("x").as_int(),
+		up.attribute("y").as_int(), up.attribute("z").as_int());
+	weaponPositions[Facing::RIGHT] = Vector3(right.attribute("x").as_int(),
+		right.attribute("y").as_int(), right.attribute("z").as_int());
+
+	xml_node attackBoxSize = baddieDataNode.child("attackBoxSizes");
+	down = attackBoxSize.child("down");
+	left = attackBoxSize.child("left");
+	up = attackBoxSize.child("up");
+	right = attackBoxSize.child("right");
+	attackBoxSizes[Facing::DOWN] = Vector3(down.attribute("x").as_int(),
+		down.attribute("y").as_int(), down.attribute("z").as_int());
+	attackBoxSizes[Facing::LEFT] = Vector3(left.attribute("x").as_int(),
+		left.attribute("y").as_int(), left.attribute("z").as_int());
+	attackBoxSizes[Facing::UP] = Vector3(up.attribute("x").as_int(),
+		up.attribute("y").as_int(), up.attribute("z").as_int());
+	attackBoxSizes[Facing::RIGHT] = Vector3(right.attribute("x").as_int(),
+		right.attribute("y").as_int(), right.attribute("z").as_int());
+
+
 	assets = assetSet;
 }
 
@@ -31,7 +60,7 @@ Baddie::Baddie(BaddieData* data) {
 	setHitbox(data->hitbox.get());
 	hitboxesAll.push_back(this);
 
-	threatRange = Vector3(25, 25, 20);
+	threatRange = Vector3(40, 40, 8 + 16); // z = jump height + attackbox z
 	jumpSpeed = 85;
 
 	assetSet = data->assets;
@@ -53,6 +82,8 @@ Baddie::Baddie(BaddieData* data) {
 
 	loadAnimation(walkLeft);
 	currentFrameTexture = currentAnimation->texture.Get();
+
+
 }
 
 Baddie::~Baddie() {
@@ -82,7 +113,7 @@ bool Baddie::update(double deltaTime) {
 
 					if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 						// le petit attaque
-						distance.z = 0;
+						distance.z = 8;
 						distance.Normalize();
 						startMainAttack(distance);
 					}
@@ -137,8 +168,8 @@ void Baddie::draw(SpriteBatch* batch) {
 
 void Baddie::takeDamage(int damage) {
 
-	if ((hp -= damage) < 0) {
-		hp = 0;
+	if ((currentHP -= damage) < 0) {
+		currentHP = 0;
 		isAlive = false;
 		timeSinceDeath = 0;
 		startTint = tint;
@@ -155,15 +186,46 @@ void Baddie::takeDamage(int damage) {
 BlueImp::BlueImp(BaddieData* baddieData) : Baddie(baddieData) {
 
 	name = baddieData->type;
-	hp = 13;
+	currentHP = maxHP = 13;
 	DEFPWR = 127;
 	MDEF = 50;
 	EXP = 2;
 	TP = 1;
 	GOLD = 12;
+
+	weight = 50;
+
+	memcpy(attackBoxSizes, baddieData->attackBoxSizes, sizeof(attackBoxSizes));
+
+	attackBox.size = attackBoxSizes[facing];
+
+#ifdef  DEBUG_HITBOXES
+	attackFrame.reset(guiFactory->createRectangleFrame(
+		Vector2(attackBox.position.x, attackBox.position.y),
+		Vector2(attackBox.size.x, attackBox.size.y)));
+#endif //  DEBUG_HITBOXES
+
+	memcpy(weaponPositions, baddieData->weaponPositions, sizeof(weaponPositions));
 }
 
 BlueImp::~BlueImp() {
+}
+
+bool BlueImp::update(double deltaTime) {
+#ifdef  DEBUG_HITBOXES
+	attackFrame->update();
+#endif //  DEBUG_HITBOXES
+	return Baddie::update(deltaTime);
+
+}
+
+void BlueImp::draw(SpriteBatch* batch) {
+	Baddie::draw(batch);
+
+#ifdef  DEBUG_HITBOXES
+	if (drawAttack)
+		attackFrame->draw(batch);
+#endif //  DEBUG_HITBOXES
 }
 
 
@@ -197,16 +259,27 @@ void BlueImp::startMainAttack(Vector3 direction) {
 		}
 	}
 
+
+	// hit detection
+	attackBox.size = attackBoxSizes[facing];
+	attackBox.position = position + weaponPositions[facing];
+	switch (facing) {
+		case Facing::LEFT:
+			attackBox.position.x -= (currentFrameOrigin.x);
+			break;
+			/*case Facing::DOWN:
+			break;
+			case Facing::RIGHT:
+			break;
+			case Facing::UP:
+			break;*/
+	}
+
+
+	attackBox.position.y -= attackBox.size.y;
+
 	jumpVelocity = direction * jumpSpeed;
 
-
-	currentFrameTime = 0;
-	currentFrameDuration
-		= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-	currentFrameRect
-		= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-	currentFrameOrigin
-		= currentAnimation->animationFrames[currentFrameIndex]->origin;
 }
 
 
@@ -216,8 +289,24 @@ void BlueImp::attackUpdate(double deltaTime) {
 		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
 			// attack sequence completed
 			canCancelAction = true;
-			loadAnimation(walkLeft);
+			switch (facing) {
+				case Facing::DOWN:
+					loadAnimation(walkDown);
+					break;
+				case Facing::LEFT:
+					loadAnimation(walkLeft);
+					break;
+				case Facing::UP:
+					loadAnimation(walkUp);
+					break;
+				case Facing::RIGHT:
+					loadAnimation(walkRight);
+					break;
+			}
 			action = CreatureAction::WAITING_ACTION;
+#ifdef  DEBUG_HITBOXES
+			drawAttack = false;
+#endif //  DEBUG_HITBOXES
 			return;
 		}
 		currentFrameTime = 0;
@@ -232,16 +321,50 @@ void BlueImp::attackUpdate(double deltaTime) {
 
 	switch (currentFrameIndex) {
 		case 0:
+			
 			break;
 		case 1:
+		{
 			// jump forward
-			moveBy(jumpVelocity * deltaTime);
-			/*for (auto& pc : pcs) {
-			if (hitbox.collision
+			Vector3 moveAmount = jumpVelocity * deltaTime;
+			moveBy(moveAmount);
+			attackBox.position += moveAmount;
 
-			}*/
+#ifdef  DEBUG_HITBOXES
+			drawAttack = true;
+			attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+			attackFrame->setPosition(Vector2(
+				attackBox.position.x, attackBox.position.y));
+#endif //  DEBUG_HITBOXES
+
+			for (Tangible* object : hitboxesAll) {
+				if (object == this) {
+					continue;
+				}
+
+				if (attackBox.collision(object->getHitbox())) {
+					object->takeDamage(5);
+					object->knockBack(jumpVelocity, weight);
+					// impact effect, if any
+					//hitEffectManager.newEffect(facing, position, 0);
+				}
+			}
+		}
+		break;
+
+		case 2: // hanging
+			jumpVelocity = Vector3::Zero;
 			break;
-
+		case 3: // falling
+			jumpVelocity += GRAVITY * deltaTime;
+			moveBy(jumpVelocity);
+			if (position.z <= 0) { // finish fall
+				Vector3 newpos = position;
+				newpos.z = 0;
+				setPosition(newpos);
+				currentFrameTime = 10;
+			}
+			break;
 
 	}
 }

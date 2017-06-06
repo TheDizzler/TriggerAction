@@ -4,6 +4,22 @@
 	<baddie name="Blue Imp">
 		<hitbox x="0" y="0" width="11" height="8" z="19"/>
 
+		<weaponPosition>
+			<down x="-8" y="4" z="0" />
+			<left x="-4" y="4" z="0" />
+			<up x="-8" y="-4" z="0" />
+			<right x="4" y="4" z="0" />
+		</weaponPosition>
+
+		<attackBoxSizes>
+			<down x="16" y="8" z="16" />
+			<left x="8" y="16" z="16" />
+			<up x="16" y="8" z="16" />
+			<right x="8" y="16" z="16" />
+		</attackBoxSizes>
+
+		<attackbox x="0" y="0" width="8" height="14" />
+
 		<spritesheet name="Baddies - Imps" file="Baddies - Imps.dds" set="Blue Imp" >
 
 			<animation name="walk down" timePerFrame=".2">
@@ -55,13 +71,13 @@
 				<sprite x="79" y="154" width="19" height="23" frameTime=".5">
 					<origin x="8" y="23" />
 				</sprite>
-				<sprite x="17" y="153" width="20" height="28" frameTime=".2">
+				<sprite x="17" y="153" width="20" height="23" frameTime=".32">
 					<origin x="11" y="28" />
 				</sprite>
-				<sprite x="48" y="153" width="19" height="28" frameTime=".5">
+				<sprite x="48" y="153" width="19" height="23" frameTime=".5">
 					<origin x="10" y="28" />
 				</sprite>
-				<sprite x="79" y="154" width="19" height="23" frameTime=".5">
+				<sprite x="79" y="154" width="19" height="23" frameTime="3.5">
 					<origin x="8" y="23" />
 				</sprite>
 			</animation>
@@ -69,13 +85,13 @@
 				<sprite x="80" y="191" width="16" height="23" frameTime=".5">
 					<origin x="8" y="23" />
 				</sprite>
-				<sprite x="20" y="190" width="15" height="31" frameTime=".2">
-					<origin x="8" y="31" />
+				<sprite x="20" y="190" width="15" height="23" frameTime=".32">
+					<origin x="8" y="23" />
 				</sprite>
-				<sprite x="50" y="190" width="15" height="31" frameTime=".5">
-					<origin x="8" y="31" />
+				<sprite x="50" y="190" width="15" height="22" frameTime=".5">
+					<origin x="8" y="22" />
 				</sprite>
-				<sprite x="80" y="191" width="16" height="23" frameTime=".5">
+				<sprite x="80" y="191" width="16" height="23" frameTime="3.5">
 					<origin x="8" y="23" />
 				</sprite>
 			</animation>
@@ -83,13 +99,13 @@
 				<sprite x="79" y="229" width="16" height="21" frameTime=".5">
 					<origin x="10" y="21" />
 				</sprite>
-				<sprite x="19" y="230" width="21" height="21" frameTime=".2">
+				<sprite x="19" y="230" width="21" height="21" frameTime=".32">
 					<origin x="10" y="21" />
 				</sprite>
 				<sprite x="49" y="230" width="19" height="21" frameTime=".5">
 					<origin x="10" y="21" />
 				</sprite>
-				<sprite x="79" y="229" width="16" height="21" frameTime=".5">
+				<sprite x="79" y="229" width="16" height="21" frameTime="3.5">
 					<origin x="10" y="21" />
 				</sprite>
 			</animation>
@@ -97,13 +113,13 @@
 				<sprite x="80" y="263" width="16" height="23" frameTime=".5">
 					<origin x="9" y="23" />
 				</sprite>
-				<sprite x="22" y="262" width="15" height="30" frameTime=".2">
-					<origin x="7" y="30" />
+				<sprite x="22" y="262" width="15" height="23" frameTime=".32">
+					<origin x="7" y="23" />
 				</sprite>
-				<sprite x="52" y="263" width="15" height="30" frameTime=".5">
-					<origin x="7" y="30" />
+				<sprite x="52" y="263" width="15" height="22" frameTime=".5">
+					<origin x="7" y="22" />
 				</sprite>
-				<sprite x="80" y="263" width="16" height="23" frameTime=".5">
+				<sprite x="80" y="263" width="16" height="23" frameTime="3.5">
 					<origin x="9" y="23" />
 				</sprite>
 			</animation>
@@ -122,7 +138,7 @@
 					<origin x="9" y="31" />
 				</sprite>
 			</animation>
-			<animation name="hit" timePerFrame=".25">
+			<animation name="hit" timePerFrame=".15">
 				<sprite x="152" y="177" width="19" height="29" >
 					<origin x="9" y="29" />
 				</sprite>

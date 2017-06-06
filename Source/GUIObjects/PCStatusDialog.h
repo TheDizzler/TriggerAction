@@ -13,6 +13,9 @@ public:
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
+	void updateHP();
+	void updateMP();
+
 private:
 
 	PlayerCharacter* player;

@@ -6,6 +6,7 @@
 #include <deque>
 
 class MenuDialog;
+class PCStatusDialog;
 
 enum ControlButtons {
 	A = 0, B, X, Y, L, R, SELECT, START
@@ -28,12 +29,12 @@ public:
 
 
 	void pairWithDialog(DynamicDialog* dialog);
+	void pairWithStatusDialog(PCStatusDialog* dialog);
 
 	/** Returns true if pair was succesful. Returns false if slot already paired. */
 	bool pairWithSocket(JoyData* joyData);
 	void unpairSocket();
 
-	//void loadCharacterData(const CharacterData* characterData);
 
 
 	size_t getPlayerSlotNumber();
@@ -44,6 +45,7 @@ public:
 
 	void setDialogText(wstring text);
 	DynamicDialog* pcDialog;
+	PCStatusDialog* statusDialog;
 	CharacterData* characterData;
 
 	unique_ptr<MenuDialog> pauseDialog;

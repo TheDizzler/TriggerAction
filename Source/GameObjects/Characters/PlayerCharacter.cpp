@@ -59,7 +59,7 @@ void PlayerCharacter::update(double deltaTime) {
 
 					if (horzDirection > 10 || horzDirection < -10
 						|| vertDirection < -10 || vertDirection > 10) {
-						movement(deltaTime/*, horzDirection, vertDirection*/);
+						movement(deltaTime);
 					}
 				}
 			}
@@ -79,8 +79,7 @@ void PlayerCharacter::update(double deltaTime) {
 				int vertDirection = joystick->lAxisY;
 				if (horzDirection > 10 || horzDirection < -10
 					|| vertDirection < -10 || vertDirection > 10) {
-					movement(deltaTime/*, horzDirection, vertDirection*/);
-
+					movement(deltaTime);
 				}
 				//moveUpdate(deltaTime);
 			}
@@ -94,13 +93,7 @@ void PlayerCharacter::update(double deltaTime) {
 			} else if (joystick->bButtonStates[ControlButtons::L]) {
 				startBlock();
 			} else {
-				/*int horzDirection = joystick->lAxisX;
-				int vertDirection = joystick->lAxisY;
-				if (horzDirection > 10 || horzDirection < -10
-					|| vertDirection < -10 || vertDirection > 10) {*/
-					movement(deltaTime/*, horzDirection, vertDirection*/);
-
-				//} 
+				movement(deltaTime);
 				moveUpdate(deltaTime);
 			}
 
@@ -110,7 +103,6 @@ void PlayerCharacter::update(double deltaTime) {
 			blockUpdate(deltaTime);
 			break;
 		case CreatureAction::JUMP_ACTION:
-
 			jumpUpdate(deltaTime);
 			break;
 		case CreatureAction::HIT_ACTION:
@@ -152,15 +144,41 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 
 void PlayerCharacter::takeDamage(int damage) {
 
-	if ((hp -= damage) < 0) {
-		hp = 0;
+	if (action == CreatureAction::HIT_ACTION) {
+		return;
+	}
+
+	if ((currentHP -= damage) < 0) {
+		currentHP = 0;
 		isAlive = false;
 		timeSinceDeath = 0;
 	}
 
+	playerSlot->statusDialog->updateHP();
+
+	if (position.z != 0) {
+		// start falling!
+		falling = true;
+
+	}
+
 	action = CreatureAction::HIT_ACTION;
 	canCancelAction = false;
-	loadAnimation(hit);
+
+	switch (facing) {
+		case Facing::DOWN:
+			loadAnimation(hitDown);
+			break;
+		case Facing::LEFT:
+			loadAnimation(hitLeft);
+			break;
+		case Facing::UP:
+			loadAnimation(hitUp);
+			break;
+		case Facing::RIGHT:
+			loadAnimation(hitRight);
+			break;
+	}
 }
 
 
@@ -196,6 +214,11 @@ void PlayerCharacter::initializeAssets() {
 	combatStanceLeft = assetSet->getAnimation("combat stance left");
 	combatStanceUp = assetSet->getAnimation("combat stance up");
 	combatStanceRight = assetSet->getAnimation("combat stance right");
+
+	hitDown = assetSet->getAnimation("hit down");
+	hitLeft = assetSet->getAnimation("hit left");
+	hitUp = assetSet->getAnimation("hit up");
+	hitRight = assetSet->getAnimation("hit right");
 
 	provoke = assetSet->getAnimation("provoke");
 	surprise = assetSet->getAnimation("surprise");
@@ -499,21 +522,61 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 	} else if (horzDirection < -10) {
 		facing = Facing::LEFT;
 		loadAnimation(jumpLeft);
-
 	} else if (vertDirection > 10) {
 		facing = Facing::DOWN;
 		loadAnimation(jumpDown);
-
 	} else if (vertDirection < -10) {
 		facing = Facing::UP;
 		loadAnimation(jumpUp);
-
 	}
 
 }
 
 
-void PlayerCharacter::movement(double deltaTime/*, int horzDirection, int vertDirection*/) {
+void PlayerCharacter::hitUpdate(double deltaTime) {
+
+	if (knockBackVelocity != Vector3::Zero) {
+		moveBy(knockBackVelocity);
+		knockBackVelocity += GRAVITY * deltaTime;
+		if (position.z <= 0) {
+			knockBackVelocity = Vector3::Zero;
+		}
+	} else {
+		currentFrameTime += deltaTime;
+		if (currentFrameTime >= currentFrameDuration) {
+			if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+				// hit sequence done
+				canCancelAction = true;
+				switch (facing) {
+					case Facing::RIGHT:
+						loadAnimation(combatStanceRight);
+						break;
+					case Facing::LEFT:
+						loadAnimation(combatStanceLeft);
+						break;
+					case Facing::DOWN:
+						loadAnimation(combatStanceDown);
+						break;
+					case Facing::UP:
+						loadAnimation(combatStanceUp);
+						break;
+				}
+				action = CreatureAction::WAITING_ACTION;
+				return;
+			}
+			currentFrameTime = 0;
+			currentFrameDuration
+				= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+			currentFrameRect
+				= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+			currentFrameOrigin
+				= currentAnimation->animationFrames[currentFrameIndex]->origin;
+		}
+	}
+}
+
+
+void PlayerCharacter::movement(double deltaTime) {
 
 	int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;

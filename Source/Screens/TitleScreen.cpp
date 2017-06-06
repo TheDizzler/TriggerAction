@@ -4,8 +4,6 @@
 TitleScreen::~TitleScreen() {
 }
 
-const float GRAVITY = 981; // assume 1 pixel == 1 cm, therefore gravity is in 1/100 of a pixel per second squared
-float TOTAL_SWING_TIME;
 
 #include "../Engine/GameEngine.h"
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
@@ -61,7 +59,7 @@ void TitleScreen::setGameManager(GameManager* gm) {
 
 //TOTAL_SWING_TIME = 2 * XM_PI * sqrt(pendulum->getHeight() / GRAVITY);
 double totalSwingTime = 0;
-double g = GRAVITY;
+double g = 981; // assume 1 pixel == 1 cm, therefore gravity is in 1/100 of a pixel per second squared
 float angularAcceleration = 0;
 float damping = .99989;
 bool doneSwinging = false;

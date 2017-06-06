@@ -20,10 +20,9 @@ Chrono::Chrono(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	STAM = 8;
 	MDEF = 2;
 
-	attackBoxSizes[Facing::LEFT] = Vector3(16, 16, 45);
-	attackBoxSizes[Facing::UP] = Vector3(24, 16, 45);
-	attackBoxSizes[Facing::RIGHT] = Vector3(16, 16, 45);
-	attackBoxSizes[Facing::DOWN] = Vector3(24, 16, 45);
+	weight = 70;
+
+	memcpy(attackBoxSizes, characterData->attackBoxSizes, sizeof(attackBoxSizes));
 
 	attackBox.size = attackBoxSizes[facing];
 #ifdef  DEBUG_HITBOXES
@@ -184,8 +183,8 @@ void Chrono::attackUpdate(double deltaTime) {
 			if (percentMoved <= 1) {
 				setPosition(Vector3::Lerp(moveStart, moveEnd, percentMoved));
 				break;
-			} else if (percentMoved > 1 && !finishedJump) {
-				finishedJump = true;
+			} else if (percentMoved > 1 && !falling) {
+				falling = true;
 				moveTime = 0;
 				moveStart = position;
 				switch (facing) {
@@ -245,8 +244,8 @@ void Chrono::attackUpdate(double deltaTime) {
 				setPosition(Vector3::Lerp(position, moveEnd, percentMoved));
 				currentFrameTime = 0;
 				break;
-			} else if (percentMoved > 1 && !finishedJump) {
-				finishedJump = true;
+			} else if (percentMoved > 1 && !falling) {
+				falling = true;
 				moveTime = 0;
 				moveStart = position;
 				currentFrameTime = 0;
@@ -339,7 +338,7 @@ void Chrono::firstAttack() {
 			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 -2;
+			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 - 2;
 			break;
 	}
 
@@ -353,7 +352,7 @@ void Chrono::firstAttack() {
 		attackBox.position.x, attackBox.position.y));
 #endif //  DEBUG_HITBOXES
 
-					// hit detection
+	// hit detection
 	for (Tangible* object : hitboxesAll) {
 		if (object == this) {
 			continue;
@@ -361,11 +360,25 @@ void Chrono::firstAttack() {
 
 		if (attackBox.collision(object->getHitbox())) {
 			object->takeDamage(5);
+			switch (facing) {
+				case Facing::DOWN:
+					object->knockBack(Vector3(0, 10, 0), weight);
+					break;
+				case Facing::LEFT:
+					object->knockBack(Vector3(-10, 0, 0), weight);
+					break;
+				case Facing::UP:
+					object->knockBack(Vector3(0, -10, 0), weight);
+					break;
+				case Facing::RIGHT:
+					object->knockBack(Vector3(10, 0, 0), weight);
+					break;
+			}
 			// slash effect
-			//hitEffectManager.newEffect(facing, position, 0);
+			hitEffectManager.newEffect(facing, position, 0);
 		}
 	}
-	hitEffectManager.newEffect(facing, position, 0);
+
 }
 
 void Chrono::secondAttackStart() {
@@ -439,11 +452,25 @@ void Chrono::secondAttack() {
 
 		if (attackBox.collision(object->getHitbox())) {
 			object->takeDamage(5);
+			switch (facing) {
+				case Facing::DOWN:
+					object->knockBack(Vector3(0, 10, 2), weight);
+					break;
+				case Facing::LEFT:
+					object->knockBack(Vector3(-10, 0, 2), weight);
+					break;
+				case Facing::UP:
+					object->knockBack(Vector3(0, -10, 2), weight);
+					break;
+				case Facing::RIGHT:
+					object->knockBack(Vector3(10, 0, 2), weight);
+					break;
+			}
 			// slash effect
-			//hitEffectManager.newEffect(facing, position, 1);
+			hitEffectManager.newEffect(facing, position, 1);
 		}
 	}
-	hitEffectManager.newEffect(facing, position, 1);
+
 }
 
 void Chrono::thirdAttackStart() {
@@ -451,7 +478,6 @@ void Chrono::thirdAttackStart() {
 	currentFrameIndex = 0;
 	currentAttack = THIRD_ATTACK;
 	yetAttackedThird = false;
-	finishedJump = false;
 	moveTime = 0;
 	waitingTime = 0;
 
@@ -496,7 +522,7 @@ void Chrono::thirdAttack() {
 			attackBox.size.x /= 2;
 			attackBox.position.y += attackBoxOffset.y;
 			//attackBox.position.x -= (getWidth() /*+ currentFrameOrigin.x*/) / 2;
-			attackBox.position.x -= attackBox.size.x/2;
+			attackBox.position.x -= attackBox.size.x / 2;
 			break;
 		case Facing::RIGHT:
 			attackBox.position.x += (currentFrameOrigin.x);
@@ -527,11 +553,25 @@ void Chrono::thirdAttack() {
 
 		if (attackBox.collision(object->getHitbox())) {
 			object->takeDamage(5);
+			switch (facing) {
+				case Facing::DOWN:
+					object->knockBack(Vector3(0, 1, 20), weight);
+					break;
+				case Facing::LEFT:
+					object->knockBack(Vector3(-1, 0, 20), weight);
+					break;
+				case Facing::UP:
+					object->knockBack(Vector3(0, -1, 20), weight);
+					break;
+				case Facing::RIGHT:
+					object->knockBack(Vector3(1, 0, 20), weight);
+					break;
+			}
 			// slash effect
-			//hitEffectManager.newEffect(facing, position, 0);
+			hitEffectManager.newEffect(facing, position, 0);
 		}
 	}
-	hitEffectManager.newEffect(facing, position, 0);
+
 
 }
 
@@ -550,7 +590,7 @@ void Chrono::fourthAttackStart() {
 	moveStart = position;
 	moveEnd = position + Vector3(0, 0, FOURTH_ATTACK_JUMP_HEIGHT);
 	yetFourthAttack = false;
-	finishedJump = false;
+	falling = false;
 }
 
 void Chrono::fourthAttack() {
@@ -595,10 +635,10 @@ void Chrono::fourthAttack() {
 		if (attackBox.collision(object->getHitbox())) {
 			object->takeDamage(5);
 			// slash effect
-			/*hitEffectManager.newEffect(facing, position, 3);*/
+			hitEffectManager.newEffect(facing, position, 2);
 		}
 	}
-	hitEffectManager.newEffect(facing, position, 2);
+
 }
 
 
