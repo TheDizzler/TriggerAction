@@ -2,7 +2,7 @@
 
 #include "IElement3D.h"
 
-const Vector3 GRAVITY(0, 0, -9.8);
+const Vector3 GRAVITY(0, 0, -7);
 
 class Hitbox {
 public:

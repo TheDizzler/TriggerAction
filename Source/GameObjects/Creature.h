@@ -44,6 +44,7 @@ protected:
 	bool isAlive = true;
 	// use this whenever gravity is doing its business
 	bool falling = false;
+	Vector3 fallVelocity = Vector3::Zero;
 
 	virtual void moveUpdate(double deltaTime);
 	virtual void attackUpdate(double deltaTime) = 0;

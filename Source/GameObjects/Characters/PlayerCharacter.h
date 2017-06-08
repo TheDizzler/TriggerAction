@@ -59,9 +59,10 @@ protected:
 	void startBlock();
 	void startJump();
 
-	Vector3 startJumpPosition, endHalfJumpPosition;
-	double jumpTime = 0;
-	bool jumpingRising = true;
+	//Vector3 startJumpPosition, endHalfJumpPosition;
+	float jumpZ = 10;
+	//double jumpTime = 0;
+	//bool jumpingRising = true;
 	bool running = false;
 	bool moving = false;
 	bool waiting = false;
@@ -86,8 +87,9 @@ protected:
 	float moveDiagonalDown = radius * sin(Q);
 	float runRightSpeed = 100;
 
-	float jumpByX;
-	float jumpByY;
+	Vector3 jumpVelocity;
+	//float jumpByX;
+	//float jumpByY;
 
 
 	bool lastCollision = false;

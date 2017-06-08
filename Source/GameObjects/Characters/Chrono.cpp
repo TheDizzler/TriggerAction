@@ -359,7 +359,7 @@ void Chrono::firstAttack() {
 		}
 
 		if (attackBox.collision(object->getHitbox())) {
-			object->takeDamage(5);
+			object->takeDamage(2);
 			switch (facing) {
 				case Facing::DOWN:
 					object->knockBack(Vector3(0, 10, 0), weight);
@@ -451,19 +451,19 @@ void Chrono::secondAttack() {
 		}
 
 		if (attackBox.collision(object->getHitbox())) {
-			object->takeDamage(5);
+			object->takeDamage(4);
 			switch (facing) {
 				case Facing::DOWN:
-					object->knockBack(Vector3(0, 10, 2), weight);
+					object->knockBack(Vector3(0, 15, 10), weight);
 					break;
 				case Facing::LEFT:
-					object->knockBack(Vector3(-10, 0, 2), weight);
+					object->knockBack(Vector3(-15, 0, 10), weight);
 					break;
 				case Facing::UP:
-					object->knockBack(Vector3(0, -10, 2), weight);
+					object->knockBack(Vector3(0, -15, 10), weight);
 					break;
 				case Facing::RIGHT:
-					object->knockBack(Vector3(10, 0, 2), weight);
+					object->knockBack(Vector3(15, 0, 10), weight);
 					break;
 			}
 			// slash effect
@@ -633,7 +633,7 @@ void Chrono::fourthAttack() {
 		}
 
 		if (attackBox.collision(object->getHitbox())) {
-			object->takeDamage(5);
+			object->takeDamage(7);
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 2);
 		}

@@ -39,11 +39,13 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 
 
 void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
-	setPosition(Vector3(startingPosition.x, startingPosition.y, 0));
+	setPosition(Vector3(startingPosition.x, startingPosition.y, 20));
+	falling = true;
 }
 
 
 void PlayerCharacter::update(double deltaTime) {
+
 
 	switch (action) {
 		case CreatureAction::ATTACKING_ACTION:
@@ -51,6 +53,7 @@ void PlayerCharacter::update(double deltaTime) {
 			if (canCancelAction) {
 				if (joystick->xButton()) {
 					startJump();
+					position -= GRAVITY * (deltaTime + .0000001);
 				} else if (joystick->bButtonStates[ControlButtons::L]) {
 					startBlock();
 				} else {
@@ -72,6 +75,7 @@ void PlayerCharacter::update(double deltaTime) {
 				//startDrawWeapon();
 			} else if (joystick->xButton()) {
 				startJump();
+				position -= GRAVITY * (deltaTime + .0000001);
 			} else if (joystick->bButtonStates[ControlButtons::L]) {
 				startBlock();
 			} else {
@@ -90,6 +94,7 @@ void PlayerCharacter::update(double deltaTime) {
 				//startDrawWeapon();
 			} else if (joystick->xButton()) {
 				startJump();
+				position -= GRAVITY * (deltaTime + .0000001);
 			} else if (joystick->bButtonStates[ControlButtons::L]) {
 				startBlock();
 			} else {
@@ -113,6 +118,19 @@ void PlayerCharacter::update(double deltaTime) {
 			break;
 
 	}
+
+	if (falling) {
+		fallVelocity += GRAVITY * deltaTime;
+		moveBy(fallVelocity);
+		if (position.z <= 0) {
+			Vector3 newpos = position;
+			newpos.z = 0;
+			setPosition(newpos);
+			fallVelocity.z = 0;
+			falling = false;
+		}
+	}
+
 
 	if (joystick->bButtonStates[ControlButtons::START]) {
 
@@ -268,13 +286,8 @@ void PlayerCharacter::startBlock() {
 
 void PlayerCharacter::startJump() {
 
-	jumpByX = jumpByY = 0;
+	Vector3 direction;
 
-	float speedFactor;
-	if (running)
-		speedFactor = RUN_SPEED;
-	else
-		speedFactor = NORMAL_SPEED;
 
 	int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;
@@ -284,17 +297,20 @@ void PlayerCharacter::startJump() {
 		loadAnimation(jumpRight);
 		if (vertDirection < -10) {
 			// moving right & up
-			jumpByX = moveDiagonalRight*JUMP_TIME*speedFactor;
-			jumpByY = -moveDiagonalDown*JUMP_TIME*speedFactor;
-			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			//jumpByX = moveDiagonalRight*JUMP_TIME*speedFactor;
+			//jumpByY = -moveDiagonalDown*JUMP_TIME*speedFactor;
+			//endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			direction = Vector3(moveDiagonalRight, -moveDiagonalDown, 0);
 		} else if (vertDirection > 10) {
 			// moving right & down
-			jumpByX = moveDiagonalRight*JUMP_TIME*speedFactor;
-			jumpByY = moveDiagonalDown*JUMP_TIME*speedFactor;
-			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			//jumpByX = moveDiagonalRight*JUMP_TIME*speedFactor;
+			//jumpByY = moveDiagonalDown*JUMP_TIME*speedFactor;
+			//endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			direction = Vector3(moveDiagonalRight, moveDiagonalDown, 0);
 		} else {
-			jumpByX = moveRightSpeed*JUMP_TIME*speedFactor;
-			endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+			//jumpByX = moveRightSpeed*JUMP_TIME*speedFactor;
+			//endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+			direction = Vector3(moveRightSpeed, 0, 0);
 		}
 	} else if (horzDirection < -10) {
 		// moving left
@@ -302,66 +318,88 @@ void PlayerCharacter::startJump() {
 		facing = Facing::LEFT;
 		if (vertDirection < -10) {
 			// moving left & up
-			jumpByX = -moveDiagonalRight*JUMP_TIME*speedFactor;
-			jumpByY = -moveDiagonalDown*JUMP_TIME*speedFactor;
-			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			//jumpByX = -moveDiagonalRight*JUMP_TIME*speedFactor;
+			//jumpByY = -moveDiagonalDown*JUMP_TIME*speedFactor;
+			//endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			direction = Vector3(-moveDiagonalRight, -moveDiagonalDown, 0);
 		} else if (vertDirection > 10) {
 			// moving left & down
-			jumpByX = -moveDiagonalRight*JUMP_TIME*speedFactor;
-			jumpByY = moveDiagonalDown*JUMP_TIME*speedFactor;
-			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			//jumpByX = -moveDiagonalRight/**JUMP_TIME*/*speedFactor;
+			//jumpByY = moveDiagonalDown/**JUMP_TIME*/*speedFactor;
+			//endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, MAX_JUMP_HEIGHT);
+			direction = Vector3(-moveDiagonalRight, moveDiagonalDown, 0);
 		} else {
-			jumpByX = -moveRightSpeed*JUMP_TIME*speedFactor;
-			endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+			//jumpByX = -moveRightSpeed/**JUMP_TIME*/*speedFactor;
+			//endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+			direction = Vector3(-moveRightSpeed, 0, 0);
 		}
 	} else if (vertDirection < -10) {
 		// moving up
 		facing = Facing::UP;
 		loadAnimation(jumpUp);
-		jumpByY = -moveDownSpeed*JUMP_TIME*speedFactor;
-		endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+		//jumpByY = -moveDownSpeed/**JUMP_TIME*/*speedFactor;
+		//endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+		direction = Vector3(0, -moveDownSpeed, 0);
 	} else if (vertDirection > 10) {
 		// moving down
 		facing = Facing::DOWN;
 		loadAnimation(jumpDown);
-		jumpByY = moveDownSpeed*JUMP_TIME*speedFactor;
-		endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+		//jumpByY = moveDownSpeed/**JUMP_TIME*/*speedFactor;
+		//endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+		direction = Vector3(0, moveDownSpeed, 0);
 	} else {
 		// no direction input
 
 		switch (facing) {
 			case Facing::LEFT:
 				loadAnimation(jumpLeft);
-				jumpByX = -moveRightSpeed * JUMP_TIME * speedFactor;
-				endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+				//jumpByX = -moveRightSpeed /** JUMP_TIME*/ * speedFactor;
+				//endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+				direction = Vector3(-moveRightSpeed, 0, 0);
 				break;
 			case Facing::DOWN:
 				// moving down
 				loadAnimation(jumpDown);
-				jumpByY = moveDownSpeed * JUMP_TIME * speedFactor;
-				endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+				//jumpByY = moveDownSpeed/* * JUMP_TIME*/ * speedFactor;
+				//endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+				direction = Vector3(0, moveDownSpeed, 0);
 				break;
 			case Facing::RIGHT:
 				loadAnimation(jumpRight);
-				jumpByX = moveRightSpeed * JUMP_TIME * speedFactor;
-				endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+				//jumpByX = moveRightSpeed /** JUMP_TIME*/ * speedFactor;
+				//endHalfJumpPosition = position + Vector3(jumpByX, 0, MAX_JUMP_HEIGHT);
+				direction = Vector3(moveRightSpeed, 0, 0);
 				break;
 			case Facing::UP:
 				// moving up
 				loadAnimation(jumpUp);
-				jumpByY = -moveDownSpeed * JUMP_TIME * speedFactor;
-				endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+				//jumpByY = -moveDownSpeed /** JUMP_TIME*/ * speedFactor;
+				//endHalfJumpPosition = position + Vector3(0, jumpByY, MAX_JUMP_HEIGHT);
+				direction = Vector3(0, -moveDownSpeed, 0);
 				break;
 		}
 	}
+
+	float speedFactor;
+	if (running) {
+		speedFactor = RUN_SPEED;
+		direction.z = 355;
+	} else {
+		speedFactor = NORMAL_SPEED;
+		direction.z = 275;
+	}
+
+	jumpVelocity = Vector3(direction.x * speedFactor, direction.y * speedFactor, direction.z);
+	//jumpVelocity = Vector3(jumpByX, jumpByY, jumpZ * speedFactor);
 
 
 	canCancelAction = false;
 	action = CreatureAction::JUMP_ACTION;
 	moving = false;
-	jumpTime = 0;
-	startJumpPosition = position;
-	jumpingRising = true;
+	//jumpTime = 0;
+	//startJumpPosition = position;
+	//jumpingRising = true;
+	falling = true;
 }
 
 
@@ -476,59 +514,106 @@ void PlayerCharacter::blockUpdate(double deltaTime) {
 
 void PlayerCharacter::jumpUpdate(double deltaTime) {
 
-	jumpTime += deltaTime;
-	double percentJumped = jumpTime / JUMP_TIME;
-	setPosition(
-		Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
-	if (percentJumped >= 1) {
-		if (jumpingRising) {
-			jumpingRising = false;
-			jumpTime = 0;
-			startJumpPosition = endHalfJumpPosition;
-			endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, -MAX_JUMP_HEIGHT);
-		} else {
-			double percentJumped = jumpTime / JUMP_TIME;
-			setPosition(
-				Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
-			if (percentJumped >= 1) {
-				// landed
-				switch (facing) {
-					case Facing::RIGHT:
-						loadAnimation(combatStanceRight);
-						break;
-					case Facing::LEFT:
-						loadAnimation(combatStanceLeft);
-						break;
-					case Facing::DOWN:
-						loadAnimation(combatStanceDown);
-						break;
-					case Facing::UP:
-						loadAnimation(combatStanceUp);
-						break;
-				}
-				action = CreatureAction::WAITING_ACTION;
-				canCancelAction = true;
-				moving = false;
+	Vector3 moveVector = jumpVelocity * deltaTime;
+	if (!falling) {
+
+		Vector3 newpos = moveVector + position;
+		newpos.z = 0;
+		setPosition(newpos);
+		 //landed
+		switch (facing) {
+			case Facing::RIGHT:
+				loadAnimation(combatStanceRight);
+				break;
+			case Facing::LEFT:
+				loadAnimation(combatStanceLeft);
+				break;
+			case Facing::DOWN:
+				loadAnimation(combatStanceDown);
+				break;
+			case Facing::UP:
+				loadAnimation(combatStanceUp);
+				break;
+		}
+		action = CreatureAction::WAITING_ACTION;
+		canCancelAction = true;
+		moving = false;
+
+	} else {
+
+		radarBox.position = hitbox.position + moveVector * 2;
+		bool collision = false;
+		// check for collisions
+		for (const Tangible* hb : hitboxesAll) {
+			if (hb->getHitbox() == &hitbox)
+				continue;
+			if (radarBox.collision(hb->getHitbox())) {
+				collision = true; // it's POSSIBLE that more than one object could collide
+				jumpVelocity.x = 0;
+				jumpVelocity.y = 0;
+				break;
 			}
 		}
-	}
 
 
-	int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-		loadAnimation(jumpRight);
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-		loadAnimation(jumpLeft);
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-		loadAnimation(jumpDown);
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-		loadAnimation(jumpUp);
+		moveBy(moveVector);
+		//jumpVelocity += GRAVITY * deltaTime;
+
+		int horzDirection = joystick->lAxisX;
+		int vertDirection = joystick->lAxisY;
+		if (horzDirection > 10) {
+			facing = Facing::RIGHT;
+			loadAnimation(jumpRight);
+		} else if (horzDirection < -10) {
+			facing = Facing::LEFT;
+			loadAnimation(jumpLeft);
+		} else if (vertDirection > 10) {
+			facing = Facing::DOWN;
+			loadAnimation(jumpDown);
+		} else if (vertDirection < -10) {
+			facing = Facing::UP;
+			loadAnimation(jumpUp);
+		}
 	}
+	/*jumpTime += deltaTime;
+	double percentJumped = jumpTime / JUMP_TIME;
+	setPosition(
+		Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));*/
+	//if (percentJumped >= 1) {
+	//	if (jumpingRising) {
+	//		jumpingRising = false;
+	//		jumpTime = 0;
+	//		startJumpPosition = endHalfJumpPosition;
+	//		endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, -MAX_JUMP_HEIGHT);
+	//	} else {
+	//		double percentJumped = jumpTime / JUMP_TIME;
+	//		setPosition(
+	//			Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
+	//		if (percentJumped >= 1) {
+	//			// landed
+	//			switch (facing) {
+	//				case Facing::RIGHT:
+	//					loadAnimation(combatStanceRight);
+	//					break;
+	//				case Facing::LEFT:
+	//					loadAnimation(combatStanceLeft);
+	//					break;
+	//				case Facing::DOWN:
+	//					loadAnimation(combatStanceDown);
+	//					break;
+	//				case Facing::UP:
+	//					loadAnimation(combatStanceUp);
+	//					break;
+	//			}
+	//			action = CreatureAction::WAITING_ACTION;
+	//			canCancelAction = true;
+	//			moving = false;
+	//		}
+	//	}
+	//}
+
+
+
 
 }
 
