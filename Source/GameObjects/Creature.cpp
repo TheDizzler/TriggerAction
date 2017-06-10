@@ -35,6 +35,21 @@ void Creature::loadAnimation(const pugi::char_t* name) {
 	//currentFrameTexture = currentAnimation->texture.Get(); // shouldn't change
 }
 
+
+void Creature::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
+	velocityOfHit.Normalize();
+	knockBackVelocity = velocityOfHit * weightOfHit / weight;
+	falling = true;
+	position += GRAVITY * .005;
+}
+
+void Creature::knockBack(Vector3 moveVelocity) {
+	knockBackVelocity = moveVelocity;
+	falling = true;
+	position += GRAVITY * .005;
+}
+
+
 bool Creature::checkCollisionWith(const Hitbox* hitbox) const {
 	return false;
 }
@@ -57,7 +72,19 @@ void Creature::moveBy(const Vector3& moveVector) {
 	shadow.moveBy(Vector2(moveVector.x, moveVector.y));
 
 	layerDepth = Map::getLayerDepth(position.y);
+	//falling == Map::standingOnGround(position);
 
+	// bigger th z-coord smaller the shadow
+	// if z = 0 then scale = 1
+	// as z -> inf scale = 0
+	float scalefactor;
+	if (position.z < 0)
+		scalefactor = 1; // just in case...
+	else
+		//scalefactor = 1 / (sqrt(position.z) + 1);
+		scalefactor = (100 - position.z) / 100; // z > 100 will create problems...
+	shadow.setScale(Vector2(scalefactor, scalefactor));
+	shadow.setPosition(Vector2(position.x, position.y));
 }
 
 void Creature::setPosition(const Vector3& newpos) {
@@ -66,6 +93,7 @@ void Creature::setPosition(const Vector3& newpos) {
 
 
 	layerDepth = Map::getLayerDepth(position.y);
+	//falling == Map::standingOnGround(position);
 
 	// bigger th z-coord smaller the shadow
 	// if z = 0 then scale = 1

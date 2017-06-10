@@ -72,7 +72,7 @@ private:
 	void thirdAttackStart();
 	void thirdAttack();
 	void fourthAttackStart();
-	void fourthAttack();
+	void fourthAttack(double deltaTime);
 	int FOURTH_ATTACK_JUMP_HEIGHT = 20;
 	double FOURTH_ATTACK_COOLDOWN_MAX = 1.0;
 	double fourthAttackCooldownTime = 0;
@@ -83,9 +83,9 @@ private:
 	bool yetFourthAttack = false;
 	//bool finishedJump = false;
 	/** Position vector for lerp movement. */
-	Vector3 moveStart;
+	//Vector3 moveStart;
 	/** Position vectors for lerp movement. */
-	Vector3 moveEnd;
+	//Vector3 moveEnd;
 
 
 

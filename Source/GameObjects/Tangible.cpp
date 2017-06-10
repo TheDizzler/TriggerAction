@@ -125,9 +125,11 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 }
 
 void Tangible::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
+	
+}
 
-	velocityOfHit.Normalize();
-	knockBackVelocity = velocityOfHit * weightOfHit / weight;
+void Tangible::knockBack(Vector3 moveVelocity) {
+
 }
 
 

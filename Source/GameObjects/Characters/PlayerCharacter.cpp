@@ -35,6 +35,11 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 	setHitboxPosition(position);
 	radarBox = Hitbox(hitbox);
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
+
+	setInitialPosition(Vector2(10, playerSlot->getPlayerSlotNumber() * 100 + 150));
+	canCancelAction = true;
+	action = CreatureAction::WAITING_ACTION;
+
 }
 
 
@@ -389,8 +394,8 @@ void PlayerCharacter::startJump() {
 		direction.z = 275;
 	}
 
-	jumpVelocity = Vector3(direction.x * speedFactor, direction.y * speedFactor, direction.z);
-	//jumpVelocity = Vector3(jumpByX, jumpByY, jumpZ * speedFactor);
+	moveVelocity = Vector3(direction.x * speedFactor, direction.y * speedFactor, direction.z);
+	//moveVelocity = Vector3(jumpByX, jumpByY, jumpZ * speedFactor);
 
 
 	canCancelAction = false;
@@ -480,6 +485,7 @@ void PlayerCharacter::blockUpdate(double deltaTime) {
 	if (!joystick->bButtonStates[ControlButtons::L]) {
 		// end block
 		action = CreatureAction::WAITING_ACTION;
+		moving = false;
 		switch (facing) {
 			case Facing::DOWN:
 				loadAnimation(combatStanceDown);
@@ -514,7 +520,7 @@ void PlayerCharacter::blockUpdate(double deltaTime) {
 
 void PlayerCharacter::jumpUpdate(double deltaTime) {
 
-	Vector3 moveVector = jumpVelocity * deltaTime;
+	Vector3 moveVector = moveVelocity * deltaTime;
 	if (!falling) {
 
 		Vector3 newpos = moveVector + position;
@@ -549,15 +555,14 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 				continue;
 			if (radarBox.collision(hb->getHitbox())) {
 				collision = true; // it's POSSIBLE that more than one object could collide
-				jumpVelocity.x = 0;
-				jumpVelocity.y = 0;
+				moveVelocity.x = 0;
+				moveVelocity.y = 0;
 				break;
 			}
 		}
 
 
 		moveBy(moveVector);
-		//jumpVelocity += GRAVITY * deltaTime;
 
 		int horzDirection = joystick->lAxisX;
 		int vertDirection = joystick->lAxisY;
@@ -621,10 +626,13 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 void PlayerCharacter::hitUpdate(double deltaTime) {
 
 	if (knockBackVelocity != Vector3::Zero) {
-		moveBy(knockBackVelocity);
-		knockBackVelocity += GRAVITY * deltaTime;
-		if (position.z <= 0) {
-			knockBackVelocity = Vector3::Zero;
+		moveBy(knockBackVelocity * deltaTime);
+		if (!falling) {
+			knockBackVelocity = knockBackVelocity * GROUND_FRICTION;
+			knockBackVelocity.z = 0;
+			if (abs(knockBackVelocity.x) <= 1 && abs(knockBackVelocity.y) <= 1) {
+				knockBackVelocity = Vector3::Zero;
+			}
 		}
 	} else {
 		currentFrameTime += deltaTime;

@@ -9,6 +9,10 @@ public:
 	//virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
+	/** This assumes zero defender initial velocity. */
+	virtual void knockBack(Vector3 velocityOfHit, USHORT weightOfHit) override;
+	virtual void knockBack(Vector3 moveVelocity) override;
+
 
 	/** NOTE: NOT USED! Currently returns FALSE always! */
 	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
@@ -42,8 +46,7 @@ protected:
 	bool canCancelAction = true;
 
 	bool isAlive = true;
-	// use this whenever gravity is doing its business
-	bool falling = false;
+	
 	Vector3 fallVelocity = Vector3::Zero;
 
 	virtual void moveUpdate(double deltaTime);

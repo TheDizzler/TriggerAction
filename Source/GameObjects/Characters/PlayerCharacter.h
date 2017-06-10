@@ -87,7 +87,8 @@ protected:
 	float moveDiagonalDown = radius * sin(Q);
 	float runRightSpeed = 100;
 
-	Vector3 jumpVelocity;
+	/** Velocity for automated movement. */
+	Vector3 moveVelocity;
 	//float jumpByX;
 	//float jumpByY;
 

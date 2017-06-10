@@ -2,7 +2,10 @@
 
 #include "IElement3D.h"
 
+/* GRAVITY(0, 0, -7) */
 const Vector3 GRAVITY(0, 0, -7);
+/* GROUND_FRICTION = .9 */
+const double GROUND_FRICTION = .9;
 
 class Hitbox {
 public:
@@ -49,8 +52,10 @@ public:
 	void setHitboxPosition(const Vector3& newPosition);
 
 	virtual void takeDamage(int damage) = 0;
-	/** This assumes zero defender initial velocity. */
+	/** Do nothing for innanimate objects. Other objects should override */
 	virtual void knockBack(Vector3 velocityOfHit, USHORT weightOfHit);
+	/** Do nothing for innanimate objects. Other objects should override */
+	virtual void knockBack(Vector3 moveVelocity);
 protected:
 
 	Hitbox hitbox;
@@ -63,6 +68,8 @@ protected:
 	/** Used to calculate knockback. */
 	USHORT weight = 1;
 	Vector3 knockBackVelocity = Vector3::Zero;
+	/* use this whenever gravity is doing its business. */
+	bool falling = false;
 
 private:
 	Vector3 hitboxOffset;

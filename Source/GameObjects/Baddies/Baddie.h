@@ -48,7 +48,7 @@ protected: // creature unique stuff
 	/** Range at which baddie will take an opportunity action. */
 	Vector3 threatRange;
 	float jumpSpeed;
-	Vector3 jumpVelocity;
+	Vector3 moveVelocity;
 };
 
 

@@ -133,6 +133,18 @@ bool Baddie::update(double deltaTime) {
 
 		}
 
+		if (falling) {
+			fallVelocity += GRAVITY * deltaTime;
+			moveBy(fallVelocity);
+			if (position.z <= 0) {
+				Vector3 newpos = position;
+				newpos.z = 0;
+				setPosition(newpos);
+				fallVelocity.z = 0;
+				falling = false;
+			}
+		}
+
 #ifdef  DEBUG_HITBOXES
 		debugUpdate();
 #endif //  DEBUG_HITBOXES
@@ -186,7 +198,7 @@ void Baddie::takeDamage(int damage) {
 BlueImp::BlueImp(BaddieData* baddieData) : Baddie(baddieData) {
 
 	name = baddieData->type;
-	currentHP = maxHP = 13;
+	currentHP = maxHP = 130;
 	DEFPWR = 127;
 	MDEF = 50;
 	EXP = 2;
@@ -278,7 +290,7 @@ void BlueImp::startMainAttack(Vector3 direction) {
 
 	attackBox.position.y -= attackBox.size.y;
 
-	jumpVelocity = direction * jumpSpeed;
+	moveVelocity = direction * jumpSpeed;
 
 }
 
@@ -326,7 +338,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 		case 1:
 		{
 			// jump forward
-			Vector3 moveAmount = jumpVelocity * deltaTime;
+			Vector3 moveAmount = moveVelocity * deltaTime;
 			moveBy(moveAmount);
 			attackBox.position += moveAmount;
 
@@ -344,7 +356,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 
 				if (attackBox.collision(object->getHitbox())) {
 					object->takeDamage(5);
-					object->knockBack(jumpVelocity, weight);
+					object->knockBack(moveVelocity/*, weight*2*/);
 					// impact effect, if any
 					//hitEffectManager.newEffect(facing, position, 0);
 				}
@@ -353,17 +365,18 @@ void BlueImp::attackUpdate(double deltaTime) {
 		break;
 
 		case 2: // hanging
-			jumpVelocity = Vector3::Zero;
+			moveVelocity = Vector3::Zero;
 			break;
 		case 3: // falling
-			jumpVelocity += GRAVITY * deltaTime;
-			moveBy(jumpVelocity);
+			//moveVelocity += GRAVITY * deltaTime;
+			moveBy(moveVelocity);
 			if (position.z <= 0) { // finish fall
 				Vector3 newpos = position;
 				newpos.z = 0;
 				setPosition(newpos);
 				currentFrameTime = 10;
-			}
+			} else
+				falling = true;
 			break;
 
 	}

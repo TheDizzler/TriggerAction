@@ -93,6 +93,7 @@ TangibleTile::~TangibleTile() {
 
 void TangibleTile::load(TileAsset* const tileAsset) {
 	Tile::load(tileAsset);
+	weight = 1000000;
 
 	if (tileAsset->hitboxes.size() > 0) {
 		//hitbox = make_unique<Hitbox>(tileAsset->hitboxes[0].get());
