@@ -37,16 +37,15 @@ void Creature::loadAnimation(const pugi::char_t* name) {
 
 
 void Creature::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
-	velocityOfHit.Normalize();
 	knockBackVelocity = velocityOfHit * weightOfHit / weight;
 	falling = true;
-	position += GRAVITY * .005;
+	position -= GRAVITY * .005;
 }
 
 void Creature::knockBack(Vector3 moveVelocity) {
 	knockBackVelocity = moveVelocity;
 	falling = true;
-	position += GRAVITY * .005;
+	position -= GRAVITY * .005;
 }
 
 
@@ -126,11 +125,15 @@ void Creature::moveUpdate(double deltaTime) {
 
 void Creature::hitUpdate(double deltaTime) {
 
+
 	if (knockBackVelocity != Vector3::Zero) {
-		moveBy(knockBackVelocity);
-		knockBackVelocity += GRAVITY * deltaTime;
-		if (position.z <= 0) {
-			knockBackVelocity = Vector3::Zero;
+		moveBy(knockBackVelocity * deltaTime);
+		if (!falling) {
+			knockBackVelocity = knockBackVelocity * GROUND_FRICTION;
+			knockBackVelocity.z = 0;
+			if (abs(knockBackVelocity.x) <= 1 && abs(knockBackVelocity.y) <= 1) {
+				knockBackVelocity = Vector3::Zero;
+			}
 		}
 	} else {
 		currentFrameTime += deltaTime;

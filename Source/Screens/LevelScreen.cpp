@@ -4,6 +4,8 @@
 vector<Tangible*> hitboxesAll;
 vector<unique_ptr<PlayerCharacter>> pcs;
 
+JammerManager LevelScreen::jammerMan;
+
 
 LevelScreen::~LevelScreen() {
 	pcs.clear();
@@ -98,6 +100,8 @@ void LevelScreen::update(double deltaTime) {
 
 	for (const auto& pc : pcs)
 		pc->update(deltaTime);
+
+	jammerMan.update(deltaTime);
 }
 
 void LevelScreen::draw(SpriteBatch * batch) {
@@ -106,6 +110,8 @@ void LevelScreen::draw(SpriteBatch * batch) {
 
 	for (const auto& pc : pcs)
 		pc->draw(batch);
+
+	jammerMan.draw(batch);
 }
 
 void LevelScreen::pause() {

@@ -225,25 +225,85 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 }
 
 bool Joystick::yButton() {
-	return bButtonStates[ControlButtons::Y] && !lastButtonStates[ControlButtons::Y];
+	
+	bool pushed = bButtonStates[ControlButtons::Y]
+		&& !lastButtonStates[ControlButtons::Y];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::Y] = true;
+		lastButtonStates[ControlButtons::Y] = true;
+	}
+	return pushed;
 }
 
 bool Joystick::xButton() {
-	return bButtonStates[ControlButtons::X] && !lastButtonStates[ControlButtons::X];
+	
+	bool pushed = bButtonStates[ControlButtons::X]
+		&& !lastButtonStates[ControlButtons::X];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::X] = true;
+		lastButtonStates[ControlButtons::X] = true;
+	}
+	return pushed;
 }
 
 bool Joystick::aButton() {
-	return bButtonStates[ControlButtons::A] && !lastButtonStates[ControlButtons::A];
+	bool pushed = bButtonStates[ControlButtons::A] && !lastButtonStates[ControlButtons::A];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::A] = true;
+		lastButtonStates[ControlButtons::A] = true;
+	}
+	return pushed;
 }
 
 bool Joystick::bButton() {
-	return bButtonStates[ControlButtons::B] && !lastButtonStates[ControlButtons::B];
+	
+	bool pushed = bButtonStates[ControlButtons::B]
+		&& !lastButtonStates[ControlButtons::B];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::B] = true;
+		lastButtonStates[ControlButtons::B] = true;
+	}
+	return pushed;
 }
 
 bool Joystick::lButton() {
-	return bButtonStates[ControlButtons::L] && !lastButtonStates[ControlButtons::L];
+	
+	bool pushed = bButtonStates[ControlButtons::L]
+		&& !lastButtonStates[ControlButtons::L];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::L] = true;
+		lastButtonStates[ControlButtons::L] = true;
+	}
+	return pushed;
 }
 
 bool Joystick::rButton() {
-	return bButtonStates[ControlButtons::R] && !lastButtonStates[ControlButtons::R];
+	bool pushed = bButtonStates[ControlButtons::R]
+		&& !lastButtonStates[ControlButtons::R];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::R] = true;
+		lastButtonStates[ControlButtons::R] = true;
+	}
+	return pushed;
+}
+
+bool Joystick::startButton() {
+	bool pushed = bButtonStates[ControlButtons::START]
+		&& !lastButtonStates[ControlButtons::START];
+
+	if (pushed) {
+		bButtonStates[ControlButtons::START] = true;
+		lastButtonStates[ControlButtons::START] = true;
+	}
+	return pushed;
+}
+
+bool Joystick::selectButton() {
+	return bButtonStates[ControlButtons::SELECT] && !lastButtonStates[ControlButtons::SELECT];
 }

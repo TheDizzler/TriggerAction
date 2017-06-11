@@ -4,6 +4,7 @@
 #include "../GameObjects/Characters/PlayerCharacter.h"
 #include "../GUIObjects//PCStatusDialog.h"
 #include "../Managers/MapManager.h"
+#include "../Managers/JammerManager.h"
 
 
 
@@ -29,7 +30,7 @@ public:
 	virtual void controllerRemoved(size_t controllerSlot) override;
 	virtual void newController(HANDLE joyHandle);
 
-
+	static JammerManager jammerMan;
 	
 private:
 	GameManager* game;
@@ -38,5 +39,7 @@ private:
 
 	unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS];
 	//unique_ptr<PCTechDialog> pcTechDialogs[MAX_PLAYERS];
+
+	
 
 };

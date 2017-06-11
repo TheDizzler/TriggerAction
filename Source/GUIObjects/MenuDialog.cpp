@@ -119,9 +119,6 @@ void MenuDialog::update(double deltaTime) {
 
 		repeatDelayTime += deltaTime;
 		if (repeatDelayTime >= REPEAT_DELAY) {
-			/*--selectedItem;
-			if (selectedItem < 0)
-				selectedItem = selections.size() - 1;*/
 			bool circle = false;
 			do {
 				--selectedItem;
@@ -143,18 +140,13 @@ void MenuDialog::update(double deltaTime) {
 		repeatDelayTime = REPEAT_DELAY;
 	}
 
-	if (playerSlot->getStick()->bButtonStates[ControlButtons::A] ||
-		playerSlot->getStick()->bButtonStates[ControlButtons::START]) {
 
-		if (released) {
+	if (playerSlot->getStick()->aButton() || playerSlot->getStick()->startButton()) {
+
 			// option selected
 			selectionMade = true;
-		}
-	} else {
-		released = true;
-	}
 
-	for (const auto& selection : selections)
+	} for (const auto& selection : selections)
 		selection->update(deltaTime);
 
 	pointer->update(deltaTime);

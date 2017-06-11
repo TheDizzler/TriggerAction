@@ -106,7 +106,7 @@ void TangibleTile::load(TileAsset* const tileAsset) {
 	}
 }
 
-void TangibleTile::takeDamage(int damage) {
+void TangibleTile::takeDamage(int damage, bool showDamage) {
 }
 
 void TangibleTile::update(double deltaTime) {

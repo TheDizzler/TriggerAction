@@ -22,7 +22,7 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 
 
-	virtual void takeDamage(int damage) override;
+	virtual void takeDamage(int damage, bool showDamage = true) override;
 
 	
 	USHORT currentMP, maxMP;
@@ -58,6 +58,9 @@ protected:
 	virtual void startMainAttack() = 0;
 	void startBlock();
 	void startJump();
+
+	/** Objects already hit by current attack. */
+	vector<Tangible*> hitList;
 
 	//Vector3 startJumpPosition, endHalfJumpPosition;
 	float jumpZ = 10;

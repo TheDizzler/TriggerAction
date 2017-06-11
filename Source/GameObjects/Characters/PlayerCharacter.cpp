@@ -36,6 +36,10 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 	radarBox = Hitbox(hitbox);
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
+	currentHP = maxHP;
+	currentMP = maxMP;
+	playerSlot->statusDialog->updateHP();
+
 	setInitialPosition(Vector2(10, playerSlot->getPlayerSlotNumber() * 100 + 150));
 	canCancelAction = true;
 	action = CreatureAction::WAITING_ACTION;
@@ -137,7 +141,7 @@ void PlayerCharacter::update(double deltaTime) {
 	}
 
 
-	if (joystick->bButtonStates[ControlButtons::START]) {
+	if (joystick->startButton()) {
 
 		if (!playerSlot->pauseDialog->isOpen())
 			GameEngine::showCustomDialog(playerSlot->pauseDialog.get());
@@ -165,17 +169,46 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 #endif //  DEBUG_HITBOXES
 }
 
-void PlayerCharacter::takeDamage(int damage) {
+void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	if (action == CreatureAction::HIT_ACTION) {
+		// prevents further damage while recovering from hit
 		return;
 	}
+
+	if (action == CreatureAction::BLOCK_ACTION) {
+		damage *= .25;
+		knockBackVelocity *= .25;
+	} else {
+		
+		canCancelAction = false;
+
+		switch (facing) {
+			case Facing::DOWN:
+				loadAnimation(hitDown);
+				break;
+			case Facing::LEFT:
+				loadAnimation(hitLeft);
+				break;
+			case Facing::UP:
+				loadAnimation(hitUp);
+				break;
+			case Facing::RIGHT:
+				loadAnimation(hitRight);
+				break;
+		}
+	}
+
+	action = CreatureAction::HIT_ACTION;
 
 	if ((currentHP -= damage) < 0) {
 		currentHP = 0;
 		isAlive = false;
 		timeSinceDeath = 0;
 	}
+
+	if (showDamage)
+	LevelScreen::jammerMan.createJam(position, damage);
 
 	playerSlot->statusDialog->updateHP();
 
@@ -185,23 +218,6 @@ void PlayerCharacter::takeDamage(int damage) {
 
 	}
 
-	action = CreatureAction::HIT_ACTION;
-	canCancelAction = false;
-
-	switch (facing) {
-		case Facing::DOWN:
-			loadAnimation(hitDown);
-			break;
-		case Facing::LEFT:
-			loadAnimation(hitLeft);
-			break;
-		case Facing::UP:
-			loadAnimation(hitUp);
-			break;
-		case Facing::RIGHT:
-			loadAnimation(hitRight);
-			break;
-	}
 }
 
 

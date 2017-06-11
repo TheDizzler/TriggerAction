@@ -178,7 +178,7 @@ void Baddie::draw(SpriteBatch* batch) {
 }
 
 
-void Baddie::takeDamage(int damage) {
+void Baddie::takeDamage(int damage, bool showDamage) {
 
 	if ((currentHP -= damage) < 0) {
 		currentHP = 0;
@@ -186,6 +186,9 @@ void Baddie::takeDamage(int damage) {
 		timeSinceDeath = 0;
 		startTint = tint;
 	}
+
+	if (showDamage)
+		LevelScreen::jammerMan.createJam(position, damage);
 
 	action = CreatureAction::HIT_ACTION;
 	canCancelAction = false;
@@ -333,7 +336,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 
 	switch (currentFrameIndex) {
 		case 0:
-			
+
 			break;
 		case 1:
 		{
@@ -355,8 +358,9 @@ void BlueImp::attackUpdate(double deltaTime) {
 				}
 
 				if (attackBox.collision(object->getHitbox())) {
-					object->takeDamage(5);
 					object->knockBack(moveVelocity/*, weight*2*/);
+					object->takeDamage(5);
+
 					// impact effect, if any
 					//hitEffectManager.newEffect(facing, position, 0);
 				}

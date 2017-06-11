@@ -55,7 +55,7 @@ public:
 	virtual void load(TileAsset* const tileAsset) override;
 
 	/** Special on-hit effects of object. */
-	virtual void takeDamage(int damage);
+	virtual void takeDamage(int damage, bool showDamage = true);
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;

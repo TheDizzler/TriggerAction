@@ -70,6 +70,15 @@
     <Filter Include="Source Files\GameObjects\Characters">
       <UniqueIdentifier>{31cda343-abc2-429a-88e4-05907ec49740}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\DXTGui\Effects">
+      <UniqueIdentifier>{4cd509dc-f31d-4ed4-81cd-72af70befb36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DXTGui\Base">
+      <UniqueIdentifier>{a856c00b-bb09-4762-86c5-1046ff1d05e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DXTGui\Controls">
+      <UniqueIdentifier>{58cf67e7-4848-4c0f-ae59-0abf7df785eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -78,58 +87,7 @@
     <None Include="assets\maps\Test Square C.tmx" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\DXTKGui\Controls\Button.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\CheckBox.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\ComboBox.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\Dialog.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\BaseGraphics\FontSet.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\BaseGraphics\GraphicsAsset.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\GUIControl.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\ListBox.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DXTKGui\Controllers\MouseController.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\Panel.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\BaseGraphics\PrimitiveShapes.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Effects\ScreenTransitions.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\ScrollBar.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\Spinner.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\BaseGraphics\Sprite.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\TextLabel.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\TexturePanel.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Effects\TransitionEffects.cpp">
       <Filter>Source Files\DXTGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\pch.cpp">
@@ -183,9 +141,6 @@
     <ClCompile Include="Source\Screens\TitleScreen.cpp">
       <Filter>Source Files\Screens</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DXTKGui\Controls\DynamicDialog.cpp">
-      <Filter>Source Files\DXTGui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GUIObjects\PCSelectDialog.cpp">
       <Filter>Source Files\GUIObjects</Filter>
     </ClCompile>
@@ -230,6 +185,66 @@
     </ClCompile>
     <ClCompile Include="Source\GUIObjects\PCStatusDialog.cpp">
       <Filter>Source Files\GUIObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Effects\LetterJammer.cpp">
+      <Filter>Source Files\DXTGui\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Effects\ScreenTransitions.cpp">
+      <Filter>Source Files\DXTGui\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Effects\TransitionEffects.cpp">
+      <Filter>Source Files\DXTGui\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\BaseGraphics\FontSet.cpp">
+      <Filter>Source Files\DXTGui\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\BaseGraphics\GraphicsAsset.cpp">
+      <Filter>Source Files\DXTGui\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\BaseGraphics\PrimitiveShapes.cpp">
+      <Filter>Source Files\DXTGui\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\BaseGraphics\Sprite.cpp">
+      <Filter>Source Files\DXTGui\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\Button.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\CheckBox.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\ComboBox.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\Dialog.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\DynamicDialog.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\GUIControl.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\ListBox.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\Panel.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\ScrollBar.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\Spinner.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\TextLabel.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXTKGui\Controls\TexturePanel.cpp">
+      <Filter>Source Files\DXTGui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Managers\JammerManager.cpp">
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -397,6 +412,12 @@
     </ClInclude>
     <ClInclude Include="Source\GUIObjects\PCStatusDialog.h">
       <Filter>Header Files\GUIObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXTKGui\Effects\LetterJammer.h">
+      <Filter>Header Files\DXTGui\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Managers\JammerManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

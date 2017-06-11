@@ -23,7 +23,7 @@ private:
 	ComPtr<ID3D11ShaderResourceView> texture;
 	RECT sourceRect;
 
-	double timeLive = 0;
+	double timeLive;
 
 	UINT width;
 	UINT height;

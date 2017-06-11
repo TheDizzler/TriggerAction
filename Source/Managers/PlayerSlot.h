@@ -58,7 +58,7 @@ private:
 	int currentCharacterNum = -1;
 	bool characterSelected = false;
 	bool characterLocked = false;
-	bool buttonStillDown = false;
+	//bool buttonStillDown = false;
 
 	/* For temporary initialization purposes only! Do not use! */
 	JoyData* _threadJoystickData;

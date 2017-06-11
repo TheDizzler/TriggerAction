@@ -51,7 +51,7 @@ public:
 	void moveHitboxBy(const Vector3& moveVector);
 	void setHitboxPosition(const Vector3& newPosition);
 
-	virtual void takeDamage(int damage) = 0;
+	virtual void takeDamage(int damage, bool showDamage = true) = 0;
 	/** Do nothing for innanimate objects. Other objects should override */
 	virtual void knockBack(Vector3 velocityOfHit, USHORT weightOfHit);
 	/** Do nothing for innanimate objects. Other objects should override */

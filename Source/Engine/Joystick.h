@@ -37,6 +37,8 @@ public:
 	bool bButton();
 	bool lButton();
 	bool rButton();
+	bool startButton();
+	bool selectButton();
 	
 private:
 	HANDLE handle = NULL;

@@ -208,6 +208,14 @@ TextLabel* GUIFactory::createTextLabel(const Vector2& position,
 	return label;
 }
 
+LetterJammer* GUIFactory::createLetterJammer(
+	const Vector2& position, wstring text, Color textColor, const char_t* fontName) {
+
+	LetterJammer* jammer = new LetterJammer(this, NULL, position, text);
+	jammer->setTint(textColor);
+	return jammer;
+}
+
 
 Button* GUIFactory::createButton(const char_t* fontName) {
 

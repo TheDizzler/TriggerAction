@@ -9,8 +9,11 @@ public:
 	//virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
-	/** This assumes zero defender initial velocity. */
+	/** This assumes zero defender initial velocity.
+		Note: knockback should be called before takeDamage.*/
 	virtual void knockBack(Vector3 velocityOfHit, USHORT weightOfHit) override;
+	/** This assumes zero defender initial velocity.
+		Note: knockback should be called before takeDamage.*/
 	virtual void knockBack(Vector3 moveVelocity) override;
 
 
@@ -35,7 +38,7 @@ public:
 	USHORT EXP = 0;
 	/** Amont given when Baddie killed or current TP of PC. */
 	USHORT TP = 0;
-	
+
 protected:
 
 	enum CreatureAction {
@@ -46,14 +49,14 @@ protected:
 	bool canCancelAction = true;
 
 	bool isAlive = true;
-	
+
 	Vector3 fallVelocity = Vector3::Zero;
 
 	virtual void moveUpdate(double deltaTime);
 	virtual void attackUpdate(double deltaTime) = 0;
 	/** The update for when creature has been hit with an attack. */
 	virtual void hitUpdate(double deltaTime);
-	
+
 
 	shared_ptr<AssetSet> assetSet;
 	shared_ptr<Animation> currentAnimation;

@@ -157,16 +157,17 @@ void Chrono::attackUpdate(double deltaTime) {
 						continue;
 					if (radarBox.collision2d(hb->getHitbox())) {
 						collision = true;
-						hb->takeDamage(0);
 						hb->knockBack(moveVector);
+						hb->takeDamage(0, false);
+
 						break;
 					}
 				}
 
-				//if (!collision) {
+				if (!collision) {
 					moveBy(moveVector);
 
-				//}
+				}
 
 				if (currentFrameTime >= currentFrameDuration) {
 					yetAttacked = true;
@@ -240,13 +241,16 @@ void Chrono::attackUpdate(double deltaTime) {
 				radarBox.position = hitbox.position + moveVector * 2;
 				bool collision = false;
 				// check for collisions
-				for (const Tangible* hb : hitboxesAll) {
+				for (Tangible* hb : hitboxesAll) {
 					if (hb->getHitbox() == &hitbox)
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
 						collision = true; // it's POSSIBLE that more than one object could collide
-						moveVelocity.x = 0;
-						moveVelocity.y = 0;
+						moveVector.x = 0;
+						moveVector.y = 0;
+						hb->knockBack(moveVector);
+						hb->takeDamage(0, false);
+
 						break;
 					}
 				}
@@ -394,6 +398,8 @@ void Chrono::endAttack() {
 	canCancelAction = true;
 	currentAttack = NONE;
 
+	hitList.clear();
+
 #ifdef  DEBUG_HITBOXES
 	drawAttack = false;
 #endif //  DEBUG_HITBOXES
@@ -439,21 +445,22 @@ void Chrono::firstAttack() {
 		}
 
 		if (attackBox.collision(object->getHitbox())) {
-			object->takeDamage(2);
 			switch (facing) {
 				case Facing::DOWN:
-					object->knockBack(Vector3(0, 10, 0), weight);
+					object->knockBack(Vector3(0, 100, 0), weight);
 					break;
 				case Facing::LEFT:
-					object->knockBack(Vector3(-10, 0, 0), weight);
+					object->knockBack(Vector3(-100, 0, 0), weight);
 					break;
 				case Facing::UP:
-					object->knockBack(Vector3(0, -10, 0), weight);
+					object->knockBack(Vector3(0, -100, 0), weight);
 					break;
 				case Facing::RIGHT:
-					object->knockBack(Vector3(10, 0, 0), weight);
+					object->knockBack(Vector3(100, 0, 0), weight);
 					break;
 			}
+			object->takeDamage(2);
+
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 0);
 		}
@@ -536,21 +543,22 @@ void Chrono::secondAttack() {
 		}
 
 		if (attackBox.collision(object->getHitbox())) {
-			object->takeDamage(4);
 			switch (facing) {
 				case Facing::DOWN:
-					object->knockBack(Vector3(0, 15, 5), weight);
+					object->knockBack(Vector3(0, 200, 25), weight);
 					break;
 				case Facing::LEFT:
-					object->knockBack(Vector3(-15, 0, 5), weight);
+					object->knockBack(Vector3(-200, 0, 25), weight);
 					break;
 				case Facing::UP:
-					object->knockBack(Vector3(0, -15, 5), weight);
+					object->knockBack(Vector3(0, -200, 25), weight);
 					break;
 				case Facing::RIGHT:
-					object->knockBack(Vector3(15, 0, 5), weight);
+					object->knockBack(Vector3(200, 0, 25), weight);
 					break;
 			}
+			object->takeDamage(4);
+
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 1);
 		}
@@ -610,7 +618,6 @@ void Chrono::thirdAttack() {
 		case Facing::DOWN:
 			attackBox.size.x /= 2;
 			attackBox.position.y += attackBoxOffset.y;
-			//attackBox.position.x -= (getWidth() /*+ currentFrameOrigin.x*/) / 2;
 			attackBox.position.x -= attackBox.size.x / 2;
 			break;
 		case Facing::RIGHT:
@@ -619,7 +626,6 @@ void Chrono::thirdAttack() {
 			break;
 		case Facing::UP:
 			attackBox.size.x /= 2;
-			//attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2;
 			attackBox.position.x -= attackBox.size.x / 2;
 			break;
 	}
@@ -641,21 +647,22 @@ void Chrono::thirdAttack() {
 		}
 
 		if (attackBox.collision(object->getHitbox())) {
-			object->takeDamage(5);
 			switch (facing) {
 				case Facing::DOWN:
-					object->knockBack(Vector3(0, 1, 20), weight);
+					object->knockBack(Vector3(0, 200, 0), weight);
 					break;
 				case Facing::LEFT:
-					object->knockBack(Vector3(-1, 0, 20), weight);
+					object->knockBack(Vector3(-200, 0, 0), weight);
 					break;
 				case Facing::UP:
-					object->knockBack(Vector3(0, -1, 20), weight);
+					object->knockBack(Vector3(0, -200, 0), weight);
 					break;
 				case Facing::RIGHT:
-					object->knockBack(Vector3(1, 0, 20), weight);
+					object->knockBack(Vector3(200, 0, 0), weight);
 					break;
 			}
+			object->takeDamage(5);
+
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 0);
 		}
@@ -723,10 +730,7 @@ void Chrono::fourthAttack(double deltaTime) {
 			endAttack();
 		}
 		return;
-	} /*else {
-		Vector3 moveVector = moveVelocity * deltaTime;
-		moveBy(moveVector);
-	}*/
+	}
 
 	if (fallVelocity.z < moveVelocity.z) { // raising
 		Vector3 moveVector = moveVelocity * deltaTime;
@@ -739,23 +743,27 @@ void Chrono::fourthAttack(double deltaTime) {
 				continue;
 			}
 
+			if (std::find(hitList.begin(), hitList.end(), object) != hitList.end())
+				continue;
+
 			if (attackBox.collision(object->getHitbox())) {
-				object->takeDamage(5);
 				switch (facing) {
 					case Facing::DOWN:
-						object->knockBack(Vector3(0, 200, 200), weight);
+						object->knockBack(Vector3(0, 50, 250), weight);
 						break;
 					case Facing::LEFT:
-						object->knockBack(Vector3(-200, 0, 200), weight);
+						object->knockBack(Vector3(-50, 0, 250), weight);
 						break;
 					case Facing::UP:
-						object->knockBack(Vector3(0, -200, 200), weight);
+						object->knockBack(Vector3(0, -50, 250), weight);
 						break;
 					case Facing::RIGHT:
-						object->knockBack(Vector3(200, 0, 200), weight);
+						object->knockBack(Vector3(50, 0, 250), weight);
 						break;
 				}
-				// slash effect
+				object->takeDamage(5);
+				hitList.push_back(object);
+					// slash effect
 				hitEffectManager.newEffect(facing, position, 2);
 			}
 		}
@@ -866,9 +874,11 @@ void Chrono::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[
 
 
 
-
+const double MAX_LIVE_TIME = 1.1;
+const double FADE_WAIT_TIME = .5;
 HitEffect::HitEffect(const Vector3& pos) {
 	position = pos;
+	timeLive = -FADE_WAIT_TIME;
 }
 
 HitEffect::~HitEffect() {
@@ -884,9 +894,10 @@ void HitEffect::load(GraphicsAsset* const graphicsAsset) {
 	sourceRect = graphicsAsset->getSourceRect();
 }
 
-const float MAX_LIVE_TIME = 1.5;
+
 bool HitEffect::update(double deltaTime) {
 	timeLive += deltaTime;
+	tint = Color::Lerp(Color(1, 1, 1, 1), Color(.5, .1, .1, 0), timeLive / MAX_LIVE_TIME);
 	if (timeLive >= MAX_LIVE_TIME) {
 		// die die die
 

@@ -180,6 +180,7 @@
     <ClCompile Include="Source\DXTKGui\Controls\Spinner.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\TextLabel.cpp" />
     <ClCompile Include="Source\DXTKGui\Controls\TexturePanel.cpp" />
+    <ClCompile Include="Source\DXTKGui\Effects\LetterJammer.cpp" />
     <ClCompile Include="Source\DXTKGui\Effects\ScreenTransitions.cpp" />
     <ClCompile Include="Source\DXTKGui\Effects\TransitionEffects.cpp" />
     <ClCompile Include="Source\DXTKGui\GUIFactory.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Source\GUIObjects\SelectionPointer.cpp" />
     <ClCompile Include="Source\Managers\GameManager.cpp" />
     <ClCompile Include="Source\Managers\GFXAssetManager.cpp" />
+    <ClCompile Include="Source\Managers\JammerManager.cpp" />
     <ClCompile Include="Source\Managers\MapManager.cpp" />
     <ClCompile Include="Source\Managers\PlayerSlot.cpp" />
     <ClCompile Include="Source\pch.cpp" />
@@ -235,6 +237,7 @@
     <ClInclude Include="Source\DXTKGui\Controls\Spinner.h" />
     <ClInclude Include="Source\DXTKGui\Controls\TextLabel.h" />
     <ClInclude Include="Source\DXTKGui\Controls\TexturePanel.h" />
+    <ClInclude Include="Source\DXTKGui\Effects\LetterJammer.h" />
     <ClInclude Include="Source\DXTKGui\Effects\ScreenTransitions.h" />
     <ClInclude Include="Source\DXTKGui\Effects\TransitionEffects.h" />
     <ClInclude Include="Source\DXTKGui\GuiAssets.h" />
@@ -265,6 +268,7 @@
     <ClInclude Include="Source\GUIObjects\SelectionPointer.h" />
     <ClInclude Include="Source\Managers\GameManager.h" />
     <ClInclude Include="Source\Managers\GFXAssetManager.h" />
+    <ClInclude Include="Source\Managers\JammerManager.h" />
     <ClInclude Include="Source\Managers\MapManager.h" />
     <ClInclude Include="Source\Managers\PlayerSlot.h" />
     <ClInclude Include="Source\pch.h" />

@@ -93,7 +93,7 @@ public:
 		}
 	}
 
-private:
+protected:
 	typedef void (ActionListener::*OnClickFunction) (TextLabel*);
 	ActionListener* actionListener = NULL;
 	OnClickFunction onClickFunction;

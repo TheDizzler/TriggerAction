@@ -52,9 +52,8 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 	}
 
 
-	if (joystick->bButtonStates[ControlButtons::A]) {
-		if (!buttonStillDown) {
-			buttonStillDown = true;
+	if (!characterLocked && joystick->aButton()) {
+
 
 			if (characterSelected) {
 				characterLocked = true;
@@ -63,10 +62,9 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				characterSelected = true;
 				dialog->setSelected(true);
 			}
-		}
-	} else if (joystick->bButtonStates[ControlButtons::B]) {
-		if (!buttonStillDown) {
-			buttonStillDown = true;
+
+	} else if (joystick->bButton()) {
+
 
 			if (characterLocked || characterSelected) {
 				characterLocked = false;
@@ -74,10 +72,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				dialog->setSelected(false);
 				dialog->setReady(false);
 			}
-		}
-	} else {
-		buttonStillDown = false;
-	}
+	} 
 
 	return characterLocked;
 }
@@ -85,12 +80,10 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 
 void PlayerSlot::waiting() {
 
-	if (joystick->bButtonStates[ControlButtons::A]) {
+	if (joystick->aButton()) {
 		_threadJoystickData->finishFlag = true;
 		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
 
-		// "lock" A button until released
-		buttonStillDown = true;
 	}
 }
 

@@ -28,7 +28,7 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 
 
-	virtual void takeDamage(int damage);
+	virtual void takeDamage(int damage, bool showDamage = true);
 
 
 	USHORT GOLD = 0;
