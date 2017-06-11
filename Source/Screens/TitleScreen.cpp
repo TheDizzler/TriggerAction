@@ -8,9 +8,6 @@ TitleScreen::~TitleScreen() {
 #include "../Engine/GameEngine.h"
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
-	camera->setZoom(1);
-
-
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 3);
 	dialogPos = Vector2(Globals::targetResolution.x / 2, Globals::targetResolution.y / 2);
@@ -40,21 +37,40 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	pendulum->setRotation(pendulumRotation);
 	pendulum->setLayerDepth(.9);
 
-
+	camera->setZoom(1);
 	camera->centerOn(Vector2(
 		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
 
-	for (int i = 0; i < MAX_PLAYERS; ++i)
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		pcSelectDialogs[i] = guiOverlay->createPCSelectDialog(
 			guiFactory->getAssetSet("Menu BG 0"), i);
 
+	}
 	guiOverlay->initializeTitleScreen(pcSelectDialogs);
 
 	return true;
 }
 
+
 void TitleScreen::setGameManager(GameManager* gm) {
 	game = gm;
+}
+
+bool openedOnce = false;
+void TitleScreen::reload() {
+
+	
+	pendulum->setPosition(Vector2(Globals::WINDOW_WIDTH * .6666, 100));
+	pendulum->setOrigin(Vector2(pendulum->getWidth() / 2, 0));
+	pendulumRotation = -XM_PIDIV2;
+	pendulum->setRotation(pendulumRotation);
+
+	camera->setZoom(1);
+	camera->centerOn(Vector2(
+		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
+
+	guiOverlay->reloadTitleScreen(pcSelectDialogs);
+	openedOnce = false;
 }
 
 //TOTAL_SWING_TIME = 2 * XM_PI * sqrt(pendulum->getHeight() / GRAVITY);
@@ -63,7 +79,6 @@ double g = 981; // assume 1 pixel == 1 cm, therefore gravity is in 1/100 of a pi
 float angularAcceleration = 0;
 float damping = .99989;
 bool doneSwinging = false;
-bool openedOnce = false;
 void TitleScreen::update(double deltaTime) {
 
 
@@ -93,7 +108,6 @@ void TitleScreen::update(double deltaTime) {
 
 	if (noControllerDialog->isOpen()) {
 		noControllerDialog->update(deltaTime);
-		//slotManager->waiting();
 	} else {
 
 		bool ready = true;
@@ -116,6 +130,9 @@ void TitleScreen::update(double deltaTime) {
 				case TitleItems::NEW_GAME:
 					//state = CHARACTER_SELECT;
 					guiOverlay->menuDialog->hide();
+					for (const auto& slot : activeSlots) {
+						slot->pcSelectDialog->hide();
+					}
 					game->loadLevel(Globals::testLevel);
 					break;
 

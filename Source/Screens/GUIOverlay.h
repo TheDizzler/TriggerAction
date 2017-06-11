@@ -14,6 +14,7 @@ public:
 	virtual ~GUIOverlay();
 
 	void initializeTitleScreen(unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS]);
+	void reloadTitleScreen(unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS]);
 	void initializeLevelScreen(unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS]);
 
 
@@ -33,7 +34,10 @@ public:
 	unique_ptr<PCSelectDialog> createPCSelectDialog(shared_ptr<AssetSet> dialogImageSet,
 		const USHORT playerNumber, const char_t* fontName = "Default Font");
 
-	/** Displayed by GUIOverlay but controlled by it's associated screen. */
+
+	void openCharacterSelectDialog(PlayerSlot* playerSlot);
+
+/** Displayed by GUIOverlay but controlled by it's associated screen. */
 	unique_ptr<MenuDialog> menuDialog;
 private:
 

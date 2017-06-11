@@ -87,6 +87,7 @@ GUIOverlay::~GUIOverlay() {
 void GUIOverlay::initializeTitleScreen(
 	unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS]) {
 
+
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		slotManager->playerSlots[i]->pairWithDialog(pcSelectDialogs[i].get());
 		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcSelectDialogs[i].get();
@@ -98,6 +99,17 @@ void GUIOverlay::initializeTitleScreen(
 	menuDialog->addSelection(L"Continue Game", false);
 	menuDialog->addSelection(L"Options", true);
 	menuDialog->addSelection(L"Quit", true);
+}
+
+void GUIOverlay::reloadTitleScreen(
+	unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS]) {
+
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		hudDialogs[HUDDIALOG::PLAYER1 + i]->hide();
+		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcSelectDialogs[i].get();
+		if (slotManager->playerSlots[i]->hasJoystick())
+			hudDialogs[HUDDIALOG::PLAYER1 + i]->show();
+	}
 }
 
 
@@ -224,6 +236,16 @@ unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(dialogPositions[PLAYER1 + playerNumber], dialogSize);
 	return move(dialog);
+}
+
+
+void GUIOverlay::openCharacterSelectDialog(PlayerSlot* playerSlot) {
+
+	hudDialogs[PLAYER1 + playerSlot->getPlayerSlotNumber()]->hide();
+	hudDialogs[PLAYER1 + playerSlot->getPlayerSlotNumber()] = playerSlot->pcSelectDialog;
+	playerSlot->resetCharacterSelect();
+	hudDialogs[PLAYER1 + playerSlot->getPlayerSlotNumber()]->show();
+
 }
 
 

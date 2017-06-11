@@ -12,6 +12,12 @@ SelectionPointer::SelectionPointer() {
 SelectionPointer::~SelectionPointer() {
 }
 
+void SelectionPointer::reset() {
+	selectingTime = 0;
+	position = startPos;
+	setSelected(0);
+}
+
 #include "../Engine/Joystick.h"
 void SelectionPointer::update(double deltaTime) {
 

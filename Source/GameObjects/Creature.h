@@ -39,16 +39,17 @@ public:
 	/** Amont given when Baddie killed or current TP of PC. */
 	USHORT TP = 0;
 
+	bool isAlive = true;
 protected:
 
 	enum CreatureAction {
 		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION,
-		BLOCK_ACTION, DRAWING_ACTION
+		BLOCK_ACTION, DRAWING_ACTION, FOLLOWING_TARGET, DEAD_ACTION
 	};
 	CreatureAction action = WAITING_ACTION;
 	bool canCancelAction = true;
 
-	bool isAlive = true;
+	
 
 	Vector3 fallVelocity = Vector3::Zero;
 

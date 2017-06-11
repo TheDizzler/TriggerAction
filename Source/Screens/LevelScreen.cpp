@@ -30,8 +30,15 @@ void LevelScreen::setGameManager(GameManager* gm) {
 #include "../GameObjects/Characters/Chrono.h"
 void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
+	hitboxesAll.clear();
+	pcs.clear();
+	jammerMan.reset();
+
 	map.reset();
 	map = move(newMap);
+
+	for (auto& baddie : map->baddies)
+		hitboxesAll.push_back(baddie.get());
 
 	for (const auto& slot : activeSlots) {
 
@@ -98,8 +105,17 @@ void LevelScreen::update(double deltaTime) {
 
 	map->update(deltaTime);
 
-	for (const auto& pc : pcs)
+	bool gameOver = true;
+	for (const auto& pc : pcs) {
 		pc->update(deltaTime);
+		if (pc->isAlive)
+			gameOver = false;
+	}
+
+	if (gameOver) {
+		game->loadMainMenu();
+
+	}
 
 	jammerMan.update(deltaTime);
 }

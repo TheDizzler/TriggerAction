@@ -20,12 +20,20 @@ PlayerSlot::~PlayerSlot() {
 }
 
 
+void PlayerSlot::resetCharacterSelect() {
+
+	
+	characterLocked = false;
+	characterSelected = false;
+	characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+	pcSelectDialog->loadPC(characterData);
+}
+
+
 bool PlayerSlot::characterSelect(double deltaTime) {
 
-	PCSelectDialog* dialog = (PCSelectDialog*) pcDialog;
-	if (characterLocked) {
-
-	} else {
+	//PCSelectDialog* dialog = (PCSelectDialog*) pcSelectDialog;
+	if (!characterLocked) {
 
 		if (!characterSelected) {
 			if (joystick->lAxisX < -10) {
@@ -33,7 +41,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				if (repeatDelayTime >= REPEAT_DELAY) {
 					// select character to left
 					characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
-					dialog->loadPC(characterData);
+					pcSelectDialog->loadPC(characterData);
 					repeatDelayTime = 0;
 				}
 
@@ -42,38 +50,38 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				if (repeatDelayTime >= REPEAT_DELAY) {
 					// select character to right
 					characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-					dialog->loadPC(characterData);
+					pcSelectDialog->loadPC(characterData);
 					repeatDelayTime = 0;
 				}
 			} else {
 				repeatDelayTime = REPEAT_DELAY;
 			}
 		}
-	}
 
 
-	if (!characterLocked && joystick->aButton()) {
+
+		if (joystick->aButton()) {
 
 
 			if (characterSelected) {
 				characterLocked = true;
-				dialog->setReady(true);
+				pcSelectDialog->setReady(true);
 			} else {
 				characterSelected = true;
-				dialog->setSelected(true);
+				pcSelectDialog->setSelected(true);
 			}
 
-	} else if (joystick->bButton()) {
+		} else if (joystick->bButton()) {
 
 
 			if (characterLocked || characterSelected) {
 				characterLocked = false;
 				characterSelected = false;
-				dialog->setSelected(false);
-				dialog->setReady(false);
+				pcSelectDialog->setSelected(false);
+				pcSelectDialog->setReady(false);
 			}
-	} 
-
+		}
+	}
 	return characterLocked;
 }
 
@@ -88,8 +96,8 @@ void PlayerSlot::waiting() {
 }
 
 
-void PlayerSlot::pairWithDialog(DynamicDialog* dialog) {
-	pcDialog = dialog;
+void PlayerSlot::pairWithDialog(PCSelectDialog* dialog) {
+	pcSelectDialog = dialog;
 }
 
 void PlayerSlot::pairWithStatusDialog(PCStatusDialog* dialog) {
@@ -107,8 +115,8 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 	joystick = joyData->joystick.get();
 	joystick->playerSlotNumber = slotNumber;
 
-	pcDialog->show();
-	pcDialog->setText(L"Push A\nto join!");
+	pcSelectDialog->show();
+	pcSelectDialog->setText(L"Push A\nto join!");
 	_threadJoystickData = joyData;
 
 	wostringstream wss;
@@ -140,7 +148,7 @@ void PlayerSlot::unpairSocket() {
 	wss << L" unpaired." << endl;
 	OutputDebugString(wss.str().c_str());
 
-	pcDialog->hide();
+	pcSelectDialog->hide();
 
 	joystick->playerSlotNumber = -1;
 	joystick = NULL;
@@ -163,11 +171,11 @@ Joystick* PlayerSlot::getStick() {
 void PlayerSlot::selectCharacter() {
 
 	characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-	((PCSelectDialog*) pcDialog)->loadPC(characterData);
+	pcSelectDialog->loadPC(characterData);
 }
 
 void PlayerSlot::setDialogText(wstring text) {
-	pcDialog->setText(text);
+	pcSelectDialog->setText(text);
 }
 
 

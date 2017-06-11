@@ -24,11 +24,12 @@ public:
 	PlayerSlot(size_t slotNum);
 	virtual ~PlayerSlot();
 
+	void resetCharacterSelect();
 	bool characterSelect(double deltaTime);
 	void waiting();
 
 
-	void pairWithDialog(DynamicDialog* dialog);
+	void pairWithDialog(PCSelectDialog* dialog);
 	void pairWithStatusDialog(PCStatusDialog* dialog);
 
 	/** Returns true if pair was succesful. Returns false if slot already paired. */
@@ -38,13 +39,14 @@ public:
 
 
 	size_t getPlayerSlotNumber();
+	/** If no joy, no player :( */
 	bool hasJoystick();
 	Joystick* getStick();
 
 	void selectCharacter();
 
 	void setDialogText(wstring text);
-	DynamicDialog* pcDialog;
+	PCSelectDialog* pcSelectDialog;
 	PCStatusDialog* statusDialog;
 	CharacterData* characterData;
 

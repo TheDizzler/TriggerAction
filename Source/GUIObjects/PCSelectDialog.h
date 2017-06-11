@@ -13,7 +13,6 @@ public:
 
 	void reset();
 
-	//virtual void pairPlayerSlot(PlayerSlot* playerSlot);
 
 	virtual void setDimensions(const Vector2& position, const Vector2& size) override;
 	void loadPC(CharacterData* characterData);
@@ -25,13 +24,12 @@ public:
 	virtual void textureDraw(SpriteBatch* batch) override;
 
 	virtual void hide() override;
-
+	virtual void show() override;
 
 	void setSelected(bool selected);
 	void setReady(bool isReady);
 private:
 
-	//PlayerSlot*  playerSlot;
 	CharacterData* characterData;
 
 	unique_ptr<Sprite> portrait;

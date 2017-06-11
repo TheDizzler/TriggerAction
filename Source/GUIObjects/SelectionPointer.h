@@ -8,6 +8,8 @@ public:
 	SelectionPointer();
 	virtual ~SelectionPointer();
 
+	void reset();
+
 	virtual void update(double deltaTime);
 
 	void setSelected(bool selected);

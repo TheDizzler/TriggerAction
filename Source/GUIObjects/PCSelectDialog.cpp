@@ -18,14 +18,9 @@ PCSelectDialog::~PCSelectDialog() {
 
 void PCSelectDialog::reset() {
 
-	playerReady = false;
+	showReadyLabel = false;
+	pointer->reset();
 }
-
-
-//void PCSelectDialog::pairPlayerSlot(PlayerSlot* slot) {
-//
-//	playerSlot = slot;
-//}
 
 
 
@@ -81,7 +76,7 @@ void PCSelectDialog::loadPC(CharacterData* pcData) {
 
 #include "../Screens/GUIOverlay.h"
 void PCSelectDialog::update(double deltaTime) {
-	
+
 
 	if (!isShowing)
 		return;
@@ -119,6 +114,10 @@ void PCSelectDialog::textureDraw(SpriteBatch* batch) {
 
 void PCSelectDialog::hide() {
 	DynamicDialog::hide();
+}
+
+void PCSelectDialog::show() {
+	DynamicDialog::show();
 	reset();
 }
 

@@ -42,6 +42,10 @@ void JammerManager::createJam(Vector3 position, int message, Color color) {
 
 }
 
+void JammerManager::reset() {
+	jammers.clear();
+}
+
 void JammerManager::createJam(Vector3 position, wstring message, Color color) {
 
 	unique_ptr<LetterJammer> jammer;

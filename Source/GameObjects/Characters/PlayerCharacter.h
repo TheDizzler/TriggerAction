@@ -92,8 +92,6 @@ protected:
 
 	/** Velocity for automated movement. */
 	Vector3 moveVelocity;
-	//float jumpByX;
-	//float jumpByY;
 
 
 	bool lastCollision = false;

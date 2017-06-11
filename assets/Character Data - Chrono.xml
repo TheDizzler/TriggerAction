@@ -540,7 +540,7 @@
 			<sprite x="403" y="423" width="22" height="37" frameTime=".5" >
 				<origin x="8" y="34" />
 			</sprite>
-			
+
 
 		</animation>
 
@@ -583,6 +583,17 @@
 		<animation name="jump right">
 			<sprite x="401" y="602" width="27" height="31" >
 				<origin x="12" y="30" />
+			</sprite>
+		</animation>
+
+		<animation name="dead left">
+			<sprite x="38" y="251" width="32" height="14" >
+				<origin x="16" y="13" />
+			</sprite>
+		</animation>
+		<animation name="dead right">
+			<sprite x="78" y="251" width="32" height="14" >
+				<origin x="16" y="13" />
 			</sprite>
 		</animation>
 

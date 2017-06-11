@@ -13,6 +13,7 @@ public:
 	void createJam(Vector3 position, wstring message, Color color = Color(1, 1, 1, 1));
 	void createJam(Vector3 position, int message, Color color = Color(1, 1, 1, 1));
 
+	void reset();
 private:
 
 	vector<unique_ptr<LetterJammer>> jammers;

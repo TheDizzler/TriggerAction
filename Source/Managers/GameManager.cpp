@@ -196,7 +196,8 @@ bool GameManager::reloadLevel(const pugi::char_t* levelName) {
 void GameManager::loadMainMenu() {
 
 	lastScreen = currentScreen;
-	currentScreen = levelScreen.get();
+	currentScreen = titleScreen.get();
+	titleScreen->reload();
 
 }
 

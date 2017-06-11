@@ -125,6 +125,24 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::DRAWING_ACTION:
 			drawWeaponUpdate(deltaTime);
 			break;
+		case CreatureAction::DEAD_ACTION:
+			
+			if (knockBackVelocity != Vector3::Zero) {
+				timeSinceDeath += deltaTime;
+				moveBy(knockBackVelocity * deltaTime);
+				if (!falling) {
+					knockBackVelocity = knockBackVelocity * GROUND_FRICTION;
+					knockBackVelocity.z = 0;
+					if (abs(knockBackVelocity.x) <= 1 && abs(knockBackVelocity.y) <= 1) {
+						knockBackVelocity = Vector3::Zero;
+						guiOverlay->openCharacterSelectDialog(playerSlot.get());
+						isAlive = false;
+					}
+				}
+			}/* else {
+				playerSlot->characterSelect(deltaTime);
+			}*/
+			break;
 
 	}
 
@@ -180,7 +198,7 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 		damage *= .25;
 		knockBackVelocity *= .25;
 	} else {
-		
+
 		canCancelAction = false;
 
 		switch (facing) {
@@ -203,12 +221,22 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	if ((currentHP -= damage) < 0) {
 		currentHP = 0;
-		isAlive = false;
+		/*isAlive = false;*/
+		action = CreatureAction::DEAD_ACTION;
+		switch (facing) {
+			case Facing::LEFT:
+				loadAnimation("dead left");
+				break;
+			case Facing::RIGHT:
+				loadAnimation("dead right");
+				break;
+		}
+		remove(hitboxesAll.begin(), hitboxesAll.end(), this);
 		timeSinceDeath = 0;
 	}
 
 	if (showDamage)
-	LevelScreen::jammerMan.createJam(position, damage);
+		LevelScreen::jammerMan.createJam(position, damage);
 
 	playerSlot->statusDialog->updateHP();
 

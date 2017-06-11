@@ -58,7 +58,6 @@ void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet
 Baddie::Baddie(BaddieData* data) {
 
 	setHitbox(data->hitbox.get());
-	hitboxesAll.push_back(this);
 
 	threatRange = Vector3(40, 40, 8 + 16); // z = jump height + attackbox z
 	jumpSpeed = 85;
@@ -108,8 +107,16 @@ bool Baddie::update(double deltaTime) {
 					currentFrameOrigin
 						= currentAnimation->animationFrames[currentFrameIndex]->origin;
 				}
+
+
+				/** Opportunity-attack */
 				for (const auto& pc : pcs) {
 					Vector3 distance = pc->getHitbox()->position - hitbox.position;
+
+					if (target == NULL || !target->isAlive) {
+						target = pc.get();
+						action = FOLLOWING_TARGET;
+					}
 
 					if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 						// le petit attaque
@@ -120,15 +127,97 @@ bool Baddie::update(double deltaTime) {
 
 				}
 				break;
+			case CreatureAction::FOLLOWING_TARGET:
+
+				if (target != NULL) {
+
+					// check for opportunity attack
+					for (const auto& pc : pcs) {
+						Vector3 distance = pc->getHitbox()->position - hitbox.position;
+
+						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
+							distance.z = 8;
+							distance.Normalize();
+							startMainAttack(distance);
+						}
+
+					}
+
+
+					Vector3 direction = position - target->getPosition();
+					direction.Normalize();
+
+					Facing newFacing;
+					if (abs(direction.x) > abs(direction.y)) {
+						// more horizontal than vertical
+						if (direction.x < 0) {
+							// going right
+							newFacing = Facing::RIGHT;
+						} else {
+							// going left
+							newFacing = Facing::LEFT;
+						}
+					} else {
+						// more vertical than horizontal
+						if (direction.y < 0) {
+							// going down
+							newFacing = Facing::DOWN;
+						} else {
+							// going up
+							newFacing = Facing::UP;
+						}
+					}
+
+					if (newFacing != facing) {
+						switch (newFacing) {
+							case Facing::UP:
+								loadAnimation(walkUp);
+								break;
+							case Facing::DOWN:
+								loadAnimation(walkDown);
+								break;
+							case Facing::LEFT:
+								loadAnimation(walkLeft);
+								break;
+							case Facing::RIGHT:
+								loadAnimation(walkRight);
+								break;
+						}
+						facing = newFacing;
+					}
+
+					moveBy(direction * -moveRightSpeed * deltaTime);
+
+					currentFrameTime += deltaTime;
+					if (currentFrameTime >= currentFrameDuration) {
+						if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+							currentFrameIndex = 0;
+						}
+						currentFrameTime = 0;
+						currentFrameDuration
+							= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+						currentFrameRect
+							= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+						currentFrameOrigin
+							= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					}
+
+				} else
+					action = CreatureAction::WAITING_ACTION;
+				break;
 			case CreatureAction::MOVING_ACTION:
 				break;
 			case CreatureAction::ATTACKING_ACTION:
 				attackUpdate(deltaTime);
-
+				if (!target->isAlive) {
+					target = NULL;
+					action = CreatureAction::WAITING_ACTION;
+				}
 				break;
 
 			case CreatureAction::HIT_ACTION:
 				hitUpdate(deltaTime);
+				target = NULL;
 				break;
 
 		}
@@ -318,12 +407,15 @@ void BlueImp::attackUpdate(double deltaTime) {
 					loadAnimation(walkRight);
 					break;
 			}
-			action = CreatureAction::WAITING_ACTION;
+			//action = CreatureAction::WAITING_ACTION;
+			action = CreatureAction::FOLLOWING_TARGET;
 #ifdef  DEBUG_HITBOXES
 			drawAttack = false;
 #endif //  DEBUG_HITBOXES
 			return;
 		}
+		if (currentFrameIndex == 3)
+			falling = true;
 		currentFrameTime = 0;
 		currentFrameDuration
 			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
@@ -336,7 +428,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 
 	switch (currentFrameIndex) {
 		case 0:
-
+			hitList.clear();
 			break;
 		case 1:
 		{
@@ -356,11 +448,12 @@ void BlueImp::attackUpdate(double deltaTime) {
 				if (object == this) {
 					continue;
 				}
-
+				if (std::find(hitList.begin(), hitList.end(), object) != hitList.end())
+					continue;
 				if (attackBox.collision(object->getHitbox())) {
 					object->knockBack(moveVelocity/*, weight*2*/);
 					object->takeDamage(5);
-
+					hitList.push_back(object);
 					// impact effect, if any
 					//hitEffectManager.newEffect(facing, position, 0);
 				}
@@ -372,15 +465,14 @@ void BlueImp::attackUpdate(double deltaTime) {
 			moveVelocity = Vector3::Zero;
 			break;
 		case 3: // falling
-			//moveVelocity += GRAVITY * deltaTime;
 			moveBy(moveVelocity);
-			if (position.z <= 0) { // finish fall
-				Vector3 newpos = position;
+			if (!falling) { // finish fall
+				/*Vector3 newpos = position;
 				newpos.z = 0;
-				setPosition(newpos);
+				setPosition(newpos);*/
 				currentFrameTime = 10;
-			} else
-				falling = true;
+
+			}
 			break;
 
 	}
