@@ -39,6 +39,7 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 	currentHP = maxHP;
 	currentMP = maxMP;
 	playerSlot->statusDialog->updateHP();
+	isAlive = true;
 
 	setInitialPosition(Vector2(10, playerSlot->getPlayerSlotNumber() * 100 + 150));
 	canCancelAction = true;
@@ -49,6 +50,7 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 
 void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 	setPosition(Vector3(startingPosition.x, startingPosition.y, 20));
+	loadAnimation(combatStanceRight);
 	falling = true;
 }
 
@@ -126,15 +128,15 @@ void PlayerCharacter::update(double deltaTime) {
 			drawWeaponUpdate(deltaTime);
 			break;
 		case CreatureAction::DEAD_ACTION:
-			
-			if (knockBackVelocity != Vector3::Zero) {
+
+			if (moveVelocity != Vector3::Zero) {
 				timeSinceDeath += deltaTime;
-				moveBy(knockBackVelocity * deltaTime);
+				moveBy(moveVelocity * deltaTime);
 				if (!falling) {
-					knockBackVelocity = knockBackVelocity * GROUND_FRICTION;
-					knockBackVelocity.z = 0;
-					if (abs(knockBackVelocity.x) <= 1 && abs(knockBackVelocity.y) <= 1) {
-						knockBackVelocity = Vector3::Zero;
+					moveVelocity = moveVelocity * GROUND_FRICTION;
+					//moveVelocity.z = 0;
+					if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
+						moveVelocity = Vector3::Zero;
 						guiOverlay->openCharacterSelectDialog(playerSlot.get());
 						isAlive = false;
 					}
@@ -149,11 +151,14 @@ void PlayerCharacter::update(double deltaTime) {
 	if (falling) {
 		fallVelocity += GRAVITY * deltaTime;
 		moveBy(fallVelocity);
+		// get z-height of tile directly underneath
+		//map
 		if (position.z <= 0) {
 			Vector3 newpos = position;
 			newpos.z = 0;
 			setPosition(newpos);
 			fallVelocity.z = 0;
+			moveVelocity.z = 0;
 			falling = false;
 		}
 	}
@@ -196,7 +201,7 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	if (action == CreatureAction::BLOCK_ACTION) {
 		damage *= .25;
-		knockBackVelocity *= .25;
+		moveVelocity *= .25; // dampen knockback
 	} else {
 
 		canCancelAction = false;
@@ -660,54 +665,48 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 	//		}
 	//	}
 	//}
-
-
-
-
 }
 
 
 void PlayerCharacter::hitUpdate(double deltaTime) {
 
-	if (knockBackVelocity != Vector3::Zero) {
-		moveBy(knockBackVelocity * deltaTime);
-		if (!falling) {
-			knockBackVelocity = knockBackVelocity * GROUND_FRICTION;
-			knockBackVelocity.z = 0;
-			if (abs(knockBackVelocity.x) <= 1 && abs(knockBackVelocity.y) <= 1) {
-				knockBackVelocity = Vector3::Zero;
-			}
-		}
-	} else {
-		currentFrameTime += deltaTime;
-		if (currentFrameTime >= currentFrameDuration) {
-			if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
-				// hit sequence done
-				canCancelAction = true;
-				switch (facing) {
-					case Facing::RIGHT:
-						loadAnimation(combatStanceRight);
-						break;
-					case Facing::LEFT:
-						loadAnimation(combatStanceLeft);
-						break;
-					case Facing::DOWN:
-						loadAnimation(combatStanceDown);
-						break;
-					case Facing::UP:
-						loadAnimation(combatStanceUp);
-						break;
+	moveBy(moveVelocity * deltaTime);
+	if (!falling) {
+		moveVelocity = moveVelocity * GROUND_FRICTION;
+		//moveVelocity.z = 0;
+		if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
+			moveVelocity = Vector3::Zero;
+
+			currentFrameTime += deltaTime;
+			if (currentFrameTime >= currentFrameDuration) {
+				if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+					// hit sequence done
+					canCancelAction = true;
+					switch (facing) {
+						case Facing::RIGHT:
+							loadAnimation(combatStanceRight);
+							break;
+						case Facing::LEFT:
+							loadAnimation(combatStanceLeft);
+							break;
+						case Facing::DOWN:
+							loadAnimation(combatStanceDown);
+							break;
+						case Facing::UP:
+							loadAnimation(combatStanceUp);
+							break;
+					}
+					action = CreatureAction::WAITING_ACTION;
+					return;
 				}
-				action = CreatureAction::WAITING_ACTION;
-				return;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
 			}
-			currentFrameTime = 0;
-			currentFrameDuration
-				= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-			currentFrameRect
-				= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-			currentFrameOrigin
-				= currentAnimation->animationFrames[currentFrameIndex]->origin;
 		}
 	}
 }
@@ -727,7 +726,7 @@ void PlayerCharacter::movement(double deltaTime) {
 		for (const Tangible* hb : hitboxesAll) {
 			if (hb->getHitbox() == &hitbox)
 				continue;
-			if (radarBox.collision2d(hb->getHitbox())) {
+			if (radarBox.collision(hb->getHitbox())) {
 				collision = true;
 				break;
 			}

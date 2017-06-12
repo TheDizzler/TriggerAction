@@ -3,6 +3,7 @@
 
 vector<Tangible*> hitboxesAll;
 vector<unique_ptr<PlayerCharacter>> pcs;
+vector<Baddie*> baddies;
 
 JammerManager LevelScreen::jammerMan;
 
@@ -10,6 +11,8 @@ JammerManager LevelScreen::jammerMan;
 LevelScreen::~LevelScreen() {
 	pcs.clear();
 	hitboxesAll.clear();
+	baddies.clear();
+	jammerMan.reset();
 }
 
 #include "../Engine/GameEngine.h"
@@ -32,13 +35,20 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	hitboxesAll.clear();
 	pcs.clear();
+	baddies.clear();
 	jammerMan.reset();
 
 	map.reset();
 	map = move(newMap);
 
-	for (auto& baddie : map->baddies)
+	for (auto& tile : map->tangibles) {
+		hitboxesAll.push_back(tile);
+	}
+
+	for (auto& baddie : map->baddies) {
 		hitboxesAll.push_back(baddie.get());
+		baddies.push_back(baddie.get());
+	}
 
 	for (const auto& slot : activeSlots) {
 
@@ -85,15 +95,32 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 
+	hitboxesAll.clear();
+	baddies.clear();
+	jammerMan.reset();
+
 	map.reset();
 	map = move(newMap);
 
+	for (auto& tile : map->tangibles) {
+		hitboxesAll.push_back(tile);
+	}
+
+	for (auto& baddie : map->baddies) {
+		hitboxesAll.push_back(baddie.get());
+		baddies.push_back(baddie.get());
+	}
 
 	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
 		hitboxesAll.push_back(pc.get());
 
 	}
+
+	guiOverlay->initializeLevelScreen(pcStatusDialogs);
+
+	camera->setZoomToResolution();
+	camera->centerOn(Vector2(256 / 2, 224 / 2));
 }
 
 
@@ -108,13 +135,13 @@ void LevelScreen::update(double deltaTime) {
 	bool gameOver = true;
 	for (const auto& pc : pcs) {
 		pc->update(deltaTime);
-		if (pc->isAlive)
+		if (gameOver && pc->isAlive)
 			gameOver = false;
 	}
 
 	if (gameOver) {
-		game->loadMainMenu();
-
+		//game->loadMainMenu();
+		GameEngine::showCustomDialog(activeSlots[0]->pauseDialog.get());
 	}
 
 	jammerMan.update(deltaTime);

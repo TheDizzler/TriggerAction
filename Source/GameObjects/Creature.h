@@ -52,6 +52,8 @@ protected:
 	
 
 	Vector3 fallVelocity = Vector3::Zero;
+	/** Velocity for automated movement. */
+	Vector3 moveVelocity;
 
 	virtual void moveUpdate(double deltaTime);
 	virtual void attackUpdate(double deltaTime) = 0;

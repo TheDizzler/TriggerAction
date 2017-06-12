@@ -10,6 +10,7 @@
 
 extern vector<Tangible*> hitboxesAll;
 extern vector<unique_ptr<PlayerCharacter>> pcs;
+extern vector<Baddie*> baddies;
 
 class LevelScreen : public Screen {
 public:
@@ -35,7 +36,7 @@ public:
 private:
 	GameManager* game;
 
-	unique_ptr<Map> map;
+	shared_ptr<Map> map;
 
 	unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS];
 	//unique_ptr<PCTechDialog> pcTechDialogs[MAX_PLAYERS];

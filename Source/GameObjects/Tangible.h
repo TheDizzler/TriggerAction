@@ -67,7 +67,7 @@ protected:
 
 	/** Used to calculate knockback. */
 	USHORT weight = 1;
-	Vector3 knockBackVelocity = Vector3::Zero;
+	//Vector3 knockBackVelocity = Vector3::Zero;
 	/* use this whenever gravity is doing its business. */
 	bool falling = false;
 

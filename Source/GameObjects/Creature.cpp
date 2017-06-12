@@ -37,13 +37,13 @@ void Creature::loadAnimation(const pugi::char_t* name) {
 
 
 void Creature::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
-	knockBackVelocity = velocityOfHit * weightOfHit / weight;
+	moveVelocity = velocityOfHit * weightOfHit / weight;
 	falling = true;
 	position -= GRAVITY * .005;
 }
 
-void Creature::knockBack(Vector3 moveVelocity) {
-	knockBackVelocity = moveVelocity;
+void Creature::knockBack(Vector3 hitVelocity) {
+	moveVelocity = hitVelocity;
 	falling = true;
 	position -= GRAVITY * .005;
 }
@@ -79,9 +79,10 @@ void Creature::moveBy(const Vector3& moveVector) {
 	float scalefactor;
 	if (position.z < 0)
 		scalefactor = 1; // just in case...
-	else
+	else {
 		//scalefactor = 1 / (sqrt(position.z) + 1);
 		scalefactor = (100 - position.z) / 100; // z > 100 will create problems...
+	}
 	shadow.setScale(Vector2(scalefactor, scalefactor));
 	shadow.setPosition(Vector2(position.x, position.y));
 }
@@ -100,9 +101,10 @@ void Creature::setPosition(const Vector3& newpos) {
 	float scalefactor;
 	if (position.z < 0)
 		scalefactor = 1; // just in case...
-	else
+	else {
 		//scalefactor = 1 / (sqrt(position.z) + 1);
 		scalefactor = (100 - position.z) / 100; // z > 100 will create problems...
+	}
 	shadow.setScale(Vector2(scalefactor, scalefactor));
 	shadow.setPosition(Vector2(position.x, position.y));
 }
@@ -126,32 +128,61 @@ void Creature::moveUpdate(double deltaTime) {
 void Creature::hitUpdate(double deltaTime) {
 
 
-	if (knockBackVelocity != Vector3::Zero) {
-		moveBy(knockBackVelocity * deltaTime);
-		if (!falling) {
-			knockBackVelocity = knockBackVelocity * GROUND_FRICTION;
-			knockBackVelocity.z = 0;
-			if (abs(knockBackVelocity.x) <= 1 && abs(knockBackVelocity.y) <= 1) {
-				knockBackVelocity = Vector3::Zero;
+	//if (knockBackVelocity != Vector3::Zero) {
+	moveBy(moveVelocity * deltaTime);
+	if (!falling) {
+		moveVelocity = moveVelocity * GROUND_FRICTION;
+		if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
+			moveVelocity = Vector3::Zero;
+			currentFrameTime += deltaTime;
+			if (currentFrameTime >= currentFrameDuration) {
+				if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+					// hit sequence done
+					canCancelAction = true;
+					switch (facing) {
+						case Facing::LEFT:
+							loadAnimation(walkLeft);
+							break;
+						case Facing::DOWN:
+							loadAnimation(walkDown);
+							break;
+						case Facing::RIGHT:
+							loadAnimation(walkRight);
+							break;
+						case Facing::UP:
+							loadAnimation(walkUp);
+							break;
+					}
+
+					action = CreatureAction::WAITING_ACTION;
+					return;
+				}
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
 			}
 		}
-	} else {
-		currentFrameTime += deltaTime;
-		if (currentFrameTime >= currentFrameDuration) {
-			if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
-				// hit sequence done
-				canCancelAction = true;
-				loadAnimation(walkLeft);
-				action = CreatureAction::WAITING_ACTION;
-				return;
-			}
-			currentFrameTime = 0;
-			currentFrameDuration
-				= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-			currentFrameRect
-				= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-			currentFrameOrigin
-				= currentAnimation->animationFrames[currentFrameIndex]->origin;
-		}
+	//} else {
+	//	currentFrameTime += deltaTime;
+	//	if (currentFrameTime >= currentFrameDuration) {
+	//		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
+	//			// hit sequence done
+	//			canCancelAction = true;
+	//			loadAnimation(walkLeft);
+	//			action = CreatureAction::WAITING_ACTION;
+	//			return;
+	//		}
+	//		currentFrameTime = 0;
+	//		currentFrameDuration
+	//			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+	//		currentFrameRect
+	//			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+	//		currentFrameOrigin
+	//			= currentAnimation->animationFrames[currentFrameIndex]->origin;
+	//	}
 	}
 }

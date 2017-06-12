@@ -14,16 +14,18 @@ Map::~Map() {
 
 	animationMap.clear();
 	assetMap.clear();
-	layerMap.clear();
-	hitboxes.clear();
+	//layerMap.clear();
 }
 
 
 void Map::update(double deltaTime) {
 
-	for (const auto& layer : layerMap) {
+	/*for (const auto& layer : layerMap) {
 		layer.second->update(deltaTime);
-	}
+	}*/
+
+	for (const auto& layer : layers)
+		layer->update(deltaTime);
 
 	for (int i = 0; i < baddies.size(); ) {
 		if (baddies[i]->update(deltaTime)) {
@@ -42,9 +44,11 @@ void Map::update(double deltaTime) {
 
 void Map::draw(SpriteBatch* batch) {
 
-	for (const auto& layer : layerMap) { // using maps are not efficient
-		layer.second->draw(batch);
-	}
+	//for (const auto& layer : layerMap) { // using maps are not efficient
+	//	layer.second->draw(batch);
+	//}
+	for (const auto& layer : layers)
+		layer->draw(batch);
 
 
 	for (const auto& baddie : baddies)
@@ -86,6 +90,12 @@ void Map::placeBaddie(xml_node objectNode) {
 
 	baddies.push_back(move(baddie));*/
 
+}
+
+Tile* Map::getTileAt(Vector2 position) {
+
+
+	return nullptr;
 }
 
 
@@ -412,7 +422,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						tile->setOrigin(Vector2(0, tile->getHeight()));
 						tile->setLayerDepth(layerDepth);
 						tile->setPosition(position);
-						hitboxesAll.push_back(tile.get());
+						map->tangibles.push_back(tile.get());
 						layer->tiles.push_back(move(tile));
 
 					}
@@ -429,7 +439,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 			}
 		}
 
-		map->layerMap[layerName] = move(layer);
+		//map->layerMap[layerName] = move(layer);
+		map->layers.push_back(move(layer));
 	}
 
 

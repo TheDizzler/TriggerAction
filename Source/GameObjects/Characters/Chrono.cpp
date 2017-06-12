@@ -10,7 +10,7 @@ Chrono::Chrono(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadAnimation(standRight);
 	currentFrameTexture = currentAnimation->texture.Get();
 
-	currentHP = maxHP = 10;
+	currentHP = maxHP = 75;
 	currentMP = maxMP = 8;
 	PWR = 5;
 	HIT = 8;

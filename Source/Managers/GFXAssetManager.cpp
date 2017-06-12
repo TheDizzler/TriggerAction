@@ -6,6 +6,8 @@ GFXAssetManager::GFXAssetManager(xml_node assetManifestRoot) {
 	characterDataNode = assetManifestRoot.child("characterData");
 	baddieDataNode = assetManifestRoot.child("baddieData");
 	gfxAssetsNode = assetManifestRoot.child("gfx");
+
+	InitializeCriticalSection(&cs_selectingPC);
 }
 
 GFXAssetManager::~GFXAssetManager() {
@@ -18,6 +20,12 @@ GFXAssetManager::~GFXAssetManager() {
 
 #include "../Engine/GameEngine.h"
 bool GFXAssetManager::initialize(ComPtr<ID3D11Device> device) {
+
+
+	assetMap.clear();
+	animationMap.clear();
+	setMap.clear();
+	characterDataMap.clear();
 
 	if (!getGFXAssetsFromXML(device)) {
 		GameEngine::showErrorDialog(
@@ -269,7 +277,7 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 	numPCsAvailable = characterDataMap.size();
 
 
-	InitializeCriticalSection(&cs_selectingPC);
+	
 
 	return true;
 }

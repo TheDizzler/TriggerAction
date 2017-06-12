@@ -30,6 +30,7 @@
 			<font name="Arial" file="Arial.spritefont" fontSize="16" />
 			<font name="Bookshelf" file="Bookshelf.spritefont" fontSize="42" />
 			<font name="BlackCloak" file="BlackCloak.spritefont" fontSize="32" />
+			<font name="ArialBlack8pt" file="ArialBlack8pt.spritefont" fontSize="8" />
 		</spritefonts>
 
 

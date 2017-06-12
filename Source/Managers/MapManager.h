@@ -87,10 +87,11 @@ public:
 	map<USHORT, shared_ptr<TileAsset>> assetMap;
 
 
-	map<string, unique_ptr<Map::Layer>> layerMap;
+	//map<string, unique_ptr<Map::Layer>> layerMap;
+	vector<unique_ptr<Map::Layer>> layers;
 	vector<unique_ptr<Baddie>> baddies;
 	/* When an object appears on screen, register its hitbox (if it has one) here. */
-	vector<Hitbox> hitboxes;
+	vector<TangibleTile*> tangibles;
 
 	/* How much the depthLayer variable changes with a one tile shift. */
 	static double depthPerTile;
@@ -103,7 +104,7 @@ public:
 		return ypos * depthPerPixel + FURTHEST_DEPTH;
 	}
 
-
+	Tile* getTileAt(Vector2 position);
 
 
 

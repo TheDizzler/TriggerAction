@@ -63,7 +63,7 @@ protected:
 	vector<Tangible*> hitList;
 
 	//Vector3 startJumpPosition, endHalfJumpPosition;
-	float jumpZ = 10;
+	//float jumpZ = 10;
 	//double jumpTime = 0;
 	//bool jumpingRising = true;
 	bool running = false;
@@ -90,8 +90,8 @@ protected:
 	float moveDiagonalDown = radius * sin(Q);
 	float runRightSpeed = 100;
 
-	/** Velocity for automated movement. */
-	Vector3 moveVelocity;
+	///** Velocity for automated movement. */
+	//Vector3 moveVelocity;
 
 
 	bool lastCollision = false;

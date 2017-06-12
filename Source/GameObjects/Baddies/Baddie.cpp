@@ -108,28 +108,29 @@ bool Baddie::update(double deltaTime) {
 						= currentAnimation->animationFrames[currentFrameIndex]->origin;
 				}
 
-
+				if (!falling) {
 				/** Opportunity-attack */
-				for (const auto& pc : pcs) {
-					Vector3 distance = pc->getHitbox()->position - hitbox.position;
+					for (const auto& pc : pcs) {
+						Vector3 distance = pc->getHitbox()->position - hitbox.position;
 
-					if (target == NULL || !target->isAlive) {
-						target = pc.get();
-						action = FOLLOWING_TARGET;
+						if (target == NULL || !target->isAlive) {
+							target = pc.get();
+							action = FOLLOWING_TARGET;
+						}
+
+						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
+							// le petit attaque
+							distance.z = 8;
+							distance.Normalize();
+							startMainAttack(distance);
+							break;
+						}
 					}
-
-					if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
-						// le petit attaque
-						distance.z = 8;
-						distance.Normalize();
-						startMainAttack(distance);
-					}
-
 				}
 				break;
 			case CreatureAction::FOLLOWING_TARGET:
 
-				if (target != NULL) {
+				if (target != NULL && !falling) {
 
 					// check for opportunity attack
 					for (const auto& pc : pcs) {
@@ -138,13 +139,19 @@ bool Baddie::update(double deltaTime) {
 						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 							distance.z = 8;
 							distance.Normalize();
-							startMainAttack(distance);
+							//startMainAttack(distance);
+							break;
 						}
 
 					}
 
+					if (action == CreatureAction::ATTACKING_ACTION)
+						break;
+
+
 
 					Vector3 direction = position - target->getPosition();
+					direction.z = 0;
 					direction.Normalize();
 
 					Facing newFacing;
@@ -230,6 +237,7 @@ bool Baddie::update(double deltaTime) {
 				newpos.z = 0;
 				setPosition(newpos);
 				fallVelocity.z = 0;
+				moveVelocity.z = 0;
 				falling = false;
 			}
 		}
@@ -407,15 +415,18 @@ void BlueImp::attackUpdate(double deltaTime) {
 					loadAnimation(walkRight);
 					break;
 			}
-			//action = CreatureAction::WAITING_ACTION;
 			action = CreatureAction::FOLLOWING_TARGET;
+
 #ifdef  DEBUG_HITBOXES
 			drawAttack = false;
 #endif //  DEBUG_HITBOXES
 			return;
 		}
-		if (currentFrameIndex == 3)
+		if (currentFrameIndex == 2)
+			moveVelocity = Vector3::Zero;
+		else if (currentFrameIndex == 3)
 			falling = true;
+
 		currentFrameTime = 0;
 		currentFrameDuration
 			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
@@ -451,7 +462,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 				if (std::find(hitList.begin(), hitList.end(), object) != hitList.end())
 					continue;
 				if (attackBox.collision(object->getHitbox())) {
-					object->knockBack(moveVelocity/*, weight*2*/);
+					object->knockBack(moveVelocity*2, weight*2);
 					object->takeDamage(5);
 					hitList.push_back(object);
 					// impact effect, if any
@@ -462,17 +473,14 @@ void BlueImp::attackUpdate(double deltaTime) {
 		break;
 
 		case 2: // hanging
-			moveVelocity = Vector3::Zero;
+
 			break;
 		case 3: // falling
-			moveBy(moveVelocity);
+			//moveBy(moveVelocity);
 			if (!falling) { // finish fall
-				/*Vector3 newpos = position;
-				newpos.z = 0;
-				setPosition(newpos);*/
 				currentFrameTime = 10;
-
-			}
+			} else
+				currentFrameTime = 0;
 			break;
 
 	}
