@@ -93,7 +93,9 @@ TangibleTile::~TangibleTile() {
 
 void TangibleTile::load(TileAsset* const tileAsset) {
 	Tile::load(tileAsset);
+	
 	weight = 1000000;
+	isFlat = tileAsset->isFlat;
 
 	if (tileAsset->hitboxes.size() > 0) {
 		setHitbox(Hitbox(tileAsset->hitboxes[0].get()));
@@ -159,7 +161,10 @@ void TangibleTile::setPosition(const Vector3& newpos) {
 
 	setHitboxPosition(newpos);
 
-	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
+	if (isFlat)
+		setLayerDepth(Map::getLayerDepth(position.y - getHeight() + maskPosition.y));
+	else
+		setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
 
 const Hitbox* TangibleTile::getHitbox() const {

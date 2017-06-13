@@ -67,5 +67,6 @@ public:
 
 	virtual const Hitbox* getHitbox() const override;
 
-
+	/** In situation where a 3D tile is flat, calculate the depthLayer from top left. */
+	bool isFlat = false;
 };

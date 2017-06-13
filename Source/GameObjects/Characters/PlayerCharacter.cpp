@@ -32,7 +32,6 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 	characterData = data;
 	initializeAssets();
 	setHitbox(characterData->hitbox.get());
-	setHitboxPosition(position);
 	radarBox = Hitbox(hitbox);
 	loadWeapon(characterData->weaponAssets, characterData->weaponPositions);
 
@@ -183,9 +182,9 @@ void PlayerCharacter::update(double deltaTime) {
 						fallVelocity.z = 0;
 						moveVelocity.z = 0;
 						falling = false;
+						break;
 					}
-					//collision = true;
-					//break;
+
 				}
 			}
 		}
@@ -600,11 +599,7 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 	Vector3 moveVector = moveVelocity * deltaTime;
 	if (!falling) {
-
-		Vector3 newpos = moveVector + position;
-		newpos.z = 0;
-		setPosition(newpos);
-		 //landed
+		//landed
 		switch (facing) {
 			case Facing::RIGHT:
 				loadAnimation(combatStanceRight);
@@ -625,6 +620,9 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 	} else {
 
+		int horzDirection = joystick->lAxisX;
+		int vertDirection = joystick->lAxisY;
+
 		radarBox.position = hitbox.position + moveVector * 2;
 		bool collision = false;
 		// check for collisions
@@ -642,8 +640,7 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 		moveBy(moveVector);
 
-		int horzDirection = joystick->lAxisX;
-		int vertDirection = joystick->lAxisY;
+		
 		if (horzDirection > 10) {
 			facing = Facing::RIGHT;
 			loadAnimation(jumpRight);
@@ -658,42 +655,6 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 			loadAnimation(jumpUp);
 		}
 	}
-	/*jumpTime += deltaTime;
-	double percentJumped = jumpTime / JUMP_TIME;
-	setPosition(
-		Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));*/
-	//if (percentJumped >= 1) {
-	//	if (jumpingRising) {
-	//		jumpingRising = false;
-	//		jumpTime = 0;
-	//		startJumpPosition = endHalfJumpPosition;
-	//		endHalfJumpPosition = position + Vector3(jumpByX, jumpByY, -MAX_JUMP_HEIGHT);
-	//	} else {
-	//		double percentJumped = jumpTime / JUMP_TIME;
-	//		setPosition(
-	//			Vector3::Lerp(startJumpPosition, endHalfJumpPosition, percentJumped));
-	//		if (percentJumped >= 1) {
-	//			// landed
-	//			switch (facing) {
-	//				case Facing::RIGHT:
-	//					loadAnimation(combatStanceRight);
-	//					break;
-	//				case Facing::LEFT:
-	//					loadAnimation(combatStanceLeft);
-	//					break;
-	//				case Facing::DOWN:
-	//					loadAnimation(combatStanceDown);
-	//					break;
-	//				case Facing::UP:
-	//					loadAnimation(combatStanceUp);
-	//					break;
-	//			}
-	//			action = CreatureAction::WAITING_ACTION;
-	//			canCancelAction = true;
-	//			moving = false;
-	//		}
-	//	}
-	//}
 }
 
 
