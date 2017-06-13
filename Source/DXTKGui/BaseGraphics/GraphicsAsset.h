@@ -56,7 +56,8 @@ public:
 	ComPtr<ID3D11ShaderResourceView> getTexture();
 	ComPtr<ID3D11Resource> getResource();
 
-
+	/* for debugging */
+	wstring textureFile;
 protected:
 	ComPtr<ID3D11ShaderResourceView> texture;
 	ComPtr<ID3D11Resource> resource;
@@ -70,8 +71,7 @@ protected:
 
 	RECT sourceRect;
 
-	/* for debugging */
-	wstring textureFile;
+	
 };
 
 

@@ -1,13 +1,17 @@
 #include "../pch.h"
 #include "Creature.h"
 #include "../Screens/LevelScreen.h"
-
+#include "../Managers/MapManager.h"
 
 Creature::Creature() {
 	layerDepth = 0.1f;
 }
 
 Creature::~Creature() {
+}
+
+void Creature::loadMap(shared_ptr<Map> mp) {
+	map = mp;
 }
 
 

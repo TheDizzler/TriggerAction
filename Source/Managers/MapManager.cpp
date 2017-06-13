@@ -1,6 +1,7 @@
 #include "../pch.h"
 #include "MapManager.h"
 #include "../Engine/GameEngine.h"
+//#include "../GameObjects/Baddies/Baddie.h"
 
 double Map::depthPerTile;
 double Map::depthPerPixel;
@@ -85,17 +86,21 @@ void Map::placeBaddie(xml_node objectNode) {
 
 		baddies.push_back(move(baddie));
 	}
-	/*unique_ptr<Baddie> baddie = make_unique<Baddie>(baddieDataMap[gid].get());
-	baddie->setPosition(pos);
-
-	baddies.push_back(move(baddie));*/
-
 }
 
-Tile* Map::getTileAt(Vector2 position) {
+vector<TileBase*> Map::getTilesAt(Vector3 position) {
 
+	int row = position.y / tileHeight;
+	int col = position.x / tileWidth;
 
-	return nullptr;
+	vector<TileBase*> stack;
+	for (const auto& layer : layers) {
+		TileBase* tile = layer->tiles[row][col].get();
+		if (tile)
+			stack.push_back(tile);
+	}
+
+	return stack;
 }
 
 
@@ -114,15 +119,20 @@ Map::Layer::~Layer() {
 }
 
 void Map::Layer::update(double deltaTime) {
-	for (const auto& tile : tiles)
-		tile->update(deltaTime);
+
+	for (const auto& tileRow : tiles)
+		for (const auto& tile : tileRow)
+			if (tile.get())
+				tile->update(deltaTime);
 }
 
 
 void Map::Layer::draw(SpriteBatch* batch) {
 
-	for (const auto& tile : tiles)
-		tile->draw(batch);
+	for (const auto& tileRow : tiles)
+		for (const auto& tile : tileRow)
+			if (tile.get())
+				tile->draw(batch);
 }
 
 
@@ -292,6 +302,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							tile->mask = mask;
 
 						}
+					} else if (propertyname.compare("flat") == 0) {
+						tile->isFlat = propertyNode.attribute("value").as_bool();
 					} else {
 						// generic (not yet used?) properties
 						if (propertyNode.attribute("value"))
@@ -375,7 +387,12 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 			line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
 			if (line.length() <= 0)
 				continue;
-			data.push_back(split(line));
+			vector<int> row = split(line);
+			data.push_back(row);
+			vector<unique_ptr<TileBase>> tileRow = vector<unique_ptr<TileBase>>();
+			for (int i = 0; i < row.size(); ++i)
+				tileRow.push_back(unique_ptr<TileBase>());
+			layer->tiles.push_back(move(tileRow));
 		}
 
 		for (int row = 0; row < map->mapHeight; ++row) {
@@ -415,16 +432,66 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						tile->setOrigin(Vector2(0, tile->getHeight()));
 						tile->setLayerDepth(layerDepth);
 						tile->setPosition(position);
-						layer->tiles.push_back(move(tile));
-					} else {
-						unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
-						tile->load(tileAsset);
-						tile->setOrigin(Vector2(0, tile->getHeight()));
-						tile->setLayerDepth(layerDepth);
-						tile->setPosition(position);
-						map->tangibles.push_back(tile.get());
-						layer->tiles.push_back(move(tile));
+						//layer->tiles.push_back(move(tile));
+						layer->tiles[row][col] = move(tile);
 
+					} else {
+						if (tileAsset->isFlat) {
+							// carve pieces
+							int width = tileAsset->getWidth();
+							int height = tileAsset->getHeight();
+							int horzTilesNum = width / map->tileWidth;
+							int vertTilesNum = height / map->tileHeight;
+
+							Vector2 size = Vector2(map->tileWidth, map->tileHeight);
+							Vector2 origin = Vector2(0, map->tileHeight);
+
+							for (int i = 0; i <= horzTilesNum; ++i) {
+								for (int j = 0; j <= vertTilesNum; ++j) {
+									if (i == 0 && j == 0) {
+										unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
+										TileAsset* newAsset = new TileAsset();
+										newAsset->loadAsPartOfSheet(tileAsset->getTexture(),
+											Vector2(i * map->tileWidth, j * map->tileHeight),
+											size, origin, tileAsset->textureFile.c_str());
+
+										newAsset->hitboxes = move(tileAsset->hitboxes);
+
+										tile->load(newAsset);
+										tile->setOrigin(Vector2(0, tile->getHeight()));
+										tile->setLayerDepth(layerDepth);
+										tile->setPosition(position);
+
+										map->tangibles.push_back(tile.get());
+										layer->tiles[row + i][col + j] = move(tile);
+									} else {
+										unique_ptr<Tile> tile = make_unique<Tile>();
+										TileAsset* newAsset = new TileAsset();
+										newAsset->loadAsPartOfSheet(tileAsset->getTexture(),
+											Vector2(i * map->tileWidth, j * map->tileHeight),
+											size, origin, tileAsset->textureFile.c_str());
+
+										newAsset->hitboxes = move(tileAsset->hitboxes);
+
+										tile->load(newAsset);
+										tile->setOrigin(Vector2(0, tile->getHeight()));
+										tile->setLayerDepth(layerDepth);
+										tile->setPosition(position);
+										layer->tiles[row + i][col + j] = move(tile);
+									}
+								}
+							}
+
+						} else {
+							unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
+							tile->load(tileAsset);
+							tile->setOrigin(Vector2(0, tile->getHeight()));
+							tile->setLayerDepth(layerDepth);
+							tile->setPosition(position);
+							map->tangibles.push_back(tile.get());
+							//layer->tiles.push_back(move(tile));
+							layer->tiles[row][col] = move(tile);
+						}
 					}
 				} else {
 
@@ -433,7 +500,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 					anim->setLayerDepth(layerDepth, layerDepthNudge);
 					anim->setOrigin(Vector2(0, anim->getHeight()));
 					anim->setPosition(position);
-					layer->tiles.push_back(move(anim));
+					//layer->tiles.push_back(move(anim));
+					layer->tiles[row][col] = move(anim);
 				}
 
 			}

@@ -41,7 +41,8 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 	playerSlot->statusDialog->updateHP();
 	isAlive = true;
 
-	setInitialPosition(Vector2(10, playerSlot->getPlayerSlotNumber() * 100 + 150));
+	//setInitialPosition(Vector2(10, playerSlot->getPlayerSlotNumber() * 100 + 150));
+	setInitialPosition(Vector2(180, 150));
 	canCancelAction = true;
 	action = CreatureAction::WAITING_ACTION;
 
@@ -152,7 +153,14 @@ void PlayerCharacter::update(double deltaTime) {
 		fallVelocity += GRAVITY * deltaTime;
 		moveBy(fallVelocity);
 		// get z-height of tile directly underneath
-		//map
+		/*vector<TileBase*> tiles = map->getTilesAt(position);
+		TileBase* tileBelow = tiles[0];
+		for (int i = 1; i < tiles.size(); ++i) {
+			if (tiles[i]->getPosition().z < position.z
+				&& tiles[i]->getPosition().z > tileBelow->getPosition().z) {
+				tileBelow = tiles[i];
+			}
+		}*/
 		if (position.z <= 0) {
 			Vector3 newpos = position;
 			newpos.z = 0;
@@ -160,7 +168,28 @@ void PlayerCharacter::update(double deltaTime) {
 			fallVelocity.z = 0;
 			moveVelocity.z = 0;
 			falling = false;
+		} else {
+			radarBox.position = hitbox.position;
+			// check for collisions
+			for (const Tangible* tangible : hitboxesAll) {
+				const Hitbox* hb = tangible->getHitbox();
+				if (hb == &hitbox)
+					continue;
+				if (radarBox.collision2d(hb)) {
+					if (position.z <= hb->position.z + hb->size.z) {
+						Vector3 newpos = position;
+						newpos.z = hb->position.z + hb->size.z;
+						setPosition(newpos);
+						fallVelocity.z = 0;
+						moveVelocity.z = 0;
+						falling = false;
+					}
+					//collision = true;
+					//break;
+				}
+			}
 		}
+
 	}
 
 

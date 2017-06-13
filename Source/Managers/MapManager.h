@@ -5,7 +5,10 @@
 #include "../Managers/GFXAssetManager.h"
 #include "../GameObjects/AnimatedTile.h"
 #include "../GameObjects/Tile.h"
-#include "../GameObjects/Baddies/Baddie.h"
+//#include "../GameObjects/Baddies/Baddie.h"
+
+class Baddie;
+class BaddieData;
 
 class TileAsset : public GraphicsAsset {
 public:
@@ -16,6 +19,7 @@ public:
 
 	/* Sets where the layer depth should be calculated from. */
 	Vector2 mask;
+	bool isFlat = false;
 };
 
 class AnimationAsset : public Animation {
@@ -58,7 +62,8 @@ public:
 
 		string name;
 
-		vector<unique_ptr<TileBase> > tiles;
+		//vector<unique_ptr<TileBase> > tiles;
+		vector<vector<unique_ptr<TileBase>>> tiles;
 
 		void update(double deltaTime);
 		void draw(SpriteBatch* batch);
@@ -104,7 +109,9 @@ public:
 		return ypos * depthPerPixel + FURTHEST_DEPTH;
 	}
 
-	Tile* getTileAt(Vector2 position);
+	/** Currently not used (you should probably be using hitboxes!).
+			Returns stack of tiles occupying position. */
+	vector<TileBase*> getTilesAt(Vector3 position);
 
 
 

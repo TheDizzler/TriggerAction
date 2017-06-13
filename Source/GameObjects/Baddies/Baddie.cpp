@@ -3,6 +3,7 @@
 #include "../../Managers/GameManager.h"
 #include "../../Engine/GameEngine.h"
 
+
 BaddieData::BaddieData() {
 }
 
@@ -114,15 +115,15 @@ bool Baddie::update(double deltaTime) {
 						Vector3 distance = pc->getHitbox()->position - hitbox.position;
 
 						if (target == NULL || !target->isAlive) {
-							target = pc.get();
-							action = FOLLOWING_TARGET;
+							//target = pc.get();
+							//action = FOLLOWING_TARGET;
 						}
 
 						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 							// le petit attaque
 							distance.z = 8;
 							distance.Normalize();
-							startMainAttack(distance);
+							//startMainAttack(distance);
 							break;
 						}
 					}

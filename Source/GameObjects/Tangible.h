@@ -56,6 +56,7 @@ public:
 	virtual void knockBack(Vector3 velocityOfHit, USHORT weightOfHit);
 	/** Do nothing for innanimate objects. Other objects should override */
 	virtual void knockBack(Vector3 moveVelocity);
+
 protected:
 
 	Hitbox hitbox;

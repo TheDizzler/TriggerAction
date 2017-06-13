@@ -61,7 +61,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
-
+			newPC->loadMap(map);
 			pcs.push_back(move(newPC));
 
 		} else if (slot->characterData->name == "Marle") {
@@ -72,6 +72,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
+			newPC->loadMap(map);
 			pcs.push_back(move(newPC));
 
 		} else if (slot->characterData->name == "Chrono") {
@@ -82,6 +83,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
+			newPC->loadMap(map);
 			pcs.push_back(move(newPC));
 
 		}
@@ -113,6 +115,7 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 
 	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
+		pc->loadMap(map);
 		hitboxesAll.push_back(pc.get());
 
 	}

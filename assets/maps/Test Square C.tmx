@@ -5,6 +5,7 @@
   <image source="../gfx/Tiled Set - Millenial Fair Fountain.dds" width="192" height="160"/>
   <tile id="0">
    <properties>
+    <property name="flat" type="bool" value="true"/>
     <property name="hitbox">
 					x=32 y=8 width=48 height=40 z=7
 					x=22 y=41 width=20 height=12 z=8

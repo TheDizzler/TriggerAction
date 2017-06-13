@@ -19,7 +19,7 @@ GraphicsAsset::~GraphicsAsset() {
 bool GraphicsAsset::load(ComPtr<ID3D11Device> device, const wchar_t* texFile, const Vector2& org,
 	bool showMessageBox) {
 
-	textureFile = texFile;
+	textureFile = wstring(texFile);
 
 	wostringstream wss;
 	wss << L"Unable to load texture file: " << texFile << " in GraphicsAsset::load().";
@@ -52,7 +52,7 @@ void GraphicsAsset::loadAsPartOfSheet(
 	const Vector2& locationInSheet, const Vector2& size, const Vector2& org,
 	const wchar_t* texFile) {
 
-	textureFile = texFile;
+	textureFile = wstring(texFile);
 
 	texture = spriteSheetTexture;
 	position = locationInSheet;

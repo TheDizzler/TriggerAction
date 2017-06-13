@@ -1,10 +1,15 @@
 #pragma once
 #include "Tangible.h"
+//#include "../Managers/MapManager.h"
+
+class Map;
 
 class Creature : public IElement3D, public Tangible {
 public:
 	Creature();
 	virtual ~Creature();
+
+	void loadMap(shared_ptr<Map> map);
 
 	//virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
@@ -42,6 +47,8 @@ public:
 	bool isAlive = true;
 protected:
 
+	shared_ptr<Map> map;
+
 	enum CreatureAction {
 		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION,
 		BLOCK_ACTION, DRAWING_ACTION, FOLLOWING_TARGET, DEAD_ACTION
@@ -49,7 +56,7 @@ protected:
 	CreatureAction action = WAITING_ACTION;
 	bool canCancelAction = true;
 
-	
+
 
 	Vector3 fallVelocity = Vector3::Zero;
 	/** Velocity for automated movement. */
