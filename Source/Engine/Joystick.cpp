@@ -224,7 +224,7 @@ void Joystick::parseRawInput(PRAWINPUT pRawInput) {
 	}*/
 }
 
-bool Joystick::yButton() {
+bool Joystick::yButtonPushed() {
 	
 	bool pushed = bButtonStates[ControlButtons::Y]
 		&& !lastButtonStates[ControlButtons::Y];
@@ -236,7 +236,7 @@ bool Joystick::yButton() {
 	return pushed;
 }
 
-bool Joystick::xButton() {
+bool Joystick::xButtonPushed() {
 	
 	bool pushed = bButtonStates[ControlButtons::X]
 		&& !lastButtonStates[ControlButtons::X];
@@ -248,7 +248,7 @@ bool Joystick::xButton() {
 	return pushed;
 }
 
-bool Joystick::aButton() {
+bool Joystick::aButtonPushed() {
 	bool pushed = bButtonStates[ControlButtons::A] && !lastButtonStates[ControlButtons::A];
 
 	if (pushed) {
@@ -258,7 +258,7 @@ bool Joystick::aButton() {
 	return pushed;
 }
 
-bool Joystick::bButton() {
+bool Joystick::bButtonPushed() {
 	
 	bool pushed = bButtonStates[ControlButtons::B]
 		&& !lastButtonStates[ControlButtons::B];
@@ -270,7 +270,7 @@ bool Joystick::bButton() {
 	return pushed;
 }
 
-bool Joystick::lButton() {
+bool Joystick::lButtonPushed() {
 	
 	bool pushed = bButtonStates[ControlButtons::L]
 		&& !lastButtonStates[ControlButtons::L];
@@ -282,7 +282,7 @@ bool Joystick::lButton() {
 	return pushed;
 }
 
-bool Joystick::rButton() {
+bool Joystick::rButtonPushed() {
 	bool pushed = bButtonStates[ControlButtons::R]
 		&& !lastButtonStates[ControlButtons::R];
 
@@ -293,7 +293,7 @@ bool Joystick::rButton() {
 	return pushed;
 }
 
-bool Joystick::startButton() {
+bool Joystick::startButtonPushed() {
 	bool pushed = bButtonStates[ControlButtons::START]
 		&& !lastButtonStates[ControlButtons::START];
 
@@ -304,6 +304,6 @@ bool Joystick::startButton() {
 	return pushed;
 }
 
-bool Joystick::selectButton() {
+bool Joystick::selectButtonPushed() {
 	return bButtonStates[ControlButtons::SELECT] && !lastButtonStates[ControlButtons::SELECT];
 }

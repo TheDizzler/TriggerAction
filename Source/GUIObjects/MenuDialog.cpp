@@ -141,7 +141,7 @@ void MenuDialog::update(double deltaTime) {
 	}
 
 
-	if (playerSlot->getStick()->aButton() || playerSlot->getStick()->startButton()) {
+	if (playerSlot->getStick()->aButtonPushed() || playerSlot->getStick()->startButtonPushed()) {
 
 			// option selected
 			selectionMade = true;

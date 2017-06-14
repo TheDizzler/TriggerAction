@@ -62,7 +62,7 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::ATTACKING_ACTION:
 			attackUpdate(deltaTime);
 			if (canCancelAction) {
-				if (joystick->xButton()) {
+				if (joystick->xButtonPushed()) {
 					startJump();
 					position -= GRAVITY * (deltaTime + .0000001);
 					position.z += LANDING_TOLERANCE;
@@ -82,10 +82,10 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::WAITING_ACTION:
 		default:
 			waitUpdate(deltaTime);
-			if (joystick->yButton()) {
+			if (joystick->yButtonPushed()) {
 				startMainAttack();
 				//startDrawWeapon();
-			} else if (joystick->xButton()) {
+			} else if (joystick->xButtonPushed()) {
 				startJump();
 				position -= GRAVITY * (deltaTime + .0000001);
 				position.z += LANDING_TOLERANCE;
@@ -101,9 +101,9 @@ void PlayerCharacter::update(double deltaTime) {
 			}
 			break;
 		case CreatureAction::MOVING_ACTION:
-			if (joystick->yButton()) {
+			if (joystick->yButtonPushed()) {
 				startMainAttack();
-			} else if (joystick->xButton()) {
+			} else if (joystick->xButtonPushed()) {
 				startJump();
 				position -= GRAVITY * (deltaTime + .0000001);
 				position.z += LANDING_TOLERANCE;
@@ -169,8 +169,10 @@ void PlayerCharacter::update(double deltaTime) {
 					continue;
 				if (radarBox.collision2d(hb)) {
 					float dif = position.z - (hb->position.z + hb->size.z);
+					double moveDelta = moveVelocity.z * deltaTime;
 					if (dif < LANDING_TOLERANCE
-						&& dif > -LANDING_TOLERANCE) {
+						&& dif > -LANDING_TOLERANCE
+						&& abs(fallVelocity.z) > moveDelta) {
 						Vector3 newpos = position;
 						newpos.z = hb->position.z + hb->size.z;
 						setPosition(newpos);
@@ -187,7 +189,7 @@ void PlayerCharacter::update(double deltaTime) {
 	}
 
 
-	if (joystick->startButton()) {
+	if (joystick->startButtonPushed()) {
 
 		if (!playerSlot->pauseDialog->isOpen())
 			GameEngine::showCustomDialog(playerSlot->pauseDialog.get());
@@ -439,6 +441,7 @@ void PlayerCharacter::blockUpdate(double deltaTime) {
 		// end block
 		action = CreatureAction::WAITING_ACTION;
 		moving = false;
+		running = false;
 		switch (facing) {
 			case Facing::DOWN:
 				loadAnimation(combatStanceDown);
@@ -456,18 +459,18 @@ void PlayerCharacter::blockUpdate(double deltaTime) {
 		return;
 	}
 
-	int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
+	//int horzDirection = joystick->lAxisX;
+	//int vertDirection = joystick->lAxisY;
 
-	if (horzDirection > 10) {
-		// hop right
-	} else if (horzDirection < -10) {
-		// hop left
-	} else if (vertDirection < -10) {
-		// hop up
-	} else if (vertDirection > 10) {
-		// hop down
-	}
+	//if (horzDirection > 10) {
+	//	// hop right
+	//} else if (horzDirection < -10) {
+	//	// hop left
+	//} else if (vertDirection < -10) {
+	//	// hop up
+	//} else if (vertDirection > 10) {
+	//	// hop down
+	//}
 }
 
 
@@ -521,26 +524,24 @@ void PlayerCharacter::startJump() {
 		switch (facing) {
 			case Facing::LEFT:
 				loadAnimation(jumpLeft);
-				direction = Vector3(0, 0, 0);
 				break;
 			case Facing::DOWN:
 				// moving down
 				loadAnimation(jumpDown);
-				direction = Vector3(0, 0, 0);
 				break;
 			case Facing::RIGHT:
 				loadAnimation(jumpRight);
-				direction = Vector3(0, 0, 0);
 				break;
 			case Facing::UP:
 				// moving up
 				loadAnimation(jumpUp);
-				direction = Vector3(0, -0, 0);
 				break;
 		}
 	}
 
 	float speedFactor;
+
+	running = joystick->bButtonStates[joystick->runButton];
 	if (running) {
 		speedFactor = RUN_SPEED;
 		direction.z = 355;
@@ -560,7 +561,7 @@ void PlayerCharacter::startJump() {
 
 void PlayerCharacter::jumpUpdate(double deltaTime) {
 
-	
+
 	if (!falling) {
 		//landed
 		switch (facing) {

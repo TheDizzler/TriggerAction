@@ -5,6 +5,10 @@
 
 class PlayerCharacter;
 
+enum ControlButtons {
+	A = 0, B, X, Y, L, R, SELECT, START
+};
+
 /* A joystick class with huge thanks to Alexander Bocken
 	https://www.codeproject.com/Articles/185522/Using-the-Raw-Input-API-to-Process-Joystick-Input */
 class Joystick {
@@ -31,15 +35,23 @@ public:
 	size_t socket;
 	short playerSlotNumber = -1;
 
-	bool yButton();
-	bool xButton();
-	bool aButton();
-	bool bButton();
-	bool lButton();
-	bool rButton();
-	bool startButton();
-	bool selectButton();
-	
+	bool yButtonPushed();
+	bool xButtonPushed();
+	bool aButtonPushed();
+	bool bButtonPushed();
+	bool lButtonPushed();
+	bool rButtonPushed();
+	bool startButtonPushed();
+	bool selectButtonPushed();
+
+
+	ControlButtons startButton = ControlButtons::START;
+	ControlButtons selectButton = ControlButtons::SELECT;
+	ControlButtons attackButton = ControlButtons::Y;
+	ControlButtons jumpButton = ControlButtons::X;
+	ControlButtons runButton = ControlButtons::B;
+	ControlButtons blockButton = ControlButtons::L;
+
 private:
 	HANDLE handle = NULL;
 

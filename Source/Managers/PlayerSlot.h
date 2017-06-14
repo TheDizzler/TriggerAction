@@ -8,9 +8,7 @@
 class MenuDialog;
 class PCStatusDialog;
 
-enum ControlButtons {
-	A = 0, B, X, Y, L, R, SELECT, START
-};
+
 
 const double REPEAT_DELAY = .5;
 

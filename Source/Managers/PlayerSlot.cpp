@@ -60,7 +60,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 
 
 
-		if (joystick->aButton()) {
+		if (joystick->aButtonPushed()) {
 
 
 			if (characterSelected) {
@@ -71,7 +71,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				pcSelectDialog->setSelected(true);
 			}
 
-		} else if (joystick->bButton()) {
+		} else if (joystick->bButtonPushed()) {
 
 
 			if (characterLocked || characterSelected) {
@@ -88,7 +88,7 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 
 void PlayerSlot::waiting() {
 
-	if (joystick->aButton()) {
+	if (joystick->aButtonPushed()) {
 		_threadJoystickData->finishFlag = true;
 		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
 

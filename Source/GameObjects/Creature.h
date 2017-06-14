@@ -53,7 +53,7 @@ protected:
 		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION,
 		BLOCK_ACTION, DRAWING_ACTION, FOLLOWING_TARGET, DEAD_ACTION
 	};
-	CreatureAction action = WAITING_ACTION;
+	CreatureAction action = CreatureAction::WAITING_ACTION;
 	bool canCancelAction = true;
 
 

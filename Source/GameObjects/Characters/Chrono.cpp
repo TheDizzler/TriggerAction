@@ -78,7 +78,7 @@ void Chrono::attackUpdate(double deltaTime) {
 #endif //  DEBUG_HITBOXES
 
 			waitingTime += deltaTime;
-			if (joystick->yButton()) {
+			if (joystick->yButtonPushed()) {
 				canCancelAction = false;
 				switch (++currentComboAttack) {
 					case 2:
@@ -732,8 +732,9 @@ void Chrono::fourthAttack(double deltaTime) {
 		return;
 	}
 
-	if (fallVelocity.z < moveVelocity.z) { // raising
-		Vector3 moveVector = moveVelocity * deltaTime;
+	Vector3 moveVector = moveVelocity * deltaTime;
+	if (abs(fallVelocity.z) < moveVector.z) { // raising
+		
 		moveBy(moveVector);
 		attackBox.position += moveVector;
 
