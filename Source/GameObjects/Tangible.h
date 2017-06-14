@@ -2,6 +2,7 @@
 
 #include "IElement3D.h"
 
+
 /* GRAVITY(0, 0, -7) */
 const Vector3 GRAVITY(0, 0, -7);
 /* GROUND_FRICTION = .9 */
@@ -45,7 +46,8 @@ public:
 
 	void setHitbox(const Hitbox hitbox);
 
-	virtual bool checkCollisionWith(const Hitbox* hitbox) const = 0;
+	//virtual bool checkCollisionWith(const Hitbox* hitbox) const = 0;
+	virtual bool checkCollisionWith(const Tangible* tangible) const;
 
 	virtual const Hitbox* getHitbox() const = 0;
 	void moveHitboxBy(const Vector3& moveVector);
@@ -57,14 +59,15 @@ public:
 	/** Do nothing for innanimate objects. Other objects should override */
 	virtual void knockBack(Vector3 moveVelocity);
 
-protected:
-
-	Hitbox hitbox;
 	/** Hit tests should check if objects collide in x and y axii of main hitbox before
 	checking any other hitboxes. */
 	vector<unique_ptr<Hitbox> > subHitboxes;
+protected:
 
+	Hitbox hitbox;
+	
 	unique_ptr<RectangleFrame> testFrame;
+	vector<unique_ptr<RectangleFrame>> subTestFrames;
 
 	/** Used to calculate knockback. */
 	USHORT weight = 1;

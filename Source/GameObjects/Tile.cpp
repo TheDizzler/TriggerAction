@@ -54,7 +54,7 @@ void Tile::load(TileAsset* const tileAsset) {
 	texture = tileAsset->getTexture();
 	width = tileAsset->getWidth();
 	height = tileAsset->getHeight();
-	
+
 	startZposition = tileAsset->zPosition;
 
 	origin = tileAsset->getOrigin();
@@ -67,7 +67,7 @@ void Tile::load(TileAsset* const tileAsset) {
 	drawPosition.y = position.y;
 	maskPosition = tileAsset->mask;
 
-	
+
 }
 
 
@@ -97,16 +97,17 @@ TangibleTile::~TangibleTile() {
 
 void TangibleTile::load(TileAsset* const tileAsset) {
 	Tile::load(tileAsset);
-	
+
 	weight = 1000000;
 	isFlat = tileAsset->isFlat;
 
 	if (tileAsset->hitboxes.size() > 0) {
+		for (int i = 1; i < tileAsset->hitboxes.size(); ++i)
+			subHitboxes.push_back(move(tileAsset->hitboxes[i]));
 		setHitbox(Hitbox(tileAsset->hitboxes[0].get()));
-		for (const auto& hitbox : tileAsset->hitboxes) {
-			unique_ptr<Hitbox> hb = make_unique<Hitbox>(hitbox.get());
-			subHitboxes.push_back(move(hb));
-		}
+		//for (const auto& hitbox : tileAsset->hitboxes) {
+			//unique_ptr<Hitbox> hb = make_unique<Hitbox>(hitbox.get());
+		
 	}
 }
 
@@ -131,18 +132,33 @@ void TangibleTile::draw(SpriteBatch* batch) {
 #endif //  DEBUG_HITBOXES
 }
 
+//bool TangibleTile::checkCollisionWith(const Tangible* other) const {
+//
+//	const Hitbox* otherBG = other->getHitbox();
+//	if (hitbox.collision2d(otherBG)) { // first check to see if hitbox overlap on x-y plane
+//		if (hitbox.collisionZ(otherBG)) // then check if collide on z-axis as well
+//			return true;
+//		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
+//			if (subHB->collision(otherBG))
+//				for (const auto& otherSubs : other->subHitboxes)
+//					if (subHB->collision(otherSubs.get()))
+//						return true;
+//	}
+//	return false;
+//}
 
-bool TangibleTile::checkCollisionWith(const Hitbox* other) const {
-
-	if (hitbox.collision2d(other)) { // first check to see if hitbox overlap on x-y plane
-		if (hitbox.collisionZ(other)) // then check if collide on z-axis as well
-			return true;
-		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
-			if (subHB->collision(other))
-				return true;
-	}
-	return false;
-}
+//
+//bool TangibleTile::checkCollisionWith(const Hitbox* other) const {
+//
+//	if (hitbox.collision2d(other)) { // first check to see if hitbox overlap on x-y plane
+//		if (hitbox.collisionZ(other)) // then check if collide on z-axis as well
+//			return true;
+//		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
+//			if (subHB->collision(other))
+//				return true;
+//	}
+//	return false;
+//}
 
 void TangibleTile::moveBy(const Vector3& moveVector) {
 
@@ -150,9 +166,7 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 	drawPosition.x += moveVector.x;
 	drawPosition.y += moveVector.y - moveVector.z;
 
-	hitbox.position += moveVector;
-	for (const auto& subHB : subHitboxes)
-		subHB->position += moveVector;
+	moveHitboxBy(moveVector);
 
 	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
@@ -161,7 +175,8 @@ void TangibleTile::setPosition(const Vector3& newpos) {
 
 	position = newpos;
 	drawPosition.x = position.x;
-	drawPosition.y = position.y - (position.z + startZposition);
+	drawPosition.y = position.y - (position.z
+		+ startZposition);
 
 	setHitboxPosition(newpos);
 

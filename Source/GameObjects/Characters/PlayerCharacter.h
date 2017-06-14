@@ -48,8 +48,7 @@ protected:
 	Joystick* joystick;
 	CharacterData* characterData;	
 
-	/* A temp hitbox to test incoming collisions. */
-	Hitbox radarBox;
+	
 
 	/** Possible actions. */
 	void movement(double deltaTime/*, int horzDirection, int vertDirection*/);

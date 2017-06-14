@@ -701,13 +701,11 @@ void PlayerCharacter::movement(double deltaTime) {
 
 		bool collision = false;
 		// check for collisions
-		for (const Tangible* hb : hitboxesAll) {
-			if (hb->getHitbox() == &hitbox)
+		for (const Tangible* tangible : hitboxesAll) {
+			if (tangible == this)
 				continue;
-			if (radarBox.collision(hb->getHitbox())) {
-				collision = true;
+			if ((collision = checkCollisionWith(tangible)) == true)
 				break;
-			}
 		}
 
 		radarBox.position = hitbox.position;
@@ -717,13 +715,17 @@ void PlayerCharacter::movement(double deltaTime) {
 			Vector3 testVector = moveVector;
 			testVector.x = 0;
 			radarBox.position = hitbox.position + testVector * 2;
-			for (const Tangible* hb : hitboxesAll) {
-				if (hb->getHitbox() == &hitbox)
+			for (const Tangible* tangible : hitboxesAll) {
+				/*if (hb->getHitbox() == &hitbox)
 					continue;
 				if (radarBox.collision2d(hb->getHitbox())) {
 					collision = true;
 					break;
-				}
+				}*/
+				if (tangible == this)
+					continue;
+				if ((collision = checkCollisionWith(tangible)) == true)
+					break;
 			}
 
 			if (!collision)
@@ -733,13 +735,17 @@ void PlayerCharacter::movement(double deltaTime) {
 				testVector = moveVector;
 				testVector.y = 0;
 				radarBox.position = hitbox.position + testVector * 2;
-				for (const Tangible* hb : hitboxesAll) {
-					if (hb->getHitbox() == &hitbox)
+				for (const Tangible* tangible : hitboxesAll) {
+					/*if (hb->getHitbox() == &hitbox)
 						continue;
 					if (radarBox.collision2d(hb->getHitbox())) {
 						collision = true;
 						break;
-					}
+					}*/
+					if (tangible == this)
+						continue;
+					if ((collision = checkCollisionWith(tangible)) == true)
+						break;
 				}
 				if (!collision)
 					moveBy(testVector);

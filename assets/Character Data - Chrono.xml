@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
 
-	<hitbox x="0" y="0" z="0" width="13" height="8" zHeight="24"/>
+	<hitbox x="-6" y="8" z="0" width="13" height="8" zHeight="24"/>
 	<weaponMenuIcon name="Katana" />
 	<attackBoxSizes>
 		<down x="24" y="16" z="45" />

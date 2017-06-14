@@ -53,7 +53,25 @@ void Creature::knockBack(Vector3 hitVelocity) {
 }
 
 
-bool Creature::checkCollisionWith(const Hitbox* hitbox) const {
+bool Creature::checkCollisionWith(const Tangible* other) const {
+
+	/*if (radarBox.collision(other->getHitbox())) {
+		return true;
+	}*/
+
+	const Hitbox* otherBG = other->getHitbox();
+	if (radarBox.collision2d(otherBG)) { // first check to see if hitbox overlap on x-y plane
+		if (radarBox.collisionZ(otherBG)) // then check if collide on z-axis as well
+			return true;
+		for (const auto& otherSubHB : other->subHitboxes)
+			if (otherSubHB->collision(&radarBox))
+				return true;
+			//for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
+			//	if (subHB->collision(otherBG))
+			//		for (const auto& otherSubs : other->subHitboxes)
+			//			if (subHB->collision(otherSubs.get()))
+			//				return true;
+	}
 	return false;
 }
 

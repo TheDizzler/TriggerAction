@@ -62,7 +62,7 @@ public:
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
-	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
+	//virtual bool checkCollisionWith(const Tangible* tangible) const override;
 
 	virtual void moveBy(const Vector3& moveVector) override;
 	virtual void setPosition(const Vector3& position) override;

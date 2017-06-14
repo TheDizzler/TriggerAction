@@ -1,6 +1,7 @@
 #include "../pch.h"
 #include "Tangible.h"
 
+#include "../Engine/GameEngine.h"
 
 Hitbox::Hitbox() {
 }
@@ -66,7 +67,6 @@ bool Hitbox::contains(const Vector2& point) const {
 
 
 
-#include "../Engine/GameEngine.h"
 Tangible::~Tangible() {
 }
 
@@ -74,11 +74,15 @@ Tangible::~Tangible() {
 void Tangible::debugUpdate() {
 
 	testFrame->update();
+	for (auto& subFrame : subTestFrames)
+		subFrame->update();
 }
 
 void Tangible::debugDraw(SpriteBatch* batch) {
 
 	testFrame->draw(batch);
+	for (auto& subFrame : subTestFrames)
+		subFrame->draw(batch);
 }
 
 void Tangible::debugSetTint(const Color& color) {
@@ -96,7 +100,31 @@ void Tangible::setHitbox(const Hitbox box) {
 		Vector2(hitbox.position.x, hitbox.position.y),
 		Vector2(hitbox.size.x, hitbox.size.y)));
 	testFrame->setAlpha(.5);
+
+	for (const auto& subs : subHitboxes) {
+		unique_ptr<RectangleFrame> frame;
+		frame.reset(guiFactory->createRectangleFrame(
+			Vector2(subs->position.x, subs->position.y /*- subs->position.z*/),
+			Vector2(subs->size.x, subs->size.y)));
+		frame->setTint(Colors::Cornsilk);
+		subTestFrames.push_back(move(frame));
+	}
 #endif //  DEBUG_HITBOXES
+}
+
+bool Tangible::checkCollisionWith(const Tangible* other) const {
+
+	const Hitbox* otherBG = other->getHitbox();
+	if (hitbox.collision2d(otherBG)) { // first check to see if hitbox overlap on x-y plane
+		if (hitbox.collisionZ(otherBG)) // then check if collide on z-axis as well
+			return true;
+		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
+			if (subHB->collision(otherBG))
+				for (const auto& otherSubs : other->subHitboxes)
+					if (subHB->collision(otherSubs.get()))
+						return true;
+	}
+	return false;
 }
 
 
@@ -108,24 +136,31 @@ void Tangible::moveHitboxBy(const Vector3& moveVector) {
 
 #ifdef  DEBUG_HITBOXES
 	testFrame->moveBy(Vector2(moveVector.x, moveVector.y));
+	for (auto& subFrame : subTestFrames)
+		subFrame->moveBy(Vector2(moveVector.x, moveVector.y));
 #endif //  DEBUG_HITBOXES
 }
 
 void Tangible::setHitboxPosition(const Vector3& newPosition) {
 
+	Vector3 oldPos = hitbox.position;
 	hitbox.position = newPosition + hitboxOffset;
-	hitbox.position.x -= hitbox.size.x / 2;
-	hitbox.position.y -= hitbox.size.y;
+	//hitbox.position.x -= hitbox.size.x / 2;
+	//hitbox.position.y -= hitbox.size.y;
+
+	Vector3 moveVector = hitbox.position - oldPos;
 	for (const auto& subHB : subHitboxes)
-		subHB->position = newPosition;
+		subHB->position -= moveVector;
 
 #ifdef  DEBUG_HITBOXES
 	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));
+	for (auto& subFrame : subTestFrames)
+		subFrame->moveBy(Vector2(moveVector.x, moveVector.y));
 #endif //  DEBUG_HITBOXES
 }
 
 void Tangible::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
-	
+
 }
 
 void Tangible::knockBack(Vector3 moveVelocity) {

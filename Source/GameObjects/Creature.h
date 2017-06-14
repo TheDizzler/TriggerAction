@@ -22,8 +22,7 @@ public:
 	virtual void knockBack(Vector3 moveVelocity) override;
 
 
-	/** NOTE: NOT USED! Currently returns FALSE always! */
-	virtual bool checkCollisionWith(const Hitbox* hitbox) const override;
+	virtual bool checkCollisionWith(const Tangible* tangible) const override;
 
 	virtual const int getHeight() const;
 	virtual const int getWidth() const;
@@ -56,7 +55,8 @@ protected:
 	CreatureAction action = CreatureAction::WAITING_ACTION;
 	bool canCancelAction = true;
 
-
+	/* A temp hitbox to test incoming collisions. */
+	Hitbox radarBox;
 
 	Vector3 fallVelocity = Vector3::Zero;
 	/** Velocity for automated movement. */
