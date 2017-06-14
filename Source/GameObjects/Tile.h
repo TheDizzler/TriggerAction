@@ -43,7 +43,9 @@ protected:
 	UINT width;
 	UINT height;
 
-
+	/** Position of tile above ground. For floating objects.
+		This is independant from hitbox z position. */
+	int startZposition = 0;
 
 };
 

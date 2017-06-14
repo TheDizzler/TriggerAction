@@ -10,7 +10,7 @@ const double GROUND_FRICTION = .9;
 class Hitbox {
 public:
 	Hitbox(); // required for use as non-pointer
-	Hitbox(int rowdata[5]);
+	Hitbox(int rowdata[6]);
 	Hitbox(const Hitbox* copybox);
 	virtual ~Hitbox();
 

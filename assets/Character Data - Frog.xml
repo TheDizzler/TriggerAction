@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Frog" dir="assets/gfx/">
 
-	<hitbox x="1" y="0" width="10" height="7" z="15"/>
+	<hitbox x="1" y="0" z="0" width="10" height="7" zHeight="15"/>
 
 	<weaponMenuIcon name="Sword" />
 

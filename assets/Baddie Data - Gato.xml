@@ -2,9 +2,9 @@
 <root game="Trigger Action RPG" xml="Baddie Data - Millenial Fair" dir="assets/gfx/">
 
 	<baddie name="Gato">
-		<hitbox x="14" y="0" width="27" height="15" z="42"/>
+		<hitbox x="14" y="0" z="0" width="27" height="15" zHeight="42"/>
 		<!-- head hitbox -->
-		<hitbox x="19" y="39" width="19" height="17" z="13" />
+		<hitbox x="19" y="39" z="40" width="19" height="17" zHeight="13" />
 
 
 		<spritesheet name="Baddies - Millenial Fair"

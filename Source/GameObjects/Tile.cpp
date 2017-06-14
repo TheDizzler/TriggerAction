@@ -54,16 +54,20 @@ void Tile::load(TileAsset* const tileAsset) {
 	texture = tileAsset->getTexture();
 	width = tileAsset->getWidth();
 	height = tileAsset->getHeight();
+	
+	startZposition = tileAsset->zPosition;
 
 	origin = tileAsset->getOrigin();
 
 
 	sourceRect = tileAsset->getSourceRect();
 
-	position = Vector3(0, 0, 0);
+	position = Vector3(0, 0, startZposition);
 	drawPosition.x = position.x;
-	drawPosition.y = position.y/* - height*/;
+	drawPosition.y = position.y;
 	maskPosition = tileAsset->mask;
+
+	
 }
 
 
@@ -157,7 +161,7 @@ void TangibleTile::setPosition(const Vector3& newpos) {
 
 	position = newpos;
 	drawPosition.x = position.x;
-	drawPosition.y = position.y - position.z;
+	drawPosition.y = position.y - (position.z + startZposition);
 
 	setHitboxPosition(newpos);
 

@@ -2,7 +2,7 @@
 <root game="Trigger Action RPG" xml="Baddie Data - Millenial Fair" dir="assets/gfx/">
 
 	<baddie name="Blue Eaglet">
-		<hitbox x="8" y="0" width="15" height="10" z="23"/>
+		<hitbox x="8" y="0" z="0" width="15" height="10" zHeight="23"/>
 
 		<spritesheet name="Baddies - Millenial Fair"
 			file="Baddies - Millenial Fair sheet.dds" set="Blue Eaglet" >

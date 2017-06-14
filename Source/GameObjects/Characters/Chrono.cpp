@@ -183,24 +183,6 @@ void Chrono::attackUpdate(double deltaTime) {
 				}
 				break;
 			}
-			/* moveTime += deltaTime;
-			double percentMoved = moveTime / currentFrameDuration;
-			if (percentMoved < 1) {
-				setPosition(Vector3::Lerp(moveStart, moveEnd, percentMoved));
-				break;
-			} else if (!yetAttacked) {
-				yetAttacked = true;
-				currentFrameIndex = 4;
-				currentFrameTime = 0;
-				currentFrameDuration
-					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-				currentFrameRect
-					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-				currentFrameOrigin
-					= currentAnimation->animationFrames[currentFrameIndex]->origin;
-				secondAttack();
-				break;
-			}*/
 
 			if (currentFrameTime >= currentFrameDuration) {
 				currentAttack = AWAIT_INPUT;
@@ -257,47 +239,6 @@ void Chrono::attackUpdate(double deltaTime) {
 				moveBy(moveVector);
 				break;
 			}
-			//moveTime += deltaTime;
-			//double percentMoved = moveTime / currentFrameDuration;
-			//if (percentMoved <= 1) {
-			//	setPosition(Vector3::Lerp(moveStart, moveEnd, percentMoved));5
-			//	break;
-			//} else if (percentMoved > 1 && !falling) {
-			//	falling = true;
-			//	moveTime = 0;
-			//	moveStart = position;
-			//	switch (facing) {
-			//		case Facing::LEFT:
-			//			moveEnd = position + Vector3(-15, 0, -10);
-			//			break;
-			//		case Facing::DOWN:
-			//			moveEnd = position + Vector3(0, 15, -10);
-			//			break;
-			//		case Facing::RIGHT:
-			//			moveEnd = position + Vector3(15, 0, -10);
-			//			break;
-			//		case Facing::UP:
-			//			moveEnd = position + Vector3(0, -15, -10);
-			//			break;
-			//	}
-			//	break;
-			//} else if (!yetAttackedThird) {
-			//	Vector3 newPos = position;
-			//	newPos.z = 0;
-			//	setPosition(newPos); // insures we end on z = 0;
-			//	yetAttackedThird = true;
-			//	currentFrameIndex = 1;
-			//	currentFrameTime = 0;
-			//	currentFrameDuration
-			//		= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-			//	currentFrameRect
-			//		= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-			//	currentFrameOrigin
-			//		= currentAnimation->animationFrames[currentFrameIndex]->origin;
-			//	thirdAttack();
-
-			//	break;
-			//}
 
 			if (currentFrameTime >= currentFrameDuration) {
 				currentAttack = AWAIT_INPUT;
@@ -316,64 +257,7 @@ void Chrono::attackUpdate(double deltaTime) {
 		{
 
 			fourthAttack(deltaTime);
-			//if (!yetFourthAttack) {
-				//fourthAttack();
-				//yetFourthAttack = true;
-			//}
-
-			//moveTime += deltaTime;
-			//double percentMoved = moveTime / currentFrameDuration;
-			//if (percentMoved <= 1) {
-			//	setPosition(Vector3::Lerp(position, moveEnd, percentMoved));
-			//	currentFrameTime = 0;
-			//	break;
-			//} else if (percentMoved > 1 && !falling) {
-			//	falling = true;
-			//	moveTime = 0;
-			//	moveStart = position;
-			//	currentFrameTime = 0;
-			//	currentFrameIndex = 1;
-			//	currentFrameDuration
-			//		= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-			//	currentFrameRect
-			//		= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-			//	currentFrameOrigin
-			//		= currentAnimation->animationFrames[currentFrameIndex]->origin;
-
-			//	switch (facing) {
-			//		case Facing::LEFT:
-			//			moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
-			//			break;
-			//		case Facing::DOWN:
-			//			moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
-			//			break;
-			//		case Facing::RIGHT:
-			//			moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
-			//			break;
-			//		case Facing::UP:
-			//			moveEnd = position + Vector3(0, 0, -FOURTH_ATTACK_JUMP_HEIGHT);
-			//			break;
-			//	}
-			//	break;
-			//}
-			//Vector3 newPos = position;
-			//newPos.z = 0;
-			//setPosition(newPos); // insures we end on z = 0;
-			//if (currentFrameTime >= currentFrameDuration) {
-			//	if (++currentFrameIndex > 2)
-			//		currentFrameIndex = 1;
-			//	currentFrameTime = 0;
-			//	currentFrameDuration
-			//		= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-			//	currentFrameRect
-			//		= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-			//	currentFrameOrigin
-			//		= currentAnimation->animationFrames[currentFrameIndex]->origin;
-			//}
-			//fourthAttackCooldownTime += deltaTime;
-			/*if (fourthAttackCooldownTime >= FOURTH_ATTACK_COOLDOWN_MAX) {
-				endAttack();
-			}*/
+			
 		}
 		break;
 	}
@@ -425,6 +309,7 @@ void Chrono::firstAttack() {
 			break;
 		case Facing::UP:
 			attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 - 2;
+			attackBox.position.y -= attackBoxOffset.y / 2;
 			break;
 	}
 
@@ -515,14 +400,15 @@ void Chrono::secondAttack() {
 			break;
 		case Facing::DOWN:
 			attackBox.position.y += attackBoxOffset.y;
-			attackBox.position.x -= (/*getWidth() + */currentFrameOrigin.x) / 2;
+			attackBox.position.x -= (currentFrameOrigin.x) / 2;
 			break;
 		case Facing::RIGHT:
 			attackBox.position.x += (currentFrameOrigin.x);
 			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			attackBox.position.x -= (/*getWidth() + */currentFrameOrigin.x) / 2 + 6;
+			attackBox.position.x -= (currentFrameOrigin.x) / 2 + 6;
+			attackBox.position.y -= attackBoxOffset.y / 2;
 			break;
 	}
 
@@ -627,6 +513,7 @@ void Chrono::thirdAttack() {
 		case Facing::UP:
 			attackBox.size.x /= 2;
 			attackBox.position.x -= attackBox.size.x / 2;
+			attackBox.position.y -= attackBoxOffset.y / 2;
 			break;
 	}
 
@@ -649,16 +536,16 @@ void Chrono::thirdAttack() {
 		if (attackBox.collision(object->getHitbox())) {
 			switch (facing) {
 				case Facing::DOWN:
-					object->knockBack(Vector3(0, 200, 0), weight);
+					object->knockBack(Vector3(0, 100, -100), weight);
 					break;
 				case Facing::LEFT:
-					object->knockBack(Vector3(-200, 0, 0), weight);
+					object->knockBack(Vector3(-100, 0, -100), weight);
 					break;
 				case Facing::UP:
-					object->knockBack(Vector3(0, -200, 0), weight);
+					object->knockBack(Vector3(0, -100, -100), weight);
 					break;
 				case Facing::RIGHT:
-					object->knockBack(Vector3(200, 0, 0), weight);
+					object->knockBack(Vector3(100, 0, -100), weight);
 					break;
 			}
 			object->takeDamage(5);
@@ -683,9 +570,8 @@ void Chrono::fourthAttackStart() {
 	fourthAttackCooldownTime = 0;
 	waitingTime = 0;
 	moveTime = 0;
-	//moveStart = position;
-	//moveEnd = position + Vector3(0, 0, FOURTH_ATTACK_JUMP_HEIGHT);
-	moveVelocity = Vector3(0, 0, 200);
+
+	moveVelocity = Vector3(0, 0, 300);
 	yetFourthAttack = false;
 	falling = false;
 
@@ -698,7 +584,7 @@ void Chrono::fourthAttackStart() {
 			attackBox.position.y += 5;
 			break;
 		case Facing::DOWN:
-			attackBox.position.y += attackBoxOffset.y;
+			attackBox.position.y += attackBoxOffset.y + 4;
 			attackBox.position.x -= (currentFrameOrigin.x) / 2 - 2;
 			break;
 		case Facing::RIGHT:
@@ -707,6 +593,7 @@ void Chrono::fourthAttackStart() {
 			break;
 		case Facing::UP:
 			attackBox.position.x -= (getWidth()) / 2 - 4;
+			attackBox.position.y -= attackBox.size.y / 2;
 			break;
 	}
 
@@ -734,7 +621,7 @@ void Chrono::fourthAttack(double deltaTime) {
 
 	Vector3 moveVector = moveVelocity * deltaTime;
 	if (abs(fallVelocity.z) < moveVector.z) { // raising
-		
+
 		moveBy(moveVector);
 		attackBox.position += moveVector;
 

@@ -5,10 +5,10 @@
 Hitbox::Hitbox() {
 }
 
-Hitbox::Hitbox(int rowdata[5]) {
+Hitbox::Hitbox(int rowdata[6]) {
 
-	position = Vector3(rowdata[0], -rowdata[1], 0);
-	size = Vector3(rowdata[2], rowdata[3], rowdata[4]);
+	position = Vector3(rowdata[0], -rowdata[1], rowdata[2]);
+	size = Vector3(rowdata[3], rowdata[4], rowdata[5]);
 
 }
 

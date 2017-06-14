@@ -250,24 +250,27 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							if (line.length() <= 0)
 								continue;
 
-							int rowdata[5];
+							int rowdata[6];
 
 							size_t xloc = line.find("x=") + 2;
 							size_t yloc = line.find("y=") + 2;
+							size_t zloc = line.find("z=") + 2;
 							size_t widthloc = line.find("width=") + 6;
 							size_t heightloc = line.find("height=") + 7;
-							size_t zloc = line.find("z") + 2;
+							size_t zheightloc = line.find("zHeight=") + 8;
 
 							string substr = line.substr(xloc);
 							istringstream(substr) >> rowdata[0];
 							substr = line.substr(yloc);
 							istringstream(substr) >> rowdata[1];
-							substr = line.substr(widthloc);
-							istringstream(substr) >> rowdata[2];
-							substr = line.substr(heightloc);
-							istringstream(substr) >> rowdata[3];
 							substr = line.substr(zloc);
+							istringstream(substr) >> rowdata[2];
+							substr = line.substr(widthloc);
+							istringstream(substr) >> rowdata[3];
+							substr = line.substr(heightloc);
 							istringstream(substr) >> rowdata[4];
+							substr = line.substr(zheightloc);
+							istringstream(substr) >> rowdata[5];
 
 							unique_ptr<Hitbox> hitbox = make_unique<Hitbox>(rowdata);
 							tile->hitboxes.push_back(move(hitbox));
@@ -304,6 +307,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 						}
 					} else if (propertyname.compare("flat") == 0) {
 						tile->isFlat = propertyNode.attribute("value").as_bool();
+					} else if (propertyname.compare("zPos") == 0) {
+						tile->zPosition = propertyNode.attribute("value").as_int();
 					} else {
 						// generic (not yet used?) properties
 						if (propertyNode.attribute("value"))
@@ -414,6 +419,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 				else
 					layerDepth = map->getLayerDepth(position.y);
 
+
+
 				// look in animation map first for ID
 				if (!map->animationMap[gid]) {
 					if (!map->assetMap[gid]) {
@@ -435,7 +442,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						layer->tiles[row][col] = move(tile);
 
 					} else {
-						
+
 						unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
 						tile->load(tileAsset);
 						tile->setOrigin(Vector2(0, tile->getHeight()));

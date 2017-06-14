@@ -15,10 +15,11 @@ void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet
 	type = baddieDataNode.attribute("name").as_string();
 	xml_node hitboxNode = baddieDataNode.child("hitbox");
 
-	int rowdata[5] = {
+	int rowdata[6] = {
 		hitboxNode.attribute("x").as_int(), hitboxNode.attribute("y").as_int(),
+		hitboxNode.attribute("z").as_int(),
 		hitboxNode.attribute("width").as_int(), hitboxNode.attribute("height").as_int(),
-		hitboxNode.attribute("z").as_int()
+		hitboxNode.attribute("zHeight").as_int()
 	};
 	hitbox = make_unique<Hitbox>(rowdata);
 

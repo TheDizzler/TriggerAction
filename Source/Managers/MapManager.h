@@ -20,6 +20,8 @@ public:
 	/* Sets where the layer depth should be calculated from. */
 	Vector2 mask;
 	bool isFlat = false;
+	/** Z height above ground. For floating objects. */
+	int zPosition = 0;
 };
 
 class AnimationAsset : public Animation {
