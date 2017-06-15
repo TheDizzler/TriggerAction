@@ -1,6 +1,7 @@
 #include "../pch.h"
 #include "Tile.h"
 #include "../Managers/GameManager.h"
+#include "Creature.h"
 
 void TileBase::moveBy(const Vector3 & moveVector) {
 
@@ -100,18 +101,26 @@ void TangibleTile::load(TileAsset* const tileAsset) {
 
 	weight = 1000000;
 	isFlat = tileAsset->isFlat;
-
+	for (const auto& trigger : tileAsset->triggers) {
+		triggers.push_back(make_unique<Trigger>(trigger.get()));
+	}
 	if (tileAsset->hitboxes.size() > 0) {
 		for (int i = 1; i < tileAsset->hitboxes.size(); ++i)
-			subHitboxes.push_back(move(tileAsset->hitboxes[i]));
+			subHitboxes.push_back(make_unique<Hitbox>(tileAsset->hitboxes[i].get()));
 		setHitbox(Hitbox(tileAsset->hitboxes[0].get()));
-		//for (const auto& hitbox : tileAsset->hitboxes) {
-			//unique_ptr<Hitbox> hb = make_unique<Hitbox>(hitbox.get());
-		
 	}
 }
 
 void TangibleTile::takeDamage(int damage, bool showDamage) {
+}
+
+bool TangibleTile::activateTrigger(Creature* creature) {
+	for (const auto& trigger : triggers) {
+		if (trigger->activateTrigger(creature))
+			return true;
+		return false;
+	}
+	return false;
 }
 
 void TangibleTile::update(double deltaTime) {
@@ -119,6 +128,8 @@ void TangibleTile::update(double deltaTime) {
 
 #ifdef  DEBUG_HITBOXES
 	debugUpdate();
+	for (const auto& trigger : triggers)
+		trigger->debugUpdate();
 #endif //  DEBUG_HITBOXES
 }
 
@@ -129,36 +140,11 @@ void TangibleTile::draw(SpriteBatch* batch) {
 
 #ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
+	for (const auto& trigger : triggers)
+		trigger->debugDraw(batch);
 #endif //  DEBUG_HITBOXES
 }
 
-//bool TangibleTile::checkCollisionWith(const Tangible* other) const {
-//
-//	const Hitbox* otherBG = other->getHitbox();
-//	if (hitbox.collision2d(otherBG)) { // first check to see if hitbox overlap on x-y plane
-//		if (hitbox.collisionZ(otherBG)) // then check if collide on z-axis as well
-//			return true;
-//		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
-//			if (subHB->collision(otherBG))
-//				for (const auto& otherSubs : other->subHitboxes)
-//					if (subHB->collision(otherSubs.get()))
-//						return true;
-//	}
-//	return false;
-//}
-
-//
-//bool TangibleTile::checkCollisionWith(const Hitbox* other) const {
-//
-//	if (hitbox.collision2d(other)) { // first check to see if hitbox overlap on x-y plane
-//		if (hitbox.collisionZ(other)) // then check if collide on z-axis as well
-//			return true;
-//		for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
-//			if (subHB->collision(other))
-//				return true;
-//	}
-//	return false;
-//}
 
 void TangibleTile::moveBy(const Vector3& moveVector) {
 
@@ -167,18 +153,24 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 	drawPosition.y += moveVector.y - moveVector.z;
 
 	moveHitboxBy(moveVector);
+	for (auto& trigger : triggers)
+		trigger->moveBy(moveVector);
 
 	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
 
 void TangibleTile::setPosition(const Vector3& newpos) {
 
+	Vector3 oldpos = position;
 	position = newpos;
 	drawPosition.x = position.x;
 	drawPosition.y = position.y - (position.z
 		+ startZposition);
 
 	setHitboxPosition(newpos);
+	Vector3 moveVector = position - oldpos;
+	for (auto& trigger : triggers)
+		trigger->moveBy(moveVector);
 
 	if (isFlat)
 		setLayerDepth(Map::getLayerDepth(position.y - getHeight() + maskPosition.y));
@@ -190,3 +182,55 @@ const Hitbox* TangibleTile::getHitbox() const {
 	return &hitbox;
 }
 
+
+
+
+Trigger::Trigger(int rowdata[6]) : Tangible() {
+	setHitbox(rowdata);
+#ifdef  DEBUG_HITBOXES
+	debugSetTint(Colors::BlueViolet.v);
+#endif //  DEBUG_HITBOXES
+}
+
+Trigger::Trigger(const Trigger* copytrigger) {
+
+	setHitbox(copytrigger->getHitbox());
+#ifdef  DEBUG_HITBOXES
+	debugSetTint(Colors::BlueViolet.v);
+#endif //  DEBUG_HITBOXES
+}
+
+Trigger::~Trigger() {
+}
+
+void Trigger::moveBy(const Vector3& moveVector) {
+	moveHitboxBy(moveVector);
+}
+
+bool Trigger::activateTrigger(Creature* creature) {
+
+	if (hitbox.collision(creature->getHitbox())) {
+		// min height = hitbox.position.z
+		// max height = hitbox.size.z
+		Vector3 newpos = creature->getPosition();
+		float relativeY = (hitbox.position.y + hitbox.size.y)
+			- (newpos.y - creature->getHitbox()->size.y);
+		if (relativeY <= 0)
+			newpos.z = hitbox.size.z;
+		else {
+		//newpos.z = hitbox.position.z + hitbox.size.z;
+			float percent = relativeY / hitbox.size.y;
+			float newZ = (hitbox.size.z - hitbox.position.z) * percent + hitbox.position.z;
+
+			newpos.z = newZ;
+			
+		}
+		creature->setPosition(newpos);
+		return true;
+	}
+	return false;
+}
+
+
+void Trigger::takeDamage(int damage, bool showDamage) {
+}

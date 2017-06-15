@@ -53,18 +53,18 @@ void Creature::knockBack(Vector3 hitVelocity) {
 }
 
 
-bool Creature::checkCollisionWith(const Tangible* other) const {
-
-	/*if (radarBox.collision(other->getHitbox())) {
-		return true;
-	}*/
+bool Creature::checkCollisionWith(Tangible* other) {
 
 	if (radarBox.collision2d(other->getHitbox())) { // first check to see if hitbox overlap on x-y plane
 		if (radarBox.collisionZ(other->getHitbox())) // then check if collide on z-axis as well
 			return true;
-		for (const auto& otherSubHB : other->subHitboxes)
+		if (other->activateTrigger(this)) {
+			return false;
+		}
+		for (const auto& otherSubHB : other->subHitboxes) {
 			if (otherSubHB->collision(&radarBox))
 				return true;
+		}
 	}
 	return false;
 }
@@ -89,9 +89,6 @@ const int Creature::getWidth() const {
 	return currentFrameRect.right - currentFrameRect.left;
 }
 
-const Hitbox* Creature::getHitbox() const {
-	return &hitbox;
-}
 
 void Creature::moveBy(const Vector3& moveVector) {
 	IElement3D::moveBy(moveVector);
@@ -121,7 +118,6 @@ void Creature::setPosition(const Vector3& newpos) {
 
 
 	layerDepth = Map::getLayerDepth(position.y);
-	//falling == Map::standingOnGround(position);
 
 	// bigger th z-coord smaller the shadow
 	// if z = 0 then scale = 1

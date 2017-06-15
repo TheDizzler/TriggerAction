@@ -54,7 +54,7 @@ void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 	falling = true;
 }
 
-const float LANDING_TOLERANCE = 1;
+const float LANDING_TOLERANCE = 1.9;
 void PlayerCharacter::update(double deltaTime) {
 
 
@@ -163,11 +163,15 @@ void PlayerCharacter::update(double deltaTime) {
 		} else {
 			radarBox.position = hitbox.position;
 			// check for collisions
-			for (const Tangible* tangible : hitboxesAll) {
+			for (Tangible* tangible : tangiblesAll) {
 				if (tangible == this)
 					continue;
 				if (radarBox.collision2d(tangible->getHitbox())) { // first check to see if hitbox overlap on x-y plane
-					if (radarBox.collisionZ(tangible->getHitbox())) {
+					if (tangible->activateTrigger(this)) {
+						fallVelocity.z = 0;
+						falling = false;
+						break;
+					} else if (radarBox.collisionZ(tangible->getHitbox())) {
 						// then check if collide on z-axis as well
 						const Hitbox* hb = tangible->getHitbox();
 						float dif = radarBox.position.z - (hb->position.z + hb->size.z);
@@ -282,7 +286,7 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 				loadAnimation("dead right");
 				break;
 		}
-		remove(hitboxesAll.begin(), hitboxesAll.end(), this);
+		remove(tangiblesAll.begin(), tangiblesAll.end(), this);
 		timeSinceDeath = 0;
 	}
 
@@ -633,7 +637,7 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 		radarBox.position = hitbox.position + moveVector * 2;
 		bool collision = false;
 		// check for collisions
-		for (const Tangible* hb : hitboxesAll) {
+		for (Tangible* hb : tangiblesAll) {
 			if (hb == this)
 				continue;
 			if (checkCollisionWith(hb)) {
@@ -719,50 +723,38 @@ void PlayerCharacter::movement(double deltaTime) {
 	if (moveVector != Vector3::Zero) {
 
 		radarBox.position = hitbox.position + moveVector * 2;
-
 		bool collision = false;
 		// check for collisions
-		for (const Tangible* tangible : hitboxesAll) {
+		for (Tangible* tangible : tangiblesAll) {
 			if (tangible == this)
 				continue;
-			if ((collision = checkCollisionWith(tangible)) == true)
+			if ((collision = checkCollisionWith(tangible)) == true) {
+				//tangible->activateTrigger(this);
 				break;
+			}
 		}
 
-		radarBox.position = hitbox.position;
 		if (collision && moveVector.x != 0 && moveVector.y != 0) {
 			collision = false;
 			//test if can move other directions
 			Vector3 testVector = moveVector;
 			testVector.x = 0;
 			radarBox.position = hitbox.position + testVector * 2;
-			for (const Tangible* tangible : hitboxesAll) {
-				/*if (hb->getHitbox() == &hitbox)
-					continue;
-				if (radarBox.collision2d(hb->getHitbox())) {
-					collision = true;
-					break;
-				}*/
+			for (Tangible* tangible : tangiblesAll) {
 				if (tangible == this)
 					continue;
 				if ((collision = checkCollisionWith(tangible)) == true)
 					break;
 			}
 
-			if (!collision)
+			if (!collision) {
 				moveBy(testVector);
-			else {
+			} else {
 				collision = false;
 				testVector = moveVector;
 				testVector.y = 0;
 				radarBox.position = hitbox.position + testVector * 2;
-				for (const Tangible* tangible : hitboxesAll) {
-					/*if (hb->getHitbox() == &hitbox)
-						continue;
-					if (radarBox.collision2d(hb->getHitbox())) {
-						collision = true;
-						break;
-					}*/
+				for (Tangible* tangible : tangiblesAll) {
 					if (tangible == this)
 						continue;
 					if ((collision = checkCollisionWith(tangible)) == true)

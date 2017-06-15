@@ -31,8 +31,8 @@ void Map::update(double deltaTime) {
 	for (int i = 0; i < baddies.size(); ) {
 		if (baddies[i]->update(deltaTime)) {
 			vector<Tangible*>::iterator it =
-				find(hitboxesAll.begin(), hitboxesAll.end(), baddies[i].get());
-			hitboxesAll.erase(it);
+				find(tangiblesAll.begin(), tangiblesAll.end(), baddies[i].get());
+			tangiblesAll.erase(it);
 
 			swap(baddies[i], baddies.back());
 			baddies.pop_back();
@@ -303,6 +303,47 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 							mask.y *= -1;
 							tile->mask = mask;
+
+						}
+					} else if (propertyname.compare("step") == 0) {
+						string str;
+						if (propertyNode.attribute("value"))
+							str = propertyNode.attribute("value").as_string();
+						else
+							str = propertyNode.text().as_string();
+
+						istringstream datastream(str);
+						string line;
+						vector<vector<int>> data;
+						while (getline(datastream, line)) {
+							line.erase(remove_if(
+								line.begin(), line.end(), isspace), line.end());
+							if (line.length() <= 0)
+								continue;
+
+							int rowdata[6];
+
+							size_t xloc = line.find("x=") + 2;
+							size_t yloc = line.find("y=") + 2;
+							size_t zloc = line.find("z=") + 2;
+							size_t widthloc = line.find("width=") + 6;
+							size_t heightloc = line.find("height=") + 7;
+							size_t zheightloc = line.find("zHeight=") + 8;
+
+							string substr = line.substr(xloc);
+							istringstream(substr) >> rowdata[0];
+							substr = line.substr(yloc);
+							istringstream(substr) >> rowdata[1];
+							substr = line.substr(zloc);
+							istringstream(substr) >> rowdata[2];
+							substr = line.substr(widthloc);
+							istringstream(substr) >> rowdata[3];
+							substr = line.substr(heightloc);
+							istringstream(substr) >> rowdata[4];
+							substr = line.substr(zheightloc);
+							istringstream(substr) >> rowdata[5];
+
+							tile->triggers.push_back(make_unique<Trigger>(rowdata));
 
 						}
 					} else if (propertyname.compare("flat") == 0) {

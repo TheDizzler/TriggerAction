@@ -76,7 +76,7 @@ void Projectile::update(double deltaTime) {
 		sin(-rotation)* projectileSpeed*deltaTime, 0));
 
 	// ray-casting hit detection
-	for (Tangible* liveObject : hitboxesAll) {
+	for (Tangible* liveObject : tangiblesAll) {
 
 		if (liveObject == owner)
 			continue;

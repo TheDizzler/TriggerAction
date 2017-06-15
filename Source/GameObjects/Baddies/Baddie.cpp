@@ -457,7 +457,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 				attackBox.position.x, attackBox.position.y));
 #endif //  DEBUG_HITBOXES
 
-			for (Tangible* object : hitboxesAll) {
+			for (Tangible* object : tangiblesAll) {
 				if (object == this) {
 					continue;
 				}

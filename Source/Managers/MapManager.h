@@ -16,6 +16,7 @@ public:
 
 	map<string, string> properties;
 	vector<unique_ptr<Hitbox>> hitboxes;
+	vector<unique_ptr<Trigger>> triggers;
 
 	/* Sets where the layer depth should be calculated from. */
 	Vector2 mask;

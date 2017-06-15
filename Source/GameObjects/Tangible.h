@@ -27,13 +27,14 @@ public:
 	/* Position relative to bottom-left of sprite containing this hotbox.
 		position(x, y, height above y)*/
 	Vector3 position;
-	Vector3 size; // (width, height, z)
+	Vector3 size; // (width, height, zHeight)
 };
 
 enum Facing {
 	LEFT, DOWN, RIGHT, UP
 };
 
+class Creature;
 /* A drawable asset with Hitboxes. */
 class Tangible {
 public:
@@ -46,10 +47,12 @@ public:
 
 	void setHitbox(const Hitbox hitbox);
 
-	//virtual bool checkCollisionWith(const Hitbox* hitbox) const = 0;
-	virtual bool checkCollisionWith(const Tangible* tangible) const;
+	virtual bool checkCollisionWith(Tangible* tangible);
 
-	virtual const Hitbox* getHitbox() const = 0;
+	/** Do nothing. */
+	virtual bool activateTrigger(Creature* creature);
+
+	virtual const Hitbox* getHitbox() const;
 	void moveHitboxBy(const Vector3& moveVector);
 	void setHitboxPosition(const Vector3& newPosition);
 

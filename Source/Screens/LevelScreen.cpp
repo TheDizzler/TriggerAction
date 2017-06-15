@@ -1,7 +1,7 @@
 #include "../pch.h"
 #include "LevelScreen.h"
 
-vector<Tangible*> hitboxesAll;
+vector<Tangible*> tangiblesAll;
 vector<unique_ptr<PlayerCharacter>> pcs;
 vector<Baddie*> baddies;
 
@@ -10,7 +10,7 @@ JammerManager LevelScreen::jammerMan;
 
 LevelScreen::~LevelScreen() {
 	pcs.clear();
-	hitboxesAll.clear();
+	tangiblesAll.clear();
 	baddies.clear();
 	jammerMan.reset();
 }
@@ -33,7 +33,7 @@ void LevelScreen::setGameManager(GameManager* gm) {
 #include "../GameObjects/Characters/Chrono.h"
 void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
-	hitboxesAll.clear();
+	tangiblesAll.clear();
 	pcs.clear();
 	baddies.clear();
 	jammerMan.reset();
@@ -42,11 +42,11 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 	map = move(newMap);
 
 	for (auto& tile : map->tangibles) {
-		hitboxesAll.push_back(tile);
+		tangiblesAll.push_back(tile);
 	}
 
 	for (auto& baddie : map->baddies) {
-		hitboxesAll.push_back(baddie.get());
+		tangiblesAll.push_back(baddie.get());
 		baddies.push_back(baddie.get());
 	}
 
@@ -54,7 +54,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 		if (slot->characterData->name == "Lucca") {
 			unique_ptr<Lucca> newPC = make_unique<Lucca>(slot);
-			hitboxesAll.push_back(newPC.get());
+			tangiblesAll.push_back(newPC.get());
 			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
 
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
@@ -66,7 +66,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 		} else if (slot->characterData->name == "Marle") {
 			unique_ptr<Marle> newPC = make_unique<Marle>(slot);
-			hitboxesAll.push_back(newPC.get());
+			tangiblesAll.push_back(newPC.get());
 			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
@@ -77,7 +77,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 		} else if (slot->characterData->name == "Chrono") {
 			unique_ptr<Chrono> newPC = make_unique<Chrono>(slot);
-			hitboxesAll.push_back(newPC.get());
+			tangiblesAll.push_back(newPC.get());
 			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
@@ -97,7 +97,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 
-	hitboxesAll.clear();
+	tangiblesAll.clear();
 	baddies.clear();
 	jammerMan.reset();
 
@@ -105,18 +105,18 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 	map = move(newMap);
 
 	for (auto& tile : map->tangibles) {
-		hitboxesAll.push_back(tile);
+		tangiblesAll.push_back(tile);
 	}
 
 	for (auto& baddie : map->baddies) {
-		hitboxesAll.push_back(baddie.get());
+		tangiblesAll.push_back(baddie.get());
 		baddies.push_back(baddie.get());
 	}
 
 	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
 		pc->loadMap(map);
-		hitboxesAll.push_back(pc.get());
+		tangiblesAll.push_back(pc.get());
 
 	}
 

@@ -22,13 +22,13 @@ public:
 	virtual void knockBack(Vector3 moveVelocity) override;
 
 
-	virtual bool checkCollisionWith(const Tangible* tangible) const override;
+	virtual bool checkCollisionWith(Tangible* tangible) override;
 	virtual bool checkCollision2DWith(const Tangible* tangible) const;
 
 
 	virtual const int getHeight() const;
 	virtual const int getWidth() const;
-	virtual const Hitbox* getHitbox() const override;
+
 	virtual void moveBy(const Vector3& moveVector);
 	virtual void setPosition(const Vector3& position);
 

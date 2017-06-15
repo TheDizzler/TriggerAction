@@ -6,9 +6,9 @@
 #include "../Managers/MapManager.h"
 #include "../Managers/JammerManager.h"
 
+#define DEBUG_HITBOXES
 
-
-extern vector<Tangible*> hitboxesAll;
+extern vector<Tangible*> tangiblesAll;
 extern vector<unique_ptr<PlayerCharacter>> pcs;
 extern vector<Baddie*> baddies;
 

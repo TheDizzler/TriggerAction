@@ -71,6 +71,7 @@ void Chrono::attackUpdate(double deltaTime) {
 	currentFrameTime += deltaTime;
 	switch (currentAttack) {
 		case AWAIT_INPUT:
+		{
 			// cycles 5 times between frame 2 and 1 until attack button pressed
 
 #ifdef  DEBUG_HITBOXES
@@ -115,7 +116,8 @@ void Chrono::attackUpdate(double deltaTime) {
 
 			if (waitingTime >= CAN_CANCEL_COOLDOWN_TIME)
 				canCancelAction = true;
-			break;
+		}
+		break;
 		case FIRST_ATTACK:
 		{
 			if (currentFrameTime >= currentFrameDuration) {
@@ -154,7 +156,7 @@ void Chrono::attackUpdate(double deltaTime) {
 
 				bool collision = false;
 				// check for collisions
-				for (Tangible* hb : hitboxesAll) {
+				for (Tangible* hb : tangiblesAll) {
 					if (hb == this)
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
@@ -168,7 +170,7 @@ void Chrono::attackUpdate(double deltaTime) {
 
 				if (!collision) {
 					moveBy(moveVector);
-
+					falling = true;
 				}
 
 				if (currentFrameTime >= currentFrameDuration) {
@@ -238,7 +240,7 @@ void Chrono::attackUpdate(double deltaTime) {
 				radarBox.position = hitbox.position + moveVector * 2;
 				bool collision = false;
 				// check for collisions
-				for (Tangible* hb : hitboxesAll) {
+				for (Tangible* hb : tangiblesAll) {
 					if (hb == this)
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
@@ -329,7 +331,7 @@ void Chrono::firstAttack() {
 #endif //  DEBUG_HITBOXES
 
 	// hit detection
-	for (Tangible* object : hitboxesAll) {
+	for (Tangible* object : tangiblesAll) {
 		if (object == this) {
 			continue;
 		}
@@ -423,7 +425,7 @@ void Chrono::secondAttack() {
 #endif //  DEBUG_HITBOXES
 
 	// hit detection
-	for (Tangible* object : hitboxesAll) {
+	for (Tangible* object : tangiblesAll) {
 		if (object == this) {
 			continue;
 		}
@@ -528,7 +530,7 @@ void Chrono::thirdAttack() {
 #endif //  DEBUG_HITBOXES
 
 	// hit detection
-	for (Tangible* object : hitboxesAll) {
+	for (Tangible* object : tangiblesAll) {
 		if (object == this) {
 			continue;
 		}
@@ -625,7 +627,7 @@ void Chrono::fourthAttack(double deltaTime) {
 		attackBox.position += moveVector;
 
 		// hit detection
-		for (Tangible* object : hitboxesAll) {
+		for (Tangible* object : tangiblesAll) {
 			if (object == this) {
 				continue;
 			}

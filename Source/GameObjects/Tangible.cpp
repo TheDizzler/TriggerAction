@@ -3,6 +3,7 @@
 
 #include "../Engine/GameEngine.h"
 
+
 Hitbox::Hitbox() {
 }
 
@@ -112,7 +113,7 @@ void Tangible::setHitbox(const Hitbox box) {
 #endif //  DEBUG_HITBOXES
 }
 
-bool Tangible::checkCollisionWith(const Tangible* other) const {
+bool Tangible::checkCollisionWith(Tangible* other) {
 
 	const Hitbox* otherBG = other->getHitbox();
 	if (hitbox.collision2d(otherBG)) { // first check to see if hitbox overlap on x-y plane
@@ -127,6 +128,15 @@ bool Tangible::checkCollisionWith(const Tangible* other) const {
 	return false;
 }
 
+bool Tangible::activateTrigger(Creature* creature) {
+	// do nothing
+	return false;
+}
+
+
+const Hitbox* Tangible::getHitbox() const {
+	return &hitbox;
+}
 
 void Tangible::moveHitboxBy(const Vector3& moveVector) {
 
