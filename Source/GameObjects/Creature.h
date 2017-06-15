@@ -23,6 +23,8 @@ public:
 
 
 	virtual bool checkCollisionWith(const Tangible* tangible) const override;
+	virtual bool checkCollision2DWith(const Tangible* tangible) const;
+
 
 	virtual const int getHeight() const;
 	virtual const int getWidth() const;

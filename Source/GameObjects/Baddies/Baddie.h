@@ -87,6 +87,6 @@ protected:
 	Hitbox attackBox;
 	Vector3 attackBoxSizes[4];
 	Vector2 attackBoxOffset = Vector2(12, 12);
-	bool drawAttack = false;
+	bool drawAttackBox = false;
 	unique_ptr<RectangleFrame> attackFrame;
 };

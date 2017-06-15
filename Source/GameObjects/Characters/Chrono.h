@@ -98,7 +98,8 @@ private:
 	Hitbox attackBox;
 	Vector3 attackBoxSizes[4];
 	Vector2 attackBoxOffset = Vector2(12, 12);
-	bool drawAttack = false;
+	/** Debug flag for drawing attack area. */
+	bool drawAttackBox = false;
 	unique_ptr<RectangleFrame> attackFrame;
 
 	HitEffectManager hitEffectManager;

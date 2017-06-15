@@ -60,7 +60,7 @@ void Chrono::draw(SpriteBatch * batch) {
 
 	hitEffectManager.draw(batch);
 #ifdef  DEBUG_HITBOXES
-	if (drawAttack)
+	if (drawAttackBox)
 		attackFrame->draw(batch);
 #endif //  DEBUG_HITBOXES
 }
@@ -74,7 +74,7 @@ void Chrono::attackUpdate(double deltaTime) {
 			// cycles 5 times between frame 2 and 1 until attack button pressed
 
 #ifdef  DEBUG_HITBOXES
-			drawAttack = false;
+			drawAttackBox = false;
 #endif //  DEBUG_HITBOXES
 
 			waitingTime += deltaTime;
@@ -117,6 +117,7 @@ void Chrono::attackUpdate(double deltaTime) {
 				canCancelAction = true;
 			break;
 		case FIRST_ATTACK:
+		{
 			if (currentFrameTime >= currentFrameDuration) {
 				if (++currentFrameIndex == 1) { // finished wind-up
 					currentFrameTime = 0;
@@ -129,7 +130,7 @@ void Chrono::attackUpdate(double deltaTime) {
 					firstAttack();
 				} else { // finished attack frame
 #ifdef  DEBUG_HITBOXES
-					drawAttack = false;
+					drawAttackBox = false;
 #endif //  DEBUG_HITBOXES
 					currentAttack = AWAIT_INPUT;
 					canCancelAction = true;
@@ -142,7 +143,8 @@ void Chrono::attackUpdate(double deltaTime) {
 						= currentAnimation->animationFrames[currentFrameIndex]->origin;
 				}
 			}
-			break;
+		}
+		break;
 		case SECOND_ATTACK:
 		{
 
@@ -153,9 +155,9 @@ void Chrono::attackUpdate(double deltaTime) {
 				bool collision = false;
 				// check for collisions
 				for (Tangible* hb : hitboxesAll) {
-					if (hb->getHitbox() == &hitbox)
+					if (hb == this)
 						continue;
-					if (radarBox.collision2d(hb->getHitbox())) {
+					if (radarBox.collision(hb->getHitbox())) {
 						collision = true;
 						hb->knockBack(moveVector);
 						hb->takeDamage(0, false);
@@ -201,30 +203,43 @@ void Chrono::attackUpdate(double deltaTime) {
 		case THIRD_ATTACK:
 		{
 			Vector3 moveVector = moveVelocity * deltaTime;
-			if (!falling && !yetAttackedThird) {
+			if (!falling) {
 
-				Vector3 newpos = moveVector + position;
-				newpos.z = 0;
-				setPosition(newpos);
+				if (!yetAttackedThird) {
 
-				currentFrameIndex = 1;
-				currentFrameTime = 0;
-				currentFrameDuration
-					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-				currentFrameRect
-					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-				currentFrameOrigin
-					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					currentFrameIndex = 1;
+					currentFrameTime = 0;
+					currentFrameDuration
+						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
 
-				thirdAttack();
-				yetAttackedThird = true;
+					thirdAttack();
+					yetAttackedThird = true;
+					break;
+				}
+
+				if (currentFrameTime >= currentFrameDuration) {
+					currentAttack = AWAIT_INPUT;
+					currentFrameIndex = 1;
+					currentFrameTime = 0;
+					currentFrameDuration
+						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				}
+
 				break;
 			} else if (falling) {
 				radarBox.position = hitbox.position + moveVector * 2;
 				bool collision = false;
 				// check for collisions
 				for (Tangible* hb : hitboxesAll) {
-					if (hb->getHitbox() == &hitbox)
+					if (hb == this)
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
 						collision = true; // it's POSSIBLE that more than one object could collide
@@ -240,24 +255,14 @@ void Chrono::attackUpdate(double deltaTime) {
 				break;
 			}
 
-			if (currentFrameTime >= currentFrameDuration) {
-				currentAttack = AWAIT_INPUT;
-				currentFrameIndex = 1;
-				currentFrameTime = 0;
-				currentFrameDuration
-					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-				currentFrameRect
-					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-				currentFrameOrigin
-					= currentAnimation->animationFrames[currentFrameIndex]->origin;
-			}
+
 		}
 		break;
 		case FOURTH_ATTACK:
 		{
 
 			fourthAttack(deltaTime);
-			
+
 		}
 		break;
 	}
@@ -285,7 +290,7 @@ void Chrono::endAttack() {
 	hitList.clear();
 
 #ifdef  DEBUG_HITBOXES
-	drawAttack = false;
+	drawAttackBox = false;
 #endif //  DEBUG_HITBOXES
 }
 
@@ -317,7 +322,7 @@ void Chrono::firstAttack() {
 	attackBox.position.y -= attackBox.size.y;
 
 #ifdef  DEBUG_HITBOXES
-	drawAttack = true;
+	drawAttackBox = true;
 	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
 	attackFrame->setPosition(Vector2(
 		attackBox.position.x, attackBox.position.y));
@@ -362,22 +367,17 @@ void Chrono::secondAttackStart() {
 	moveTime = 0;
 	waitingTime = 0;
 
-	//moveStart = position;
 	switch (facing) {
 		case Facing::LEFT:
-			//moveEnd = position + Vector3(-15, 0, 0);
 			moveVelocity = Vector3(-75, 0, 0);
 			break;
 		case Facing::DOWN:
-			//moveEnd = position + Vector3(0, 15, 0);
 			moveVelocity = Vector3(0, 75, 0);
 			break;
 		case Facing::RIGHT:
-			//moveEnd = position + Vector3(15, 0, 0);
 			moveVelocity = Vector3(75, 0, 0);
 			break;
 		case Facing::UP:
-			//moveEnd = position + Vector3(0, -15, 0);
 			moveVelocity = Vector3(0, -75, 0);
 			break;
 	}
@@ -416,7 +416,7 @@ void Chrono::secondAttack() {
 	attackBox.position.y -= attackBox.size.y;
 
 #ifdef  DEBUG_HITBOXES
-	drawAttack = true;
+	drawAttackBox = true;
 	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
 	attackFrame->setPosition(Vector2(
 		attackBox.position.x, attackBox.position.y));
@@ -521,7 +521,7 @@ void Chrono::thirdAttack() {
 	attackBox.position.y -= attackBox.size.y;
 
 #ifdef  DEBUG_HITBOXES
-	drawAttack = true;
+	drawAttackBox = true;
 	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
 	attackFrame->setPosition(Vector2(
 		attackBox.position.x, attackBox.position.y));
@@ -572,8 +572,6 @@ void Chrono::fourthAttackStart() {
 	moveTime = 0;
 
 	moveVelocity = Vector3(0, 0, 300);
-	yetFourthAttack = false;
-	falling = false;
 
 	awaitInputCycles = 0;
 	attackBox.size = attackBoxSizes[facing];
@@ -600,9 +598,10 @@ void Chrono::fourthAttackStart() {
 
 	attackBox.position.y -= attackBox.size.y;
 	falling = true;
+	yetFourthAttack = false;
 
 #ifdef  DEBUG_HITBOXES
-	drawAttack = true;
+	drawAttackBox = true;
 	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
 	attackFrame->setPosition(Vector2(
 		attackBox.position.x, attackBox.position.y));
@@ -658,56 +657,9 @@ void Chrono::fourthAttack(double deltaTime) {
 
 	} else {  // falling
 #ifdef  DEBUG_HITBOXES
-		drawAttack = false;
+		drawAttackBox = false;
 #endif //  DEBUG_HITBOXES
-
-
 	}
-
-//	awaitInputCycles = 0;
-//	attackBox.size = attackBoxSizes[facing];
-//	attackBox.position = position;
-//	switch (facing) {
-//		case Facing::LEFT:
-//			attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
-//			attackBox.position.y += 5;
-//			break;
-//		case Facing::DOWN:
-//			attackBox.position.y += attackBoxOffset.y;
-//			attackBox.position.x -= (/*getWidth() + */currentFrameOrigin.x) / 2 - 2;
-//			break;
-//		case Facing::RIGHT:
-//			attackBox.position.x += (currentFrameOrigin.x);
-//			attackBox.position.y += 5;
-//			break;
-//		case Facing::UP:
-//			attackBox.position.x -= (getWidth() /*+ currentFrameOrigin.x*/) / 2 - 4;
-//			break;
-//	}
-//
-//
-//	attackBox.position.y -= attackBox.size.y;
-//
-//#ifdef  DEBUG_HITBOXES
-//	drawAttack = true;
-//	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
-//	attackFrame->setPosition(Vector2(
-//		attackBox.position.x, attackBox.position.y));
-//#endif //  DEBUG_HITBOXES
-//
-//	// hit detection
-//	for (Tangible* object : hitboxesAll) {
-//		if (object == this) {
-//			continue;
-//		}
-//
-//		if (attackBox.collision(object->getHitbox())) {
-//			object->takeDamage(7);
-//			// slash effect
-//			hitEffectManager.newEffect(facing, position, 2);
-//		}
-//	}
-
 }
 
 

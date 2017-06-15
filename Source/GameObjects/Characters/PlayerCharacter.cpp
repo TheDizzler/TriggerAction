@@ -164,28 +164,49 @@ void PlayerCharacter::update(double deltaTime) {
 			radarBox.position = hitbox.position;
 			// check for collisions
 			for (const Tangible* tangible : hitboxesAll) {
-				const Hitbox* hb = tangible->getHitbox();
-				if (hb == &hitbox)
+				if (tangible == this)
 					continue;
-				if (radarBox.collision2d(hb)) {
-					float dif = position.z - (hb->position.z + hb->size.z);
-					double moveDelta = moveVelocity.z * deltaTime;
-					if (dif < LANDING_TOLERANCE
-						&& dif > -LANDING_TOLERANCE
-						&& abs(fallVelocity.z) > moveDelta) {
-						Vector3 newpos = position;
-						newpos.z = hb->position.z + hb->size.z;
-						setPosition(newpos);
-						fallVelocity.z = 0;
-						moveVelocity.z = 0;
-						falling = false;
-						break;
-					}
-
+				if (radarBox.collision2d(tangible->getHitbox())) { // first check to see if hitbox overlap on x-y plane
+					if (radarBox.collisionZ(tangible->getHitbox())) {
+						// then check if collide on z-axis as well
+						const Hitbox* hb = tangible->getHitbox();
+						float dif = radarBox.position.z - (hb->position.z + hb->size.z);
+						double moveDelta = moveVelocity.z * deltaTime;
+						if (dif < LANDING_TOLERANCE
+							&& dif > -LANDING_TOLERANCE
+							&& abs(fallVelocity.z) > moveDelta) {
+							Vector3 newpos = position;
+							newpos.z = hb->position.z + hb->size.z;
+							setPosition(newpos);
+							fallVelocity.z = 0;
+							moveVelocity.z = 0;
+							falling = false;
+							break;
+						}
+					} else
+						for (const auto& otherSubHB : tangible->subHitboxes) {
+							if (otherSubHB->collision2d(&radarBox)) {
+								const Hitbox* hb = otherSubHB.get();
+								float dif = position.z - (hb->position.z + hb->size.z);
+								double moveDelta = moveVelocity.z * deltaTime;
+								if (dif < LANDING_TOLERANCE
+									&& dif > -LANDING_TOLERANCE
+									&& abs(fallVelocity.z) > moveDelta) {
+									Vector3 newpos = position;
+									newpos.z = hb->position.z + hb->size.z;
+									setPosition(newpos);
+									fallVelocity.z = 0;
+									moveVelocity.z = 0;
+									falling = false;
+									break;
+								}
+							}
+							if (!falling)
+								break;
+						}
 				}
 			}
 		}
-
 	}
 
 
@@ -613,9 +634,9 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 		bool collision = false;
 		// check for collisions
 		for (const Tangible* hb : hitboxesAll) {
-			if (hb->getHitbox() == &hitbox)
+			if (hb == this)
 				continue;
-			if (radarBox.collision(hb->getHitbox())) {
+			if (checkCollisionWith(hb)) {
 				collision = true; // it's POSSIBLE that more than one object could collide
 				moveVelocity.x = 0;
 				moveVelocity.y = 0;

@@ -150,7 +150,7 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 
 	Vector3 moveVector = hitbox.position - oldPos;
 	for (const auto& subHB : subHitboxes)
-		subHB->position -= moveVector;
+		subHB->position += moveVector;
 
 #ifdef  DEBUG_HITBOXES
 	testFrame->setPosition(Vector2(hitbox.position.x, hitbox.position.y));

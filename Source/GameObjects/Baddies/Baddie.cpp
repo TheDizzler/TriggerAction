@@ -337,7 +337,7 @@ void BlueImp::draw(SpriteBatch* batch) {
 	Baddie::draw(batch);
 
 #ifdef  DEBUG_HITBOXES
-	if (drawAttack)
+	if (drawAttackBox)
 		attackFrame->draw(batch);
 #endif //  DEBUG_HITBOXES
 }
@@ -420,7 +420,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 			action = CreatureAction::FOLLOWING_TARGET;
 
 #ifdef  DEBUG_HITBOXES
-			drawAttack = false;
+			drawAttackBox = false;
 #endif //  DEBUG_HITBOXES
 			return;
 		}
@@ -451,7 +451,7 @@ void BlueImp::attackUpdate(double deltaTime) {
 			attackBox.position += moveAmount;
 
 #ifdef  DEBUG_HITBOXES
-			drawAttack = true;
+			drawAttackBox = true;
 			attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
 			attackFrame->setPosition(Vector2(
 				attackBox.position.x, attackBox.position.y));

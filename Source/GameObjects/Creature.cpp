@@ -59,18 +59,24 @@ bool Creature::checkCollisionWith(const Tangible* other) const {
 		return true;
 	}*/
 
-	const Hitbox* otherBG = other->getHitbox();
-	if (radarBox.collision2d(otherBG)) { // first check to see if hitbox overlap on x-y plane
-		if (radarBox.collisionZ(otherBG)) // then check if collide on z-axis as well
+	if (radarBox.collision2d(other->getHitbox())) { // first check to see if hitbox overlap on x-y plane
+		if (radarBox.collisionZ(other->getHitbox())) // then check if collide on z-axis as well
 			return true;
 		for (const auto& otherSubHB : other->subHitboxes)
 			if (otherSubHB->collision(&radarBox))
 				return true;
-			//for (const auto& subHB : subHitboxes) // then check inner hitboxes for collisions
-			//	if (subHB->collision(otherBG))
-			//		for (const auto& otherSubs : other->subHitboxes)
-			//			if (subHB->collision(otherSubs.get()))
-			//				return true;
+	}
+	return false;
+}
+
+bool Creature::checkCollision2DWith(const Tangible* other) const {
+
+	if (radarBox.collision2d(other->getHitbox())) { // first check to see if hitbox overlap on x-y plane
+		if (radarBox.collisionZ(other->getHitbox())) // then check if collide on z-axis as well
+			return true;
+		for (const auto& otherSubHB : other->subHitboxes)
+			if (otherSubHB->collision2d(&radarBox))
+				return true;
 	}
 	return false;
 }
