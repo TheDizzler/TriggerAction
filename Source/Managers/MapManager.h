@@ -108,7 +108,7 @@ public:
 	static double depthPerPixel;
 
 	/* If use depthPerPixel we could skip a division. Use bottom left ypos of sprite. */
-	static float getLayerDepth(int ypos) {
+	static float getLayerDepth(float ypos) {
 
 		//return (ypos / tileHeight) * depthPerTile + FURTHEST_DEPTH;
 		return ypos * depthPerPixel + FURTHEST_DEPTH;

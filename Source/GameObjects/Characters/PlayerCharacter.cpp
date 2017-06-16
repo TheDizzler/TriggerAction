@@ -203,7 +203,6 @@ void PlayerCharacter::update(double deltaTime) {
 	if (falling) {
 		fallVelocity += GRAVITY * deltaTime;
 		moveBy(moveVelocity*deltaTime + fallVelocity);
-		//moveBy(fallVelocity);
 
 		if (position.z <= 0) {
 			Vector3 newpos = position;
@@ -218,12 +217,9 @@ void PlayerCharacter::update(double deltaTime) {
 			for (Tangible* tangible : tangiblesAll) {
 				if (tangible == this)
 					continue;
-				if (radarBox.collision2d(tangible->getHitbox())) { // first check to see if hitbox overlap on x-y plane
-					/*if (tangible->activateTrigger(this)) {
-						fallVelocity.z = 0;
-						falling = false;
-						break;
-					} else*/ if (radarBox.collisionZ(tangible->getHitbox())) {
+				if (radarBox.collision2d(tangible->getHitbox())) {
+				// first check to see if hitbox overlap on x-y plane
+					if (radarBox.collisionZ(tangible->getHitbox())) {
 						// then check if collide on z-axis as well
 						const Hitbox* hb = tangible->getHitbox();
 						float dif = radarBox.position.z - (hb->position.z + hb->size.z);
@@ -263,9 +259,72 @@ void PlayerCharacter::update(double deltaTime) {
 				}
 			}
 		}
-	} else
-		moveBy(moveVelocity*deltaTime);
+	} else {
+		if (!(moveVelocity.x == 0 && moveVelocity.y == 0)) {
 
+			Vector3 testVector = moveVelocity * deltaTime;
+			radarBox.position = hitbox.position + testVector * 2;
+
+			// check for collisions
+			bool collision = false;
+			vector<Tangible*> collided;
+			for (Tangible* tangible : tangiblesAll) {
+				if (tangible == this)
+					continue;
+				if (checkCollisionWith(tangible)) {
+					if (moveVelocity.x == 0) {
+						moveVelocity.y = 0;
+						break;
+					} else if (moveVelocity.y == 0) {
+						moveVelocity.x = 0;
+						break;
+					}
+					collision = true;
+					collided.push_back(tangible);
+				}
+			}
+
+			if (collision) {
+				collision = false;
+				Vector3 backupVector = testVector;
+				testVector.x = 0;
+				radarBox.position = hitbox.position + testVector * 2;
+
+				for (const auto& tangible : collided) {
+					if (checkCollisionWith(tangible)) {
+						collision = true;
+						break;
+					}
+				}
+
+
+				if (!collision) {
+					moveVelocity.x = 0;
+				} else {
+					moveVelocity.y = 0;
+
+					testVector.x = backupVector.x;
+					testVector.y = 0;
+					radarBox.position = hitbox.position + testVector * 2;
+
+					for (const auto& tangible : collided) {
+						if (checkCollisionWith(tangible)) {
+							moveVelocity.x = 0;
+							break;
+						}
+					}
+						
+				}
+			}
+			
+			moveBy(moveVelocity*deltaTime);
+			// check if falling
+			if (position.z > 0) {
+				//falling = true;
+
+			}
+		}
+	}
 
 	if (joystick->startButtonPushed()) {
 
@@ -720,80 +779,12 @@ void PlayerCharacter::movement(double deltaTime) {
 	int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;
 	Vector3 moveVector = getMovement(deltaTime, horzDirection, vertDirection);
-	if (moveVector != Vector3::Zero) {
-
-		Vector3 testVector = moveVector * deltaTime;
-
-		radarBox.position = hitbox.position + testVector * 2;
-		bool collision = false;
-		// check for collisions
-		for (Tangible* tangible : tangiblesAll) {
-			if (tangible == this)
-				continue;
-			if ((collision = checkCollisionWith(tangible)) == true) {
-				//tangible->activateTrigger(this);
-				break;
-			}
-		}
-
-		if (!collision) {
-		   //moveBy(moveVector);
-			moveVelocity = moveVector;
-			// check if falling
-			if (position.z != 0) {
-				falling = true;
-			}
-		} else if (collision && (moveVector.x != 0 || moveVector.y != 0)) {
-			Vector3 backupVector = testVector;
-			collision = false;
-			//test if can move other directions
-			//Vector3 testVector = moveVector;
-			testVector.x = 0;
-			radarBox.position = hitbox.position + testVector * 2;
-			for (Tangible* tangible : tangiblesAll) {
-				if (tangible == this)
-					continue;
-				if ((collision = checkCollisionWith(tangible)) == true)
-					break;
-			}
-
-			if (!collision) {
-				//moveBy(testVector);
-				//moveVelocity = testVector;
-				moveVelocity = moveVector;
-				moveVelocity.x = 0;
-			} else {
-				collision = false;
-				testVector = backupVector;
-				testVector.y = 0;
-				radarBox.position = hitbox.position + testVector * 2;
-				for (Tangible* tangible : tangiblesAll) {
-					if (tangible == this)
-						continue;
-					if ((collision = checkCollisionWith(tangible)) == true)
-						break;
-				}
-				if (!collision) {
-					//moveBy(testVector);
-					//moveVelocity = testVector;
-					moveVelocity = moveVector;
-					moveVelocity.y = 0;
-				} else {
-					moveVelocity.x = 0;
-					moveVelocity.y = 0;
-				}
-
-			}
-		}
-
-		action = CreatureAction::MOVING_ACTION;
-
-	} else if (!waiting) { // redo this to match current command flow
+	if (moveVector == Vector3::Zero) {
 		moveVelocity.x = 0;
 		moveVelocity.y = 0;
-		waiting = true;
 		moving = false;
 		running = false;
+		action = CreatureAction::WAITING_ACTION;
 		switch (facing) {
 			case Facing::RIGHT:
 				loadAnimation(combatStanceRight);
@@ -807,9 +798,101 @@ void PlayerCharacter::movement(double deltaTime) {
 			case Facing::UP:
 				loadAnimation(combatStanceUp);
 				break;
+
 		}
-	} else
-		running = false;
+	} else {
+		action = CreatureAction::MOVING_ACTION;
+		moveVelocity = moveVector;
+	}
+   //if (moveVector != Vector3::Zero) {
+
+   //	Vector3 testVector = moveVector * deltaTime;
+
+   //	radarBox.position = hitbox.position + testVector * 2;
+   //	bool collision = false;
+   //	// check for collisions
+   //	for (Tangible* tangible : tangiblesAll) {
+   //		if (tangible == this)
+   //			continue;
+   //		if ((collision = checkCollisionWith(tangible)) == true) {
+   //			//tangible->activateTrigger(this);
+   //			break;
+   //		}
+   //	}
+
+   //	if (!collision) {
+   //		moveVelocity = moveVector;
+   //		// check if falling
+   //		if (position.z != 0) {
+   //			falling = true;
+   //		}
+   //	} else if (collision && (moveVector.x != 0 || moveVector.y != 0)) {
+   //		Vector3 backupVector = testVector;
+   //		collision = false;
+   //		//test if can move other directions
+   //		//Vector3 testVector = moveVector;
+   //		testVector.x = 0;
+   //		radarBox.position = hitbox.position + testVector * 2;
+   //		for (Tangible* tangible : tangiblesAll) {
+   //			if (tangible == this)
+   //				continue;
+   //			if ((collision = checkCollisionWith(tangible)) == true)
+   //				break;
+   //		}
+
+   //		if (!collision) {
+   //			//moveBy(testVector);
+   //			//moveVelocity = testVector;
+   //			moveVelocity = moveVector;
+   //			moveVelocity.x = 0;
+   //		} else {
+   //			collision = false;
+   //			testVector = backupVector;
+   //			testVector.y = 0;
+   //			radarBox.position = hitbox.position + testVector * 2;
+   //			for (Tangible* tangible : tangiblesAll) {
+   //				if (tangible == this)
+   //					continue;
+   //				if ((collision = checkCollisionWith(tangible)) == true)
+   //					break;
+   //			}
+   //			if (!collision) {
+   //				//moveBy(testVector);
+   //				//moveVelocity = testVector;
+   //				moveVelocity = moveVector;
+   //				moveVelocity.y = 0;
+   //			} else {
+   //				moveVelocity.x = 0;
+   //				moveVelocity.y = 0;
+   //			}
+
+   //		}
+   //	}
+
+   //	action = CreatureAction::MOVING_ACTION;
+
+   //} else if (!waiting) { // redo this to match current command flow
+   //	moveVelocity.x = 0;
+   //	moveVelocity.y = 0;
+   //	waiting = true;
+   //	moving = false;
+   //	running = false;
+   //	switch (facing) {
+   //		case Facing::RIGHT:
+   //			loadAnimation(combatStanceRight);
+   //			break;
+   //		case Facing::LEFT:
+   //			loadAnimation(combatStanceLeft);
+   //			break;
+   //		case Facing::DOWN:
+   //			loadAnimation(combatStanceDown);
+   //			break;
+   //		case Facing::UP:
+   //			loadAnimation(combatStanceUp);
+   //			break;
+   //	}
+   //} else
+   //	running = false;
 }
 
 
@@ -851,7 +934,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			moving = true;
 			facing = Facing::RIGHT;
 		}
-		waiting = false;
+		//waiting = false;
 		return moveVector;
 	}
 
@@ -882,7 +965,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			facing = Facing::LEFT;
 		}
 
-		waiting = false;
+		//waiting = false;
 		return moveVector;
 	}
 
@@ -899,7 +982,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			moving = true;
 			facing = Facing::UP;
 		}
-		waiting = false;
+		//waiting = false;
 		return moveVector;
 	}
 
@@ -915,7 +998,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 			moving = true;
 			facing = Facing::DOWN;
 		}
-		waiting = false;
+		//waiting = false;
 		return moveVector;
 	}
 

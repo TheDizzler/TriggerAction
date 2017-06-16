@@ -67,7 +67,7 @@ protected:
 	//bool jumpingRising = true;
 	bool running = false;
 	bool moving = false;
-	bool waiting = false;
+	//bool waiting = false;
 
 	const double NORMAL_SPEED = 1.0;
 	const double RUN_SPEED = 1.75;

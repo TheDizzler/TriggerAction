@@ -629,6 +629,7 @@ void Chrono::fourthAttack(double deltaTime) {
 
 		//moveBy(moveVector);
 		attackBox.position += moveVector;
+		// NOTE: attackbox pos could get out-of-sync with actual position
 
 		// hit detection
 		for (Tangible* object : tangiblesAll) {
