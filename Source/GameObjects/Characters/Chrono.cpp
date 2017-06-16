@@ -154,24 +154,21 @@ void Chrono::attackUpdate(double deltaTime) {
 				Vector3 moveVector = moveVelocity * deltaTime;
 				radarBox.position = hitbox.position + moveVector * 2;
 
-				bool collision = false;
+				//bool collision = false;
 				// check for collisions
 				for (Tangible* hb : tangiblesAll) {
 					if (hb == this)
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
-						collision = true;
 						hb->knockBack(moveVector);
 						hb->takeDamage(0, false);
-
+						moveVelocity.x = 0;
+						moveVelocity.y = 0;
+						falling = true;
 						break;
 					}
 				}
 
-				if (!collision) {
-					moveBy(moveVector);
-					falling = true;
-				}
 
 				if (currentFrameTime >= currentFrameDuration) {
 					yetAttacked = true;
@@ -245,15 +242,17 @@ void Chrono::attackUpdate(double deltaTime) {
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
 						collision = true; // it's POSSIBLE that more than one object could collide
-						moveVector.x = 0;
-						moveVector.y = 0;
+						/*moveVector.x = 0;
+						moveVector.y = 0;*/
+						moveVelocity.x = 0;
+						moveVelocity.y = 0;
 						hb->knockBack(moveVector);
 						hb->takeDamage(0, false);
 
 						break;
 					}
 				}
-				moveBy(moveVector);
+				//moveBy(moveVector);
 				break;
 			}
 
@@ -392,6 +391,9 @@ void Chrono::secondAttackStart() {
 
 void Chrono::secondAttack() {
 
+	moveVelocity.x = 0;
+	moveVelocity.y = 0;
+
 	awaitInputCycles = 0;
 	attackBox.size = attackBoxSizes[facing];
 	attackBox.position = position;
@@ -458,7 +460,7 @@ void Chrono::thirdAttackStart() {
 
 	currentFrameIndex = 0;
 	currentAttack = THIRD_ATTACK;
-	yetAttackedThird = false;
+	//yetAttackedThird = false;
 	moveTime = 0;
 	waitingTime = 0;
 	falling = true;
@@ -494,6 +496,9 @@ void Chrono::thirdAttackStart() {
 }
 
 void Chrono::thirdAttack() {
+
+	moveVelocity.x = 0;
+	moveVelocity.y = 0;
 
 	awaitInputCycles = 0;
 	attackBox.size = attackBoxSizes[facing];
@@ -600,7 +605,6 @@ void Chrono::fourthAttackStart() {
 
 	attackBox.position.y -= attackBox.size.y;
 	falling = true;
-	yetFourthAttack = false;
 
 #ifdef  DEBUG_HITBOXES
 	drawAttackBox = true;
@@ -623,7 +627,7 @@ void Chrono::fourthAttack(double deltaTime) {
 	Vector3 moveVector = moveVelocity * deltaTime;
 	if (abs(fallVelocity.z) < moveVector.z) { // raising
 
-		moveBy(moveVector);
+		//moveBy(moveVector);
 		attackBox.position += moveVector;
 
 		// hit detection
@@ -667,6 +671,9 @@ void Chrono::fourthAttack(double deltaTime) {
 
 void Chrono::startMainAttack() {
 
+	moveVelocity.x = 0;
+	moveVelocity.y = 0;
+
 	int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;
 
@@ -702,6 +709,7 @@ void Chrono::startMainAttack() {
 	currentComboAttack = 1;
 	yetAttacked = false;
 	yetAttackedThird = false;
+	yetFourthAttack = false;
 	moving = false;
 }
 

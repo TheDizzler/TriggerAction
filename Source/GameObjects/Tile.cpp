@@ -113,15 +113,15 @@ void TangibleTile::load(TileAsset* const tileAsset) {
 
 void TangibleTile::takeDamage(int damage, bool showDamage) {
 }
-
-bool TangibleTile::activateTrigger(Creature* creature) {
-	for (const auto& trigger : triggers) {
-		if (trigger->activateTrigger(creature))
-			return true;
-		return false;
-	}
-	return false;
-}
+//
+//bool TangibleTile::activateTrigger(Creature* creature) {
+//	for (const auto& trigger : triggers) {
+//		if (trigger->activateTrigger(creature))
+//			return true;
+//		return false;
+//	}
+//	return false;
+//}
 
 void TangibleTile::update(double deltaTime) {
 	//Tile::update(deltaTime);

@@ -49,8 +49,6 @@ public:
 
 	virtual bool checkCollisionWith(Tangible* tangible);
 
-	/** Do nothing. */
-	virtual bool activateTrigger(Creature* creature);
 
 	virtual const Hitbox* getHitbox() const;
 	void moveHitboxBy(const Vector3& moveVector);

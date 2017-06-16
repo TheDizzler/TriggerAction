@@ -65,6 +65,10 @@ void Marle::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4
 }
 
 void Marle::startMainAttack() {
+
+	moveVelocity.x = 0;
+	moveVelocity.y = 0;
+
 	int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;
 

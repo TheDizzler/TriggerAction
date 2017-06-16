@@ -84,6 +84,7 @@ public:
 	void loadMapDescription(xml_node mapRoot);
 	void loadBaddieType(USHORT tileId, unique_ptr<BaddieData> baddie);
 	void placeBaddie(xml_node objectNode);
+	void placeTrigger(xml_node objectNode);
 
 	int mapWidth, mapHeight;
 	/*static*/ int tileWidth, tileHeight;
@@ -98,6 +99,7 @@ public:
 	//map<string, unique_ptr<Map::Layer>> layerMap;
 	vector<unique_ptr<Map::Layer>> layers;
 	vector<unique_ptr<Baddie>> baddies;
+	vector<unique_ptr<Trigger>> triggers;
 	/* When an object appears on screen, register its hitbox (if it has one) here. */
 	vector<TangibleTile*> tangibles;
 

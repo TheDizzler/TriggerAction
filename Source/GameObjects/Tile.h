@@ -59,7 +59,7 @@ public:
 	/** Special on-hit effects of object. */
 	virtual void takeDamage(int damage, bool showDamage = true);
 
-	virtual bool activateTrigger(Creature* creature) override;
+	//virtual bool activateTrigger(Creature* creature) override;
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
@@ -85,7 +85,7 @@ public:
 	virtual ~Trigger();
 
 	virtual void moveBy(const Vector3& moveVector);
-	virtual bool activateTrigger(Creature* creature) override;
+	virtual bool activateTrigger(Creature* creature);
 
 	virtual void takeDamage(int damage, bool showDamage = true) override;
 };

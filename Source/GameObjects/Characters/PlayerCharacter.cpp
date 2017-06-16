@@ -48,6 +48,57 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 }
 
 
+void PlayerCharacter::initializeAssets() {
+	assetSet = characterData->assets;
+
+	standDown = assetSet->getAnimation("stand down");
+	standLeft = assetSet->getAnimation("stand left");
+	standUp = assetSet->getAnimation("stand up");
+	standRight = assetSet->getAnimation("stand right");
+
+	runDown = assetSet->getAnimation("run down");
+	runLeft = assetSet->getAnimation("run left");
+	runUp = assetSet->getAnimation("run up");
+	runRight = assetSet->getAnimation("run right");
+
+	walkDown = assetSet->getAnimation("walk down");
+	walkLeft = assetSet->getAnimation("walk left");
+	walkUp = assetSet->getAnimation("walk up");
+	walkRight = assetSet->getAnimation("walk right");
+
+	attackDown = assetSet->getAnimation("attack down");
+	attackLeft = assetSet->getAnimation("attack left");
+	attackUp = assetSet->getAnimation("attack up");
+	attackRight = assetSet->getAnimation("attack right");
+
+	jumpDown = assetSet->getAnimation("jump down");
+	jumpLeft = assetSet->getAnimation("jump left");
+	jumpUp = assetSet->getAnimation("jump up");
+	jumpRight = assetSet->getAnimation("jump right");
+
+	combatStanceDown = assetSet->getAnimation("combat stance down");
+	combatStanceLeft = assetSet->getAnimation("combat stance left");
+	combatStanceUp = assetSet->getAnimation("combat stance up");
+	combatStanceRight = assetSet->getAnimation("combat stance right");
+
+	hitDown = assetSet->getAnimation("hit down");
+	hitLeft = assetSet->getAnimation("hit left");
+	hitUp = assetSet->getAnimation("hit up");
+	hitRight = assetSet->getAnimation("hit right");
+
+	provoke = assetSet->getAnimation("provoke");
+	surprise = assetSet->getAnimation("surprise");
+	hit = assetSet->getAnimation("hit");
+
+	blockDown = assetSet->getAnimation("block down");
+	blockLeft = assetSet->getAnimation("block left");
+	blockUp = assetSet->getAnimation("block up");
+	blockRight = assetSet->getAnimation("block right");
+
+	shadow.load(assetSet->getAsset("shadow"));
+}
+
+
 void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
 	setPosition(Vector3(startingPosition.x, startingPosition.y, 20));
 	loadAnimation(combatStanceRight);
@@ -151,7 +202,8 @@ void PlayerCharacter::update(double deltaTime) {
 
 	if (falling) {
 		fallVelocity += GRAVITY * deltaTime;
-		moveBy(fallVelocity);
+		moveBy(moveVelocity*deltaTime + fallVelocity);
+		//moveBy(fallVelocity);
 
 		if (position.z <= 0) {
 			Vector3 newpos = position;
@@ -167,11 +219,11 @@ void PlayerCharacter::update(double deltaTime) {
 				if (tangible == this)
 					continue;
 				if (radarBox.collision2d(tangible->getHitbox())) { // first check to see if hitbox overlap on x-y plane
-					if (tangible->activateTrigger(this)) {
+					/*if (tangible->activateTrigger(this)) {
 						fallVelocity.z = 0;
 						falling = false;
 						break;
-					} else if (radarBox.collisionZ(tangible->getHitbox())) {
+					} else*/ if (radarBox.collisionZ(tangible->getHitbox())) {
 						// then check if collide on z-axis as well
 						const Hitbox* hb = tangible->getHitbox();
 						float dif = radarBox.position.z - (hb->position.z + hb->size.z);
@@ -211,7 +263,8 @@ void PlayerCharacter::update(double deltaTime) {
 				}
 			}
 		}
-	}
+	} else
+		moveBy(moveVelocity*deltaTime);
 
 
 	if (joystick->startButtonPushed()) {
@@ -301,57 +354,6 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	}
 
-}
-
-
-void PlayerCharacter::initializeAssets() {
-	assetSet = characterData->assets;
-
-	standDown = assetSet->getAnimation("stand down");
-	standLeft = assetSet->getAnimation("stand left");
-	standUp = assetSet->getAnimation("stand up");
-	standRight = assetSet->getAnimation("stand right");
-
-	runDown = assetSet->getAnimation("run down");
-	runLeft = assetSet->getAnimation("run left");
-	runUp = assetSet->getAnimation("run up");
-	runRight = assetSet->getAnimation("run right");
-
-	walkDown = assetSet->getAnimation("walk down");
-	walkLeft = assetSet->getAnimation("walk left");
-	walkUp = assetSet->getAnimation("walk up");
-	walkRight = assetSet->getAnimation("walk right");
-
-	attackDown = assetSet->getAnimation("attack down");
-	attackLeft = assetSet->getAnimation("attack left");
-	attackUp = assetSet->getAnimation("attack up");
-	attackRight = assetSet->getAnimation("attack right");
-
-	jumpDown = assetSet->getAnimation("jump down");
-	jumpLeft = assetSet->getAnimation("jump left");
-	jumpUp = assetSet->getAnimation("jump up");
-	jumpRight = assetSet->getAnimation("jump right");
-
-	combatStanceDown = assetSet->getAnimation("combat stance down");
-	combatStanceLeft = assetSet->getAnimation("combat stance left");
-	combatStanceUp = assetSet->getAnimation("combat stance up");
-	combatStanceRight = assetSet->getAnimation("combat stance right");
-
-	hitDown = assetSet->getAnimation("hit down");
-	hitLeft = assetSet->getAnimation("hit left");
-	hitUp = assetSet->getAnimation("hit up");
-	hitRight = assetSet->getAnimation("hit right");
-
-	provoke = assetSet->getAnimation("provoke");
-	surprise = assetSet->getAnimation("surprise");
-	hit = assetSet->getAnimation("hit");
-
-	blockDown = assetSet->getAnimation("block down");
-	blockLeft = assetSet->getAnimation("block left");
-	blockUp = assetSet->getAnimation("block up");
-	blockRight = assetSet->getAnimation("block right");
-
-	shadow.load(assetSet->getAsset("shadow"));
 }
 
 
@@ -566,7 +568,6 @@ void PlayerCharacter::startJump() {
 
 	float speedFactor;
 
-	running = joystick->bButtonStates[joystick->runButton];
 	if (running) {
 		speedFactor = RUN_SPEED;
 		direction.z = 355;
@@ -606,7 +607,7 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 		action = CreatureAction::WAITING_ACTION;
 		canCancelAction = true;
 		moving = false;
-
+		running = false;
 	} else {
 
 		int horzDirection = joystick->lAxisX;
@@ -635,23 +636,23 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 		Vector3 moveVector = moveVelocity * deltaTime;
 
 		radarBox.position = hitbox.position + moveVector * 2;
-		bool collision = false;
+		//bool collision = false;
 		// check for collisions
 		for (Tangible* hb : tangiblesAll) {
 			if (hb == this)
 				continue;
 			if (checkCollisionWith(hb)) {
-				collision = true; // it's POSSIBLE that more than one object could collide
+				/*collision = true;*/ // it's POSSIBLE that more than one object could collide
 				moveVelocity.x = 0;
 				moveVelocity.y = 0;
-				moveVector.x = 0;
-				moveVector.y = 0;
+				//moveVector.x = 0;
+				//moveVector.y = 0;
 				break;
 			}
 		}
 
 
-		moveBy(moveVector);
+		//moveBy(moveVector);
 
 
 		if (horzDirection > 10) {
@@ -673,10 +674,9 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 void PlayerCharacter::hitUpdate(double deltaTime) {
 
-	moveBy(moveVelocity * deltaTime);
+	//moveBy(moveVelocity * deltaTime);
 	if (!falling) {
 		moveVelocity = moveVelocity * GROUND_FRICTION;
-		//moveVelocity.z = 0;
 		if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
 			moveVelocity = Vector3::Zero;
 
@@ -722,7 +722,9 @@ void PlayerCharacter::movement(double deltaTime) {
 	Vector3 moveVector = getMovement(deltaTime, horzDirection, vertDirection);
 	if (moveVector != Vector3::Zero) {
 
-		radarBox.position = hitbox.position + moveVector * 2;
+		Vector3 testVector = moveVector * deltaTime;
+
+		radarBox.position = hitbox.position + testVector * 2;
 		bool collision = false;
 		// check for collisions
 		for (Tangible* tangible : tangiblesAll) {
@@ -734,10 +736,18 @@ void PlayerCharacter::movement(double deltaTime) {
 			}
 		}
 
-		if (collision && moveVector.x != 0 && moveVector.y != 0) {
+		if (!collision) {
+		   //moveBy(moveVector);
+			moveVelocity = moveVector;
+			// check if falling
+			if (position.z != 0) {
+				falling = true;
+			}
+		} else if (collision && (moveVector.x != 0 || moveVector.y != 0)) {
+			Vector3 backupVector = testVector;
 			collision = false;
 			//test if can move other directions
-			Vector3 testVector = moveVector;
+			//Vector3 testVector = moveVector;
 			testVector.x = 0;
 			radarBox.position = hitbox.position + testVector * 2;
 			for (Tangible* tangible : tangiblesAll) {
@@ -748,10 +758,13 @@ void PlayerCharacter::movement(double deltaTime) {
 			}
 
 			if (!collision) {
-				moveBy(testVector);
+				//moveBy(testVector);
+				//moveVelocity = testVector;
+				moveVelocity = moveVector;
+				moveVelocity.x = 0;
 			} else {
 				collision = false;
-				testVector = moveVector;
+				testVector = backupVector;
 				testVector.y = 0;
 				radarBox.position = hitbox.position + testVector * 2;
 				for (Tangible* tangible : tangiblesAll) {
@@ -760,15 +773,15 @@ void PlayerCharacter::movement(double deltaTime) {
 					if ((collision = checkCollisionWith(tangible)) == true)
 						break;
 				}
-				if (!collision)
-					moveBy(testVector);
-			}
-		} else if (!collision) {
-			moveBy(moveVector);
-
-			// check if falling
-			if (position.z != 0) {
-				falling = true;
+				if (!collision) {
+					//moveBy(testVector);
+					//moveVelocity = testVector;
+					moveVelocity = moveVector;
+					moveVelocity.y = 0;
+				} else {
+					moveVelocity.x = 0;
+					moveVelocity.y = 0;
+				}
 
 			}
 		}
@@ -776,8 +789,11 @@ void PlayerCharacter::movement(double deltaTime) {
 		action = CreatureAction::MOVING_ACTION;
 
 	} else if (!waiting) { // redo this to match current command flow
+		moveVelocity.x = 0;
+		moveVelocity.y = 0;
 		waiting = true;
 		moving = false;
+		running = false;
 		switch (facing) {
 			case Facing::RIGHT:
 				loadAnimation(combatStanceRight);
@@ -792,7 +808,8 @@ void PlayerCharacter::movement(double deltaTime) {
 				loadAnimation(combatStanceUp);
 				break;
 		}
-	}
+	} else
+		running = false;
 }
 
 
@@ -813,16 +830,16 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 		// moving right
 		if (vertDirection < -10) {
 			// moving right & up
-			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
-			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			float moveByX = moveDiagonalRight/**deltaTime*/*speedFactor;
+			float moveByY = moveDiagonalDown/**deltaTime*/*speedFactor;
 			moveVector = Vector3(moveByX, -moveByY, 0);
 		} else if (vertDirection > 10) {
 			// moving right & down
-			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
-			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			float moveByX = moveDiagonalRight/**deltaTime*/*speedFactor;
+			float moveByY = moveDiagonalDown/**deltaTime*/*speedFactor;
 			moveVector = Vector3(moveByX, moveByY, 0);
 		} else {
-			float moveByX = moveRightSpeed*deltaTime*speedFactor;
+			float moveByX = moveRightSpeed/**deltaTime*/*speedFactor;
 			moveVector = Vector3(moveByX, 0, 0);
 		}
 
@@ -843,16 +860,16 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 
 		if (vertDirection < -10) {
 			// moving left & up
-			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
-			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			float moveByX = moveDiagonalRight/**deltaTime*/*speedFactor;
+			float moveByY = moveDiagonalDown/**deltaTime*/*speedFactor;
 			moveVector = Vector3(-moveByX, -moveByY, 0);
 		} else if (vertDirection > 10) {
 			// moving left & down
-			float moveByX = moveDiagonalRight*deltaTime*speedFactor;
-			float moveByY = moveDiagonalDown*deltaTime*speedFactor;
+			float moveByX = moveDiagonalRight/**deltaTime*/*speedFactor;
+			float moveByY = moveDiagonalDown/**deltaTime*/*speedFactor;
 			moveVector = Vector3(-moveByX, moveByY, 0);
 		} else {
-			float moveByX = moveRightSpeed*deltaTime*speedFactor;
+			float moveByX = moveRightSpeed/**deltaTime*/*speedFactor;
 			moveVector = Vector3(-moveByX, 0, 0);
 		}
 
@@ -872,7 +889,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 
 	if (vertDirection < -10) {
 		// moving up
-		float moveByY = moveDownSpeed*deltaTime*speedFactor;
+		float moveByY = moveDownSpeed/**deltaTime*/*speedFactor;
 		moveVector = Vector3(0, -moveByY, 0);
 		if (!moving || facing != Facing::UP) {
 			if (runningNow)
@@ -888,7 +905,7 @@ Vector3 PlayerCharacter::getMovement(double deltaTime, int horzDirection, int ve
 
 	if (vertDirection > 10) {
 		// moving down
-		float moveByY = moveDownSpeed*deltaTime*speedFactor;
+		float moveByY = moveDownSpeed/**deltaTime*/*speedFactor;
 		moveVector = Vector3(0, moveByY, 0);
 		if (!moving || facing != Facing::DOWN) {
 			if (runningNow)

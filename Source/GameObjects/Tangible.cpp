@@ -128,11 +128,6 @@ bool Tangible::checkCollisionWith(Tangible* other) {
 	return false;
 }
 
-bool Tangible::activateTrigger(Creature* creature) {
-	// do nothing
-	return false;
-}
-
 
 const Hitbox* Tangible::getHitbox() const {
 	return &hitbox;

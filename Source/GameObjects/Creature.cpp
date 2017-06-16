@@ -58,9 +58,9 @@ bool Creature::checkCollisionWith(Tangible* other) {
 	if (radarBox.collision2d(other->getHitbox())) { // first check to see if hitbox overlap on x-y plane
 		if (radarBox.collisionZ(other->getHitbox())) // then check if collide on z-axis as well
 			return true;
-		if (other->activateTrigger(this)) {
+		/*if (other->activateTrigger(this)) {
 			return false;
-		}
+		}*/
 		for (const auto& otherSubHB : other->subHitboxes) {
 			if (otherSubHB->collision(&radarBox))
 				return true;

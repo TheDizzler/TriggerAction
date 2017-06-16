@@ -4,6 +4,7 @@
 vector<Tangible*> tangiblesAll;
 vector<unique_ptr<PlayerCharacter>> pcs;
 vector<Baddie*> baddies;
+vector<Trigger*> triggers;
 
 JammerManager LevelScreen::jammerMan;
 
@@ -48,6 +49,10 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 	for (auto& baddie : map->baddies) {
 		tangiblesAll.push_back(baddie.get());
 		baddies.push_back(baddie.get());
+	}
+
+	for (auto& trigger : map->triggers) {
+		triggers.push_back(trigger.get());
 	}
 
 	for (const auto& slot : activeSlots) {

@@ -78,15 +78,48 @@ void Map::loadBaddieType(USHORT gid, unique_ptr<BaddieData> baddieData) {
 
 void Map::placeBaddie(xml_node objectNode) {
 	USHORT gid = objectNode.attribute("gid").as_int();
-	Vector3 pos(objectNode.attribute("x").as_int(), objectNode.attribute("y").as_int(), 0);
+
+	int zHeight = 0;
+	for (xml_node propertyNode : objectNode.child("properties")) {
+		string name = propertyNode.child("property").attribute("name").as_string();
+		if (name.compare("z") == 0)
+			zHeight = propertyNode.child("property").attribute("value").as_int();
+	}
+
+	Vector3 pos(objectNode.attribute("x").as_int(), objectNode.attribute("y").as_int(), zHeight);
 
 	if (baddieDataMap[gid]->type == "Blue Imp") {
 		unique_ptr<Baddie> baddie = make_unique<BlueImp>(baddieDataMap[gid].get());
+		pos.x += baddie->getWidth() / 2;
 		baddie->setPosition(pos);
 
 		baddies.push_back(move(baddie));
 	}
 }
+
+
+void Map::placeTrigger(xml_node objectNode) {
+
+	string type = objectNode.attribute("name").as_string();
+	if (type.compare("step") == 0) {
+		int minZ = 0, maxZ = 20;
+		for (xml_node propertyNode : objectNode.child("properties")) {
+			string propertyName = propertyNode.attribute("name").as_string();
+			if (propertyName.compare("maxZ") == 0)
+				maxZ = propertyNode.attribute("value").as_int();
+			else if (propertyName.compare("minZ") == 0)
+				minZ = propertyNode.attribute("value").as_int();
+		}
+		int data[6] = {
+			objectNode.attribute("x").as_int(), objectNode.attribute("y").as_int(), minZ,
+			objectNode.attribute("width").as_int(), objectNode.attribute("height").as_int(), maxZ
+		};
+
+		unique_ptr<Trigger> trigger = make_unique<Trigger>(data);
+		triggers.push_back(move(trigger));
+	}
+}
+
 
 vector<TileBase*> Map::getTilesAt(Vector3 position) {
 
@@ -505,14 +538,21 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 			}
 		}
 
-		//map->layerMap[layerName] = move(layer);
 		map->layers.push_back(move(layer));
 	}
 
 
 	for (xml_node objectGroupNode : mapRoot.children("objectgroup")) {
-		for (xml_node objectNode : objectGroupNode.children("object")) {
-			map->placeBaddie(objectNode);
+
+		string name = objectGroupNode.attribute("name").as_string();
+		if (name.compare("enemies") == 0) {
+			for (xml_node objectNode : objectGroupNode.children("object")) {
+				map->placeBaddie(objectNode);
+			}
+		} else if (name.compare("triggers")) {
+			for (xml_node objectNode : objectGroupNode.children("object")) {
+				map->placeTrigger(objectNode);
+			}
 		}
 	}
 	return true;
