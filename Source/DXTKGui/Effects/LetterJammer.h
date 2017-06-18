@@ -78,6 +78,8 @@ private:
 	vector<double> times;
 };
 
+/** Simulates an RPG damage effect. 
+	int fallDistance, int fallSpeed, float fadeOutTime */
 class RPGDamageJammer : public JammerEffect {
 public:
 	RPGDamageJammer(int fallDistance, int fallSpeed, float fadeOutTime);

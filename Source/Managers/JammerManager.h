@@ -11,7 +11,7 @@ public:
 	void draw(SpriteBatch* batch);
 
 	void createJam(Vector3 position, wstring message, Color color = Color(1, 1, 1, 1));
-	void createJam(Vector3 position, int message, Color color = Color(1, 1, 1, 1));
+	void createJam(Vector3 position, int number, Color color = Color(1, 1, 1, 1));
 
 	void reset();
 private:

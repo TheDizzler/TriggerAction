@@ -71,7 +71,7 @@ public:
 
 	virtual const Hitbox* getHitbox() const override;
 
-	vector<unique_ptr<Trigger>> triggers;
+	//vector<unique_ptr<Trigger>> subTriggers;
 	/** In situation where a 3D tile is flat, calculate the depthLayer from top left. */
 	bool isFlat = false;
 };
@@ -84,8 +84,40 @@ public:
 	Trigger(const Trigger* copytrigger);
 	virtual ~Trigger();
 
+	void debugDraw(SpriteBatch* batch);
 	virtual void moveBy(const Vector3& moveVector);
-	virtual bool activateTrigger(Creature* creature);
+	virtual bool activateTrigger(Creature* creature) = 0;
 
 	virtual void takeDamage(int damage, bool showDamage = true) override;
 };
+
+class VerticalStepTrigger : public Trigger {
+public:
+	VerticalStepTrigger(int rowdata[6]);
+	VerticalStepTrigger(const VerticalStepTrigger* copyTrigger);
+	virtual ~VerticalStepTrigger();
+
+
+	virtual bool activateTrigger(Creature* creature) override;
+};
+
+
+class HorizontalStepTrigger : public Trigger {
+public:
+	HorizontalStepTrigger(int rowdata[6]);
+	HorizontalStepTrigger(const HorizontalStepTrigger* copyTrigger);
+	virtual ~HorizontalStepTrigger();
+
+
+	virtual bool activateTrigger(Creature* creature) override;
+};
+
+//class TriggerTile : public Trigger, public TangibleTile {
+//public:
+//	TriggerTile(int rowdata[6]);
+//	TriggerTile(const TriggerTile* copyTile);
+//	virtual ~TriggerTile();
+//
+//
+//
+//};

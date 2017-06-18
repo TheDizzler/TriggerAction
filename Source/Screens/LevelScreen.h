@@ -6,11 +6,12 @@
 #include "../Managers/MapManager.h"
 #include "../Managers/JammerManager.h"
 
-//#define DEBUG_HITBOXES
+#define DEBUG_HITBOXES
 
 extern vector<Tangible*> tangiblesAll;
 extern vector<unique_ptr<PlayerCharacter>> pcs;
 extern vector<Baddie*> baddies;
+extern vector<Trigger*> triggersAll;
 
 class LevelScreen : public Screen {
 public:

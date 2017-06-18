@@ -46,6 +46,9 @@ public:
 	USHORT TP = 0;
 
 	bool isAlive = true;
+
+	bool isDescending();
+	void stopFall();
 protected:
 
 	shared_ptr<Map> map;
@@ -63,6 +66,8 @@ protected:
 	Vector3 fallVelocity = Vector3::Zero;
 	/** Velocity for automated movement. */
 	Vector3 moveVelocity;
+
+	bool descending = false;
 
 	virtual void moveUpdate(double deltaTime);
 	virtual void attackUpdate(double deltaTime) = 0;

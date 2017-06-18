@@ -101,9 +101,11 @@ void TangibleTile::load(TileAsset* const tileAsset) {
 
 	weight = 1000000;
 	isFlat = tileAsset->isFlat;
-	for (const auto& trigger : tileAsset->triggers) {
-		triggers.push_back(make_unique<Trigger>(trigger.get()));
-	}
+
+
+	/*for (const auto& trigger : tileAsset->triggers) {
+		subTriggers.push_back(make_unique<Trigger>(trigger.get()));
+	}*/
 	if (tileAsset->hitboxes.size() > 0) {
 		for (int i = 1; i < tileAsset->hitboxes.size(); ++i)
 			subHitboxes.push_back(make_unique<Hitbox>(tileAsset->hitboxes[i].get()));
@@ -113,23 +115,15 @@ void TangibleTile::load(TileAsset* const tileAsset) {
 
 void TangibleTile::takeDamage(int damage, bool showDamage) {
 }
-//
-//bool TangibleTile::activateTrigger(Creature* creature) {
-//	for (const auto& trigger : triggers) {
-//		if (trigger->activateTrigger(creature))
-//			return true;
-//		return false;
-//	}
-//	return false;
-//}
+
 
 void TangibleTile::update(double deltaTime) {
 	//Tile::update(deltaTime);
 
 #ifdef  DEBUG_HITBOXES
 	debugUpdate();
-	for (const auto& trigger : triggers)
-		trigger->debugUpdate();
+	//for (const auto& trigger : subTriggers)
+	//	trigger->debugUpdate();
 #endif //  DEBUG_HITBOXES
 }
 
@@ -140,8 +134,8 @@ void TangibleTile::draw(SpriteBatch* batch) {
 
 #ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
-	for (const auto& trigger : triggers)
-		trigger->debugDraw(batch);
+	//for (const auto& trigger : subTriggers)
+	//	trigger->debugDraw(batch);
 #endif //  DEBUG_HITBOXES
 }
 
@@ -153,8 +147,8 @@ void TangibleTile::moveBy(const Vector3& moveVector) {
 	drawPosition.y += moveVector.y - moveVector.z;
 
 	moveHitboxBy(moveVector);
-	for (auto& trigger : triggers)
-		trigger->moveBy(moveVector);
+	/*for (auto& trigger : subTriggers)
+		trigger->moveBy(moveVector);*/
 
 	setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
 }
@@ -169,8 +163,8 @@ void TangibleTile::setPosition(const Vector3& newpos) {
 
 	setHitboxPosition(newpos);
 	Vector3 moveVector = position - oldpos;
-	for (auto& trigger : triggers)
-		trigger->moveBy(moveVector);
+	/*for (auto& trigger : subTriggers)
+		trigger->moveBy(moveVector);*/
 
 	if (isFlat)
 		setLayerDepth(Map::getLayerDepth(position.y - getHeight() + maskPosition.y));
@@ -203,34 +197,99 @@ Trigger::Trigger(const Trigger* copytrigger) {
 Trigger::~Trigger() {
 }
 
+void Trigger::debugDraw(SpriteBatch* batch) {
+	Tangible::debugDraw(batch);
+}
+
 void Trigger::moveBy(const Vector3& moveVector) {
 	moveHitboxBy(moveVector);
 }
 
-bool Trigger::activateTrigger(Creature* creature) {
+void Trigger::takeDamage(int damage, bool showDamage) {
+}
 
-	if (hitbox.collision(creature->getHitbox())) {
+
+
+VerticalStepTrigger::VerticalStepTrigger(int rowdata[6]) : Trigger(rowdata) {
+}
+
+VerticalStepTrigger::VerticalStepTrigger(const VerticalStepTrigger* copyTrigger)
+	: Trigger(copyTrigger) {
+}
+
+VerticalStepTrigger::~VerticalStepTrigger() {
+}
+
+bool VerticalStepTrigger::activateTrigger(Creature* creature) {
+
+	if (hitbox.collision2d(creature->getHitbox())) {
+
+
 		// min height = hitbox.position.z
 		// max height = hitbox.size.z
 		Vector3 newpos = creature->getPosition();
-		float relativeY = (hitbox.position.y + hitbox.size.y)
+		float relativeY = (hitbox.position.y + hitbox.size.y + 1)
 			- (newpos.y - creature->getHitbox()->size.y);
-		if (relativeY <= 0)
-			newpos.z = hitbox.size.z;
-		else {
-		//newpos.z = hitbox.position.z + hitbox.size.z;
-			float percent = relativeY / hitbox.size.y;
-			float newZ = (hitbox.size.z - hitbox.position.z) * percent + hitbox.position.z;
+		float percent = relativeY / hitbox.size.y;
+		float newZ = (hitbox.size.z - hitbox.position.z) * percent + hitbox.position.z;
+
+		float dif = newpos.z - (hitbox.position.z + newZ);
+
+		if (dif < LANDING_TOLERANCE * 2
+			&& dif > -LANDING_TOLERANCE * 2
+			&& creature->isDescending()) {
 
 			newpos.z = newZ;
-			
+			creature->setPosition(newpos);
+			creature->stopFall();
+			return true;
 		}
-		creature->setPosition(newpos);
-		return true;
+
+
+
+
 	}
 	return false;
 }
 
+HorizontalStepTrigger::HorizontalStepTrigger(int rowdata[6]) : Trigger(rowdata) {
+}
 
-void Trigger::takeDamage(int damage, bool showDamage) {
+HorizontalStepTrigger::HorizontalStepTrigger(const HorizontalStepTrigger* copyTrigger)
+	: Trigger(copyTrigger) {
+}
+
+HorizontalStepTrigger::~HorizontalStepTrigger() {
+}
+
+bool HorizontalStepTrigger::activateTrigger(Creature* creature) {
+	if (hitbox.collision2d(creature->getHitbox())) {
+
+
+		// min height = hitbox.position.z
+		// max height = hitbox.size.z
+		Vector3 newpos = creature->getPosition();
+		float relativeX = (newpos.x) - (hitbox.position.x);
+		if (relativeX < 0)
+			return false;
+		float percent = relativeX / hitbox.size.x;
+		float newZ = (hitbox.size.z) * percent + hitbox.position.z;
+
+		float dif = newpos.z - (newZ);
+
+		if (dif < LANDING_TOLERANCE * 2
+			&& dif > -LANDING_TOLERANCE * 2
+			&& creature->isDescending()) {
+
+			newpos.z = newZ;
+			creature->setPosition(newpos);
+			creature->stopFall();
+			return true;
+		}
+
+
+
+
+	}
+	return false;
 }

@@ -18,11 +18,14 @@ public:
 	vector<unique_ptr<Hitbox>> hitboxes;
 	vector<unique_ptr<Trigger>> triggers;
 
+	void stepUp(string stepUpValue);
 	/* Sets where the layer depth should be calculated from. */
 	Vector2 mask;
 	bool isFlat = false;
 	/** Z height above ground. For floating objects. */
 	int zPosition = 0;
+	/** If this tile acts like a step. */
+	string stepUpValue = "";
 };
 
 class AnimationAsset : public Animation {
@@ -66,6 +69,7 @@ public:
 		string name;
 
 		//vector<unique_ptr<TileBase> > tiles;
+		// not taking advantage of this so might want to revert to single in-line vector
 		vector<vector<unique_ptr<TileBase>>> tiles;
 
 		void update(double deltaTime);
@@ -85,9 +89,10 @@ public:
 	void loadBaddieType(USHORT tileId, unique_ptr<BaddieData> baddie);
 	void placeBaddie(xml_node objectNode);
 	void placeTrigger(xml_node objectNode);
+	void placeTileTrigger(TileAsset* tileAsset, Vector3 position);
 
 	int mapWidth, mapHeight;
-	/*static*/ int tileWidth, tileHeight;
+	int tileWidth, tileHeight;
 	int trueMapWidth, trueMapHeight;
 
 

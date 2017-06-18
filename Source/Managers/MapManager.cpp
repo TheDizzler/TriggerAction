@@ -21,9 +21,6 @@ Map::~Map() {
 
 void Map::update(double deltaTime) {
 
-	/*for (const auto& layer : layerMap) {
-		layer.second->update(deltaTime);
-	}*/
 
 	for (const auto& layer : layers)
 		layer->update(deltaTime);
@@ -40,20 +37,27 @@ void Map::update(double deltaTime) {
 		}
 		++i;
 	}
+
+#ifdef  DEBUG_HITBOXES
+	for (const auto& trigger : triggers)
+		trigger->debugUpdate();
+#endif //  DEBUG_HITBOXES
 }
 
 
 void Map::draw(SpriteBatch* batch) {
 
-	//for (const auto& layer : layerMap) { // using maps are not efficient
-	//	layer.second->draw(batch);
-	//}
 	for (const auto& layer : layers)
 		layer->draw(batch);
 
 
 	for (const auto& baddie : baddies)
 		baddie->draw(batch);
+
+#ifdef  DEBUG_HITBOXES
+	for (const auto& trigger : triggers)
+		trigger->debugDraw(batch);
+#endif //  DEBUG_HITBOXES
 }
 
 void Map::loadMapDescription(xml_node mapRoot) {
@@ -111,13 +115,58 @@ void Map::placeTrigger(xml_node objectNode) {
 				minZ = propertyNode.attribute("value").as_int();
 		}
 		int data[6] = {
-			objectNode.attribute("x").as_int(), objectNode.attribute("y").as_int(), minZ,
+			objectNode.attribute("x").as_int(), -objectNode.attribute("y").as_int(), minZ,
 			objectNode.attribute("width").as_int(), objectNode.attribute("height").as_int(), maxZ
 		};
 
-		unique_ptr<Trigger> trigger = make_unique<Trigger>(data);
+		unique_ptr<VerticalStepTrigger> trigger = make_unique<VerticalStepTrigger>(data);
 		triggers.push_back(move(trigger));
 	}
+}
+
+
+void Map::placeTileTrigger(TileAsset* tileAsset, Vector3 position) {
+
+	size_t zperLoc = tileAsset->stepUpValue.find("zperx=");
+	if (zperLoc == -1) {
+		zperLoc = tileAsset->stepUpValue.find("zpery=");
+		string zperyStr = tileAsset->stepUpValue.substr(zperLoc + 6);
+		float zpery;
+		istringstream(zperyStr) >> zpery;
+
+		int minZ = position.z;
+		float maxZ = tileAsset->hitboxes[0]->size.z * zpery;
+		int width = tileAsset->hitboxes[0]->size.x;
+		int height = tileAsset->hitboxes[0]->size.y;
+		int x = position.x;
+		int y = tileAsset->hitboxes[0]->position.y - position.y + height;
+
+		int data[6] = {
+			x, y, minZ,
+			width, height, maxZ
+		};
+
+		unique_ptr<VerticalStepTrigger> trigger = make_unique<VerticalStepTrigger>(data);
+		triggers.push_back(move(trigger));
+	}
+	string zperxStr = tileAsset->stepUpValue.substr(zperLoc + 6);
+	float zperx;
+	istringstream(zperxStr) >> zperx;
+
+	int minZ = position.z;
+	float maxZ = tileAsset->hitboxes[0]->size.z * zperx;
+	int width = tileAsset->hitboxes[0]->size.x;
+	int height = tileAsset->hitboxes[0]->size.y;
+	int x = position.x;
+	int y = tileAsset->hitboxes[0]->position.y -position.y + height;
+
+	int data[6] = {
+		x, y, minZ,
+		width, height, maxZ
+	};
+
+	unique_ptr<HorizontalStepTrigger> trigger = make_unique<HorizontalStepTrigger>(data);
+	triggers.push_back(move(trigger));
 }
 
 
@@ -141,12 +190,20 @@ vector<TileBase*> Map::getTilesAt(Vector3 position) {
 TileAsset::~TileAsset() {
 }
 
+void TileAsset::stepUp(string stepVal) {
+	stepUpValue = stepVal;
+}
+
+
+
 AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
 	vector<shared_ptr<Frame>> frames) :Animation(tex, frames) {
 }
 
 AnimationAsset::~AnimationAsset() {
 }
+
+
 
 Map::Layer::~Layer() {
 }
@@ -169,6 +226,8 @@ void Map::Layer::draw(SpriteBatch* batch) {
 }
 
 
+
+
 MapParser::MapParser(ComPtr<ID3D11Device> dev) {
 
 	device = dev;
@@ -176,7 +235,6 @@ MapParser::MapParser(ComPtr<ID3D11Device> dev) {
 
 MapParser::~MapParser() {
 }
-
 
 bool MapParser::parseMap(xml_node mapRoot, string mapsDir) {
 
@@ -338,47 +396,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							tile->mask = mask;
 
 						}
-					} else if (propertyname.compare("step") == 0) {
-						string str;
-						if (propertyNode.attribute("value"))
-							str = propertyNode.attribute("value").as_string();
-						else
-							str = propertyNode.text().as_string();
-
-						istringstream datastream(str);
-						string line;
-						vector<vector<int>> data;
-						while (getline(datastream, line)) {
-							line.erase(remove_if(
-								line.begin(), line.end(), isspace), line.end());
-							if (line.length() <= 0)
-								continue;
-
-							int rowdata[6];
-
-							size_t xloc = line.find("x=") + 2;
-							size_t yloc = line.find("y=") + 2;
-							size_t zloc = line.find("z=") + 2;
-							size_t widthloc = line.find("width=") + 6;
-							size_t heightloc = line.find("height=") + 7;
-							size_t zheightloc = line.find("zHeight=") + 8;
-
-							string substr = line.substr(xloc);
-							istringstream(substr) >> rowdata[0];
-							substr = line.substr(yloc);
-							istringstream(substr) >> rowdata[1];
-							substr = line.substr(zloc);
-							istringstream(substr) >> rowdata[2];
-							substr = line.substr(widthloc);
-							istringstream(substr) >> rowdata[3];
-							substr = line.substr(heightloc);
-							istringstream(substr) >> rowdata[4];
-							substr = line.substr(zheightloc);
-							istringstream(substr) >> rowdata[5];
-
-							tile->triggers.push_back(make_unique<Trigger>(rowdata));
-
-						}
+					} else if (propertyname.compare("stepUp") == 0) {
+						tile->stepUp(propertyNode.attribute("value").as_string());
 					} else if (propertyname.compare("flat") == 0) {
 						tile->isFlat = propertyNode.attribute("value").as_bool();
 					} else if (propertyname.compare("zPos") == 0) {
@@ -457,6 +476,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>(layerName);
 
 
+
 		string str = dataNode.text().as_string();
 
 		istringstream datastream(str);
@@ -483,6 +503,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 				Vector3 position = Vector3(
 					col * map->tileWidth, row * map->tileHeight + map->tileHeight, 0);
 
+				int zPlus = 0;
+
 				float layerDepth = 0;
 				if (layerName.compare("ground") == 0)
 					layerDepth = 0.06;
@@ -490,7 +512,12 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 					layerDepth = 0;
 				else if (layerName.compare("foreground") == 0)
 					layerDepth = .91;
-				else
+				else if (layerName.compare("zLayer") == 0) {
+					zPlus = layerNode.child("properties").child("property").attribute("value").as_int();
+					position.y += zPlus;
+					position.z = zPlus;
+					layerDepth = map->getLayerDepth(position.y);
+				} else
 					layerDepth = map->getLayerDepth(position.y);
 
 
@@ -516,13 +543,23 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						layer->tiles[row][col] = move(tile);
 
 					} else {
+						if (tileAsset->stepUpValue.size() > 0) {
+							map->placeTileTrigger(tileAsset, position);
 
-						unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
-						tile->load(tileAsset);
-						tile->setOrigin(Vector2(0, tile->getHeight()));
-						tile->setPosition(position);
-						map->tangibles.push_back(tile.get());
-						layer->tiles[row][col] = move(tile);
+							unique_ptr<Tile> tile = make_unique<Tile>();
+							tile->load(tileAsset);
+							tile->setOrigin(Vector2(0, tile->getHeight()));
+							tile->setLayerDepth(layerDepth);
+							tile->setPosition(position);
+							layer->tiles[row][col] = move(tile);
+						} else {
+							unique_ptr<TangibleTile> tile = make_unique<TangibleTile>();
+							tile->load(tileAsset);
+							tile->setOrigin(Vector2(0, tile->getHeight()));
+							tile->setPosition(position);
+							map->tangibles.push_back(tile.get());
+							layer->tiles[row][col] = move(tile);
+						}
 					}
 				} else {
 
@@ -531,7 +568,6 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 					anim->setLayerDepth(layerDepth, layerDepthNudge);
 					anim->setOrigin(Vector2(0, anim->getHeight()));
 					anim->setPosition(position);
-					//layer->tiles.push_back(move(anim));
 					layer->tiles[row][col] = move(anim);
 				}
 
@@ -549,7 +585,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 			for (xml_node objectNode : objectGroupNode.children("object")) {
 				map->placeBaddie(objectNode);
 			}
-		} else if (name.compare("triggers")) {
+		} else if (name.compare("triggers") == 0) {
 			for (xml_node objectNode : objectGroupNode.children("object")) {
 				map->placeTrigger(objectNode);
 			}

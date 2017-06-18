@@ -58,9 +58,6 @@ bool Creature::checkCollisionWith(Tangible* other) {
 	if (radarBox.collision2d(other->getHitbox())) { // first check to see if hitbox overlap on x-y plane
 		if (radarBox.collisionZ(other->getHitbox())) // then check if collide on z-axis as well
 			return true;
-		/*if (other->activateTrigger(this)) {
-			return false;
-		}*/
 		for (const auto& otherSubHB : other->subHitboxes) {
 			if (otherSubHB->collision(&radarBox))
 				return true;
@@ -127,10 +124,22 @@ void Creature::setPosition(const Vector3& newpos) {
 		scalefactor = 1; // just in case...
 	else {
 		//scalefactor = 1 / (sqrt(position.z) + 1);
-		scalefactor = (100 - position.z) / 100; // z > 100 will create problems...
+		scalefactor = (256 - position.z) / 256; // z > 256 will create problems...
 	}
 	shadow.setScale(Vector2(scalefactor, scalefactor));
 	shadow.setPosition(Vector2(position.x, position.y));
+}
+
+bool Creature::isDescending() {
+	return descending;
+}
+
+void Creature::stopFall() {
+	//if (action != CreatureAction::JUMP_ACTION) {
+		falling = false;
+		fallVelocity.z = 0;
+		moveVelocity.z = 0;
+	//}
 }
 
 void Creature::moveUpdate(double deltaTime) {

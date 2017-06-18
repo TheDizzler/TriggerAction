@@ -34,8 +34,8 @@ void JammerManager::createJam(Vector3 position, int message, Color color) {
 
 	unique_ptr<LetterJammer> jammer;
 	jammer.reset(guiFactory->createLetterJammer(
-		Vector2(position.x, position.y), woo.str(), color, "ArialBlack8pt"));
-	jammer->setEffect(make_unique<RPGDamageJammer>(5, 10, 2.5));
+		Vector2(position.x, position.y + position.z), woo.str(), color, "ArialBlack8pt"));
+	jammer->setEffect(make_unique<RPGDamageJammer>(2, 10, 2.5));
 	//jammer->setScale(Vector2(.5, .5));
 	jammer->setLayerDepth(1);
 	jammers.push_back(move(jammer));

@@ -100,6 +100,7 @@ protected:
 	virtual void jumpUpdate(double deltaTime);
 	virtual void hitUpdate(double deltaTime);
 	
+	Vector3 collisionMovement(Vector3& moveVector);
 
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) = 0;

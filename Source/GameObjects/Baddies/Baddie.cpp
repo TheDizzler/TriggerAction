@@ -286,8 +286,12 @@ void Baddie::takeDamage(int damage, bool showDamage) {
 		startTint = tint;
 	}
 
-	if (showDamage)
-		LevelScreen::jammerMan.createJam(position, damage);
+	if (showDamage) {
+		Vector3 jampos = position;
+		jampos.x -= getWidth() / 2;
+		jampos.y -= getHeight() / 2;
+		LevelScreen::jammerMan.createJam(jampos, damage);
+	}
 
 	action = CreatureAction::HIT_ACTION;
 	canCancelAction = false;

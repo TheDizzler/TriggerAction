@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root game="Trigger Action RPG" xml="Character Data File - Chrono" dir="assets/gfx/">
 
-	<hitbox x="0" y="0" z="0" width="10" height="7" zHeight="24"/>
+	<hitbox x="-5" y="8" z="0" width="10" height="8" zHeight="24"/>
 
 	<weaponMenuIcon name="Gun" />
 	<!-- Relative to bottom left corner -->

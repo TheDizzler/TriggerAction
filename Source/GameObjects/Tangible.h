@@ -8,6 +8,8 @@ const Vector3 GRAVITY(0, 0, -7);
 /* GROUND_FRICTION = .9 */
 const double GROUND_FRICTION = .9;
 
+const float LANDING_TOLERANCE = 1.9;
+
 class Hitbox {
 public:
 	Hitbox(); // required for use as non-pointer
@@ -72,7 +74,6 @@ protected:
 
 	/** Used to calculate knockback. */
 	USHORT weight = 1;
-	//Vector3 knockBackVelocity = Vector3::Zero;
 	/* use this whenever gravity is doing its business. */
 	bool falling = false;
 
