@@ -201,7 +201,6 @@ void PlayerCharacter::update(double deltaTime) {
 
 	if (falling) {
 		fallVelocity += GRAVITY * deltaTime;
-		//moveBy(moveVelocity*deltaTime + fallVelocity);
 
 		Vector3 moveVector = moveVelocity * deltaTime + fallVelocity;
 		descending = abs(fallVelocity.z) > moveVector.z;
@@ -280,16 +279,22 @@ void PlayerCharacter::update(double deltaTime) {
 		moveBy(moveVector);
 	} else if (!(moveVelocity.x == 0 && moveVelocity.y == 0)) {
 
-		Vector3 moveVector = moveVelocity * deltaTime;
+		moveVelocity *= GROUND_FRICTION;
+		if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
+			moveVelocity = Vector3::Zero;
+		} else {
+			Vector3 moveVector = moveVelocity * deltaTime;
 
-		for (Trigger* trigger : triggersAll) {
-			radarBox.position = hitbox.position + moveVector * 2;
-			if (checkCollisionWith(trigger)) {
-				if (trigger->activateTrigger(this))
-					break;
+			for (Trigger* trigger : triggersAll) {
+				radarBox.position = hitbox.position + moveVector * 2;
+				if (checkCollisionWith(trigger)) {
+					if (trigger->activateTrigger(this))
+						break;
+				}
 			}
+			moveBy(collisionMovement(moveVelocity * deltaTime));
+
 		}
-		moveBy(collisionMovement(moveVelocity * deltaTime));
 		// check if falling
 		if (position.z > 0) {
 			falling = true;
@@ -465,7 +470,10 @@ void PlayerCharacter::waitUpdate(double deltaTime) {
 void PlayerCharacter::startBlock() {
 
 	action = CreatureAction::BLOCK_ACTION;
-
+	moving = false;
+	running = false;
+	//moveVelocity.x = 0;
+	moveVelocity.y = 0;
 	int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;
 
@@ -803,13 +811,6 @@ Vector3 PlayerCharacter::collisionMovement(Vector3& moveVector) {
 
 		}
 	}
-
-	/*for (Trigger* trigger : triggersAll) {
-		radarBox.position = hitbox.position + moveVector * 2;
-		if (checkCollisionWith(trigger)) {
-			trigger->activateTrigger(this);
-		}
-	}*/
 
 	return moveVector;
 }

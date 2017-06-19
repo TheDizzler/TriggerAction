@@ -142,6 +142,11 @@ void Creature::stopFall() {
 	//}
 }
 
+void Creature::stopMovement() {
+	moveVelocity.x = 0;
+	moveVelocity.y = 0;
+}
+
 void Creature::moveUpdate(double deltaTime) {
 	currentFrameTime += deltaTime;
 	if (currentFrameTime >= currentFrameDuration) {

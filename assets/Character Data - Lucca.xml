@@ -459,11 +459,6 @@
 			</sprite>
 		</animation>
 
-		<animation name="block jump">
-			<sprite x="" y="" width="" height="" >
-				<origin x="" y="" />
-			</sprite>
-		</animation>
 
 		<animation name="draw weapon down" timePerFrame="1.1">
 			<sprite x="285" y="0" width="16" height="32" >
@@ -572,6 +567,18 @@
 				<origin x="12" y="27" />
 			</sprite>
 		</animation>
+
+		<animation name="dead left">
+			<sprite x="160" y="888" width="28" height="15" >
+				<origin x="14" y="14" />
+			</sprite>
+		</animation>
+		<animation name="dead right">
+			<sprite x="240" y="888" width="28" height="15" >
+				<origin x="14" y="14" />
+			</sprite>
+		</animation>
+
 	</spritesheet>
 
 

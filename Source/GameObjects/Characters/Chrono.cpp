@@ -154,8 +154,8 @@ void Chrono::attackUpdate(double deltaTime) {
 				Vector3 moveVector = moveVelocity * deltaTime;
 				radarBox.position = hitbox.position + moveVector * 2;
 
-				//bool collision = false;
-				// check for collisions
+				
+				// push any opponents in the way
 				for (Tangible* hb : tangiblesAll) {
 					if (hb == this)
 						continue;
@@ -370,16 +370,16 @@ void Chrono::secondAttackStart() {
 
 	switch (facing) {
 		case Facing::LEFT:
-			moveVelocity = Vector3(-75, 0, 0);
+			moveVelocity = Vector3(-175, 0, 25);
 			break;
 		case Facing::DOWN:
-			moveVelocity = Vector3(0, 75, 0);
+			moveVelocity = Vector3(0, 175, 25);
 			break;
 		case Facing::RIGHT:
-			moveVelocity = Vector3(75, 0, 0);
+			moveVelocity = Vector3(175, 0, 25);
 			break;
 		case Facing::UP:
-			moveVelocity = Vector3(0, -75, 0);
+			moveVelocity = Vector3(0, -175, 25);
 			break;
 	}
 
@@ -578,7 +578,7 @@ void Chrono::fourthAttackStart() {
 	waitingTime = 0;
 	moveTime = 0;
 
-	moveVelocity = Vector3(0, 0, 300);
+	moveVelocity = Vector3(0, 0, 200);
 
 	awaitInputCycles = 0;
 	attackBox.size = attackBoxSizes[facing];

@@ -299,8 +299,10 @@ bool HorizontalStepTrigger::activateTrigger(Creature* creature) {
 			return true;
 		}
 
-
-
+		if (hitbox.collisionZ(creature->getHitbox())) {
+			creature->stopMovement();
+			return true;
+		}
 
 	}
 	return false;

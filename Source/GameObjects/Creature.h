@@ -49,6 +49,7 @@ public:
 
 	bool isDescending();
 	void stopFall();
+	void stopMovement();
 protected:
 
 	shared_ptr<Map> map;

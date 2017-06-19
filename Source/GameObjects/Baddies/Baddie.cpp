@@ -116,15 +116,15 @@ bool Baddie::update(double deltaTime) {
 						Vector3 distance = pc->getHitbox()->position - hitbox.position;
 
 						if (target == NULL || !target->isAlive) {
-							//target = pc.get();
-							//action = FOLLOWING_TARGET;
+							target = pc.get();
+							action = FOLLOWING_TARGET;
 						}
 
 						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 							// le petit attaque
 							distance.z = 8;
 							distance.Normalize();
-							//startMainAttack(distance);
+							startMainAttack(distance);
 							break;
 						}
 					}
@@ -141,7 +141,7 @@ bool Baddie::update(double deltaTime) {
 						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 							distance.z = 8;
 							distance.Normalize();
-							//startMainAttack(distance);
+							startMainAttack(distance);
 							break;
 						}
 
@@ -482,7 +482,6 @@ void BlueImp::attackUpdate(double deltaTime) {
 
 			break;
 		case 3: // falling
-			//moveBy(moveVelocity);
 			if (!falling) { // finish fall
 				currentFrameTime = 10;
 			} else
