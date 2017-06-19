@@ -180,10 +180,9 @@ void PlayerCharacter::update(double deltaTime) {
 			drawWeaponUpdate(deltaTime);
 			break;
 		case CreatureAction::DEAD_ACTION:
-
+			timeSinceDeath += deltaTime;
 			if (moveVelocity != Vector3::Zero) {
-				timeSinceDeath += deltaTime;
-				moveBy(moveVelocity * deltaTime);
+				
 				if (!falling) {
 					moveVelocity = moveVelocity * GROUND_FRICTION;
 					if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
@@ -340,7 +339,7 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	if (action == CreatureAction::BLOCK_ACTION) {
 		damage *= .25;
-		moveVelocity *= .25; // dampen knockback
+		moveVelocity *= .5; // dampen knockback
 	} else {
 
 		canCancelAction = false;
@@ -359,9 +358,11 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 				loadAnimation(hitRight);
 				break;
 		}
+
+		action = CreatureAction::HIT_ACTION;
 	}
 
-	action = CreatureAction::HIT_ACTION;
+	
 
 	if ((currentHP -= damage) < 0) {
 		currentHP = 0;
@@ -387,11 +388,11 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	playerSlot->statusDialog->updateHP();
 
-	if (position.z != 0) {
-		// start falling!
-		falling = true;
+	//if (position.z != 0) {
+	//	// start falling!
+	//	falling = true;
 
-	}
+	//}
 
 }
 
@@ -713,12 +714,8 @@ void PlayerCharacter::jumpUpdate(double deltaTime) {
 
 void PlayerCharacter::hitUpdate(double deltaTime) {
 
-	//moveBy(moveVelocity * deltaTime);
 	if (!falling) {
-		moveVelocity = moveVelocity * GROUND_FRICTION;
-		if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
-			moveVelocity = Vector3::Zero;
-
+		if (moveVelocity == Vector3::Zero) {
 			currentFrameTime += deltaTime;
 			if (currentFrameTime >= currentFrameDuration) {
 				if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {

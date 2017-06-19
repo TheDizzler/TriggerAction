@@ -60,6 +60,7 @@ void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet
 Baddie::Baddie(BaddieData* data) {
 
 	setHitbox(data->hitbox.get());
+	radarBox = Hitbox(hitbox);
 
 	threatRange = Vector3(40, 40, 8 + 16); // z = jump height + attackbox z
 	jumpSpeed = 85;
@@ -131,9 +132,7 @@ bool Baddie::update(double deltaTime) {
 				}
 				break;
 			case CreatureAction::FOLLOWING_TARGET:
-
-				if (target != NULL && !falling) {
-
+				if (!falling) {
 					// check for opportunity attack
 					for (const auto& pc : pcs) {
 						Vector3 distance = pc->getHitbox()->position - hitbox.position;
@@ -141,15 +140,19 @@ bool Baddie::update(double deltaTime) {
 						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
 							distance.z = 8;
 							distance.Normalize();
+							target = pc.get();
 							startMainAttack(distance);
+
 							break;
 						}
 
 					}
+				}
 
-					if (action == CreatureAction::ATTACKING_ACTION)
-						break;
+				if (action == CreatureAction::ATTACKING_ACTION)
+					break;
 
+				if (target != NULL) {
 
 
 					Vector3 direction = position - target->getPosition();
@@ -195,7 +198,69 @@ bool Baddie::update(double deltaTime) {
 						facing = newFacing;
 					}
 
-					moveBy(direction * -moveRightSpeed * deltaTime);
+					moveVelocity = direction * -moveRightSpeed;
+
+					// check for collisions
+					/*Vector3 moveVector = direction * -moveRightSpeed * deltaTime;
+					radarBox.position = hitbox.position + moveVector * 2;
+
+					bool collision = false;
+					vector<Tangible*> collided;
+					for (Tangible* tangible : tangiblesAll) {
+						if (tangible == this)
+							continue;
+						if (checkCollisionWith(tangible)) {
+							if (direction.x == 0) {
+								direction.y = 0;
+								moveVector.y = 0;
+								break;
+							} else if (direction.y == 0) {
+								direction.x = 0;
+								moveVector.x = 0;
+								break;
+							}
+							collision = true;
+							collided.push_back(tangible);
+						}
+					}
+					if (collision) {
+						collision = false;
+						Vector3 backupVector = moveVector;
+						moveVector.x = 0;
+						radarBox.position = hitbox.position + moveVector * 2;
+
+						for (const auto& tangible : collided) {
+							if (checkCollisionWith(tangible)) {
+								collision = true;
+								break;
+							}
+						}
+
+
+						if (!collision) {
+							direction.x = 0;
+						} else {
+							direction.y = 0;
+							moveVector.y = 0;
+							moveVector.x = backupVector.x;
+
+							radarBox.position = hitbox.position + moveVector * 2;
+
+							for (const auto& tangible : collided) {
+								if (checkCollisionWith(tangible)) {
+									direction.x = 0;
+									moveVector.x = 0;
+									break;
+								}
+							}
+
+						}
+					}
+					moveBy(moveVector);*/
+
+
+
+
 
 					currentFrameTime += deltaTime;
 					if (currentFrameTime >= currentFrameDuration) {
@@ -233,7 +298,7 @@ bool Baddie::update(double deltaTime) {
 
 		if (falling) {
 			fallVelocity += GRAVITY * deltaTime;
-			moveBy(fallVelocity);
+			/*moveBy(fallVelocity);
 			if (position.z <= 0) {
 				Vector3 newpos = position;
 				newpos.z = 0;
@@ -241,7 +306,105 @@ bool Baddie::update(double deltaTime) {
 				fallVelocity.z = 0;
 				moveVelocity.z = 0;
 				falling = false;
+			}*/
+
+			Vector3 moveVector = moveVelocity * deltaTime + fallVelocity;
+			descending = abs(fallVelocity.z) > moveVector.z;
+			if (position.z <= 0) {
+				Vector3 newpos = position;
+				newpos.z = 0;
+				setPosition(newpos);
+				fallVelocity.z = 0;
+				moveVelocity.z = 0;
+				moveVector.z = 0;
+				falling = false;
+			} else {
+				radarBox.position = hitbox.position + moveVector;
+				// check for collisions
+				for (Tangible* tangible : tangiblesAll) {
+					if (tangible == this)
+						continue;
+					if (radarBox.collision2d(tangible->getHitbox())) {
+						// first check to see if hitbox overlap on x-y plane
+						if (radarBox.collisionZ(tangible->getHitbox())) {
+							// then check if collide on z-axis as well
+							const Hitbox* hb = tangible->getHitbox();
+							float dif = radarBox.position.z - (hb->position.z + hb->size.z);
+
+							if (dif < LANDING_TOLERANCE
+								&& dif > -LANDING_TOLERANCE
+								&& descending) {
+								Vector3 newpos = position;
+								newpos.z = hb->position.z + hb->size.z;
+								setPosition(newpos);
+								fallVelocity.z = 0;
+								moveVelocity.z = 0;
+								moveVector.z = 0;
+								falling = false;
+								break;
+							}
+						} else {
+							for (const auto& otherSubHB : tangible->subHitboxes) {
+								if (otherSubHB->collision2d(&radarBox)) {
+									const Hitbox* hb = otherSubHB.get();
+									float dif = position.z - (hb->position.z + hb->size.z);
+
+									if (dif < LANDING_TOLERANCE
+										&& dif > -LANDING_TOLERANCE
+										&& descending) {
+										Vector3 newpos = position;
+										newpos.z = hb->position.z + hb->size.z;
+										setPosition(newpos);
+										fallVelocity.z = 0;
+										moveVelocity.z = 0;
+										moveVector.z = 0;
+										falling = false;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+				for (Trigger* trigger : triggersAll) {
+					radarBox.position = hitbox.position + moveVector * 2;
+					if (checkCollisionWith(trigger)) {
+						if (trigger->activateTrigger(this))
+							break;
+					}
+				}
 			}
+
+			if (!(moveVelocity.x == 0 && moveVelocity.y == 0)) {
+
+				moveVector = collisionMovement(moveVector);
+
+			}
+
+			moveBy(moveVector);
+		} else if (!(moveVelocity.x == 0 && moveVelocity.y == 0)) {
+
+			if (action != CreatureAction::ATTACKING_ACTION)
+				moveVelocity *= GROUND_FRICTION;
+			if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
+				moveVelocity = Vector3::Zero;
+			} else {
+				Vector3 moveVector = moveVelocity * deltaTime;
+
+				for (Trigger* trigger : triggersAll) {
+					radarBox.position = hitbox.position + moveVector * 2;
+					if (checkCollisionWith(trigger)) {
+						if (trigger->activateTrigger(this))
+							break;
+					}
+				}
+				moveBy(collisionMovement(moveVelocity * deltaTime));
+
+			}
+			// check if falling
+			/*if (position.z > 0) {
+				falling = true;
+			}*/
 		}
 
 #ifdef  DEBUG_HITBOXES
@@ -296,6 +459,60 @@ void Baddie::takeDamage(int damage, bool showDamage) {
 	action = CreatureAction::HIT_ACTION;
 	canCancelAction = false;
 	loadAnimation(hit);
+}
+
+Vector3 Baddie::collisionMovement(Vector3 moveVector) {
+	//Vector3 moveVector = direction * -moveRightSpeed * deltaTime;
+	radarBox.position = hitbox.position + moveVector * 2;
+
+	bool collision = false;
+	vector<Tangible*> collided;
+	for (Tangible* tangible : tangiblesAll) {
+		if (tangible == this)
+			continue;
+		if (checkCollisionWith(tangible)) {
+			if (moveVector.x == 0) {
+				moveVector.y = 0;
+				break;
+			} else if (moveVector.y == 0) {
+				moveVector.x = 0;
+				break;
+			}
+			collision = true;
+			collided.push_back(tangible);
+		}
+	}
+	if (collision) {
+		collision = false;
+		Vector3 backupVector = moveVector;
+		moveVector.x = 0;
+		radarBox.position = hitbox.position + moveVector * 2;
+
+		for (const auto& tangible : collided) {
+			if (checkCollisionWith(tangible)) {
+				collision = true;
+				break;
+			}
+		}
+
+
+		if (collision) {
+			moveVector.y = 0;
+			moveVector.x = backupVector.x;
+
+			radarBox.position = hitbox.position + moveVector * 2;
+
+			for (const auto& tangible : collided) {
+				if (checkCollisionWith(tangible)) {
+					moveVector.x = 0;
+					break;
+				}
+			}
+
+		}
+	}
+
+	return moveVector;
 }
 
 
@@ -378,25 +595,27 @@ void BlueImp::startMainAttack(Vector3 direction) {
 	}
 
 
-	// hit detection
-	attackBox.size = attackBoxSizes[facing];
-	attackBox.position = position + weaponPositions[facing];
-	switch (facing) {
-		case Facing::LEFT:
-			attackBox.position.x -= (currentFrameOrigin.x);
-			break;
-			/*case Facing::DOWN:
-			break;
-			case Facing::RIGHT:
-			break;
-			case Facing::UP:
-			break;*/
-	}
+	//// hit detection setup
+	//attackBox.size = attackBoxSizes[facing];
+	//attackBox.position = position + weaponPositions[facing];
 
 
-	attackBox.position.y -= attackBox.size.y;
+	//switch (facing) {
+	//	case Facing::LEFT:
+	//		attackBox.position.x -= (currentFrameOrigin.x);
+	//		break;
+	//		/*case Facing::DOWN:
+	//		break;
+	//		case Facing::RIGHT:
+	//		break;
+	//		case Facing::UP:
+	//		break;*/
+	//}
 
-	moveVelocity = direction * jumpSpeed;
+	//attackBox.position.y -= attackBox.size.y;
+	//attackRadarBox = attackBox;
+
+	moveVelocity = Vector3::Zero;
 
 }
 
@@ -428,7 +647,67 @@ void BlueImp::attackUpdate(double deltaTime) {
 #endif //  DEBUG_HITBOXES
 			return;
 		}
-		if (currentFrameIndex == 2)
+
+		if (currentFrameIndex == 1) {
+			Vector3 direction = target->getHitbox()->position - hitbox.position;
+			direction.z = 8;
+			direction.Normalize();
+			// get direction to attack in
+			if (abs(direction.x) > abs(direction.y)) {
+				// attack more horizontal than vertical
+				if (direction.x < 0) {
+					// attack going left
+					facing = Facing::LEFT;
+					currentAnimation = attackLeft;
+					currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+				} else {
+					// attack going right
+					facing = Facing::RIGHT;
+					currentAnimation = attackRight;
+					currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+				}
+			} else {
+				// attack more vertical than horizontal
+				if (direction.y < 0) {
+					// attack going up
+					facing = Facing::UP;
+					currentAnimation = attackUp;
+					currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+				} else {
+					// attack going down
+					facing = Facing::DOWN;
+					currentAnimation = attackDown;
+					currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
+				}
+			}
+
+
+			// hit detection setup
+			attackBox.size = attackBoxSizes[facing];
+			attackBox.position = position + weaponPositions[facing];
+
+
+			switch (facing) {
+				case Facing::LEFT:
+					attackBox.position.x -= (currentFrameOrigin.x);
+					break;
+					/*case Facing::DOWN:
+					break;
+					case Facing::RIGHT:
+					break;
+					case Facing::UP:
+					break;*/
+			}
+
+			attackBox.position.y -= attackBox.size.y;
+			attackRadarBox = attackBox;
+			moveVelocity = direction * jumpSpeed;
+
+		} else if (currentFrameIndex == 2)
 			moveVelocity = Vector3::Zero;
 		else if (currentFrameIndex == 3)
 			falling = true;
@@ -451,29 +730,52 @@ void BlueImp::attackUpdate(double deltaTime) {
 		{
 			// jump forward
 			Vector3 moveAmount = moveVelocity * deltaTime;
-			moveBy(moveAmount);
-			attackBox.position += moveAmount;
+
+			attackRadarBox.position = attackBox.position + moveAmount * 2;
 
 #ifdef  DEBUG_HITBOXES
 			drawAttackBox = true;
-			attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+			attackFrame->setSize(Vector2(tempBox.size.x, tempBox.size.y));
 			attackFrame->setPosition(Vector2(
-				attackBox.position.x, attackBox.position.y));
+				tempBox.position.x, tempBox.position.y));
 #endif //  DEBUG_HITBOXES
-
+			Tangible* hit = NULL;
+			float distanceToHit = 100;
 			for (Tangible* object : tangiblesAll) {
 				if (object == this) {
 					continue;
 				}
-				if (std::find(hitList.begin(), hitList.end(), object) != hitList.end())
-					continue;
-				if (attackBox.collision(object->getHitbox())) {
-					object->knockBack(moveVelocity*2, weight*2);
-					object->takeDamage(5);
-					hitList.push_back(object);
-					// impact effect, if any
+				/*if (std::find(hitList.begin(), hitList.end(), object) != hitList.end())
+					continue;*/
+				if (attackRadarBox.collision(object->getHitbox())) {
+					if (hit == NULL
+						|| Vector3::Distance(attackRadarBox.position, hit->getHitbox()->position) <
+						distanceToHit) {
+						hit = object;
+						distanceToHit = Vector3::Distance(attackRadarBox.position, hit->getHitbox()->position);
+
+					}
+					//object->knockBack(moveVelocity * 2, weight * 2);
+					//object->takeDamage(5);
+					////hitList.push_back(object);
+					//moveAmount.x = 0;
+					//moveAmount.y = 0;
+					//// impact effect, if any
+					////hitEffectManager.newEffect(facing, position, 0);
+				}
+			}
+
+			if (hit != NULL) {
+				if (std::find(hitList.begin(), hitList.end(), hit) == hitList.end()) {
+					hit->knockBack(moveVelocity, weight * 2);
+					hit->takeDamage(5);
+					hitList.push_back(hit);
 					//hitEffectManager.newEffect(facing, position, 0);
 				}
+			} else {
+
+				attackBox.position += moveAmount;
+				//moveBy(moveAmount);
 			}
 		}
 		break;

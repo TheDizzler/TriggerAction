@@ -55,6 +55,7 @@ protected:
 	/** Objects already hit by current attack. */
 	vector<Tangible*> hitList;
 
+	Vector3 collisionMovement(Vector3 moveVector);
 
 	const double TIME_TO_DIE = 1.5;
 	Color startTint;

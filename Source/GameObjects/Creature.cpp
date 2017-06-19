@@ -5,6 +5,8 @@
 
 Creature::Creature() {
 	layerDepth = 0.1f;
+
+	
 }
 
 Creature::~Creature() {
@@ -43,13 +45,13 @@ void Creature::loadAnimation(const pugi::char_t* name) {
 void Creature::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
 	moveVelocity = velocityOfHit * weightOfHit / weight;
 	falling = true;
-	position -= GRAVITY * .005;
+	position -= GRAVITY * .00005;
 }
 
 void Creature::knockBack(Vector3 hitVelocity) {
 	moveVelocity = hitVelocity;
 	falling = true;
-	position -= GRAVITY * .005;
+	position -= GRAVITY * .00005;
 }
 
 
@@ -147,6 +149,7 @@ void Creature::stopMovement() {
 	moveVelocity.y = 0;
 }
 
+
 void Creature::moveUpdate(double deltaTime) {
 	currentFrameTime += deltaTime;
 	if (currentFrameTime >= currentFrameDuration) {
@@ -165,13 +168,12 @@ void Creature::moveUpdate(double deltaTime) {
 
 void Creature::hitUpdate(double deltaTime) {
 
-
-	//if (knockBackVelocity != Vector3::Zero) {
-	moveBy(moveVelocity * deltaTime);
+	//moveBy(moveVelocity * deltaTime);
 	if (!falling) {
-		moveVelocity = moveVelocity * GROUND_FRICTION;
-		if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
-			moveVelocity = Vector3::Zero;
+		//moveVelocity = moveVelocity * GROUND_FRICTION;
+		//if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
+			//moveVelocity = Vector3::Zero;
+		if (moveVelocity == Vector3::Zero) {
 			currentFrameTime += deltaTime;
 			if (currentFrameTime >= currentFrameDuration) {
 				if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
@@ -204,23 +206,5 @@ void Creature::hitUpdate(double deltaTime) {
 					= currentAnimation->animationFrames[currentFrameIndex]->origin;
 			}
 		}
-	//} else {
-	//	currentFrameTime += deltaTime;
-	//	if (currentFrameTime >= currentFrameDuration) {
-	//		if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
-	//			// hit sequence done
-	//			canCancelAction = true;
-	//			loadAnimation(walkLeft);
-	//			action = CreatureAction::WAITING_ACTION;
-	//			return;
-	//		}
-	//		currentFrameTime = 0;
-	//		currentFrameDuration
-	//			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-	//		currentFrameRect
-	//			= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-	//		currentFrameOrigin
-	//			= currentAnimation->animationFrames[currentFrameIndex]->origin;
-	//	}
 	}
 }

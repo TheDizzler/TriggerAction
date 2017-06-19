@@ -63,6 +63,7 @@ protected:
 
 	/* A temp hitbox to test incoming collisions. */
 	Hitbox radarBox;
+	Hitbox attackRadarBox;
 
 	Vector3 fallVelocity = Vector3::Zero;
 	/** Velocity for automated movement. */
