@@ -110,6 +110,8 @@ public:
 
 
 	virtual bool activateTrigger(Creature* creature) override;
+
+	bool rightUp;
 };
 
 //class TriggerTile : public Trigger, public TangibleTile {

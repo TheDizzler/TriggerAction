@@ -602,10 +602,10 @@ void PlayerCharacter::startJump() {
 
 	if (running) {
 		speedFactor = RUN_SPEED;
-		direction.z = 355;
+		direction.z = 275;
 	} else {
 		speedFactor = NORMAL_SPEED;
-		direction.z = 275;
+		direction.z = 235;
 	}
 
 	moveVelocity = Vector3(direction.x * speedFactor, direction.y * speedFactor, direction.z);

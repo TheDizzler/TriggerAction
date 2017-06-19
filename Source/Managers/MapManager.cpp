@@ -135,7 +135,7 @@ void Map::placeTileTrigger(TileAsset* tileAsset, Vector3 position) {
 		istringstream(zperyStr) >> zpery;
 
 		int minZ = position.z;
-		float maxZ = tileAsset->hitboxes[0]->size.z * zpery;
+		float maxZ = tileAsset->hitboxes[0]->size.z;
 		int width = tileAsset->hitboxes[0]->size.x;
 		int height = tileAsset->hitboxes[0]->size.y;
 		int x = position.x;
@@ -154,11 +154,11 @@ void Map::placeTileTrigger(TileAsset* tileAsset, Vector3 position) {
 	istringstream(zperxStr) >> zperx;
 
 	int minZ = position.z;
-	float maxZ = tileAsset->hitboxes[0]->size.z * zperx;
+	float maxZ = tileAsset->hitboxes[0]->size.z;
 	int width = tileAsset->hitboxes[0]->size.x;
 	int height = tileAsset->hitboxes[0]->size.y;
 	int x = position.x;
-	int y = tileAsset->hitboxes[0]->position.y -position.y + height;
+	int y = tileAsset->hitboxes[0]->position.y - position.y + height;
 
 	int data[6] = {
 		x, y, minZ,
@@ -166,6 +166,7 @@ void Map::placeTileTrigger(TileAsset* tileAsset, Vector3 position) {
 	};
 
 	unique_ptr<HorizontalStepTrigger> trigger = make_unique<HorizontalStepTrigger>(data);
+	trigger->rightUp = (zperx > 0);
 	triggers.push_back(move(trigger));
 }
 

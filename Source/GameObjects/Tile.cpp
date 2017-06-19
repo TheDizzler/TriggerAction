@@ -267,13 +267,25 @@ bool HorizontalStepTrigger::activateTrigger(Creature* creature) {
 
 
 		// min height = hitbox.position.z
-		// max height = hitbox.size.z
+		// max height = hitbox.size.z + hitbox.position.z
 		Vector3 newpos = creature->getPosition();
-		float relativeX = (newpos.x) - (hitbox.position.x);
-		if (relativeX < 0)
-			return false;
-		float percent = relativeX / hitbox.size.x;
-		float newZ = (hitbox.size.z) * percent + hitbox.position.z;
+
+		float relativeX;
+		float percent;
+		float newZ;
+
+		if (rightUp) {
+			relativeX = (newpos.x + creature->getHitbox()->size.x / 2 + 1.5) - (hitbox.position.x);
+			/*if (relativeX < 0)
+				return false;*/
+
+		} else {
+			relativeX = (hitbox.position.x + hitbox.size.x) - (newpos.x - creature->getHitbox()->size.x / 2);
+
+		}
+
+		percent = ceil(relativeX) / hitbox.size.x;
+		newZ = (hitbox.size.z) * percent + hitbox.position.z;
 
 		float dif = newpos.z - (newZ);
 
