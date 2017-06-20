@@ -16,7 +16,7 @@ public:
 
 	void reloadData(CharacterData* data);
 
-	void setInitialPosition(const Vector2& startingPosition);
+	void setInitialPosition(const Vector3& startingPosition);
 
 	virtual void update(double deltaTime);
 	virtual void draw(SpriteBatch* batch) override;

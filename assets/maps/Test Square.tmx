@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="32" height="16" tilewidth="16" tileheight="16" nextobjectid="12">
+<map version="1.0" tiledversion="1.0.1" orientation="orthogonal" renderorder="left-down" width="32" height="16" tilewidth="16" tileheight="16" nextobjectid="12">
  <tileset firstgid="1" name="Tiled set - Millenial Fair" tilewidth="16" tileheight="16" tilecount="117" columns="13">
-  <image source="../gfx/Tiled set - Millenial Fair.dds" width="208" height="144"/>
+  <image source="../gfx/Tiled set - Millenial Fair.png" width="208" height="144"/>
  </tileset>
  <tileset firstgid="118" name="Tiled set - Millenial Fair Objects" tilewidth="16" tileheight="16" tilecount="750" columns="30">
-  <image source="../gfx/Tiled set - Millenial Fair Objects.dds" width="480" height="400"/>
+  <image source="../gfx/Tiled set - Millenial Fair Objects.png" width="480" height="400"/>
   <tile id="41">
    <properties>
     <property name="item" value="blue berries"/>

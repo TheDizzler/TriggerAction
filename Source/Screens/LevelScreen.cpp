@@ -55,12 +55,22 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		triggersAll.push_back(trigger.get());
 	}
 
+	EventTrigger* start = map->start.get();
+	Vector3 firstPStart = start->getHitbox()->position;
+	firstPStart.x += start->getHitbox()->size.x / 2;
+	firstPStart.y += start->getHitbox()->size.y;
+	Vector3 secondPStart = start->getHitbox()->position;
+	Vector3 thirdPStart = start->getHitbox()->position;
+	thirdPStart.x += start->getHitbox()->size.y;
+
+	Vector3 startPos[3] = {firstPStart, secondPStart, thirdPStart};
+	int i = 0;
 	for (const auto& slot : activeSlots) {
 
 		if (slot->characterData->name == "Lucca") {
 			unique_ptr<Lucca> newPC = make_unique<Lucca>(slot);
 			tangiblesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
+			newPC->setInitialPosition(startPos[i++]);
 
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
@@ -72,7 +82,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		} else if (slot->characterData->name == "Marle") {
 			unique_ptr<Marle> newPC = make_unique<Marle>(slot);
 			tangiblesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
+			newPC->setInitialPosition(startPos[i++]);
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
@@ -83,7 +93,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		} else if (slot->characterData->name == "Chrono") {
 			unique_ptr<Chrono> newPC = make_unique<Chrono>(slot);
 			tangiblesAll.push_back(newPC.get());
-			newPC->setInitialPosition(Vector2(10, slot->getPlayerSlotNumber() * 100 + 150));
+			newPC->setInitialPosition(startPos[i++]);
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
 					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
@@ -123,9 +133,21 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 		triggersAll.push_back(trigger.get());
 	}
 
+	EventTrigger* start = map->start.get();
+	Vector3 firstPStart = start->getHitbox()->position;
+	firstPStart.x += start->getHitbox()->size.x / 2;
+	firstPStart.y += start->getHitbox()->size.y;
+	Vector3 secondPStart = start->getHitbox()->position;
+	Vector3 thirdPStart = start->getHitbox()->position;
+	thirdPStart.x += start->getHitbox()->size.y;
+
+	Vector3 startPos[3] = {firstPStart, secondPStart, thirdPStart};
+	int i = 0;
+
 	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
 		pc->loadMap(map);
+		pc->setInitialPosition(startPos[i++]);
 		tangiblesAll.push_back(pc.get());
 
 	}

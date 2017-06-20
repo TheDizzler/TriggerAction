@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
-<map version="1.0" orientation="orthogonal" renderorder="left-up" width="32" height="16" tilewidth="16" tileheight="16" nextobjectid="22">
+<map version="1.0" tiledversion="1.0.1" orientation="orthogonal" renderorder="left-up" width="32" height="16" tilewidth="16" tileheight="16" nextobjectid="24">
  <tileset firstgid="1" name="Tiled Set - Millenial Fair Fountain" tilewidth="64" tileheight="80" tilecount="6" columns="3">
-  <image source="../gfx/Tiled Set - Millenial Fair Fountain.dds" width="192" height="160"/>
+  <image source="../gfx/Tiled Set - Millenial Fair Fountain.png" width="192" height="160"/>
   <tile id="0">
    <properties>
     <property name="flat" type="bool" value="true"/>
@@ -22,7 +22,7 @@
   </tile>
   <tile id="3">
    <properties>
-    <property name="mask" value="x=8 y=8"/>
+    <property name="mask" value="x=0 y=48"/>
    </properties>
    <animation>
     <frame tileid="3" duration="200"/>
@@ -35,7 +35,7 @@
   <properties>
    <property name="hitbox" value="x=7 y=51 width=19 height=10 zHeight=51"/>
   </properties>
-  <image source="../gfx/Tile - Millenial Fair Tree.dds" width="32" height="64"/>
+  <image source="../gfx/Tile - Millenial Fair Tree.png" width="32" height="64"/>
   <tile id="0">
    <properties>
     <property name="hitbox" value="x=13 y=13 z=0 width=9 height=7 zHeight=53"/>
@@ -44,7 +44,7 @@
   </tile>
  </tileset>
  <tileset firstgid="8" name="Tiled set - Millenial Fair" tilewidth="16" tileheight="16" tilecount="117" columns="13">
-  <image source="../gfx/Tiled set - Millenial Fair.dds" width="208" height="144"/>
+  <image source="../gfx/Tiled set - Millenial Fair.png" width="208" height="144"/>
   <tile id="10">
    <properties>
     <property name="hitbox" value="x=0 y=16 z=-1 width=16 height=16 zHeight=1"/>
@@ -218,7 +218,7 @@
   </tile>
  </tileset>
  <tileset firstgid="125" name="Baddies" tilewidth="32" tileheight="32" tilecount="8" columns="4">
-  <image source="../gfx/Baddies - Millenial Fair.dds" width="128" height="64"/>
+  <image source="../gfx/Baddies - Millenial Fair.png" width="128" height="64"/>
   <tile id="0">
    <properties>
     <property name="Baddie" value="Blue Imp"/>
@@ -272,6 +272,26 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,62,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,88,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer name="Tile Layer 8" width="32" height="16">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
@@ -391,14 +411,26 @@
 </data>
  </layer>
  <objectgroup name="triggers">
+  <properties>
+   <property name="z" type="int" value="80"/>
+  </properties>
   <object id="13" name="step" type="trigger" x="16" y="174" width="32" height="48">
    <properties>
     <property name="maxZ" type="int" value="48"/>
     <property name="minZ" type="int" value="0"/>
    </properties>
   </object>
+  <object id="22" name="start" type="event" x="40" y="40" width="48" height="38">
+   <properties>
+    <property name="z" type="int" value="100"/>
+   </properties>
+  </object>
+  <object id="23" name="exit" type="event" x="162" y="17" width="39" height="46.5"/>
  </objectgroup>
  <objectgroup name="enemies">
+  <properties>
+   <property name="z" type="int" value="80"/>
+  </properties>
   <object id="3" gid="125" x="59" y="172" width="32" height="32">
    <properties>
     <property name="z" type="int" value="40"/>

@@ -63,7 +63,8 @@ Baddie::Baddie(BaddieData* data) {
 	radarBox = Hitbox(hitbox);
 
 	threatRange = Vector3(40, 40, 8 + 16); // z = jump height + attackbox z
-	jumpSpeed = 85;
+	jumpSpeed = 113;
+	jumpHeight = jumpSpeed / (2 * -GRAVITY.z);
 
 	assetSet = data->assets;
 	walkDown = assetSet->getAnimation("walk down");
@@ -121,8 +122,9 @@ bool Baddie::update(double deltaTime) {
 							action = FOLLOWING_TARGET;
 						}
 
-						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
-							// le petit attaque
+						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y
+							&& abs(distance.z) < threatRange.z) {
+								// le petit attaque
 							distance.z = 8;
 							distance.Normalize();
 							startMainAttack(distance);
@@ -137,7 +139,8 @@ bool Baddie::update(double deltaTime) {
 					for (const auto& pc : pcs) {
 						Vector3 distance = pc->getHitbox()->position - hitbox.position;
 
-						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y) {
+						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y
+							&& abs(distance.z) < threatRange.z) {
 							distance.z = 8;
 							distance.Normalize();
 							target = pc.get();
@@ -200,68 +203,6 @@ bool Baddie::update(double deltaTime) {
 
 					moveVelocity = direction * -moveRightSpeed;
 
-					// check for collisions
-					/*Vector3 moveVector = direction * -moveRightSpeed * deltaTime;
-					radarBox.position = hitbox.position + moveVector * 2;
-
-					bool collision = false;
-					vector<Tangible*> collided;
-					for (Tangible* tangible : tangiblesAll) {
-						if (tangible == this)
-							continue;
-						if (checkCollisionWith(tangible)) {
-							if (direction.x == 0) {
-								direction.y = 0;
-								moveVector.y = 0;
-								break;
-							} else if (direction.y == 0) {
-								direction.x = 0;
-								moveVector.x = 0;
-								break;
-							}
-							collision = true;
-							collided.push_back(tangible);
-						}
-					}
-					if (collision) {
-						collision = false;
-						Vector3 backupVector = moveVector;
-						moveVector.x = 0;
-						radarBox.position = hitbox.position + moveVector * 2;
-
-						for (const auto& tangible : collided) {
-							if (checkCollisionWith(tangible)) {
-								collision = true;
-								break;
-							}
-						}
-
-
-						if (!collision) {
-							direction.x = 0;
-						} else {
-							direction.y = 0;
-							moveVector.y = 0;
-							moveVector.x = backupVector.x;
-
-							radarBox.position = hitbox.position + moveVector * 2;
-
-							for (const auto& tangible : collided) {
-								if (checkCollisionWith(tangible)) {
-									direction.x = 0;
-									moveVector.x = 0;
-									break;
-								}
-							}
-
-						}
-					}
-					moveBy(moveVector);*/
-
-
-
-
-
 					currentFrameTime += deltaTime;
 					if (currentFrameTime >= currentFrameDuration) {
 						if (++currentFrameIndex >= currentAnimation->animationFrames.size()) {
@@ -281,6 +222,10 @@ bool Baddie::update(double deltaTime) {
 				break;
 			case CreatureAction::MOVING_ACTION:
 				break;
+			case CreatureAction::JUMP_ACTION:
+				jumpUpdate(deltaTime);
+				break;
+
 			case CreatureAction::ATTACKING_ACTION:
 				attackUpdate(deltaTime);
 				if (!target->isAlive) {
@@ -382,6 +327,23 @@ bool Baddie::update(double deltaTime) {
 			}
 
 			moveBy(moveVector);
+		} else if (moveVelocity.z != 0) {
+
+			Vector3 moveVector = moveVelocity * deltaTime;
+
+			for (Trigger* trigger : triggersAll) {
+				radarBox.position = hitbox.position + moveVector * 2;
+				if (checkCollisionWith(trigger)) {
+					if (trigger->activateTrigger(this))
+						break;
+				}
+			}
+			moveBy(collisionMovement(moveVelocity * deltaTime));
+
+			// check if falling
+			if (position.z > 0 && action != CreatureAction::ATTACKING_ACTION) {
+				falling = true;
+			}
 		} else if (!(moveVelocity.x == 0 && moveVelocity.y == 0)) {
 
 			if (action != CreatureAction::ATTACKING_ACTION)
@@ -402,15 +364,15 @@ bool Baddie::update(double deltaTime) {
 
 			}
 			// check if falling
-			/*if (position.z > 0) {
+			if (position.z > 0 && action != CreatureAction::ATTACKING_ACTION) {
 				falling = true;
-			}*/
-		}
+			}
 
+		}
 #ifdef  DEBUG_HITBOXES
 		debugUpdate();
 #endif //  DEBUG_HITBOXES
-	} else {
+		} else {
 		timeSinceDeath += deltaTime;
 
 		double percentDead = timeSinceDeath / TIME_TO_DIE;
@@ -422,7 +384,7 @@ bool Baddie::update(double deltaTime) {
 	}
 
 	return false;
-}
+	}
 
 
 void Baddie::draw(SpriteBatch* batch) {
@@ -461,21 +423,68 @@ void Baddie::takeDamage(int damage, bool showDamage) {
 	loadAnimation(hit);
 }
 
+
+void Baddie::startJump(const Vector3& direction) {
+
+	action = CreatureAction::JUMP_ACTION;
+	switch (facing) {
+		case Facing::UP:
+			loadAnimation(attackUp);
+			break;
+		case Facing::DOWN:
+			loadAnimation(attackDown);
+			break;
+		case Facing::LEFT:
+			loadAnimation(attackLeft);
+			break;
+		case Facing::RIGHT:
+			loadAnimation(attackRight);
+			break;
+	}
+	currentFrameIndex = 1;
+	moveVelocity = direction * jumpSpeed;
+	//falling = true;
+}
+
+void Baddie::jumpUpdate(double deltaTime) {
+	if (!falling) {
+		action = CreatureAction::FOLLOWING_TARGET;
+		switch (facing) {
+			case Facing::UP:
+				loadAnimation(walkUp);
+				break;
+			case Facing::DOWN:
+				loadAnimation(walkDown);
+				break;
+			case Facing::LEFT:
+				loadAnimation(walkLeft);
+				break;
+			case Facing::RIGHT:
+				loadAnimation(walkRight);
+				break;
+		}
+	}
+}
+
+
 Vector3 Baddie::collisionMovement(Vector3 moveVector) {
 	//Vector3 moveVector = direction * -moveRightSpeed * deltaTime;
 	radarBox.position = hitbox.position + moveVector * 2;
 
 	bool collision = false;
 	vector<Tangible*> collided;
+	Tangible* hit = NULL;
 	for (Tangible* tangible : tangiblesAll) {
 		if (tangible == this)
 			continue;
 		if (checkCollisionWith(tangible)) {
 			if (moveVector.x == 0) {
 				moveVector.y = 0;
+				hit = tangible;
 				break;
 			} else if (moveVector.y == 0) {
 				moveVector.x = 0;
+				hit = tangible;
 				break;
 			}
 			collision = true;
@@ -491,6 +500,7 @@ Vector3 Baddie::collisionMovement(Vector3 moveVector) {
 		for (const auto& tangible : collided) {
 			if (checkCollisionWith(tangible)) {
 				collision = true;
+				hit = tangible;
 				break;
 			}
 		}
@@ -505,10 +515,24 @@ Vector3 Baddie::collisionMovement(Vector3 moveVector) {
 			for (const auto& tangible : collided) {
 				if (checkCollisionWith(tangible)) {
 					moveVector.x = 0;
+					hit = tangible;
 					break;
 				}
 			}
 
+		}
+		hit = collided[0]; // hope and pray...
+	}
+
+	if (hit && action == CreatureAction::FOLLOWING_TARGET) { // check height to see if can jump over
+		int obstacleHeight = (hit->getHitbox()->position.z + hit->getHitbox()->size.z)
+			- position.z;
+		if (obstacleHeight < jumpHeight) {
+			Vector3 obstacleDirection = hit->getHitbox()->position - position;
+			obstacleDirection.z = obstacleHeight;
+			obstacleDirection.Normalize();
+			startJump(obstacleDirection);
+			return Vector3::Zero;
 		}
 	}
 

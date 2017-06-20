@@ -121,6 +121,26 @@ void Map::placeTrigger(xml_node objectNode) {
 
 		unique_ptr<VerticalStepTrigger> trigger = make_unique<VerticalStepTrigger>(data);
 		triggers.push_back(move(trigger));
+
+	} else if (type.compare("start") == 0) {
+		
+		int z = objectNode.child("properties").child("property").attribute("value").as_int();
+		int data[6] = {
+			objectNode.attribute("x").as_int(), -objectNode.attribute("y").as_int(), z,
+			objectNode.attribute("width").as_int(), objectNode.attribute("height").as_int(), 1 
+		};
+
+		start = make_unique<EventTrigger>(data);
+
+	} else if (type.compare("exit") == 0) {
+
+		int z = objectNode.child("properties").child("property").attribute("value").as_int();
+		int data[6] = {
+			objectNode.attribute("x").as_int(), -objectNode.attribute("y").as_int(), z,
+			objectNode.attribute("width").as_int(), objectNode.attribute("height").as_int(), 1
+		};
+
+		triggers.push_back(make_unique<EventTrigger>(data));
 	}
 }
 
@@ -279,6 +299,8 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 		}
 		string fileStr = mapsDir
 			+ tilesetNode.child("image").attribute("source").as_string();
+		size_t loc = fileStr.find(".png");
+		fileStr.replace(loc, 4, ".dds");
 
 		int tileWidth = tilesetNode.attribute("tilewidth").as_int();
 		int tileHeight = tilesetNode.attribute("tileheight").as_int();
@@ -514,7 +536,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 				else if (layerName.compare("foreground") == 0)
 					layerDepth = .91;
 				else if (layerName.compare("zLayer") == 0) {
-					zPlus = layerNode.child("properties").child("property").attribute("value").as_int();
+					zPlus = layerNode.child("properties").child("property")
+						.attribute("value").as_int();
 					position.y += zPlus;
 					position.z = zPlus;
 					layerDepth = map->getLayerDepth(position.y);
@@ -613,3 +636,17 @@ vector<int> MapParser::split(string line) {
 }
 
 
+
+EventTrigger::EventTrigger(int rowdata[6]) : Trigger(rowdata) {
+}
+
+EventTrigger::EventTrigger(const EventTrigger* copyTrigger)
+	: Trigger(copyTrigger) {
+}
+
+EventTrigger::~EventTrigger() {
+}
+
+bool EventTrigger::activateTrigger(Creature * creature) {
+	return false;
+}

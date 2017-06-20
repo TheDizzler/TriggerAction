@@ -42,6 +42,15 @@ public:
 
 };
 
+class EventTrigger : public Trigger {
+public:
+	EventTrigger(int rowdata[6]);
+	EventTrigger(const EventTrigger* copyTrigger);
+	virtual ~EventTrigger();
+
+	virtual bool activateTrigger(Creature * creature) override;
+
+};
 
 /** Depth ranges from 0.0f to 1.0f. The entire depth between .1 and .9 (inclusive) is where the
 		game action takes place. Layer depth is assigned to a live object (non-tile) by
@@ -95,6 +104,7 @@ public:
 	int tileWidth, tileHeight;
 	int trueMapWidth, trueMapHeight;
 
+	unique_ptr<EventTrigger> start;
 
 	map<USHORT, unique_ptr<BaddieData>> baddieDataMap;
 	map<USHORT, shared_ptr<AnimationAsset>> animationMap;

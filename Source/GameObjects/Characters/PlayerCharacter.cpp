@@ -40,8 +40,6 @@ void PlayerCharacter::reloadData(CharacterData* data) {
 	playerSlot->statusDialog->updateHP();
 	isAlive = true;
 
-	//setInitialPosition(Vector2(10, playerSlot->getPlayerSlotNumber() * 100 + 150));
-	setInitialPosition(Vector2(180, 150));
 	canCancelAction = true;
 	action = CreatureAction::WAITING_ACTION;
 
@@ -99,8 +97,8 @@ void PlayerCharacter::initializeAssets() {
 }
 
 
-void PlayerCharacter::setInitialPosition(const Vector2& startingPosition) {
-	setPosition(Vector3(startingPosition.x, startingPosition.y, 20));
+void PlayerCharacter::setInitialPosition(const Vector3& startingPosition) {
+	setPosition(startingPosition);
 	loadAnimation(combatStanceRight);
 	falling = true;
 }
@@ -199,10 +197,10 @@ void PlayerCharacter::update(double deltaTime) {
 	}
 
 	if (falling) {
-		fallVelocity += GRAVITY * deltaTime;
-
+		
 		Vector3 moveVector = moveVelocity * deltaTime + fallVelocity;
 		descending = abs(fallVelocity.z) > moveVector.z;
+		fallVelocity += GRAVITY * deltaTime;
 
 		if (position.z <= 0) {
 			Vector3 newpos = position;
@@ -225,9 +223,10 @@ void PlayerCharacter::update(double deltaTime) {
 						const Hitbox* hb = tangible->getHitbox();
 						float dif = radarBox.position.z - (hb->position.z + hb->size.z);
 
-						if (dif < LANDING_TOLERANCE
-							&& dif > -LANDING_TOLERANCE
-							&& descending) {
+						if (/*dif < LANDING_TOLERANCE
+							&& dif > -LANDING_TOLERANCE*/
+							/*dif > 0
+							&& */descending) {
 							Vector3 newpos = position;
 							newpos.z = hb->position.z + hb->size.z;
 							setPosition(newpos);
@@ -239,13 +238,14 @@ void PlayerCharacter::update(double deltaTime) {
 						}
 					} else {
 						for (const auto& otherSubHB : tangible->subHitboxes) {
-							if (otherSubHB->collision2d(&radarBox)) {
+							if (otherSubHB->collision(&radarBox)) {
 								const Hitbox* hb = otherSubHB.get();
 								float dif = position.z - (hb->position.z + hb->size.z);
 
-								if (dif < LANDING_TOLERANCE
-									&& dif > -LANDING_TOLERANCE
-									&& descending) {
+								if (/*dif < LANDING_TOLERANCE
+									&& dif > -LANDING_TOLERANCE*/
+									/*dif > 0
+									&& */descending) {
 									Vector3 newpos = position;
 									newpos.z = hb->position.z + hb->size.z;
 									setPosition(newpos);
