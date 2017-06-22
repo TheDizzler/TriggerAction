@@ -19,6 +19,8 @@ Marle::Marle(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	STAM = 6;
 	MDEF = 8;
 
+	weight = 60;
+
 	// Aura (9TP) -> Aura Whirl (Chrono)
 	// Provoke
 	// Ice -> Ice Sword (Chrono) -> Antipode (Lucca)
@@ -51,6 +53,11 @@ void Marle::initializeAssets() {
 	shootDown = assetSet->getAnimation("shoot down");
 	shootRight = assetSet->getAnimation("shoot right");
 	shootUp = assetSet->getAnimation("shoot up");
+
+	jumpLeft = assetSet->getAnimation("walk left");
+	jumpDown = assetSet->getAnimation("walk down");
+	jumpRight = assetSet->getAnimation("walk right");
+	jumpUp = assetSet->getAnimation("walk up");
 }
 
 void Marle::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {

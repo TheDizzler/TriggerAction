@@ -5,7 +5,7 @@
 #include "SelectionPointer.h"
 
 enum TitleItems {
-	NEW_GAME, LOAD_GAME, OPTIONS, QUIT_GAME
+	NEW_GAME, LOAD_GAME, OPTIONS, QUIT_GAME, CANCEL
 };
 
 enum PauseMenuItems {
@@ -20,6 +20,7 @@ public:
 	virtual void setText(wstring text) override;
 	virtual void setDimensions(const Vector2& position, const Vector2& size) override;
 	virtual void pairPlayerSlot(PlayerSlot* playerSlot);
+	void reset();
 
 	void clearSelections();
 	void addSelection(wstring selection, bool enabled);

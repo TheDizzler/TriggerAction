@@ -206,8 +206,8 @@ void GameManager::controllerRemoved(size_t controllerSlot) {
 	currentScreen->controllerRemoved(controllerSlot);
 }
 
-void GameManager::newController(HANDLE joyHandle) {
-	currentScreen->newController(joyHandle);
+void GameManager::newController(shared_ptr<Joystick> newStick) {
+	currentScreen->newController(newStick);
 }
 
 void GameManager::controllerAccepted(HANDLE handle) {

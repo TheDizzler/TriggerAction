@@ -20,7 +20,7 @@ public:
 	void draw(SpriteBatch* batch, Color tint);
 
 	virtual unique_ptr<GraphicsAsset> texturize() override;
-	virtual void textureDraw(SpriteBatch* batch) override;
+	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
 
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;

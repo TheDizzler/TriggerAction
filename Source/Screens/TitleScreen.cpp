@@ -59,7 +59,7 @@ void TitleScreen::setGameManager(GameManager* gm) {
 bool openedOnce = false;
 void TitleScreen::reload() {
 
-	
+
 	pendulum->setPosition(Vector2(Globals::WINDOW_WIDTH * .6666, 100));
 	pendulum->setOrigin(Vector2(pendulum->getWidth() / 2, 0));
 	pendulumRotation = -XM_PIDIV2;
@@ -111,31 +111,42 @@ void TitleScreen::update(double deltaTime) {
 	} else {
 
 		bool ready = true;
-		for (const auto& slot : activeSlots) {
-			if (!slot->characterSelect(deltaTime))
+		//for (const auto& slot : activeSlots) {
+		for (int i = 1; i < activeSlots.size(); ++i) {
+			if (!activeSlots[i]->characterSelect(deltaTime))
 				ready = false;
 		}
 
-		if (!openedOnce && ready) {
-			guiOverlay->showMenu();
-			openedOnce = true;
-		}
-		guiOverlay->menuDialog->update(deltaTime);
-		if (guiOverlay->menuDialog->selectionMade) {
+		if (!activeSlots[0]->characterLocked) {
+			if (activeSlots[0]->characterSelect(deltaTime)) {
+				if (!openedOnce /*&& ready*/) {
+					guiOverlay->showMenu();
+					openedOnce = true;
+				}
+			}
+		} else {
+			guiOverlay->menuDialog->update(deltaTime);
+			if (guiOverlay->menuDialog->selectionMade) {
 
-			switch (guiOverlay->menuDialog->getSelected()) {
-				case TitleItems::QUIT_GAME:
-					game->exit();
-					break;
-				case TitleItems::NEW_GAME:
-					//state = CHARACTER_SELECT;
-					guiOverlay->menuDialog->hide();
-					for (const auto& slot : activeSlots) {
-						slot->pcSelectDialog->hide();
-					}
-					game->loadLevel(Globals::testLevel);
-					break;
-
+				switch (guiOverlay->menuDialog->getSelected()) {
+					case TitleItems::QUIT_GAME:
+						game->exit();
+						break;
+					case TitleItems::NEW_GAME:
+						if (ready) {
+							guiOverlay->menuDialog->hide();
+							for (const auto& slot : activeSlots) {
+								slot->pcSelectDialog->hide();
+							}
+							game->loadLevel(Globals::testLevel);
+						} else {
+							guiOverlay->menuDialog->selectionMade = false;
+						}
+						break;
+					case TitleItems::CANCEL:
+						openedOnce = false;
+						break;
+				}
 			}
 		}
 	}
@@ -156,14 +167,25 @@ void TitleScreen::pause() {
 
 void TitleScreen::controllerRemoved(size_t controllerSlot) {
 
-	if (activeSlots.size() == 0)
+	slotManager->playerSlots[controllerSlot]->resetCharacterSelect();
+
+	if (activeSlots.size() == 0) {
 		noControllerDialog->show();
+		guiOverlay->menuDialog->hide();
+		guiOverlay->menuDialog->reset();
+		openedOnce = false;
+	}
+
 }
 
 
-void TitleScreen::newController(HANDLE joyHandle) {
+void TitleScreen::newController(shared_ptr<Joystick> newStick) {
 
-	if (joyHandle)
-		noControllerDialog->hide();
 
+	if (newStick.get()) {
+		if (noControllerDialog->isOpen()) {
+			noControllerDialog->hide();
+			guiOverlay->menuDialog->pairPlayerSlot(slotManager->playerSlots[newStick->playerSlotNumber].get());
+		}
+	}
 }

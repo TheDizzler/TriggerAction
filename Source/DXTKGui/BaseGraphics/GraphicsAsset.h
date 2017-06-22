@@ -64,7 +64,7 @@ protected:
 
 	UINT width;
 	UINT height;
-	/* Optional. Currently only used for MouseController. Default == Vector2(width / 2, height / 2). */
+	/* Optional. Default == Vector2(width / 2, height / 2). */
 	Vector2 origin;
 	/* Position in spritesheet (if applicable) */
 	Vector2 position = Vector2::Zero;

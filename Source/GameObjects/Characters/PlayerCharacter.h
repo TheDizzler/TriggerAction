@@ -69,7 +69,7 @@ protected:
 	bool moving = false;
 	//bool waiting = false;
 
-	const double NORMAL_SPEED = 1.0;
+	const double NORMAL_SPEED = 1.1;
 	const double RUN_SPEED = 1.75;
 	const double JUMP_TIME = .375;
 	const int MAX_JUMP_HEIGHT = 20;

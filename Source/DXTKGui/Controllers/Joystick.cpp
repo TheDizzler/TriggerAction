@@ -1,4 +1,3 @@
-#include "../pch.h"
 #include "Joystick.h"
 
 
@@ -38,14 +37,14 @@ Joystick::Joystick(/*HANDLE hndl, */size_t controllerSlot) {
 Joystick::~Joystick() {
 }
 
-#include "../Managers/GameManager.h"
+//#include "../Managers/GameManager.h"
 void Joystick::registerNewHandle(HANDLE hndl) {
 	handle = hndl;
 
-	LARGE_INTEGER frequencyCount;
+	/*LARGE_INTEGER frequencyCount;
 	QueryPerformanceFrequency(&frequencyCount);
 	hz = double(frequencyCount.QuadPart);
-	start();
+	start();*/
 }
 
 HANDLE Joystick::getHandle() {

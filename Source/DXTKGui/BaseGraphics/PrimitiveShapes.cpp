@@ -154,7 +154,7 @@ unique_ptr<GraphicsAsset> RectangleFrame::texturize() {
 	return move(gfxAsset);
 }
 
-void RectangleFrame::textureDraw(SpriteBatch* batch) {
+void RectangleFrame::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 
 	// draw top horizontal bar
 	batch->Draw(pixel.Get(), frameTopPos, &frameHorizontal,

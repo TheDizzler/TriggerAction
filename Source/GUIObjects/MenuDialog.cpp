@@ -15,6 +15,11 @@ void MenuDialog::pairPlayerSlot(PlayerSlot* slot) {
 	playerSlot = slot;
 }
 
+void MenuDialog::reset() {
+	//playerSlot = NULL;
+	selectionMade = false;
+}
+
 void MenuDialog::setText(wstring text) {
 	dialogText->setText(text);
 	firstSelectionPosition = dialogText->getPosition();
@@ -144,9 +149,16 @@ void MenuDialog::update(double deltaTime) {
 	if (playerSlot->getStick()->aButtonPushed() || playerSlot->getStick()->startButtonPushed()) {
 
 			// option selected
-			selectionMade = true;
+		selectionMade = true;
 
-	} for (const auto& selection : selections)
+	} else if (playerSlot->getStick()->bButtonPushed()) {
+		playerSlot->resetCharacterSelect();
+		selectedItem = TitleItems::CANCEL;
+		selectionMade = true;
+		hide();
+	}
+
+	for (const auto& selection : selections)
 		selection->update(deltaTime);
 
 	pointer->update(deltaTime);

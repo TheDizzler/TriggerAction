@@ -92,7 +92,7 @@ void GUIOverlay::initializeTitleScreen(
 		slotManager->playerSlots[i]->pairWithDialog(pcSelectDialogs[i].get());
 		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcSelectDialogs[i].get();
 	}
-	menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());
+	//menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());
 	menuDialog->setText(L"Hello Menu");
 	menuDialog->clearSelections();
 	menuDialog->addSelection(L"New Game", true);

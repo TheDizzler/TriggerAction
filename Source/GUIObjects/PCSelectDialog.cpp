@@ -19,6 +19,7 @@ PCSelectDialog::~PCSelectDialog() {
 void PCSelectDialog::reset() {
 
 	showReadyLabel = false;
+	playerReady = false;
 	pointer->reset();
 }
 
@@ -107,7 +108,7 @@ void PCSelectDialog::draw(SpriteBatch* batch) {
 }
 
 
-void PCSelectDialog::textureDraw(SpriteBatch* batch) {
+void PCSelectDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 	DynamicDialog::textureDraw(batch);
 	//portrait->draw(batch);
 }

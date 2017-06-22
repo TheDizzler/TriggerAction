@@ -89,7 +89,7 @@ public:
 	void draw(SpriteBatch* batch);
 
 	virtual unique_ptr<GraphicsAsset> texturize() override;
-	virtual void textureDraw(SpriteBatch * batch) override;
+	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
 
 
 	void setSelected(size_t newIndex);

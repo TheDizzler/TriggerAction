@@ -1,5 +1,7 @@
 #pragma once
-
+#include <Windows.h>
+//#include "../BaseGraphics/Sprite.h"
+//#include "../StringHelper.h"
 #define MAX_BUTTONS		128
 #include <hidsdi.h>
 
@@ -55,24 +57,4 @@ public:
 private:
 	HANDLE handle = NULL;
 
-};
-
-
-class ControllerListener;
-/** This class is used for passing awaiting joysticks around threads. */
-struct JoyData {
-
-	JoyData(shared_ptr<Joystick> joy, ControllerListener* conListener)
-		: joystick(joy), listener(conListener) {
-	}
-	~JoyData() {
-		wostringstream wss;
-		wss << "Slot " << joystick->socket << " data deleting" << endl;
-		OutputDebugString(wss.str().c_str());
-	}
-
-	ControllerListener* listener;
-	shared_ptr<Joystick> joystick;
-	
-	bool finishFlag = false;
 };

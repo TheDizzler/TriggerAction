@@ -123,11 +123,11 @@ void Map::placeTrigger(xml_node objectNode) {
 		triggers.push_back(move(trigger));
 
 	} else if (type.compare("start") == 0) {
-		
+
 		int z = objectNode.child("properties").child("property").attribute("value").as_int();
 		int data[6] = {
 			objectNode.attribute("x").as_int(), -objectNode.attribute("y").as_int(), z,
-			objectNode.attribute("width").as_int(), objectNode.attribute("height").as_int(), 1 
+			objectNode.attribute("width").as_int(), objectNode.attribute("height").as_int(), 1
 		};
 
 		start = make_unique<EventTrigger>(data);
@@ -240,11 +240,53 @@ void Map::Layer::update(double deltaTime) {
 
 void Map::Layer::draw(SpriteBatch* batch) {
 
-	for (const auto& tileRow : tiles)
-		for (const auto& tile : tileRow)
-			if (tile.get())
-				tile->draw(batch);
+	if (texturized)
+		texturePanel->draw(batch);
+	else
+		for (const auto& tileRow : tiles)
+			for (const auto& tile : tileRow)
+				if (tile.get())
+					tile->draw(batch);
 }
+
+unique_ptr<GraphicsAsset> Map::Layer::texturize() {
+	texturized = true;
+	return move(guiFactory->createTextureFromIElement2D(this, false));
+}
+
+void Map::Layer::makeTexture(float layerDepth) {
+	texturePanel.reset(guiFactory->createPanel(true));
+	unique_ptr<GraphicsAsset> texture = texturize();
+	texturePanel->setTexture(move(texture));
+	texturePanel->setLayerDepth(layerDepth);
+}
+
+void Map::Layer::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
+	batch->Begin(SpriteSortMode_FrontToBack, CommonStates(device.Get()).NonPremultiplied());
+	{
+		for (const auto& tileRow : tiles)
+			for (const auto& tile : tileRow)
+				if (tile.get())
+					tile->draw(batch);
+	}
+	batch->End();
+}
+
+void Map::Layer::setPosition(const Vector2& position) {
+}
+
+const Vector2& Map::Layer::getPosition() const {
+	return Vector2::Zero;
+}
+
+const int Map::Layer::getWidth() const {
+	return Globals::WINDOW_WIDTH;
+}
+
+const int Map::Layer::getHeight() const {
+	return Globals::WINDOW_HEIGHT;
+}
+
 
 
 
@@ -495,9 +537,10 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 		xml_node dataNode = layerNode.child("data");
 		string layerName = layerNode.attribute("name").as_string();
 
-
+		
 		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>(layerName);
-
+		bool texturize = false;
+		float layerDepth = 0;
 
 
 		string str = dataNode.text().as_string();
@@ -528,21 +571,27 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 
 				int zPlus = 0;
 
-				float layerDepth = 0;
-				if (layerName.compare("ground") == 0)
+				
+				if (layerName.compare("ground") == 0) {
 					layerDepth = 0.06;
-				else if (layerName.compare("background") == 0)
+					texturize = true;
+				} else if (layerName.compare("background") == 0) {
 					layerDepth = 0;
-				else if (layerName.compare("foreground") == 0)
+					texturize = true;
+				} else if (layerName.compare("foreground") == 0) {
 					layerDepth = .91;
-				else if (layerName.compare("zLayer") == 0) {
+					texturize = true;
+				} else if (layerName.compare("zLayer") == 0) {
 					zPlus = layerNode.child("properties").child("property")
 						.attribute("value").as_int();
 					position.y += zPlus;
 					position.z = zPlus;
 					layerDepth = map->getLayerDepth(position.y);
-				} else
+					texturize = false;
+				} else {
 					layerDepth = map->getLayerDepth(position.y);
+					texturize = false;
+				}
 
 
 
@@ -598,6 +647,8 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 			}
 		}
 
+		if (texturize)
+			layer->makeTexture(layerDepth);
 		map->layers.push_back(move(layer));
 	}
 

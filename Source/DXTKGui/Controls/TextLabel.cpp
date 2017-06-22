@@ -97,7 +97,7 @@ unique_ptr<GraphicsAsset> TextLabel::texturize() {
 	return guiFactory->createTextureFromIElement2D(this);
 }
 
-void TextLabel::textureDraw(SpriteBatch* batch) {
+void TextLabel::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 	font->draw(batch, label.c_str(), position, tint,
 		rotation, origin, scale, layerDepth);
 }

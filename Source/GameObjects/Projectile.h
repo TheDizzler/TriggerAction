@@ -51,6 +51,8 @@ protected:
 	virtual void loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shadow) = 0;
 	void loadHitEffect(shared_ptr<Animation> hitEffect);
 
+	bool fineHitDetection(const Hitbox* hb);
+
 	void hit(Tangible* liveObject);
 	bool isExploding = false;
 };

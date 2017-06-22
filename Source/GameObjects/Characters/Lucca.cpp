@@ -9,15 +9,17 @@ Lucca::Lucca(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	loadAnimation(standRight);
 	currentFrameTexture = currentAnimation->texture.Get();
 
-	//currentHP = maxHP = 
-	//currentMP = maxMP = 
-	//PWR = ;
-	//HIT = ;
-	//MAG = ;
-	//SPD = ;
-	//EV = ;
-	//STAM = ;
-	//MDEF = ;
+	currentHP = maxHP = 62;
+	currentMP = maxMP = 12;
+	PWR = 2;
+	HIT = 8;
+	MAG = 8;
+	SPD = 6;
+	EV = 7;
+	STAM = 6;
+	MDEF = 7;
+
+	weight = 50;
 
 	// Flame Toss -> Fire Whirl (Chrono)
 	// Hypno Wave

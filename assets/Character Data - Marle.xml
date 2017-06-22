@@ -2,7 +2,7 @@
 <root game="Trigger Action RPG" xml="Character Data File - Marle" dir="assets/gfx/">
 
 	<!-- coords are from bottom left -->
-	<hitbox x="0" y="0" z="0" width="9" height="6" zHeight="24"/>
+	<hitbox x="-5" y="6" z="0" width="9" height="6" zHeight="24"/>
 
 	<weaponMenuIcon name="Bow" />
 	<!-- Relative to bottom left corner -->

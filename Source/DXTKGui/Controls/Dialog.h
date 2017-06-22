@@ -144,7 +144,7 @@ public:
 	virtual void draw(SpriteBatch* batch);
 
 	virtual unique_ptr<GraphicsAsset> texturize() override;
-	virtual void textureDraw(SpriteBatch* batch) override;
+	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
 
 	/* Add other GUIControls to dialog. Control position should be relative to Dialog.
 		Returns the position of control in control list. */

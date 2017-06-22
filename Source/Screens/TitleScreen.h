@@ -20,7 +20,7 @@ public:
 
 	virtual void pause() override;
 	virtual void controllerRemoved(size_t controllerSlot) override;
-	virtual void newController(HANDLE joyHandle);
+	virtual void newController(shared_ptr<Joystick> newStick) override;
 
 private:
 

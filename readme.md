@@ -8,3 +8,7 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- in-game player drop-in/drop-out
 >- player-controlled (and auto-scroll?) level
 >- HUD updates on enemy appear/die
+
+
+##Other notes
+>- Push to DXTKGui project: made changes to Texturizable to allow passing of ID3D11Device for more batch drawing control

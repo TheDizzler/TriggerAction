@@ -102,7 +102,7 @@ public:
 	static Dialog* showDialog;
 
 	virtual void controllerRemoved(size_t controllerSlot) override;
-	virtual void newController(HANDLE joyHandle) override;
+	virtual void newController(shared_ptr<Joystick> newStick) override;
 
 
 private:

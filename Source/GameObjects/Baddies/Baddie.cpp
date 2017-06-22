@@ -118,8 +118,10 @@ bool Baddie::update(double deltaTime) {
 						Vector3 distance = pc->getHitbox()->position - hitbox.position;
 
 						if (target == NULL || !target->isAlive) {
-							target = pc.get();
-							action = FOLLOWING_TARGET;
+							if (pc->isAlive) {
+								target = pc.get();
+								action = FOLLOWING_TARGET;
+							}
 						}
 
 						if (abs(distance.x) < threatRange.x && abs(distance.y) < threatRange.y
@@ -228,7 +230,7 @@ bool Baddie::update(double deltaTime) {
 
 			case CreatureAction::ATTACKING_ACTION:
 				attackUpdate(deltaTime);
-				if (!target->isAlive) {
+				if (target == NULL || !target->isAlive) {
 					target = NULL;
 					action = CreatureAction::WAITING_ACTION;
 				}
@@ -545,7 +547,7 @@ Vector3 Baddie::collisionMovement(Vector3 moveVector) {
 BlueImp::BlueImp(BaddieData* baddieData) : Baddie(baddieData) {
 
 	name = baddieData->type;
-	currentHP = maxHP = 130;
+	currentHP = maxHP = 50;
 	DEFPWR = 127;
 	MDEF = 50;
 	EXP = 2;
@@ -759,9 +761,9 @@ void BlueImp::attackUpdate(double deltaTime) {
 
 #ifdef  DEBUG_HITBOXES
 			drawAttackBox = true;
-			attackFrame->setSize(Vector2(tempBox.size.x, tempBox.size.y));
+			attackFrame->setSize(Vector2(attackRadarBox.size.x, attackRadarBox.size.y));
 			attackFrame->setPosition(Vector2(
-				tempBox.position.x, tempBox.position.y));
+				attackRadarBox.position.x, attackRadarBox.position.y));
 #endif //  DEBUG_HITBOXES
 			Tangible* hit = NULL;
 			float distanceToHit = 100;

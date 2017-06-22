@@ -80,13 +80,19 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 				joystickMap.erase(mapIt);
 
+				
+
 				availableControllerSockets.push_back(foundJoy->socket);
 				foundJoy->registerNewHandle(NULL);
 
 				OutputDebugString(L"Joystick removed\n");
 
-				if (foundJoy->playerSlotNumber > -1)
-					slotManager->controllerRemoved(foundJoy->playerSlotNumber);
+				
+
+				if (foundJoy->playerSlotNumber > -1) {
+					slotManager->controllerRemoved(foundJoy);
+					
+				}
 				controllerRemoved(foundJoy->socket);
 
 			}
@@ -210,7 +216,7 @@ void ControllerListener::unpairedJoystickRemoved(JoyData* joyData) {
 
 void ControllerListener::playerAcceptedSlot(JoyData* joyData) {
 	slotManager->finalizePair(joyData);
-	newController(joyData->joystick->getHandle());
+	newController(joyData->joystick);
 }
 
 

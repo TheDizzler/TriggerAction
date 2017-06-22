@@ -17,8 +17,11 @@ public:
 
 	CharacterData* getNextCharacter(int* currentPCNum);
 	CharacterData* getPreviousCharacter(int* currentPCNum);
-	//const CharacterData* getNextAvailabelCharacter();
+	CharacterData* getNextAvailabelCharacter();
 	CharacterData* getCharacterData(string characterName);
+
+	/** Returns true if character already selected. */
+	bool setCharacterSelected(int currentPCNum, bool selected);
 
 	unique_ptr<BaddieData> getBaddieData(
 		ComPtr<ID3D11Device> device, string baddieName);
@@ -28,7 +31,8 @@ private:
 	xml_node baddieDataNode;
 
 	int numPCsAvailable;
-	size_t nextAvaiablePC = 0;
+	vector<bool> pcSelected;
+	//size_t nextAvaiablePC = 0;
 	CRITICAL_SECTION cs_selectingPC;
 	map<string, unique_ptr<CharacterData>> characterDataMap;
 

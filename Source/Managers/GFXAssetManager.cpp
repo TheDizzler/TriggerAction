@@ -178,24 +178,45 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 CharacterData* GFXAssetManager::getNextCharacter(int* currentPCNum) {
 
-	if (++(*currentPCNum) > numPCsAvailable - 1)
-		*currentPCNum = 0;
+	do {
+		if (++(*currentPCNum) > numPCsAvailable - 1)
+			*currentPCNum = 0;
+	} while (pcSelected[*currentPCNum]);
 
 	return characterDataMap[characters[*currentPCNum]].get();
 }
 
 CharacterData* GFXAssetManager::getPreviousCharacter(int* currentPCNum) {
 
-	if (--(*currentPCNum) < 0)
-		*currentPCNum = numPCsAvailable - 1;
+	do {
+		if (--(*currentPCNum) < 0)
+			*currentPCNum = numPCsAvailable - 1;
+
+	} while (pcSelected[*currentPCNum]);
 
 	return characterDataMap[characters[*currentPCNum]].get();
+}
+
+CharacterData * GFXAssetManager::getNextAvailabelCharacter() {
+
+
+	//return characterDataMap[characters[]].get();
+	return NULL;
 }
 
 
 CharacterData* GFXAssetManager::getCharacterData(string characterName) {
 	return characterDataMap[characterName].get();
 }
+
+
+bool GFXAssetManager::setCharacterSelected(int currentPCNum, bool selected) {
+	if (selected && pcSelected[currentPCNum] || currentPCNum < 0)
+		return false;
+	pcSelected[currentPCNum] = selected;
+	return true;
+}
+
 
 unique_ptr<BaddieData> GFXAssetManager::getBaddieData(
 	ComPtr<ID3D11Device> device, string baddieName) {
@@ -217,14 +238,14 @@ unique_ptr<BaddieData> GFXAssetManager::getBaddieData(
 				thisBaddie = baddieNode.attribute("name").as_string();
 				if (thisBaddie == baddieName) {
 
-						string assetsDir = baddieFileroot.attribute("dir").as_string();
-						if (!getSpriteSheetData(device, baddieNode, assetsDir)) {
-							wostringstream wss;
-							wss << L"Could not read baddie spritesheet data in ";
-							wss << file.c_str() << L" file!";
-							GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
-							return baddieData;
-						}
+					string assetsDir = baddieFileroot.attribute("dir").as_string();
+					if (!getSpriteSheetData(device, baddieNode, assetsDir)) {
+						wostringstream wss;
+						wss << L"Could not read baddie spritesheet data in ";
+						wss << file.c_str() << L" file!";
+						GameEngine::errorMessage(wss.str().c_str(), L"Fatal Read Error!");
+						return baddieData;
+					}
 					baddieData->loadData(baddieNode, getAssetSet(baddieName.c_str()));
 
 					break;
@@ -275,9 +296,10 @@ bool GFXAssetManager::getCharacterDataFromXML(ComPtr<ID3D11Device> device) {
 	}
 
 	numPCsAvailable = characterDataMap.size();
+	for (int i = 0; i < numPCsAvailable; ++i)
+		pcSelected.push_back(false);
 
 
-	
 
 	return true;
 }

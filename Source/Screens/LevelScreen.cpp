@@ -104,6 +104,11 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 		}
 	}
 
+	for (i; i < 3; ++i) {
+		//CharacterData* characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+
+	}
+
 	guiOverlay->initializeLevelScreen(pcStatusDialogs);
 
 	camera->setZoomToResolution();
@@ -207,5 +212,5 @@ void LevelScreen::controllerRemoved(size_t controllerSlot) {
 
 }
 
-void LevelScreen::newController(HANDLE joyHandle) {
+void LevelScreen::newController(shared_ptr<Joystick> newStick) {
 }

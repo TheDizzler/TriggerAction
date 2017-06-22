@@ -37,7 +37,7 @@ public:
 	void loadMainMenu();
 
 	void controllerRemoved(size_t controllerSlot);
-	void newController(HANDLE joyHandle);
+	void newController(shared_ptr<Joystick> newStick);
 	void controllerAccepted(HANDLE handle);
 
 	void setPaused(bool paused);

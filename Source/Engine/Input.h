@@ -5,7 +5,6 @@
 
 
 #include "../DXTKGui/Controllers/MouseController.h"
-//#include "Joystick.h"
 #include "../Managers/PlayerSlot.h"
 
 extern unique_ptr<PlayerSlotManager> slotManager;
@@ -27,7 +26,7 @@ public:
 
 	void parseRawInput(PRAWINPUT pRawInput);
 
-	virtual void newController(HANDLE joyHandle) = 0;
+	virtual void newController(shared_ptr<Joystick> newStick) = 0;
 	virtual void controllerRemoved(size_t controllerSlot) = 0;
 	//void pairSocketToPlayerSlot(JoyData* joyData);
 	void unpairedJoystickRemoved(JoyData* joyData);

@@ -88,7 +88,7 @@ unique_ptr<GraphicsAsset> DynamicDialog::texturize() {
 }
 
 
-void DynamicDialog::textureDraw(SpriteBatch* batch) {
+void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 
 	Vector2 topPos = Vector2::Zero;
 	Vector2 bottomPos = Vector2(0, size.y - topLeftCorner->getHeight());

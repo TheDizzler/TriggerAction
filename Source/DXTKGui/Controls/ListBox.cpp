@@ -224,7 +224,7 @@ void ListBox::draw(SpriteBatch* batch) {
 }
 
 
-void ListBox::textureDraw(SpriteBatch* batch) {
+void ListBox::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 	
 	for (int i = firstItemToDisplay;
 		i < firstItemToDisplay + itemsToDisplay; ++i) {

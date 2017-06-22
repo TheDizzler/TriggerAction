@@ -3,7 +3,7 @@
 #include "../GUIObjects/MenuDialog.h"
 #include "../GUIObjects/PCStatusDialog.h"
 #include "../Engine/GameEngine.h"
-
+//#include "../Engine/Input.h"
 
 vector<shared_ptr<PlayerSlot>> activeSlots;
 deque<shared_ptr<PlayerSlot>> waitingSlots;
@@ -22,77 +22,90 @@ PlayerSlot::~PlayerSlot() {
 
 void PlayerSlot::resetCharacterSelect() {
 
-	
 	characterLocked = false;
 	characterSelected = false;
-	characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-	pcSelectDialog->loadPC(characterData);
+	pcSelectDialog->reset();
+	if (gfxAssets->setCharacterSelected(currentCharacterNum, false))
+	//characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+		pcSelectDialog->loadPC(characterData);
 }
 
 
 bool PlayerSlot::characterSelect(double deltaTime) {
 
-	//PCSelectDialog* dialog = (PCSelectDialog*) pcSelectDialog;
-	if (!characterLocked) {
+	//if (!characterLocked) {
 
-		if (!characterSelected) {
-			if (joystick->lAxisX < -10) {
-				repeatDelayTime += deltaTime;
-				if (repeatDelayTime >= REPEAT_DELAY) {
-					// select character to left
-					characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
-					pcSelectDialog->loadPC(characterData);
-					repeatDelayTime = 0;
-				}
-
-			} else if (joystick->lAxisX > 10) {
-				repeatDelayTime += deltaTime;
-				if (repeatDelayTime >= REPEAT_DELAY) {
-					// select character to right
-					characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
-					pcSelectDialog->loadPC(characterData);
-					repeatDelayTime = 0;
-				}
-			} else {
-				repeatDelayTime = REPEAT_DELAY;
-			}
-		}
-
-
-
-		if (joystick->aButtonPushed()) {
-
-
-			if (characterSelected) {
-				characterLocked = true;
-				pcSelectDialog->setReady(true);
-			} else {
-				characterSelected = true;
-				pcSelectDialog->setSelected(true);
+	if (!characterSelected) {
+		if (joystick->lAxisX < -10) {
+			repeatDelayTime += deltaTime;
+			if (repeatDelayTime >= REPEAT_DELAY) {
+				// select character to left
+				characterData = gfxAssets->getPreviousCharacter(&currentCharacterNum);
+				pcSelectDialog->loadPC(characterData);
+				repeatDelayTime = 0;
 			}
 
-		} else if (joystick->bButtonPushed()) {
-
-
-			if (characterLocked || characterSelected) {
-				characterLocked = false;
-				characterSelected = false;
-				pcSelectDialog->setSelected(false);
-				pcSelectDialog->setReady(false);
+		} else if (joystick->lAxisX > 10) {
+			repeatDelayTime += deltaTime;
+			if (repeatDelayTime >= REPEAT_DELAY) {
+				// select character to right
+				characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
+				pcSelectDialog->loadPC(characterData);
+				repeatDelayTime = 0;
 			}
+		} else {
+			repeatDelayTime = REPEAT_DELAY;
 		}
 	}
+
+
+
+	if (joystick->aButtonPushed()) {
+
+
+		if (characterSelected
+			&& gfxAssets->setCharacterSelected(currentCharacterNum, true)) {
+			characterLocked = true;
+
+			pcSelectDialog->setReady(true);
+		} else {
+			characterSelected = true;
+			pcSelectDialog->setSelected(true);
+		}
+
+	} else if (joystick->bButtonPushed()) {
+
+
+		if (characterLocked || characterSelected) {
+			if (characterLocked)
+				gfxAssets->setCharacterSelected(currentCharacterNum, false);
+			characterLocked = false;
+			characterSelected = false;
+			pcSelectDialog->setSelected(false);
+			pcSelectDialog->setReady(false);
+
+		}
+	}
+//}
 	return characterLocked;
 }
 
 
 void PlayerSlot::waiting() {
 
-	if (joystick->aButtonPushed()) {
+	if (joystick == NULL) {
+		GameEngine::errorMessage(L"Joystick non-existant");
+	} else if (joystick->aButtonPushed()) {
 		_threadJoystickData->finishFlag = true;
 		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
-
+		_threadJoystickData = NULL;
 	}
+}
+
+void PlayerSlot::finishInit() {
+	if (_threadJoystickData)
+		_threadJoystickData->finishFlag = true;
+	_threadJoystickData = NULL;
 }
 
 
@@ -152,7 +165,11 @@ void PlayerSlot::unpairSocket() {
 
 	joystick->playerSlotNumber = -1;
 	joystick = NULL;
+	_threadJoystickData = NULL;
+}
 
+JoyData* PlayerSlot::getJoyData() {
+	return _threadJoystickData;
 }
 
 
@@ -170,6 +187,7 @@ Joystick* PlayerSlot::getStick() {
 
 void PlayerSlot::selectCharacter() {
 
+	currentCharacterNum += slotNumber;
 	characterData = gfxAssets->getNextCharacter(&currentCharacterNum);
 	pcSelectDialog->loadPC(characterData);
 }
@@ -207,15 +225,19 @@ void PlayerSlotManager::waiting() {
 }
 
 
-void PlayerSlotManager::controllerRemoved(size_t playerSlotNumber) {
+void PlayerSlotManager::controllerRemoved(shared_ptr<Joystick> joystick) {
 
 	wstringstream wss;
-	wss << "Controller PlayerSlot " << playerSlotNumber << " removed" << endl;
+	wss << "Controller PlayerSlot " << joystick->playerSlotNumber << " removed" << endl;
 	OutputDebugString(wss.str().c_str());
+	JoyData* joydata = playerSlots[joystick->playerSlotNumber]->getJoyData();
+
+	if (joydata /*&& joydata->joystick*/)
+		accessWaitingSlots(REMOVE_FROM_LIST, joydata);
 
 	activeSlots.erase(remove(activeSlots.begin(), activeSlots.end(),
-		playerSlots[playerSlotNumber]), activeSlots.end());
-	playerSlots[playerSlotNumber]->unpairSocket();
+		playerSlots[joystick->playerSlotNumber]), activeSlots.end());
+	playerSlots[joystick->playerSlotNumber]->unpairSocket();
 }
 
 
@@ -233,6 +255,7 @@ void PlayerSlotManager::finalizePair(JoyData* joyData) {
 	activeSlots.push_back(playerSlots[joyData->joystick->playerSlotNumber]);
 
 	playerSlots[joyData->joystick->playerSlotNumber]->selectCharacter();
+	playerSlots[joyData->joystick->playerSlotNumber]->finishInit();
 
 	wostringstream ws;
 	ws << L"Player ";
@@ -243,7 +266,11 @@ void PlayerSlotManager::finalizePair(JoyData* joyData) {
 
 void PlayerSlotManager::accessWaitingSlots(size_t task, PVOID pvoid) {
 
+	int* playerSlotNumber;
 	JoyData* joyData = (JoyData*) pvoid;
+	//if (joyData == NULL)
+	//	//return;
+	//	playerSlotNumber = (int*) pvoid;
 
 	EnterCriticalSection(&cs_waitingJoysticks);
 	//OutputDebugString(L"\nEntering CS -> ");

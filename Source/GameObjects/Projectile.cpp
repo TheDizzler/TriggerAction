@@ -57,6 +57,7 @@ void Projectile::update(double deltaTime) {
 		|| screenpos.y < 0 || screenpos.y > Globals::WINDOW_HEIGHT) {
 
 		isActive = false;
+		return;
 	}
 
 	currentFrameTime += deltaTime;
@@ -85,49 +86,35 @@ void Projectile::update(double deltaTime) {
 		liveObject->debugSetTint(Colors::Black.v);
 #endif //  DEBUG_HITBOXES
 
-		if (ray.collision(liveObject->getHitbox())) {
+		if (ray.collision2d(liveObject->getHitbox())) {
+			if (ray.collisionZ(liveObject->getHitbox())) {
 #ifdef  DEBUG_HITBOXES
-			liveObject->debugSetTint(Colors::Cyan.v);
+				liveObject->debugSetTint(Colors::Cyan.v);
 #endif //  DEBUG_HITBOXES
-			int xDist, yDist;
-			switch (direction) {
-				case Facing::LEFT:
-					xDist = liveObject->getHitbox()->position.x - position.x;
-					if (xDist > moveInOneFrame.x - liveObject->getHitbox()->size.x / 2) {
+				if (fineHitDetection(liveObject->getHitbox())) {
+					hit(liveObject);
 #ifdef  DEBUG_HITBOXES
-						liveObject->debugSetTint(Colors::Crimson.v);
+					liveObject->debugSetTint(Colors::Crimson.v);
 #endif //  DEBUG_HITBOXES
-						hit(liveObject);
-					}
 					break;
-				case Facing::RIGHT:
-					xDist = position.x - liveObject->getHitbox()->position.x;
-					if (xDist > moveInOneFrame.x - liveObject->getHitbox()->size.x) {
+				}
+			} else {
+				for (const auto& subhb : liveObject->subHitboxes) {
 #ifdef  DEBUG_HITBOXES
-						liveObject->debugSetTint(Colors::Crimson.v);
+					liveObject->debugSetTint(Colors::Cyan.v);
 #endif //  DEBUG_HITBOXES
-						hit(liveObject);
+					if (ray.collision(subhb.get())) {
+						if (fineHitDetection(subhb.get())) {
+							hit(liveObject);
+#ifdef  DEBUG_HITBOXES
+							liveObject->debugSetTint(Colors::Crimson.v);
+#endif //  DEBUG_HITBOXES
+							break;
+						}
 					}
-					break;
 
-				case Facing::DOWN:
-					yDist = position.y - liveObject->getHitbox()->position.y;
-					if (yDist > moveInOneFrame.y - liveObject->getHitbox()->size.y / 2) {
-#ifdef  DEBUG_HITBOXES
-						liveObject->debugSetTint(Colors::Crimson.v);
-#endif //  DEBUG_HITBOXES
-						hit(liveObject);
-					}
-					break;
-				case Facing::UP:
-					yDist = liveObject->getHitbox()->position.y - position.y;
-					if (yDist > moveInOneFrame.y - liveObject->getHitbox()->size.z / 2) {
-#ifdef  DEBUG_HITBOXES
-						liveObject->debugSetTint(Colors::Crimson.v);
-#endif //  DEBUG_HITBOXES
-						hit(liveObject);
-					}
-					break;
+				}
+
 			}
 		}
 	}
@@ -201,6 +188,41 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 	moveInOneFrame = Vector2(-cos(rotation) * distanceDeltaPerFrame,
 		sin(-rotation) * distanceDeltaPerFrame);
 	layerDepth = Map::getLayerDepth(position.y);
+}
+
+bool Projectile::fineHitDetection(const Hitbox* hb) {
+
+
+	int xDist, yDist;
+	switch (direction) {
+		case Facing::LEFT:
+			xDist = hb->position.x - position.x;
+			if (xDist > moveInOneFrame.x - hb->size.x / 2) {
+
+				return true;
+			}
+			break;
+		case Facing::RIGHT:
+			xDist = position.x - hb->position.x;
+			if (xDist > moveInOneFrame.x - hb->size.x) {
+				return true;
+			}
+			break;
+
+		case Facing::DOWN:
+			yDist = position.y - hb->position.y;
+			if (yDist > moveInOneFrame.y - hb->size.y / 2) {
+				return true;
+			}
+			break;
+		case Facing::UP:
+			yDist = hb->position.y - position.y;
+			if (yDist > moveInOneFrame.y - hb->size.z / 2) {
+				return true;
+			}
+			break;
+	}
+	return false;
 }
 
 

@@ -1,6 +1,6 @@
 #include "../pch.h"
 #include "SelectionPointer.h"
-
+#include "../DXTKGui/Controllers/Joystick.h"
 
 const int POINTER_OFFSET = 16;
 const float BOUNCE_AMPLITUDE = 4;
@@ -18,7 +18,7 @@ void SelectionPointer::reset() {
 	setSelected(0);
 }
 
-#include "../Engine/Joystick.h"
+
 void SelectionPointer::update(double deltaTime) {
 
 	if (!selectedPosition) {

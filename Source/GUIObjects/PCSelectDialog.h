@@ -21,7 +21,7 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 
 
-	virtual void textureDraw(SpriteBatch* batch) override;
+	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
 
 	virtual void hide() override;
 	virtual void show() override;

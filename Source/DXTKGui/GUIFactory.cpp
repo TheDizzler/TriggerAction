@@ -581,7 +581,7 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromIElement2D(
 		}
 		batch->End();
 	} else
-		control->textureDraw(batch);
+		control->textureDraw(batch, device);
 
 	deviceContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	textureRenderTargetView.Reset();

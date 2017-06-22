@@ -635,7 +635,7 @@ unique_ptr<GraphicsAsset> PromptDialog::texturize() {
 }
 
 
-void PromptDialog::textureDraw(SpriteBatch* batch) {
+void PromptDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 
 	bgSprite->draw(batch);
 	panel->draw(batch);

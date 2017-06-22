@@ -301,7 +301,7 @@ void GameEngine::controllerRemoved(size_t controllerSlot) {
 	game->controllerRemoved(controllerSlot);
 }
 
-void GameEngine::newController(HANDLE joyHandle) {
+void GameEngine::newController(shared_ptr<Joystick> newStick) {
 
-	game->newController(joyHandle);
+	game->newController(newStick);
 }

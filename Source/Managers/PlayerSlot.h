@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../globals.h"
-#include "../Engine/Joystick.h"
+#include "../DXTKGui/Controllers/Joystick.h"
 #include "../GameObjects/Characters/CharacterData.h"
 #include <deque>
 
@@ -13,6 +13,7 @@ class PCStatusDialog;
 const double REPEAT_DELAY = .5;
 
 class PCSelectDialog;
+class JoyData;
 
 /** This class is how the game communicates with the player input.
 	The windows message pump sends data to the joysticks and the game queries
@@ -25,7 +26,7 @@ public:
 	void resetCharacterSelect();
 	bool characterSelect(double deltaTime);
 	void waiting();
-
+	void finishInit();
 
 	void pairWithDialog(PCSelectDialog* dialog);
 	void pairWithStatusDialog(PCStatusDialog* dialog);
@@ -34,7 +35,7 @@ public:
 	bool pairWithSocket(JoyData* joyData);
 	void unpairSocket();
 
-
+	JoyData* getJoyData();
 
 	size_t getPlayerSlotNumber();
 	/** If no joy, no player :( */
@@ -47,6 +48,7 @@ public:
 	PCSelectDialog* pcSelectDialog;
 	PCStatusDialog* statusDialog;
 	CharacterData* characterData;
+	bool characterLocked = false;
 
 	unique_ptr<MenuDialog> pauseDialog;
 private:
@@ -57,7 +59,7 @@ private:
 
 	int currentCharacterNum = -1;
 	bool characterSelected = false;
-	bool characterLocked = false;
+	
 	//bool buttonStillDown = false;
 
 	/* For temporary initialization purposes only! Do not use! */
@@ -75,7 +77,7 @@ public:
 	void waiting();
 
 
-	void controllerRemoved(size_t playerSlotNumber);
+	void controllerRemoved(shared_ptr<Joystick> joystick);
 	void controllerTryingToPair(JoyData* joyData);
 	void finalizePair(JoyData* joyData);
 
@@ -88,4 +90,24 @@ private:
 		ADD_TO_WAITING_LIST, REMOVE_FROM_LIST, CHECK_FOR_CONFIRM
 	};
 	void accessWaitingSlots(size_t task, PVOID pvoid);
+};
+
+
+class ControllerListener;
+/** This class is used for passing awaiting joysticks around threads. */
+struct JoyData {
+
+	JoyData(shared_ptr<Joystick> joy, ControllerListener* conListener)
+		: joystick(joy), listener(conListener) {
+	}
+	~JoyData() {
+		wostringstream wss;
+		wss << "Slot " << joystick->socket << " data deleting" << endl;
+		OutputDebugString(wss.str().c_str());
+	}
+
+	ControllerListener* listener;
+	shared_ptr<Joystick> joystick;
+
+	bool finishFlag = false;
 };
