@@ -206,6 +206,37 @@ vector<TileBase*> Map::getTilesAt(Vector3 position) {
 	return stack;
 }
 
+vector<TileBase*> Map::getTilesBetween(Vector3 topLeft, Vector3 bottomRight) {
+
+	vector<TileBase*> tiles;
+
+	int rowStart = topLeft.y / tileHeight;
+	int colStart = topLeft.x / tileWidth;
+	int rowEnd = ceil(bottomRight.x / float(tileHeight));
+	int colEnd = ceil(bottomRight.y / float(tileWidth));
+
+	for (const auto& layer : layers) {
+		for (int i = rowStart; i <= rowEnd; ++i) {
+			for (int j = colStart; j <= colEnd; ++j) {
+				tiles.push_back(layer->tiles[i][j].get());
+
+			}
+		}
+	}
+	return tiles;
+}
+
+void Map::calculateShadows() {
+	for (const auto& layer : layers) {
+		for (const auto& tileRow : layer->tiles) {
+			for (const auto& tile : tileRow) {
+				if (tile.get())
+					tile->calculateShadow(this);
+			}
+		}
+	}
+}
+
 
 
 TileAsset::~TileAsset() {
@@ -537,7 +568,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 		xml_node dataNode = layerNode.child("data");
 		string layerName = layerNode.attribute("name").as_string();
 
-		
+
 		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>(layerName);
 		bool texturize = false;
 		float layerDepth = 0;
@@ -571,7 +602,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 
 				int zPlus = 0;
 
-				
+
 				if (layerName.compare("ground") == 0) {
 					layerDepth = 0.06;
 					texturize = true;

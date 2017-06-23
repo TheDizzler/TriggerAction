@@ -193,3 +193,7 @@ USHORT MenuDialog::getSelected() {
 	selectionMade = false;
 	return selectedItem;
 }
+
+bool MenuDialog::currentPlayerIs(PlayerSlot* pSlot) {
+	return playerSlot == pSlot;
+}

@@ -4,7 +4,7 @@
 unique_ptr<PlayerSlotManager> slotManager;
 
 bool endAllThreadsNow = false;
-
+bool slotManagerThreadRunning = false;
 
 Input::Input() {
 
@@ -31,8 +31,9 @@ bool Input::initRawInput(HWND hwnd) {
 ControllerListener::ControllerListener() {
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		joystickPorts[i] = make_shared<Joystick>(i);
-		availableControllerSockets.push_back(i);
+		joystickPorts[i] = make_shared<Joystick>(ControllerSocketNumber(ControllerSocketNumber::SOCKET_1 + i));
+		availableControllerSockets.push_back(
+			ControllerSocketNumber(ControllerSocketNumber::SOCKET_1 + i));
 	}
 
 	slotManager = make_unique<PlayerSlotManager>();
@@ -50,7 +51,7 @@ ControllerListener::~ControllerListener() {
 	endAllThreadsNow = true;
 	joystickMap.clear();
 
-	deque<USHORT> empty;
+	deque<ControllerSocketNumber> empty;
 	swap(availableControllerSockets, empty);
 
 	DeleteCriticalSection(&cs_availableControllerSockets);
@@ -80,20 +81,20 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 				joystickMap.erase(mapIt);
 
-				
+
 
 				availableControllerSockets.push_back(foundJoy->socket);
 				foundJoy->registerNewHandle(NULL);
 
 				OutputDebugString(L"Joystick removed\n");
 
-				
 
-				if (foundJoy->playerSlotNumber > -1) {
+				PlayerSlotNumber slotNumber = foundJoy->playerSlotNumber;
+				if (slotNumber != PlayerSlotNumber::NONE) {
 					slotManager->controllerRemoved(foundJoy);
-					
+
 				}
-				controllerRemoved(foundJoy->socket);
+				controllerRemoved(foundJoy->socket, slotNumber);
 
 			}
 			found = NULL;
@@ -220,6 +221,33 @@ void ControllerListener::playerAcceptedSlot(JoyData* joyData) {
 }
 
 
+DWORD WINAPI slotManagerThread(PVOID pVoid) {
+
+	if (slotManagerThreadRunning)
+		return 0;
+	slotManagerThreadRunning = true;
+
+	wostringstream wss;
+	wss << L"SlotManager Thread #" << GetCurrentThreadId() << endl;
+	OutputDebugString(wss.str().c_str());
+
+	while (waitingSlots.size() > 0) {
+		slotManager->waiting();
+		if (endAllThreadsNow) {
+			slotManagerThreadRunning = false;
+			return 0;
+		}
+		//Sleep(100);
+	}
+
+	wss.clear();
+	wss << L"SlotManager Thread #" << GetCurrentThreadId() << L" finishing." << endl;
+	OutputDebugString(wss.str().c_str());
+
+	slotManagerThreadRunning = false;
+	return 0;
+}
+
 DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 
 	JoyData* joyData = (JoyData*) pVoid;
@@ -283,7 +311,6 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 			while (!joyData->finishFlag) {
 				// thread is now waiting for the player to confirm their Player Slot
 				if (endAllThreadsNow) {
-
 					delete joyData;
 					return 0;
 				}

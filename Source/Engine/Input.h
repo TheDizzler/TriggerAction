@@ -10,10 +10,9 @@
 extern unique_ptr<PlayerSlotManager> slotManager;
 
 
-
 DWORD WINAPI waitForHUDThread(PVOID pVoid);
 DWORD WINAPI waitForPlayerThread(PVOID pVoid);
-
+DWORD WINAPI slotManagerThread(PVOID pVoid);
 
 
 class ControllerListener {
@@ -27,7 +26,8 @@ public:
 	void parseRawInput(PRAWINPUT pRawInput);
 
 	virtual void newController(shared_ptr<Joystick> newStick) = 0;
-	virtual void controllerRemoved(size_t controllerSlot) = 0;
+	virtual void controllerRemoved(ControllerSocketNumber controllerSocket,
+		PlayerSlotNumber slotNumber) = 0;
 	//void pairSocketToPlayerSlot(JoyData* joyData);
 	void unpairedJoystickRemoved(JoyData* joyData);
 	void playerAcceptedSlot(JoyData* joyData);
@@ -41,7 +41,7 @@ protected:
 	map<HANDLE, shared_ptr<Joystick>> joystickMap;
 	/** When a new controller is detected, they get placed here until a player "claims" it. */
 	//map<HANDLE, shared_ptr<Joystick>> unclaimedJoysticks;
-	deque<USHORT> availableControllerSockets;
+	deque<ControllerSocketNumber> availableControllerSockets;
 
 	/* Thread Safe. */
 	bool socketsAvailable();

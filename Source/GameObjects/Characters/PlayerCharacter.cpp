@@ -332,7 +332,7 @@ void PlayerCharacter::draw(SpriteBatch* batch) {
 
 void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
-	if (action == CreatureAction::HIT_ACTION) {
+	if (action == CreatureAction::HIT_ACTION || action == CreatureAction::DEAD_ACTION) {
 		// prevents further damage while recovering from hit
 		return;
 	}
@@ -364,7 +364,7 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 
 	
 
-	if ((currentHP -= damage) < 0) {
+	if ((currentHP -= damage) <= 0) {
 		currentHP = 0;
 		action = CreatureAction::DEAD_ACTION;
 		switch (facing) {

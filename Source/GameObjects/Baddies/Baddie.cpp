@@ -406,7 +406,7 @@ void Baddie::draw(SpriteBatch* batch) {
 
 void Baddie::takeDamage(int damage, bool showDamage) {
 
-	if ((currentHP -= damage) < 0) {
+	if ((currentHP -= damage) <= 0) {
 		currentHP = 0;
 		isAlive = false;
 		timeSinceDeath = 0;

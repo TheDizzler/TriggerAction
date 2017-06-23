@@ -42,6 +42,8 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 	map.reset();
 	map = move(newMap);
 
+	map->calculateShadows();
+
 	for (auto& tile : map->tangibles) {
 		tangiblesAll.push_back(tile);
 	}
@@ -125,6 +127,8 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 	map.reset();
 	map = move(newMap);
 
+	map->calculateShadows();
+
 	for (auto& tile : map->tangibles) {
 		tangiblesAll.push_back(tile);
 	}
@@ -203,7 +207,8 @@ void LevelScreen::pause() {
 }
 
 
-void LevelScreen::controllerRemoved(size_t controllerSlot) {
+void LevelScreen::controllerRemoved(ControllerSocketNumber controllerSlot,
+	PlayerSlotNumber slotNumber) {
 
 
 	game->setPaused(true);

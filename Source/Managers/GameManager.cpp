@@ -201,9 +201,10 @@ void GameManager::loadMainMenu() {
 
 }
 
-void GameManager::controllerRemoved(size_t controllerSlot) {
+void GameManager::controllerRemoved(ControllerSocketNumber controllerSocket,
+	PlayerSlotNumber slotNumber) {
 
-	currentScreen->controllerRemoved(controllerSlot);
+	currentScreen->controllerRemoved(controllerSocket, slotNumber);
 }
 
 void GameManager::newController(shared_ptr<Joystick> newStick) {

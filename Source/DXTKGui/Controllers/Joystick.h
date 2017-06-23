@@ -7,6 +7,15 @@
 
 class PlayerCharacter;
 
+enum PlayerSlotNumber {
+	NONE = -1, SLOT_1, SLOT_2, SLOT_3
+};
+
+/* Virtual Sockets for controllers. */
+enum ControllerSocketNumber {
+	SOCKET_1, SOCKET_2, SOCKET_3
+};
+
 enum ControlButtons {
 	A = 0, B, X, Y, L, R, SELECT, START
 };
@@ -16,7 +25,7 @@ enum ControlButtons {
 class Joystick {
 public:
 
-	Joystick(size_t controllerSlot);
+	Joystick(ControllerSocketNumber controllerSocket);
 	~Joystick();
 
 	void registerNewHandle(HANDLE handle);
@@ -31,11 +40,11 @@ public:
 	LONG lHat = 0;
 	INT  g_NumberOfButtons;
 
-
 	void parseRawInput(PRAWINPUT pRawInput);
 
-	size_t socket;
-	short playerSlotNumber = -1;
+	/* The virtual controller socket this joystick is plugged in to. */
+	ControllerSocketNumber socket;
+	PlayerSlotNumber playerSlotNumber = PlayerSlotNumber::NONE;
 
 	bool yButtonPushed();
 	bool xButtonPushed();

@@ -144,8 +144,9 @@ public:
 			Returns stack of tiles occupying position. */
 	vector<TileBase*> getTilesAt(Vector3 position);
 
+	vector<TileBase*> getTilesBetween(Vector3 topLeft, Vector3 bottomRight);
 
-
+	void calculateShadows();
 };
 
 

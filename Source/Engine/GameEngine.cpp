@@ -197,7 +197,7 @@ void GameEngine::run(double deltaTime) {
 
 void GameEngine::update(double deltaTime) {
 
-	
+
 
 	if (paused) {
 		auto state = Keyboard::Get().GetState();
@@ -296,9 +296,10 @@ void GameEngine::exit() {
 }
 
 
-void GameEngine::controllerRemoved(size_t controllerSlot) {
+void GameEngine::controllerRemoved(ControllerSocketNumber controllerSocket,
+	PlayerSlotNumber slotNumber) {
 
-	game->controllerRemoved(controllerSlot);
+	game->controllerRemoved(controllerSocket, slotNumber);
 }
 
 void GameEngine::newController(shared_ptr<Joystick> newStick) {

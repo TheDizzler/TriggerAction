@@ -1,6 +1,6 @@
 #include "../pch.h"
 #include "Tile.h"
-#include "../Managers/GameManager.h"
+#include "../Engine/GameEngine.h"
 #include "Creature.h"
 
 void TileBase::moveBy(const Vector3 & moveVector) {
@@ -21,6 +21,10 @@ void TileBase::setPosition(const Vector3& newpos) {
 
 	if (layerDepth >= FURTHEST_DEPTH && layerDepth <= NEAREST_DEPTH)
 		setLayerDepth(Map::getLayerDepth(position.y + maskPosition.y));
+}
+
+/** See: TangibleTile::calculateShadow(const Map* map) */
+void TileBase::calculateShadow(Map* map) {
 }
 
 TileBase::~TileBase() {
@@ -116,6 +120,64 @@ void TangibleTile::load(TileAsset* const tileAsset) {
 void TangibleTile::takeDamage(int damage, bool showDamage) {
 }
 
+void TangibleTile::calculateShadow(Map* map) {
+
+	if (position.z > 0) {
+		shadow.reset(guiFactory->createRectangle(
+			Vector2(position.x, position.y), Vector2(getWidth(), getHeight())));
+		shadow->setTint(Colors::Black);
+
+		// raycast downward (z direction)
+		Hitbox ray;
+		ray.position = position;
+		ray.size = Vector3(getWidth(), getHeight(), position.z);
+
+		/*Vector3 topLeft = position;
+		Vector3 bottomRight(position.x + width, position.y + height, 0);
+
+		vector<TileBase*> tiles = map->getTilesBetween(topLeft, bottomRight);
+		for (TileBase* tile : tiles) {
+			if (tile == this)
+				continue;
+			if (ray.collision2d(tile->getHitbox())) {
+				if (ray.collisionZ(tile->getHitbox())) {
+
+				}
+			}
+		}*/
+		Tangible* closest = NULL;
+
+		for (Tangible* liveObject : tangiblesAll) {
+			if (liveObject == this)
+				continue;
+			if (ray.collision2d(liveObject->getHitbox())) {
+				if (ray.collisionZ(liveObject->getHitbox())) {
+					if (closest == NULL
+						|| (liveObject->getHitbox()->position.z > closest->getHitbox()->position.z
+							&& liveObject->getHitbox()->position.z > position.z)) {
+
+						closest = liveObject;
+					}
+				}
+			}
+		}
+		float closestZ = 0;
+		if (closest == NULL) {
+			shadow->setLayerDepth(layerDepth + 0.00001);
+		} else {
+			closestZ = closest->getHitbox()->position.z + closest->getHitbox()->size.z;
+			shadow->setLayerDepth(layerDepth + 0.00001);
+			
+		}
+		shadow->setPosition(Vector2(position.x, position.y - getHeight() + closestZ));
+		shadow->setAlpha(
+			(MAX_SHADOW_HEIGHT - (position.z - closestZ))/2
+			/ MAX_SHADOW_HEIGHT
+		);
+	}
+
+}
+
 
 void TangibleTile::update(double deltaTime) {
 	//Tile::update(deltaTime);
@@ -132,6 +194,8 @@ void TangibleTile::draw(SpriteBatch* batch) {
 	batch->Draw(texture.Get(), drawPosition, &sourceRect, tint, rotation,
 		origin, scale, SpriteEffects_None, layerDepth);
 
+	if (shadow.get())
+		shadow->draw(batch);
 #ifdef  DEBUG_HITBOXES
 	debugDraw(batch);
 	//for (const auto& trigger : subTriggers)

@@ -5,13 +5,14 @@
 #include "../GameObjects/Characters/CharacterData.h"
 #include <deque>
 
-class MenuDialog;
-class PCStatusDialog;
 
 
+extern CRITICAL_SECTION cs_activeSlotsAccess;
 
 const double REPEAT_DELAY = .5;
 
+class MenuDialog;
+class PCStatusDialog;
 class PCSelectDialog;
 class JoyData;
 
@@ -20,7 +21,7 @@ class JoyData;
 	the playerslots for needed data. */
 class PlayerSlot {
 public:
-	PlayerSlot(size_t slotNum);
+	PlayerSlot(PlayerSlotNumber slotNum);
 	virtual ~PlayerSlot();
 
 	void resetCharacterSelect();
@@ -37,7 +38,7 @@ public:
 
 	JoyData* getJoyData();
 
-	size_t getPlayerSlotNumber();
+	PlayerSlotNumber getPlayerSlotNumber();
 	/** If no joy, no player :( */
 	bool hasJoystick();
 	Joystick* getStick();
@@ -53,14 +54,12 @@ public:
 	unique_ptr<MenuDialog> pauseDialog;
 private:
 	Joystick* joystick = NULL;
-	size_t slotNumber;
+	PlayerSlotNumber slotNumber;
 
 	double repeatDelayTime = REPEAT_DELAY;
 
 	int currentCharacterNum = -1;
 	bool characterSelected = false;
-	
-	//bool buttonStillDown = false;
 
 	/* For temporary initialization purposes only! Do not use! */
 	JoyData* _threadJoystickData;
@@ -81,15 +80,17 @@ public:
 	void controllerTryingToPair(JoyData* joyData);
 	void finalizePair(JoyData* joyData);
 
+	/** Ordered by PlayerSlotNumber. Always 3, but not all 3 are always in use. */
 	shared_ptr<PlayerSlot>  playerSlots[MAX_PLAYERS];
 
 private:
 	CRITICAL_SECTION cs_waitingJoysticks;
 
 	enum WaitingForInputTast {
-		ADD_TO_WAITING_LIST, REMOVE_FROM_LIST, CHECK_FOR_CONFIRM
+		ADD_TO_LIST, REMOVE_FROM_LIST, CHECK_FOR_CONFIRM
 	};
 	void accessWaitingSlots(size_t task, PVOID pvoid);
+	void accessActiveSlots(size_t task, PVOID pvoid);
 };
 
 

@@ -92,7 +92,7 @@ void GUIOverlay::initializeTitleScreen(
 		slotManager->playerSlots[i]->pairWithDialog(pcSelectDialogs[i].get());
 		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcSelectDialogs[i].get();
 	}
-	//menuDialog->pairPlayerSlot(slotManager->playerSlots[0].get());
+	
 	menuDialog->setText(L"Hello Menu");
 	menuDialog->clearSelections();
 	menuDialog->addSelection(L"New Game", true);
@@ -169,14 +169,14 @@ void GUIOverlay::showMenu() {
 	menuDialog->show();
 }
 
-void GUIOverlay::setDialogText(USHORT playerSlotNumber, wstring text) {
+void GUIOverlay::setDialogText(PlayerSlotNumber playerSlotNumber, wstring text) {
 
 	hudDialogs[PLAYER1 + playerSlotNumber]->setText(text);
 	hudDialogs[PLAYER1 + playerSlotNumber]->show();
 }
 
 
-void GUIOverlay::reportLostJoystick(size_t playerSlotNumber) {
+void GUIOverlay::reportLostJoystick(ControllerSocketNumber socketNumber) {
 
 	//displayingLostJoys.push_back(joystickSocket);
 	//shared_ptr<Joystick> lostJoy = joystickPorts[joystickSocket];

@@ -29,7 +29,8 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 
 	virtual void pause() override;
-	virtual void controllerRemoved(size_t controllerSlot) override;
+	virtual void controllerRemoved(ControllerSocketNumber controllerSlot,
+		PlayerSlotNumber slotNumber) override;
 	virtual void newController(shared_ptr<Joystick> newStick) override;
 
 	static JammerManager jammerMan;

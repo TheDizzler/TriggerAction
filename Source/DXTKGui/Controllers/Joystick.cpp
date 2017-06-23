@@ -26,10 +26,9 @@ double getTimeSinceStart() {
 
 
 
-Joystick::Joystick(/*HANDLE hndl, */size_t controllerSlot) {
+Joystick::Joystick(ControllerSocketNumber controllerSocket) {
 
-	//handle = hndl;
-	socket = controllerSlot;
+	socket = controllerSocket;
 
 	ZeroMemory(bButtonStates, sizeof(bButtonStates));
 }

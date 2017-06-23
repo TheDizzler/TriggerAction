@@ -3,6 +3,7 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 
 ##The List
 >- make jump attack change jump distance to closest target
+>- diagonal attacks
 >- level start and exits
 >- odd draw crash after player death (psshader??)
 >- in-game player drop-in/drop-out

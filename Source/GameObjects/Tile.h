@@ -5,7 +5,7 @@
 
 
 class TileAsset;
-
+class Map;
 
 class TileBase : public IElement3D, public Maskable {
 public:
@@ -17,6 +17,7 @@ public:
 	virtual void moveBy(const Vector3& moveVector) override;
 	virtual void setPosition(const Vector3 & position) override;
 
+	virtual void calculateShadow(Map* map);
 };
 
 
@@ -59,7 +60,7 @@ public:
 	/** Special on-hit effects of object. */
 	virtual void takeDamage(int damage, bool showDamage = true);
 
-	//virtual bool activateTrigger(Creature* creature) override;
+	virtual void calculateShadow(Map* map) override;
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
@@ -71,9 +72,11 @@ public:
 
 	virtual const Hitbox* getHitbox() const override;
 
-	//vector<unique_ptr<Trigger>> subTriggers;
 	/** In situation where a 3D tile is flat, calculate the depthLayer from top left. */
 	bool isFlat = false;
+
+private:
+	unique_ptr<RectangleSprite> shadow;
 };
 
 

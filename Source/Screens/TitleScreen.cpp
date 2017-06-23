@@ -56,7 +56,7 @@ void TitleScreen::setGameManager(GameManager* gm) {
 	game = gm;
 }
 
-bool openedOnce = false;
+
 void TitleScreen::reload() {
 
 
@@ -70,7 +70,6 @@ void TitleScreen::reload() {
 		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
 
 	guiOverlay->reloadTitleScreen(pcSelectDialogs);
-	openedOnce = false;
 }
 
 //TOTAL_SWING_TIME = 2 * XM_PI * sqrt(pendulum->getHeight() / GRAVITY);
@@ -110,21 +109,55 @@ void TitleScreen::update(double deltaTime) {
 		noControllerDialog->update(deltaTime);
 	} else {
 
+		EnterCriticalSection(&cs_activeSlotsAccess);
 		bool ready = true;
-		//for (const auto& slot : activeSlots) {
-		for (int i = 1; i < activeSlots.size(); ++i) {
-			if (!activeSlots[i]->characterSelect(deltaTime))
+		int leader = 0;
+		for (int i = 0; i < activeSlots.size(); ++i) {
+			if (activeSlots[i]->getPlayerSlotNumber() == playerWithMenuControl) {
+				leader = i;
+				continue;
+			} else if (!activeSlots[i]->characterSelect(deltaTime))
 				ready = false;
 		}
 
-		if (!activeSlots[0]->characterLocked) {
-			if (activeSlots[0]->characterSelect(deltaTime)) {
-				if (!openedOnce /*&& ready*/) {
-					guiOverlay->showMenu();
-					openedOnce = true;
-				}
+		if (!activeSlots[leader]->characterLocked) {
+			if (activeSlots[leader]->characterSelect(deltaTime)) {
+				guiOverlay->showMenu();
 			}
 		} else {
+			if (!guiOverlay->menuDialog->isOpen())
+				guiOverlay->showMenu();
+			guiOverlay->menuDialog->update(deltaTime);
+			if (guiOverlay->menuDialog->selectionMade) {
+
+				switch (guiOverlay->menuDialog->getSelected()) {
+					case TitleItems::QUIT_GAME:
+						game->exit();
+						break;
+					case TitleItems::NEW_GAME:
+						if (ready) {
+							guiOverlay->menuDialog->hide();
+							for (const auto& slot : activeSlots) {
+								slot->pcSelectDialog->hide();
+							}
+							game->loadLevel(Globals::testLevel);
+						} else {
+							guiOverlay->menuDialog->selectionMade = false;
+						}
+						break;
+					case TitleItems::CANCEL:
+						break;
+				}
+			}
+		}
+		//if (!activeSlots[playerWithMenuControl]->characterLocked) {
+		//	if (activeSlots[playerWithMenuControl]->characterSelect(deltaTime)) {
+		//		if (!openedOnce /*&& ready*/) {
+		//			guiOverlay->showMenu();
+		//			openedOnce = true;
+		//		}
+		//	}
+		/*} else {
 			guiOverlay->menuDialog->update(deltaTime);
 			if (guiOverlay->menuDialog->selectionMade) {
 
@@ -148,10 +181,11 @@ void TitleScreen::update(double deltaTime) {
 						break;
 				}
 			}
-		}
+		}*/
+		LeaveCriticalSection(&cs_activeSlotsAccess);
 	}
 
-	slotManager->waiting();
+	//slotManager->waiting();
 }
 
 
@@ -165,16 +199,39 @@ void TitleScreen::pause() {
 }
 
 
-void TitleScreen::controllerRemoved(size_t controllerSlot) {
+void TitleScreen::controllerRemoved(ControllerSocketNumber controllerSocket,
+	PlayerSlotNumber slotNumber) {
 
-	slotManager->playerSlots[controllerSlot]->resetCharacterSelect();
+	slotManager->playerSlots[slotNumber]->resetCharacterSelect();
+
+
+	EnterCriticalSection(&cs_activeSlotsAccess);
 
 	if (activeSlots.size() == 0) {
 		noControllerDialog->show();
 		guiOverlay->menuDialog->hide();
 		guiOverlay->menuDialog->reset();
-		openedOnce = false;
+	} else if (guiOverlay->menuDialog->currentPlayerIs(
+		slotManager->playerSlots[slotNumber].get())) {
+
+		guiOverlay->menuDialog->hide();
+		guiOverlay->menuDialog->reset();
+		// find next playerslot
+		for (PlayerSlotNumber i = PlayerSlotNumber::SLOT_1; i <= PlayerSlotNumber::SLOT_3;
+			i = PlayerSlotNumber(i + 1)) {
+			if (slotManager->playerSlots[i]->hasJoystick()) {
+				guiOverlay->menuDialog->pairPlayerSlot(slotManager->playerSlots[i].get());
+				wostringstream woo;
+				woo << L"Player " << i;
+				guiOverlay->menuDialog->setText(woo.str());
+				playerWithMenuControl = i;
+				break;
+			}
+		}
+
 	}
+
+	LeaveCriticalSection(&cs_activeSlotsAccess);
 
 }
 
@@ -185,7 +242,12 @@ void TitleScreen::newController(shared_ptr<Joystick> newStick) {
 	if (newStick.get()) {
 		if (noControllerDialog->isOpen()) {
 			noControllerDialog->hide();
-			guiOverlay->menuDialog->pairPlayerSlot(slotManager->playerSlots[newStick->playerSlotNumber].get());
+			guiOverlay->menuDialog->pairPlayerSlot(
+				slotManager->playerSlots[newStick->playerSlotNumber].get());
+			wostringstream woo;
+			woo << L"Player " << newStick->playerSlotNumber;
+			guiOverlay->menuDialog->setText(woo.str());
+			playerWithMenuControl = newStick->playerSlotNumber;
 		}
 	}
 }

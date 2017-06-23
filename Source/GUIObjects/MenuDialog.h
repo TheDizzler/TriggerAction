@@ -34,6 +34,8 @@ public:
 
 	USHORT getSelected();
 	bool selectionMade = false;
+
+	bool currentPlayerIs(PlayerSlot* pSlot);
 private:
 
 	PlayerSlot*  playerSlot;

@@ -24,7 +24,7 @@ public:
 
 
 	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device,
-	shared_ptr<MouseController> mouse);
+		shared_ptr<MouseController> mouse);
 
 
 	void update(double deltaTime);
@@ -36,7 +36,8 @@ public:
 
 	void loadMainMenu();
 
-	void controllerRemoved(size_t controllerSlot);
+	void controllerRemoved(ControllerSocketNumber controllerSocket,
+		PlayerSlotNumber slotNumber);
 	void newController(shared_ptr<Joystick> newStick);
 	void controllerAccepted(HANDLE handle);
 

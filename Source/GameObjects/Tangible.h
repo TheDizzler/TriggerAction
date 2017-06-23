@@ -9,6 +9,7 @@ const Vector3 GRAVITY(0, 0, -7);
 const double GROUND_FRICTION = .9;
 
 const float LANDING_TOLERANCE = 1.9;
+const int MAX_SHADOW_HEIGHT = 256;
 
 class Hitbox {
 public:
@@ -68,7 +69,7 @@ public:
 protected:
 
 	Hitbox hitbox;
-	
+
 	unique_ptr<RectangleFrame> testFrame;
 	vector<unique_ptr<RectangleFrame>> subTestFrames;
 

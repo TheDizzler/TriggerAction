@@ -101,7 +101,8 @@ public:
 
 	static Dialog* showDialog;
 
-	virtual void controllerRemoved(size_t controllerSlot) override;
+	virtual void controllerRemoved(ControllerSocketNumber controllerSocket,
+		PlayerSlotNumber slotNumber) override;
 	virtual void newController(shared_ptr<Joystick> newStick) override;
 
 

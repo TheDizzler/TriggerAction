@@ -23,9 +23,9 @@ public:
 
 	void showMenu();
 
-	void setDialogText(USHORT playerSlotNumber, wstring text);
+	void setDialogText(PlayerSlotNumber playerSlotNumber, wstring text);
 
-	void reportLostJoystick(size_t playerSlotNumber); // currently does nothing
+	void reportLostJoystick(ControllerSocketNumber slotNumber); // currently does nothing
 
 	unique_ptr<PCStatusDialog> createPCStatusDialog(
 		shared_ptr<AssetSet> dialogImageSet,
