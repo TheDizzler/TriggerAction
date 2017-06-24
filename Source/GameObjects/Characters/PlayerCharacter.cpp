@@ -180,7 +180,7 @@ void PlayerCharacter::update(double deltaTime) {
 		case CreatureAction::DEAD_ACTION:
 			timeSinceDeath += deltaTime;
 			if (moveVelocity != Vector3::Zero) {
-				
+
 				if (!falling) {
 					moveVelocity = moveVelocity * GROUND_FRICTION;
 					if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
@@ -197,10 +197,9 @@ void PlayerCharacter::update(double deltaTime) {
 	}
 
 	if (falling) {
-		
+
 		Vector3 moveVector = moveVelocity * deltaTime + fallVelocity;
 		descending = abs(fallVelocity.z) > moveVector.z;
-		fallVelocity += GRAVITY * deltaTime;
 
 		if (position.z <= 0) {
 			Vector3 newpos = position;
@@ -220,32 +219,73 @@ void PlayerCharacter::update(double deltaTime) {
 				// first check to see if hitbox overlap on x-y plane
 					if (radarBox.collisionZ(tangible->getHitbox())) {
 						// then check if collide on z-axis as well
-						const Hitbox* hb = tangible->getHitbox();
-						float dif = radarBox.position.z - (hb->position.z + hb->size.z);
+						
 
-						if (/*dif < LANDING_TOLERANCE
-							&& dif > -LANDING_TOLERANCE*/
-							/*dif > 0
-							&& */descending) {
-							Vector3 newpos = position;
-							newpos.z = hb->position.z + hb->size.z;
-							setPosition(newpos);
-							fallVelocity.z = 0;
-							moveVelocity.z = 0;
-							moveVector.z = 0;
-							falling = false;
-							break;
+						if (descending) {
+							const Hitbox* hb = tangible->getHitbox();
+							float dif = position.z - (hb->position.z + hb->size.z);
+							if (dif < LANDING_TOLERANCE
+								&& dif > -LANDING_TOLERANCE) {
+								// land on that platform!
+								Vector3 newpos = position;
+								newpos.z = hb->position.z + hb->size.z;
+								setPosition(newpos);
+								fallVelocity.z = 0;
+								moveVelocity.z = 0;
+								moveVector.z = 0;
+								falling = false;
+								break;
+							}
+						} else {
+							//float dif = (radarBox.position.z + radarBox.size.z)
+							//	- (hb->position.z);
+							//if (dif >= 0) {
+							//// hit your head!
+							//	Vector3 newpos = position;
+							//	newpos.z -= dif;
+							//	setPosition(newpos);
+								fallVelocity.z = 0;
+								moveVelocity.z = 0;
+								moveVector.z = 0;
+								descending = true;
+							//}
 						}
 					} else {
 						for (const auto& otherSubHB : tangible->subHitboxes) {
 							if (otherSubHB->collision(&radarBox)) {
 								const Hitbox* hb = otherSubHB.get();
-								float dif = position.z - (hb->position.z + hb->size.z);
+								if (descending) {
+									float dif = position.z - (hb->position.z + hb->size.z);
+									if (dif < LANDING_TOLERANCE
+										&& dif > -LANDING_TOLERANCE) {
+										// land on that platform!
+										Vector3 newpos = position;
+										newpos.z = hb->position.z + hb->size.z;
+										setPosition(newpos);
+										fallVelocity.z = 0;
+										moveVelocity.z = 0;
+										moveVector.z = 0;
+										falling = false;
+										break;
+									}
+								} else {
+									float dif = (radarBox.position.z + radarBox.size.z)
+										- (hb->position.z);
+									if (dif >= 0) {
+										// hit your head!
+										Vector3 newpos = position;
+										newpos.z = hb->position.z - radarBox.size.z;
+										setPosition(newpos);
+										fallVelocity.z = 0;
+										moveVelocity.z = 0;
+										moveVector.z = 0;
+									}
+								}
+								/*float dif = position.z - (hb->position.z + hb->size.z);
 
-								if (/*dif < LANDING_TOLERANCE
-									&& dif > -LANDING_TOLERANCE*/
-									/*dif > 0
-									&& */descending) {
+								if (dif < LANDING_TOLERANCE
+									&& dif > -LANDING_TOLERANCE
+									&& descending) {
 									Vector3 newpos = position;
 									newpos.z = hb->position.z + hb->size.z;
 									setPosition(newpos);
@@ -254,17 +294,20 @@ void PlayerCharacter::update(double deltaTime) {
 									moveVector.z = 0;
 									falling = false;
 									break;
-								}
+								}*/
 							}
 						}
 					}
 				}
 			}
-			for (Trigger* trigger : triggersAll) {
-				radarBox.position = hitbox.position + moveVector * 2;
-				if (checkCollisionWith(trigger)) {
-					if (trigger->activateTrigger(this))
-						break;
+		}
+
+		for (Trigger* trigger : triggersAll) {
+			radarBox.position = hitbox.position + moveVector * 2;
+			if (checkCollisionWith(trigger)) {
+				if (trigger->activateTrigger(this)) {
+					//moveVector = moveVelocity * deltaTime + fallVelocity; ??? only for stairs!
+					break;
 				}
 			}
 		}
@@ -276,6 +319,8 @@ void PlayerCharacter::update(double deltaTime) {
 		}
 
 		moveBy(moveVector);
+		//if (falling)
+		fallVelocity += GRAVITY * deltaTime;
 	} else if (!(moveVelocity.x == 0 && moveVelocity.y == 0)) {
 
 		moveVelocity *= GROUND_FRICTION;
@@ -362,7 +407,7 @@ void PlayerCharacter::takeDamage(int damage, bool showDamage) {
 		action = CreatureAction::HIT_ACTION;
 	}
 
-	
+
 
 	if ((currentHP -= damage) <= 0) {
 		currentHP = 0;

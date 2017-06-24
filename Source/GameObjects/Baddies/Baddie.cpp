@@ -244,19 +244,10 @@ bool Baddie::update(double deltaTime) {
 		}
 
 		if (falling) {
-			fallVelocity += GRAVITY * deltaTime;
-			/*moveBy(fallVelocity);
-			if (position.z <= 0) {
-				Vector3 newpos = position;
-				newpos.z = 0;
-				setPosition(newpos);
-				fallVelocity.z = 0;
-				moveVelocity.z = 0;
-				falling = false;
-			}*/
 
 			Vector3 moveVector = moveVelocity * deltaTime + fallVelocity;
 			descending = abs(fallVelocity.z) > moveVector.z;
+			fallVelocity += GRAVITY * deltaTime;
 			if (position.z <= 0) {
 				Vector3 newpos = position;
 				newpos.z = 0;

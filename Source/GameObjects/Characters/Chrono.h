@@ -59,9 +59,11 @@ private:
 	virtual void initializeAssets() override;
 	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
 		Vector3 weaponPositions[4]) override;
+
+	virtual void startMainAttack() override;
 	virtual void attackUpdate(double deltaTime) override;
 	void endAttack();
-	virtual void startMainAttack() override;
+	
 
 	double waitingTime = 0;
 	double CAN_CANCEL_COOLDOWN_TIME = .3;
@@ -73,15 +75,19 @@ private:
 	void thirdAttack();
 	void fourthAttackStart();
 	void fourthAttack(double deltaTime);
+	void slideAttack();
 	int FOURTH_ATTACK_JUMP_HEIGHT = 20;
 	double FOURTH_ATTACK_COOLDOWN_MAX = 1.0;
 	double fourthAttackCooldownTime = 0;
 	double fourthAttackDuration = .5;
 	double moveTime = 0;
 	bool yetAttacked = false;
-	bool yetAttackedThird = false;
-	bool yetFourthAttack = false;
-	//bool finishedJump = false;
+	bool lastAttackHit = false;
+
+	int heavyAttackDamage = 10;
+	int mediumAttackDamage = 5;
+	int lightAttackDamage = 2;
+	
 	/** Position vector for lerp movement. */
 	//Vector3 moveStart;
 	/** Position vectors for lerp movement. */
@@ -90,10 +96,11 @@ private:
 
 
 	//bool attackQueued = false;
-	enum AttackCombo {
-		NONE = -1, FIRST_ATTACK, SECOND_ATTACK, THIRD_ATTACK, FOURTH_ATTACK, AWAIT_INPUT
+	enum Attacks {
+		NONE = -1, FIRST_ATTACK, SECOND_ATTACK, THIRD_ATTACK, FOURTH_ATTACK, AWAIT_INPUT,
+		HEAVY_ATTACK, SLIDE_ATTACK
 	};
-	AttackCombo currentAttack = NONE;
+	Attacks currentAttack = NONE;
 
 	Hitbox attackBox;
 	Vector3 attackBoxSizes[4];

@@ -210,10 +210,12 @@ void GameEngine::update(double deltaTime) {
 				if (dialog->selectionMade) {
 					switch (dialog->getSelected()) {
 						case PauseMenuItems::QUIT:
+							errorMessage(L"Exit called\n");
 							dialog->hide();
 							paused = false;
 							dialogCustom = false;
 							exit();
+							errorMessage(L"Failed to Exit.\n");
 							return;
 						case PauseMenuItems::CONTINUE:
 							dialog->hide();

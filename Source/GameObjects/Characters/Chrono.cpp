@@ -65,7 +65,64 @@ void Chrono::draw(SpriteBatch * batch) {
 #endif //  DEBUG_HITBOXES
 }
 
+
 int awaitInputCycles = 0;
+double chargeTime = 0;
+void Chrono::startMainAttack() {
+
+	moveVelocity.x = 0;
+	moveVelocity.y = 0;
+
+	int horzDirection = joystick->lAxisX;
+	int vertDirection = joystick->lAxisY;
+
+	/* If joystick tilted, initiate heavy attack. */
+	if (horzDirection > 10) {
+		facing = Facing::RIGHT;
+		currentAttack = SLIDE_ATTACK;
+		chargeTime = 0;
+	} else if (horzDirection < -10) {
+		facing = Facing::LEFT;
+		currentAttack = SLIDE_ATTACK;
+		chargeTime = 0;
+	} else if (vertDirection < -10) {
+		facing = Facing::UP;
+		currentAttack = SLIDE_ATTACK;
+		chargeTime = 0;
+	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+		currentAttack = SLIDE_ATTACK;
+		chargeTime = 0;
+	} else { /* Otherwise, start comobo. */
+		currentAttack = FIRST_ATTACK;
+		awaitInputCycles = 0;
+		currentComboAttack = 1;
+		lastAttackHit = false;
+	}
+	action = CreatureAction::ATTACKING_ACTION;
+	canCancelAction = false;
+
+	switch (facing) {
+		case Facing::LEFT:
+			loadAnimation(attackLeft);
+			break;
+		case Facing::DOWN:
+			loadAnimation(attackDown);
+			break;
+		case Facing::RIGHT:
+			loadAnimation(attackRight);
+			break;
+		case Facing::UP:
+			loadAnimation(attackUp);
+			break;
+	}
+
+	yetAttacked = false;
+	moving = false;
+}
+
+const double CHARGE_TIME = .75;
+const double HEAVY_ATTACK_COOLDOWN = .75;
 void Chrono::attackUpdate(double deltaTime) {
 
 	currentFrameTime += deltaTime;
@@ -91,10 +148,10 @@ void Chrono::attackUpdate(double deltaTime) {
 						break;
 					case 4:
 						fourthAttackStart();
-						position -= GRAVITY * (deltaTime + .0000001);
+						//position -= GRAVITY * (deltaTime + .0000001);
 						break;
-
 				}
+				lastAttackHit = false;
 			} else if (currentFrameTime >= currentFrameDuration) {
 				if (currentFrameIndex == 2) {
 					if (++awaitInputCycles > 2) {
@@ -134,15 +191,18 @@ void Chrono::attackUpdate(double deltaTime) {
 #ifdef  DEBUG_HITBOXES
 					drawAttackBox = false;
 #endif //  DEBUG_HITBOXES
-					currentAttack = AWAIT_INPUT;
-					canCancelAction = true;
-					currentFrameTime = 0;
-					currentFrameDuration
-						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-					currentFrameRect
-						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-					currentFrameOrigin
-						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					if (lastAttackHit) { // continue combo
+						currentAttack = AWAIT_INPUT;
+						canCancelAction = true;
+						currentFrameTime = 0;
+						currentFrameDuration
+							= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+						currentFrameRect
+							= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+						currentFrameOrigin
+							= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					} else
+						endAttack();
 				}
 			}
 		}
@@ -154,17 +214,27 @@ void Chrono::attackUpdate(double deltaTime) {
 				Vector3 moveVector = moveVelocity * deltaTime;
 				radarBox.position = hitbox.position + moveVector * 2;
 
-				
+
 				// push any opponents in the way
 				for (Tangible* hb : tangiblesAll) {
 					if (hb == this)
 						continue;
 					if (radarBox.collision(hb->getHitbox())) {
-						hb->knockBack(moveVector);
-						hb->takeDamage(0, false);
-						moveVelocity.x = 0;
-						moveVelocity.y = 0;
-						falling = true;
+						//hb->knockBack(moveVector);
+						//hb->takeDamage(0, false);
+						//moveVelocity.x = 0;
+						//moveVelocity.y = 0;
+						//falling = true;
+						currentFrameIndex = 4;
+						currentFrameTime = 0;
+						currentFrameDuration
+							= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+						currentFrameRect
+							= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+						currentFrameOrigin
+							= currentAnimation->animationFrames[currentFrameIndex]->origin;
+						secondAttack();
+						yetAttacked = true;
 						break;
 					}
 				}
@@ -186,15 +256,18 @@ void Chrono::attackUpdate(double deltaTime) {
 			}
 
 			if (currentFrameTime >= currentFrameDuration) {
-				currentAttack = AWAIT_INPUT;
-				currentFrameIndex = 1;
-				currentFrameTime = 0;
-				currentFrameDuration
-					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-				currentFrameRect
-					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-				currentFrameOrigin
-					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				if (lastAttackHit) {
+					currentAttack = AWAIT_INPUT;
+					currentFrameIndex = 1;
+					currentFrameTime = 0;
+					currentFrameDuration
+						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				} else
+					endAttack();
 			}
 
 		}
@@ -204,7 +277,7 @@ void Chrono::attackUpdate(double deltaTime) {
 			Vector3 moveVector = moveVelocity * deltaTime;
 			if (!falling) {
 
-				if (!yetAttackedThird) {
+				if (!yetAttacked) {
 
 					currentFrameIndex = 1;
 					currentFrameTime = 0;
@@ -216,20 +289,24 @@ void Chrono::attackUpdate(double deltaTime) {
 						= currentAnimation->animationFrames[currentFrameIndex]->origin;
 
 					thirdAttack();
-					yetAttackedThird = true;
+					yetAttacked = true;
 					break;
 				}
 
 				if (currentFrameTime >= currentFrameDuration) {
-					currentAttack = AWAIT_INPUT;
-					currentFrameIndex = 1;
-					currentFrameTime = 0;
-					currentFrameDuration
-						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
-					currentFrameRect
-						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
-					currentFrameOrigin
-						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					if (lastAttackHit) {
+						currentAttack = AWAIT_INPUT;
+						currentFrameIndex = 1;
+						currentFrameTime = 0;
+						currentFrameDuration
+							= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+						currentFrameRect
+							= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+						currentFrameOrigin
+							= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					} else
+						endAttack();
+
 				}
 
 				break;
@@ -252,7 +329,6 @@ void Chrono::attackUpdate(double deltaTime) {
 						break;
 					}
 				}
-				//moveBy(moveVector);
 				break;
 			}
 
@@ -266,8 +342,139 @@ void Chrono::attackUpdate(double deltaTime) {
 
 		}
 		break;
+		case HEAVY_ATTACK:
+		{
+			chargeTime += deltaTime;
+			if (chargeTime > CHARGE_TIME && !yetAttacked) {
+				chargeTime = 0;
+				++currentFrameIndex;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+				yetAttacked = true;
+				attackBox.size = attackBoxSizes[facing];
+				attackBox.position = position;
+				switch (facing) {
+					case Facing::LEFT:
+						attackBox.position.x -= (currentFrameOrigin.x);
+						attackBox.position.y += 5;
+						break;
+					case Facing::DOWN:
+						attackBox.position.y += attackBoxOffset.y;
+						attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 - 2;
+						break;
+					case Facing::RIGHT:
+						attackBox.position.x += (currentFrameOrigin.x);
+						attackBox.position.y += 5;
+						break;
+					case Facing::UP:
+						attackBox.position.x -= (getWidth() + currentFrameOrigin.x) / 2 - 2;
+						attackBox.position.y -= attackBoxOffset.y / 2;
+						break;
+				}
+
+
+				attackBox.position.y -= attackBox.size.y;
+
+#ifdef  DEBUG_HITBOXES
+				drawAttackBox = true;
+				attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+				attackFrame->setPosition(Vector2(
+					attackBox.position.x, attackBox.position.y));
+#endif //  DEBUG_HITBOXES
+
+				// hit detection
+				for (Tangible* object : tangiblesAll) {
+					if (object == this) {
+						continue;
+					}
+
+					if (attackBox.collision(object->getHitbox())) {
+						switch (facing) {
+							case Facing::DOWN:
+								object->knockBack(Vector3(0, 100, 50), weight);
+								break;
+							case Facing::LEFT:
+								object->knockBack(Vector3(-100, 0, 50), weight);
+								break;
+							case Facing::UP:
+								object->knockBack(Vector3(0, -100, 50), weight);
+								break;
+							case Facing::RIGHT:
+								object->knockBack(Vector3(100, 0, 50), weight);
+								break;
+						}
+						object->takeDamage(heavyAttackDamage);
+
+						// slash effect
+						hitEffectManager.newEffect(facing, position, 0);
+					}
+				}
+			} else if (yetAttacked && chargeTime > HEAVY_ATTACK_COOLDOWN) {
+
+				endAttack();
+			}
+		}
+		break;
+		case SLIDE_ATTACK:
+		{
+
+			if (!yetAttacked) {
+				Vector3 moveVector = moveVelocity * deltaTime;
+				radarBox.position = hitbox.position + moveVector * 2;
+
+
+				// push any opponents in the way
+				for (Tangible* hb : tangiblesAll) {
+					if (hb == this)
+						continue;
+					if (radarBox.collision(hb->getHitbox())) {
+						hb->knockBack(moveVector);
+						hb->takeDamage(0, false);
+						moveVelocity.x = 0;
+						moveVelocity.y = 0;
+						//falling = true;
+						break;
+					}
+				}
+
+
+				if (currentFrameTime >= currentFrameDuration) {
+					yetAttacked = true;
+					currentFrameIndex = 4;
+					currentFrameTime = 0;
+					currentFrameDuration
+						= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+					currentFrameRect
+						= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+					currentFrameOrigin
+						= currentAnimation->animationFrames[currentFrameIndex]->origin;
+					slideAttack();
+				}
+				break;
+			}
+
+			if (currentFrameTime >= currentFrameDuration) {
+				currentAttack = AWAIT_INPUT;
+				currentFrameIndex = 1;
+				currentFrameTime = 0;
+				currentFrameDuration
+					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;
+				currentFrameRect
+					= currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
+				currentFrameOrigin
+					= currentAnimation->animationFrames[currentFrameIndex]->origin;
+			}
+
+		}
+		break;
+
 	}
 }
+
 
 void Chrono::endAttack() {
 	switch (facing) {
@@ -350,7 +557,8 @@ void Chrono::firstAttack() {
 					object->knockBack(Vector3(100, 0, 0), weight);
 					break;
 			}
-			object->takeDamage(2);
+			lastAttackHit = true;
+			object->takeDamage(lightAttackDamage);
 
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 0);
@@ -447,7 +655,8 @@ void Chrono::secondAttack() {
 					object->knockBack(Vector3(200, 0, 25), weight);
 					break;
 			}
-			object->takeDamage(4);
+			lastAttackHit = true;
+			object->takeDamage(lightAttackDamage * 2);
 
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 1);
@@ -460,30 +669,25 @@ void Chrono::thirdAttackStart() {
 
 	currentFrameIndex = 0;
 	currentAttack = THIRD_ATTACK;
-	//yetAttackedThird = false;
+	
 	moveTime = 0;
 	waitingTime = 0;
-	falling = true;
+	yetAttacked = false;
 
 	Vector3 direction = Vector3::Zero;
 
-	//moveStart = position;
 	switch (facing) {
 		case Facing::LEFT:
 			direction = Vector3(-150, 0, 200);
-			//moveEnd = position + Vector3(-15, 0, 10);
 			break;
 		case Facing::DOWN:
 			direction = Vector3(0, 150, 200);
-			//moveEnd = position + Vector3(0, 15, 10);
 			break;
 		case Facing::RIGHT:
 			direction = Vector3(150, 0, 200);
-			//moveEnd = position + Vector3(15, 0, 10);
 			break;
 		case Facing::UP:
 			direction = Vector3(0, -150, 200);
-			//moveEnd = position + Vector3(0, -15, 10);
 			break;
 	}
 
@@ -555,7 +759,8 @@ void Chrono::thirdAttack() {
 					object->knockBack(Vector3(100, 0, -100), weight);
 					break;
 			}
-			object->takeDamage(5);
+			lastAttackHit = true;
+			object->takeDamage(lightAttackDamage * 2);
 
 			// slash effect
 			hitEffectManager.newEffect(facing, position, 0);
@@ -655,7 +860,7 @@ void Chrono::fourthAttack(double deltaTime) {
 						object->knockBack(Vector3(50, 0, 250), weight);
 						break;
 				}
-				object->takeDamage(5);
+				object->takeDamage(mediumAttackDamage);
 				hitList.push_back(object);
 					// slash effect
 				hitEffectManager.newEffect(facing, position, 2);
@@ -669,50 +874,71 @@ void Chrono::fourthAttack(double deltaTime) {
 	}
 }
 
-
-void Chrono::startMainAttack() {
-
+void Chrono::slideAttack() {
 	moveVelocity.x = 0;
 	moveVelocity.y = 0;
 
-	int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-	}
-
+	awaitInputCycles = 0;
+	attackBox.size = attackBoxSizes[facing];
+	attackBox.position = position;
 	switch (facing) {
 		case Facing::LEFT:
-			loadAnimation(attackLeft);
+			attackBox.position.x -= (currentFrameOrigin.x + attackBox.size.x);
+			attackBox.position.y += 5;
 			break;
 		case Facing::DOWN:
-			loadAnimation(attackDown);
+			attackBox.position.y += attackBoxOffset.y;
+			attackBox.position.x -= (currentFrameOrigin.x) / 2;
 			break;
 		case Facing::RIGHT:
-			loadAnimation(attackRight);
+			attackBox.position.x += (currentFrameOrigin.x);
+			attackBox.position.y += 5;
 			break;
 		case Facing::UP:
-			loadAnimation(attackUp);
+			attackBox.position.x -= (currentFrameOrigin.x) / 2 + 6;
+			attackBox.position.y -= attackBoxOffset.y / 2;
 			break;
 	}
 
-	currentAttack = FIRST_ATTACK;
-	awaitInputCycles = 0;
-	action = CreatureAction::ATTACKING_ACTION;
-	canCancelAction = false;
-	currentComboAttack = 1;
-	yetAttacked = false;
-	yetAttackedThird = false;
-	yetFourthAttack = false;
-	moving = false;
+
+	attackBox.position.y -= attackBox.size.y;
+
+#ifdef  DEBUG_HITBOXES
+	drawAttackBox = true;
+	attackFrame->setSize(Vector2(attackBox.size.x, attackBox.size.y));
+	attackFrame->setPosition(Vector2(
+		attackBox.position.x, attackBox.position.y));
+#endif //  DEBUG_HITBOXES
+
+	// hit detection
+	for (Tangible* object : tangiblesAll) {
+		if (object == this) {
+			continue;
+		}
+
+		if (attackBox.collision(object->getHitbox())) {
+			switch (facing) {
+				case Facing::DOWN:
+					object->knockBack(Vector3(0, 200, 25), weight);
+					break;
+				case Facing::LEFT:
+					object->knockBack(Vector3(-200, 0, 25), weight);
+					break;
+				case Facing::UP:
+					object->knockBack(Vector3(0, -200, 25), weight);
+					break;
+				case Facing::RIGHT:
+					object->knockBack(Vector3(200, 0, 25), weight);
+					break;
+			}
+			object->takeDamage(lightAttackDamage * 2);
+
+			// slash effect
+			hitEffectManager.newEffect(facing, position, 1);
+		}
+	}
 }
+
 
 
 void Chrono::initializeAssets() {

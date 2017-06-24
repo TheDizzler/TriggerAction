@@ -500,7 +500,7 @@
 			</sprite>
 		</animation>
 
-		<animation name="combat stance down" timePerFrame="1.25">
+		<animation name="combat stance down" timePerFrame=".25">
 			<sprite x="284" y="561" width="23" height="32" >
 				<origin x="7" y="31" />
 			</sprite>
@@ -514,7 +514,7 @@
 				<origin x="7" y="31" />
 			</sprite>
 		</animation>
-		<animation name="combat stance left" timePerFrame="1.25">
+		<animation name="combat stance left" timePerFrame=".25">
 			<sprite x="326" y="560" width="20" height="33" >
 				<origin x="8" y="32" />
 			</sprite>
@@ -528,7 +528,7 @@
 				<origin x="8" y="31" />
 			</sprite>
 		</animation>
-		<animation name="combat stance up" timePerFrame="1.25">
+		<animation name="combat stance up" timePerFrame=".25">
 			<sprite x="365" y="561" width="22" height="32" >
 				<origin x="17" y="31" />
 			</sprite>
@@ -542,7 +542,7 @@
 				<origin x="18" y="30" />
 			</sprite>
 		</animation>
-		<animation name="combat stance right" timePerFrame="1.25">
+		<animation name="combat stance right" timePerFrame=".25">
 			<sprite x="406" y="560" width="20" height="33" >
 				<origin x="12" y="32" />
 			</sprite>
