@@ -98,8 +98,10 @@ void MenuDialog::update(double deltaTime) {
 	DynamicDialog::update(deltaTime);
 
 
-	if (playerSlot->getStick()->lAxisY > 10
-		|| playerSlot->getStick()->bButtonStates[ControlButtons::SELECT]) {
+	//if (playerSlot->getStick()->lAxisY > 10
+	if (playerSlot->getStick()->isDownPressed()
+		//|| playerSlot->getStick()->bButtonStates[ControlButtons::SELECT]) {
+		|| playerSlot->getStick()->selectButtonDown()) {
 
 		repeatDelayTime += deltaTime;
 		if (repeatDelayTime >= REPEAT_DELAY) {
@@ -120,8 +122,8 @@ void MenuDialog::update(double deltaTime) {
 			pointer->setPosition(newpos);
 			repeatDelayTime = 0;
 		}
-	} else if (playerSlot->getStick()->lAxisY < -10) {
-
+	//} else if (playerSlot->getStick()->lAxisY < -10) {
+	} else if (playerSlot->getStick()->isUpPressed() ) {
 		repeatDelayTime += deltaTime;
 		if (repeatDelayTime >= REPEAT_DELAY) {
 			bool circle = false;

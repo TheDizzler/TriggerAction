@@ -2,7 +2,8 @@
 GUIDs
 ***********************
 {F18A0E88-C30C-11D0-8815-00A0C906BED8} - USB Digio2 HUB
-{A5DCBF10-6530-11D2-901F-00C04FB951ED} - most devices seem to hit this first
+{A5DCBF10-6530-11D2-901F-00C04FB951ED} - most devices seem to hit this first (internal USB bus most likely)
+{EC87F1E3-C13B-4100-B5F7-8B84D54260CB} (XBOX controller? rdi.hid.usUsage == 5)
 {4D1E55B2-F16F-11CF-88CB-001111000030} - controllers
 
 M-audio Keystation
@@ -34,6 +35,17 @@ Usage for the device: 4
 Usage Page for the device: 1
 
 Controller (Elecom)
+
+***********************
+
+Device Name: \\?\HID#VID_045E&PID_028E&IG_00#7&e5c0ad3&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+Vendor Id:1118
+Product Id:654
+Version No:0
+Usage for the device: 5
+Usage Page for the device: 1
+
+Controller ? (XBox)
 
 ***********************
 Device Name: \\?\HID#VID_1A81&PID_1004&MI_01&Col01#7&1f523d84&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}

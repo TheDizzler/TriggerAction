@@ -150,42 +150,29 @@ void TitleScreen::update(double deltaTime) {
 				}
 			}
 		}
-		//if (!activeSlots[playerWithMenuControl]->characterLocked) {
-		//	if (activeSlots[playerWithMenuControl]->characterSelect(deltaTime)) {
-		//		if (!openedOnce /*&& ready*/) {
-		//			guiOverlay->showMenu();
-		//			openedOnce = true;
-		//		}
-		//	}
-		/*} else {
-			guiOverlay->menuDialog->update(deltaTime);
-			if (guiOverlay->menuDialog->selectionMade) {
 
-				switch (guiOverlay->menuDialog->getSelected()) {
-					case TitleItems::QUIT_GAME:
-						game->exit();
-						break;
-					case TitleItems::NEW_GAME:
-						if (ready) {
-							guiOverlay->menuDialog->hide();
-							for (const auto& slot : activeSlots) {
-								slot->pcSelectDialog->hide();
-							}
-							game->loadLevel(Globals::testLevel);
-						} else {
-							guiOverlay->menuDialog->selectionMade = false;
-						}
-						break;
-					case TitleItems::CANCEL:
-						openedOnce = false;
-						break;
-				}
-			}
-		}*/
 		LeaveCriticalSection(&cs_activeSlotsAccess);
 	}
 
-	//slotManager->waiting();
+	//DWORD dwResult;
+	//for (DWORD i = 0; i< XUSER_MAX_COUNT; i++) {
+	//	XINPUT_STATE state;
+	//	ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+	//	// Simply get the state of the controller from XInput.
+	//	dwResult = XInputGetState(i, &state);
+
+	//	if (dwResult == ERROR_SUCCESS) {
+	//		// Controller is connected 
+	//		
+	//		if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0) {
+	//			int hi = 0;
+	//		}
+	//	} else {
+	//		// Controller is not connected 
+	//	}
+	//}
+
 }
 
 

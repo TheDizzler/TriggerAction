@@ -73,23 +73,46 @@ void Chrono::startMainAttack() {
 	moveVelocity.x = 0;
 	moveVelocity.y = 0;
 
-	int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
+	//int horzDirection = joystick->lAxisX;
+	//int vertDirection = joystick->lAxisY;
 
-	/* If joystick tilted, initiate heavy attack. */
-	if (horzDirection > 10) {
+	///* If joystick tilted, initiate heavy attack. */
+	//if (horzDirection > 10) {
+	//	facing = Facing::RIGHT;
+	//	currentAttack = SLIDE_ATTACK;
+	//	chargeTime = 0;
+	//} else if (horzDirection < -10) {
+	//	facing = Facing::LEFT;
+	//	currentAttack = SLIDE_ATTACK;
+	//	chargeTime = 0;
+	//} else if (vertDirection < -10) {
+	//	facing = Facing::UP;
+	//	currentAttack = SLIDE_ATTACK;
+	//	chargeTime = 0;
+	//} else if (vertDirection > 10) {
+	//	facing = Facing::DOWN;
+	//	currentAttack = SLIDE_ATTACK;
+	//	chargeTime = 0;
+	//} else { /* Otherwise, start comobo. */
+	//	currentAttack = FIRST_ATTACK;
+	//	awaitInputCycles = 0;
+	//	currentComboAttack = 1;
+	//	lastAttackHit = false;
+	//}
+
+	if (joystick->isRightPressed()) {
 		facing = Facing::RIGHT;
 		currentAttack = SLIDE_ATTACK;
 		chargeTime = 0;
-	} else if (horzDirection < -10) {
+	} else if (joystick->isLeftPressed()) {
 		facing = Facing::LEFT;
 		currentAttack = SLIDE_ATTACK;
 		chargeTime = 0;
-	} else if (vertDirection < -10) {
+	} else if (joystick->isUpPressed()) {
 		facing = Facing::UP;
 		currentAttack = SLIDE_ATTACK;
 		chargeTime = 0;
-	} else if (vertDirection > 10) {
+	} else if (joystick->isDownPressed()) {
 		facing = Facing::DOWN;
 		currentAttack = SLIDE_ATTACK;
 		chargeTime = 0;
@@ -669,7 +692,7 @@ void Chrono::thirdAttackStart() {
 
 	currentFrameIndex = 0;
 	currentAttack = THIRD_ATTACK;
-	
+
 	moveTime = 0;
 	waitingTime = 0;
 	yetAttacked = false;

@@ -73,8 +73,11 @@ public:
 	PlayerSlotManager();
 	~PlayerSlotManager();
 
-	void waiting();
+	/* GamePads are added as soon as they are discovered. */
+	void addGamePad(shared_ptr<GamePadJoystick> newPad);
+	void updateGamePads();
 
+	void waiting();
 
 	void controllerRemoved(shared_ptr<Joystick> joystick);
 	void controllerTryingToPair(JoyData* joyData);
@@ -91,6 +94,8 @@ private:
 	};
 	void accessWaitingSlots(size_t task, PVOID pvoid);
 	void accessActiveSlots(size_t task, PVOID pvoid);
+
+	vector<shared_ptr<GamePadJoystick>> gamepads;
 };
 
 
@@ -107,8 +112,10 @@ struct JoyData {
 		OutputDebugString(wss.str().c_str());
 	}
 
+
 	ControllerListener* listener;
 	shared_ptr<Joystick> joystick;
 
+	//bool isXInput = false;
 	bool finishFlag = false;
 };

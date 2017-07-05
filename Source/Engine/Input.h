@@ -1,5 +1,4 @@
 #pragma once
-//#define SLOT_OF_DEATH 69
 
 #include <Keyboard.h>
 
@@ -21,6 +20,7 @@ public:
 	virtual ~ControllerListener();
 
 
+	void addGamePad(HANDLE handle);
 	void addJoysticks(vector<HANDLE> handles);
 
 	void parseRawInput(PRAWINPUT pRawInput);
@@ -35,7 +35,7 @@ public:
 	bool matchFound(vector<HANDLE> newHandles, HANDLE joystickHandle);
 
 	/** This is a virtual representation of physical controller ports. */
-	shared_ptr<Joystick> joystickPorts[MAX_PLAYERS];
+	//shared_ptr<Joystick> joystickPorts[MAX_PLAYERS];
 protected:
 	
 	map<HANDLE, shared_ptr<Joystick>> joystickMap;
@@ -46,7 +46,7 @@ protected:
 	/* Thread Safe. */
 	bool socketsAvailable();
 	/** Thread safe. Does not check if any slots available.*/
-	USHORT getNextAvailableControllerSocket();
+	ControllerSocketNumber getNextAvailableControllerSocket();
 
 	enum SharedResourceTask {
 		CHECK_SOCKETS_AVAILBLE, GET_NEXT_AVAILABLE
@@ -55,7 +55,7 @@ protected:
 
 	CRITICAL_SECTION cs_availableControllerSockets;
 
-	
+	USHORT numGamePads = 0;
 };
 
 

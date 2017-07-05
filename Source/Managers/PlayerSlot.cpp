@@ -3,7 +3,7 @@
 #include "../GUIObjects/MenuDialog.h"
 #include "../GUIObjects/PCStatusDialog.h"
 #include "../Engine/GameEngine.h"
-//#include "../Engine/Input.h"
+
 
 vector<shared_ptr<PlayerSlot>> activeSlots;
 deque<shared_ptr<PlayerSlot>> waitingSlots;
@@ -37,7 +37,8 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 	if (!joystick)
 		return false;
 	if (!characterSelected) {
-		if (joystick->lAxisX < -10) {
+		//if (joystick->lAxisX < -10) {
+		if (joystick->isLeftPressed()) {
 			repeatDelayTime += deltaTime;
 			if (repeatDelayTime >= REPEAT_DELAY) {
 				// select character to left
@@ -46,7 +47,8 @@ bool PlayerSlot::characterSelect(double deltaTime) {
 				repeatDelayTime = 0;
 			}
 
-		} else if (joystick->lAxisX > 10) {
+		//} else if (joystick->lAxisX > 10) {
+		} else if (joystick->isRightPressed()) {
 			repeatDelayTime += deltaTime;
 			if (repeatDelayTime >= REPEAT_DELAY) {
 				// select character to right
@@ -96,7 +98,7 @@ void PlayerSlot::waiting() {
 
 	if (joystick == NULL) {
 		GameEngine::errorMessage(L"Joystick non-existant");
-	} else if (joystick->aButtonPushed()) {
+	} else if (joystick->aButtonPushed() && _threadJoystickData) {
 		_threadJoystickData->finishFlag = true;
 		// after this the waiting thread will execute ControllerListener->playerAcceptedSlot(joyData)
 		_threadJoystickData = NULL;
@@ -213,7 +215,7 @@ PlayerSlotManager::PlayerSlotManager() {
 }
 
 PlayerSlotManager::~PlayerSlotManager() {
-	waitingSlots.clear();
+	//waitingSlots.clear();
 	activeSlots.clear();
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		playerSlots[i].reset();
@@ -223,9 +225,18 @@ PlayerSlotManager::~PlayerSlotManager() {
 	DeleteCriticalSection(&cs_activeSlotsAccess);
 }
 
+void PlayerSlotManager::addGamePad(shared_ptr<GamePadJoystick> newPad) {
+	gamepads.push_back(newPad);
+}
+
+void PlayerSlotManager::updateGamePads() {
+	for (const auto& pad : gamepads) {
+		pad->update();
+	}
+}
+
 void PlayerSlotManager::waiting() {
 
-	//if (waitingSlots.size() > 0)
 	accessWaitingSlots(CHECK_FOR_CONFIRM, NULL);
 
 }
@@ -262,6 +273,8 @@ void PlayerSlotManager::finalizePair(JoyData* joyData) {
 	PlayerSlotNumber* plyrSltNum = &(joyData->joystick->playerSlotNumber);
 	accessActiveSlots(ADD_TO_LIST, plyrSltNum);
 	//activeSlots.push_back(playerSlots[joyData->joystick->playerSlotNumber]);
+	/*if (joyData->isXInput)
+		gamepads.push_back((GamePadJoystick*) joyData->joystick.get());*/
 
 	playerSlots[joyData->joystick->playerSlotNumber]->selectCharacter();
 	playerSlots[joyData->joystick->playerSlotNumber]->finishInit();
@@ -328,51 +341,3 @@ void PlayerSlotManager::accessActiveSlots(size_t task, PVOID pvoid) {
 	OutputDebugString(L"Exiting CS\n");
 	LeaveCriticalSection(&cs_activeSlotsAccess);
 }
-
-
-
-//void GUIOverlay::unpairedJoystickRemoved(JoyData* joyData) {
-//
-//	//sharedResource(REMOVE_JOYSTICK_FROM_WAITING, joyData);
-//
-//	controllerRemoved(joyData->joystick->socket);
-//}
-
-
-
-//void GUIOverlay::sharedResource(size_t task, PVOID pvoid) {
-//
-//	EnterCriticalSection(&cs_waitingJoysticks);
-//	switch (task) {
-//		case READ_INPUT:
-//			for (const auto& joy : waitingForInput) {
-//				if (joy->joystick->bButtonStates[0]) {
-//					joy->finishFlag = true;
-//				}
-//			}
-//			break;
-//
-//		case REMOVE_JOYSTICK_FROM_WAITING:
-//			JoyData* joyData = (JoyData*) pvoid;
-//			for (int i = 0; i < waitingForInput.size(); ++i) {
-//				if (waitingForInput[i] == joyData) {
-//					swap(waitingForInput[i], waitingForInput.back());
-//					waitingForInput.pop_back();
-//				}
-//			}
-//
-//			if (!joyData->pairingKilled)
-//				guiOverlay->readyPCSelect(joyData->joystick->socket);
-//			break;
-//	}
-//	LeaveCriticalSection(&cs_waitingJoysticks);
-//}
-
-
-
-//void GUIOverlay::pairPlayerSlotWith(JoyData* joyData) {
-//
-//	sharedResource(REMOVE_JOYSTICK_FROM_WAITING, joyData);
-//
-//}
-

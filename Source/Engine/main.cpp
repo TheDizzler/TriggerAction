@@ -272,7 +272,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 			GetRawInputData((HRAWINPUT) lParam, RID_INPUT,
 				pRawInput, &bufferSize, sizeof(RAWINPUTHEADER));
-			gameEngine->parseRawInput(pRawInput);
+			if (pRawInput->header.dwType == RIM_TYPEHID)
+				gameEngine->parseRawInput(pRawInput);
 
 			HeapFree(hHeap, 0, pRawInput);
 
@@ -400,10 +401,8 @@ int registerControllers() {
 
 	RID_DEVICE_INFO rdi;
 	rdi.cbSize = sizeof(RID_DEVICE_INFO);
-	//RAWINPUTDEVICE* rid;
 	int numControllersFound = 0;
 
-	//vector<int> controllerIndices;
 	vector<HANDLE> controllerRawDevices;
 
 	for (int i = 0; i < nNoOfDevices; i++) {
@@ -428,14 +427,21 @@ int registerControllers() {
 
 		if (rdi.dwType == RIM_TYPEHID) {
 
-			if (rdi.hid.usUsage == 4 && rdi.hid.usUsagePage == 1) {
-				controllerRawDevices.push_back(pRawInputDeviceList[i].hDevice);
-					/*++numControllersFound;
-					HANDLE handle = pRawInputDeviceList[i].hDevice;
-					gameEngine->addJoystick(handle);*/
+			if (rdi.hid.usUsagePage == 1) {
+				if (rdi.hid.usUsage == 4) {
+					controllerRawDevices.push_back(pRawInputDeviceList[i].hDevice);
+						/*++numControllersFound;
+						HANDLE handle = pRawInputDeviceList[i].hDevice;
+						gameEngine->addJoystick(handle);*/
+				} else if (rdi.hid.usUsage == 5) {
+					//gameEngine
+					//int i = 0;
+					gameEngine->addGamePad(pRawInputDeviceList[i].hDevice);
+					free(pRawInputDeviceList);
+					return 1;
+				}
 
 			}
-
 		}
 
 

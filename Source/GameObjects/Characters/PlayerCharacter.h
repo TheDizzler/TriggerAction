@@ -52,7 +52,8 @@ protected:
 
 	/** Possible actions. */
 	void movement(double deltaTime/*, int horzDirection, int vertDirection*/);
-	Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
+	//Vector3 getMovement(double deltaTime, int horzDirection, int vertDirection);
+	Vector3 getMovement(double deltaTime, Vector2 direction);
 	void startDrawWeapon();
 	virtual void startMainAttack() = 0;
 	void startBlock();

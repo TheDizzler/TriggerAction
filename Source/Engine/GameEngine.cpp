@@ -197,7 +197,7 @@ void GameEngine::run(double deltaTime) {
 
 void GameEngine::update(double deltaTime) {
 
-
+	slotManager->updateGamePads();
 
 	if (paused) {
 		auto state = Keyboard::Get().GetState();
@@ -215,7 +215,7 @@ void GameEngine::update(double deltaTime) {
 							paused = false;
 							dialogCustom = false;
 							exit();
-							errorMessage(L"Failed to Exit.\n");
+							errorMessage(L"Failed to Exit....Or did it??\n");
 							return;
 						case PauseMenuItems::CONTINUE:
 							dialog->hide();

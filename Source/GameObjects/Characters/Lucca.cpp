@@ -74,7 +74,7 @@ void Lucca::startMainAttack() {
 	moveVelocity.x = 0;
 	moveVelocity.y = 0;
 
-	int horzDirection = joystick->lAxisX;
+	/*int horzDirection = joystick->lAxisX;
 	int vertDirection = joystick->lAxisY;
 
 	if (horzDirection > 10) {
@@ -84,6 +84,16 @@ void Lucca::startMainAttack() {
 	} else if (vertDirection < -10) {
 		facing = Facing::UP;
 	} else if (vertDirection > 10) {
+		facing = Facing::DOWN;
+	}*/
+
+	if (joystick->isRightPressed()) {
+		facing = Facing::RIGHT;
+	} else if (joystick->isLeftPressed()) {
+		facing = Facing::LEFT;
+	} else if (joystick->isUpPressed()) {
+		facing = Facing::UP;
+	} else if (joystick->isDownPressed()) {
 		facing = Facing::DOWN;
 	}
 

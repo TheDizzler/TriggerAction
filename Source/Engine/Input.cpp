@@ -6,6 +6,7 @@ unique_ptr<PlayerSlotManager> slotManager;
 bool endAllThreadsNow = false;
 bool slotManagerThreadRunning = false;
 
+
 Input::Input() {
 
 }
@@ -31,7 +32,8 @@ bool Input::initRawInput(HWND hwnd) {
 ControllerListener::ControllerListener() {
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		joystickPorts[i] = make_shared<Joystick>(ControllerSocketNumber(ControllerSocketNumber::SOCKET_1 + i));
+		/*joystickPorts[i] = make_shared<Joystick>(
+			ControllerSocketNumber(ControllerSocketNumber::SOCKET_1 + i));*/
 		availableControllerSockets.push_back(
 			ControllerSocketNumber(ControllerSocketNumber::SOCKET_1 + i));
 	}
@@ -43,20 +45,62 @@ ControllerListener::ControllerListener() {
 
 ControllerListener::~ControllerListener() {
 
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-		joystickPorts[i].reset();
+	/*for (int i = 0; i < MAX_PLAYERS; ++i)
+		joystickPorts[i].reset();*/
 
 	slotManager.reset();
 
 	endAllThreadsNow = true;
 	joystickMap.clear();
 
-	deque<ControllerSocketNumber> empty;
-	swap(availableControllerSockets, empty);
+	/*deque<ControllerSocketNumber> empty;
+	swap(availableControllerSockets, empty);*/
 
 	DeleteCriticalSection(&cs_availableControllerSockets);
 }
 
+
+void ControllerListener::addGamePad(HANDLE handle) {
+
+	/*unique_ptr<GamePad> newPad = make_unique<GamePad>();
+	auto state = newPad->GetState(0);
+	if (state.IsConnected()) {
+		int successs = 0;
+	}*/
+
+	if (!socketsAvailable() || numGamePads >= 3) {
+		// too many players
+		return;
+	}
+
+	OutputDebugString(L"Attempting to link new GamePad!\n");
+
+	shared_ptr<GamePadJoystick> newPad = make_shared<GamePadJoystick>(
+		getNextAvailableControllerSocket(), numGamePads++);
+	newPad->registerNewHandle(handle);
+	slotManager->addGamePad(newPad);
+
+
+
+
+	JoyData* data = new JoyData(newPad, this);
+	//data->isXInput = true;
+
+	DWORD id;
+	if (gameInitialized)
+		CreateThread(NULL, 0, waitForPlayerThread, (PVOID) data, 0, &id);
+	else
+		CreateThread(NULL, 0, waitForHUDThread, (PVOID) data, 0, &id);
+	joystickMap[handle] = move(newPad);
+
+	/*
+	// change the indicator on gamepad. XInputRemap() doesn't exist though?
+	DWORD remap[XUSER_MAX_COUNT];
+	remap[0] = 1;
+	remap[1] = 0;
+	DWORD dwResult = XInputRemap(remap);*/
+
+}
 
 void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
@@ -92,7 +136,6 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 				PlayerSlotNumber slotNumber = foundJoy->playerSlotNumber;
 				if (slotNumber != PlayerSlotNumber::NONE) {
 					slotManager->controllerRemoved(foundJoy);
-
 				}
 				controllerRemoved(foundJoy->socket, slotNumber);
 
@@ -119,7 +162,9 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 				}
 
 
-				shared_ptr<Joystick> newJoy = joystickPorts[getNextAvailableControllerSocket()];
+				//shared_ptr<Joystick> newJoy = joystickPorts[getNextAvailableControllerSocket()];
+				shared_ptr<RawInputJoystick> newJoy
+					= make_shared<RawInputJoystick>(getNextAvailableControllerSocket());
 				newJoy->registerNewHandle(newHandle);
 
 				joystickMap[newHandle] = newJoy;
@@ -133,15 +178,17 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 			} else {
 
 				// Controllers connected at launch
-				shared_ptr<Joystick> newStick = joystickPorts[getNextAvailableControllerSocket()];
-				newStick->registerNewHandle(newHandle);
-				joystickMap[newHandle] = newStick;
+				//shared_ptr<Joystick> newStick = joystickPorts[getNextAvailableControllerSocket()];
+				shared_ptr<RawInputJoystick> newJoy
+					= make_shared<RawInputJoystick>(getNextAvailableControllerSocket());
+				newJoy->registerNewHandle(newHandle);
+				joystickMap[newHandle] = newJoy;
 
 
 				OutputDebugString(L"New joystick found!\n");
 
 				// Create a thread to ping the HUD until it's ready
-				JoyData* data = new JoyData(newStick, this);
+				JoyData* data = new JoyData(newJoy, this);
 				DWORD id;
 				CreateThread(NULL, 0, waitForHUDThread, (PVOID) data, 0, &id);
 			}
@@ -198,9 +245,10 @@ USHORT ControllerListener::sharedResource(size_t task) {
 }
 
 
-USHORT ControllerListener::getNextAvailableControllerSocket() {
+ControllerSocketNumber ControllerListener::getNextAvailableControllerSocket() {
 
-	USHORT nextAvailableSlot = sharedResource(GET_NEXT_AVAILABLE);
+	ControllerSocketNumber nextAvailableSlot
+		= (ControllerSocketNumber) sharedResource(GET_NEXT_AVAILABLE);
 
 	return nextAvailableSlot;
 }
