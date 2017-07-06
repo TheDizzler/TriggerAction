@@ -73,26 +73,37 @@ void ControllerListener::addGamePad(HANDLE handle) {
 		return;
 	}
 
-	OutputDebugString(L"Attempting to link new GamePad!\n");
 
-	shared_ptr<GamePadJoystick> newPad = make_shared<GamePadJoystick>(
-		getNextAvailableControllerSocket(), numGamePads++);
-	newPad->registerNewHandle(handle);
-	slotManager->addGamePad(newPad);
+	DWORD dwResult;
+	for (USHORT xInputSlotNum = 0; xInputSlotNum < XUSER_MAX_COUNT; ++xInputSlotNum) {
+		XINPUT_STATE state;
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+		// Simply get the state of the controller from XInput.
+		dwResult = XInputGetState(xInputSlotNum, &state);
+
+		if (dwResult == ERROR_SUCCESS && !slotManager->checkXInputSlotNumber(xInputSlotNum)) {
+			OutputDebugString(L"Attempting to link new GamePad!\n");
+
+			shared_ptr<GamePadJoystick> newPad = make_shared<GamePadJoystick>(
+				getNextAvailableControllerSocket(), xInputSlotNum);
+			newPad->registerNewHandle(handle);
+			slotManager->addGamePad(newPad);
+
+			numGamePads++;
 
 
+			JoyData* data = new JoyData(newPad, this);
 
-
-	JoyData* data = new JoyData(newPad, this);
-	//data->isXInput = true;
-
-	DWORD id;
-	if (gameInitialized)
-		CreateThread(NULL, 0, waitForPlayerThread, (PVOID) data, 0, &id);
-	else
-		CreateThread(NULL, 0, waitForHUDThread, (PVOID) data, 0, &id);
-	joystickMap[handle] = move(newPad);
-
+			DWORD id;
+			if (gameInitialized)
+				CreateThread(NULL, 0, waitForPlayerThread, (PVOID) data, 0, &id);
+			else
+				CreateThread(NULL, 0, waitForHUDThread, (PVOID) data, 0, &id);
+			joystickMap[handle] = move(newPad);
+			break;
+		}
+	}
 	/*
 	// change the indicator on gamepad. XInputRemap() doesn't exist though?
 	DWORD remap[XUSER_MAX_COUNT];
@@ -114,10 +125,44 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 
 			foundJoy = joyDev.second;
 			found = joyDev.first;
-			break;
+
+			if (foundJoy->getXInputSlot() >= 0) {
+				XINPUT_STATE state;
+				ZeroMemory(&state, sizeof(XINPUT_STATE));
+				DWORD dwResult = XInputGetState(foundJoy->getXInputSlot(), &state);
+
+				if (dwResult == ERROR_DEVICE_NOT_CONNECTED) {
+				// it's disconnected....so remove it!
+					map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
+					mapIt = joystickMap.find(found);
+					if (mapIt != joystickMap.end()) {
+
+						joystickMap.erase(mapIt);
+
+						availableControllerSockets.push_back(foundJoy->socket);
+						foundJoy->registerNewHandle(NULL);
+
+						OutputDebugString(L"GamePad removed\n");
+						--numGamePads;
+					}
+					PlayerSlotNumber slotNumber = foundJoy->getPlayerSlotNumber();
+					slotManager->gamePadRemoved(foundJoy);
+					controllerRemoved(foundJoy->socket, slotNumber);
+
+					foundJoy = NULL;
+					found = NULL;
+					found = false;
+					break;
+				}
+
+				foundJoy = NULL;
+				found = NULL;
+				found = false;
+			} else {
+				break;
+			}
 		}
 		while (found) {
-
 
 			map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
 			mapIt = joystickMap.find(found);
@@ -133,7 +178,7 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 				OutputDebugString(L"Joystick removed\n");
 
 
-				PlayerSlotNumber slotNumber = foundJoy->playerSlotNumber;
+				PlayerSlotNumber slotNumber = foundJoy->getPlayerSlotNumber();
 				if (slotNumber != PlayerSlotNumber::NONE) {
 					slotManager->controllerRemoved(foundJoy);
 				}
@@ -147,11 +192,45 @@ void ControllerListener::addJoysticks(vector<HANDLE> handles) {
 					continue;
 				foundJoy = joyDev.second;
 				found = joyDev.first;
-				break;
+				if (foundJoy->getXInputSlot() >= 0) {
+					XINPUT_STATE state;
+					ZeroMemory(&state, sizeof(XINPUT_STATE));
+					DWORD dwResult = XInputGetState(foundJoy->getXInputSlot(), &state);
+
+					if (dwResult == ERROR_DEVICE_NOT_CONNECTED) {
+						// it's disconnected....so remove it!
+						map<HANDLE, shared_ptr<Joystick>>::iterator mapIt;
+						mapIt = joystickMap.find(found);
+						if (mapIt != joystickMap.end()) {
+
+							joystickMap.erase(mapIt);
+
+							availableControllerSockets.push_back(foundJoy->socket);
+							foundJoy->registerNewHandle(NULL);
+
+							OutputDebugString(L"GamePad removed\n");
+							--numGamePads;
+						}
+						PlayerSlotNumber slotNumber = foundJoy->getPlayerSlotNumber();
+						slotManager->gamePadRemoved(foundJoy);
+						controllerRemoved(foundJoy->socket, slotNumber);
+
+						foundJoy = NULL;
+						found = NULL;
+						found = false;
+						break;
+					}
+
+					foundJoy = NULL;
+					found = NULL;
+					found = false;
+				} else {
+					break;
+				}
 			}
 		}
 
-	} else if (handles.size() > joystickMap.size()) {
+	} else if (handles.size() > joystickMap.size() - numGamePads) {
 		for (const auto& newHandle : handles) {
 			if (joystickMap.find(newHandle) != joystickMap.end()) {
 				//OutputDebugString(L"That joystick already registered.\n");
@@ -211,6 +290,8 @@ bool ControllerListener::matchFound(vector<HANDLE> newHandles, HANDLE joystickHa
 	for (HANDLE newHandle : newHandles)
 		if (newHandle == joystickHandle)
 			return true;
+
+
 	return false;
 }
 
@@ -309,7 +390,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 			return 0;
 		}
 
-		if (joyData->joystick->playerSlotNumber == -1) {
+		if (joyData->joystick->getPlayerSlotNumber() == PlayerSlotNumber::NONE) {
 			joyData->listener->unpairedJoystickRemoved(joyData);
 			delete joyData;
 			return 0;
@@ -346,13 +427,13 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 
 
 	slotManager->controllerTryingToPair(joyData);
-	switch (joyData->joystick->playerSlotNumber) {
-		case -1:
+	switch (joyData->joystick->getPlayerSlotNumber()) {
+		case PlayerSlotNumber::NONE:
 			// Too many players? Shouldn't come up?
 			OutputDebugString(L"WARNING: this defitinely should not have been called");
 			delete joyData;
 			return 0;
-		case 0:
+		case PlayerSlotNumber::SLOT_1:
 			// first player auto-select
 			break;
 		default:
@@ -363,7 +444,7 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 					return 0;
 				}
 
-				if (joyData->joystick->playerSlotNumber == -1) {
+				if (joyData->joystick->getPlayerSlotNumber() == PlayerSlotNumber::NONE) {
 					joyData->listener->unpairedJoystickRemoved(joyData);
 					delete joyData;
 					return 0;

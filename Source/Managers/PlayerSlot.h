@@ -73,12 +73,14 @@ public:
 	PlayerSlotManager();
 	~PlayerSlotManager();
 
+	bool checkXInputSlotNumber(USHORT inputSlotNum);
 	/* GamePads are added as soon as they are discovered. */
 	void addGamePad(shared_ptr<GamePadJoystick> newPad);
 	void updateGamePads();
 
 	void waiting();
 
+	void gamePadRemoved(shared_ptr<Joystick> joystick);
 	void controllerRemoved(shared_ptr<Joystick> joystick);
 	void controllerTryingToPair(JoyData* joyData);
 	void finalizePair(JoyData* joyData);
@@ -116,6 +118,5 @@ struct JoyData {
 	ControllerListener* listener;
 	shared_ptr<Joystick> joystick;
 
-	//bool isXInput = false;
 	bool finishFlag = false;
 };

@@ -404,7 +404,7 @@ int registerControllers() {
 	int numControllersFound = 0;
 
 	vector<HANDLE> controllerRawDevices;
-
+	bool gamePadFound = false;
 	for (int i = 0; i < nNoOfDevices; i++) {
 		UINT size = 256;
 		TCHAR tBuffer[256] = {0};
@@ -426,19 +426,12 @@ int registerControllers() {
 
 
 		if (rdi.dwType == RIM_TYPEHID) {
-
 			if (rdi.hid.usUsagePage == 1) {
 				if (rdi.hid.usUsage == 4) {
 					controllerRawDevices.push_back(pRawInputDeviceList[i].hDevice);
-						/*++numControllersFound;
-						HANDLE handle = pRawInputDeviceList[i].hDevice;
-						gameEngine->addJoystick(handle);*/
 				} else if (rdi.hid.usUsage == 5) {
-					//gameEngine
-					//int i = 0;
 					gameEngine->addGamePad(pRawInputDeviceList[i].hDevice);
-					free(pRawInputDeviceList);
-					return 1;
+					gamePadFound = true;
 				}
 
 			}
@@ -447,7 +440,8 @@ int registerControllers() {
 
 	}
 
-	gameEngine->addJoysticks(controllerRawDevices);
+	//if (!gamePadFound || controllerRawDevices.size() > 0)
+		gameEngine->addJoysticks(controllerRawDevices);
 
 
 	free(pRawInputDeviceList);

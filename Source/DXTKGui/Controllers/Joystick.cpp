@@ -45,6 +45,14 @@ void Joystick::registerNewHandle(HANDLE hndl) {
 	start();*/
 }
 
+void Joystick::setPlayerSlotNumber(PlayerSlotNumber slotNum) {
+	playerSlotNumber = slotNum;
+}
+
+PlayerSlotNumber Joystick::getPlayerSlotNumber() {
+	return playerSlotNumber;
+}
+
 
 HANDLE Joystick::getHandle() {
 	return handle;
@@ -59,6 +67,10 @@ RawInputJoystick::RawInputJoystick(ControllerSocketNumber controllerSocket)
 }
 
 RawInputJoystick::~RawInputJoystick() {
+}
+
+SHORT RawInputJoystick::getXInputSlot() {
+	return -1;
 }
 
 
@@ -387,6 +399,10 @@ GamePadJoystick::GamePadJoystick(ControllerSocketNumber controllerSocket, USHORT
 GamePadJoystick::~GamePadJoystick() {
 }
 
+SHORT GamePadJoystick::getXInputSlot() {
+	return xInputNum;
+}
+
 
 void GamePadJoystick::update() {
 
@@ -417,7 +433,7 @@ DirectX::SimpleMath::Vector2 GamePadJoystick::getDirection() {
 	if (lAxisY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
 		|| lAxisY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
 		y = lAxisY / 32768.0;
-	auto dir = DirectX::SimpleMath::Vector2(x , -y);
+	auto dir = DirectX::SimpleMath::Vector2(x, -y);
 	//dir.Normalize();
 	return dir;
 }

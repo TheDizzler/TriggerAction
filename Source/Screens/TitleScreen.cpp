@@ -209,7 +209,7 @@ void TitleScreen::controllerRemoved(ControllerSocketNumber controllerSocket,
 			if (slotManager->playerSlots[i]->hasJoystick()) {
 				guiOverlay->menuDialog->pairPlayerSlot(slotManager->playerSlots[i].get());
 				wostringstream woo;
-				woo << L"Player " << i;
+				woo << L"Player " << (i + 1);
 				guiOverlay->menuDialog->setText(woo.str());
 				playerWithMenuControl = i;
 				break;
@@ -230,11 +230,11 @@ void TitleScreen::newController(shared_ptr<Joystick> newStick) {
 		if (noControllerDialog->isOpen()) {
 			noControllerDialog->hide();
 			guiOverlay->menuDialog->pairPlayerSlot(
-				slotManager->playerSlots[newStick->playerSlotNumber].get());
+				slotManager->playerSlots[newStick->getPlayerSlotNumber()].get());
 			wostringstream woo;
-			woo << L"Player " << newStick->playerSlotNumber;
+			woo << L"Player " << (newStick->getPlayerSlotNumber() + 1);
 			guiOverlay->menuDialog->setText(woo.str());
-			playerWithMenuControl = newStick->playerSlotNumber;
+			playerWithMenuControl = newStick->getPlayerSlotNumber();
 		}
 	}
 }

@@ -32,6 +32,8 @@ public:
 	Joystick(ControllerSocketNumber controllerSocket);
 	~Joystick();
 
+	virtual SHORT getXInputSlot() = 0;
+
 	HANDLE getHandle();
 	void registerNewHandle(HANDLE handle);
 
@@ -39,7 +41,9 @@ public:
 
 	/* The virtual controller socket this joystick is plugged in to. */
 	ControllerSocketNumber socket;
-	PlayerSlotNumber playerSlotNumber = PlayerSlotNumber::NONE;
+	
+	void setPlayerSlotNumber(PlayerSlotNumber slotNum);
+	PlayerSlotNumber getPlayerSlotNumber();
 
 	/** Returns normalized direction magnitude (between -1 and 1). **/
 	virtual DirectX::SimpleMath::Vector2 getDirection() = 0;
@@ -77,6 +81,7 @@ public:
 
 protected:
 	HANDLE handle = NULL;
+	PlayerSlotNumber playerSlotNumber = PlayerSlotNumber::NONE;
 };
 
 class RawInputJoystick : public Joystick {
@@ -84,6 +89,7 @@ public:
 	RawInputJoystick(ControllerSocketNumber controllerSocket);
 	virtual ~RawInputJoystick();
 
+	virtual SHORT getXInputSlot() override;
 
 	virtual void parseRawInput(PRAWINPUT pRawInput) override;
 
@@ -133,6 +139,8 @@ class GamePadJoystick : public Joystick {
 public:
 	GamePadJoystick(ControllerSocketNumber controllerSocket, USHORT xInputNum);
 	virtual ~GamePadJoystick();
+
+	virtual SHORT getXInputSlot() override;
 
 	void update();
 	/** DO NOTHING */

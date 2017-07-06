@@ -129,7 +129,7 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 		return false;
 	}
 	joystick = joyData->joystick.get();
-	joystick->playerSlotNumber = slotNumber;
+	joystick->setPlayerSlotNumber(slotNumber);
 
 	pcSelectDialog->show();
 	pcSelectDialog->setText(L"Push A\nto join!");
@@ -166,7 +166,7 @@ void PlayerSlot::unpairSocket() {
 
 	pcSelectDialog->hide();
 
-	joystick->playerSlotNumber = PlayerSlotNumber::NONE;
+	joystick->setPlayerSlotNumber(PlayerSlotNumber::NONE);
 	joystick = NULL;
 	_threadJoystickData = NULL;
 }
@@ -225,6 +225,13 @@ PlayerSlotManager::~PlayerSlotManager() {
 	DeleteCriticalSection(&cs_activeSlotsAccess);
 }
 
+bool PlayerSlotManager::checkXInputSlotNumber(USHORT inputSlotNum) {
+	for (const auto& pad : gamepads)
+		if (pad->getXInputSlot() == inputSlotNum)
+			return true;
+	return false;
+}
+
 void PlayerSlotManager::addGamePad(shared_ptr<GamePadJoystick> newPad) {
 	gamepads.push_back(newPad);
 }
@@ -242,20 +249,39 @@ void PlayerSlotManager::waiting() {
 }
 
 
+void PlayerSlotManager::gamePadRemoved(shared_ptr<Joystick> gamePad) {
+
+	wstringstream wss;
+	wss << "GamePad in PlayerSlot " << gamePad->getPlayerSlotNumber() << " removed" << endl;
+	OutputDebugString(wss.str().c_str());
+
+	JoyData* joydata = playerSlots[gamePad->getPlayerSlotNumber()]->getJoyData();
+	if (joydata)
+		accessWaitingSlots(REMOVE_FROM_LIST, joydata);
+
+	PlayerSlotNumber slotNum = gamePad->getPlayerSlotNumber();
+	accessActiveSlots(REMOVE_FROM_LIST, (PVOID) &slotNum);
+	playerSlots[gamePad->getPlayerSlotNumber()]->unpairSocket();
+
+	gamepads.erase(remove(gamepads.begin(), gamepads.end(),
+		gamePad), gamepads.end());
+
+}
+
+
 void PlayerSlotManager::controllerRemoved(shared_ptr<Joystick> joystick) {
 
 	wstringstream wss;
-	wss << "Controller PlayerSlot " << joystick->playerSlotNumber << " removed" << endl;
+	wss << "Controller PlayerSlot " << joystick->getPlayerSlotNumber() << " removed" << endl;
 	OutputDebugString(wss.str().c_str());
-	JoyData* joydata = playerSlots[joystick->playerSlotNumber]->getJoyData();
 
-	if (joydata /*&& joydata->joystick*/)
+	JoyData* joydata = playerSlots[joystick->getPlayerSlotNumber()]->getJoyData();
+	if (joydata)
 		accessWaitingSlots(REMOVE_FROM_LIST, joydata);
 
-	accessActiveSlots(REMOVE_FROM_LIST, (PVOID) &joystick->playerSlotNumber);
-	/*activeSlots.erase(remove(activeSlots.begin(), activeSlots.end(),
-		playerSlots[joystick->playerSlotNumber]), activeSlots.end());*/
-	playerSlots[joystick->playerSlotNumber]->unpairSocket();
+	PlayerSlotNumber slotNum = joystick->getPlayerSlotNumber();
+	accessActiveSlots(REMOVE_FROM_LIST, (PVOID) &slotNum);
+	playerSlots[joystick->getPlayerSlotNumber()]->unpairSocket();
 }
 
 
@@ -270,19 +296,19 @@ void PlayerSlotManager::finalizePair(JoyData* joyData) {
 
 	accessWaitingSlots(REMOVE_FROM_LIST, joyData);
 
-	PlayerSlotNumber* plyrSltNum = &(joyData->joystick->playerSlotNumber);
-	accessActiveSlots(ADD_TO_LIST, plyrSltNum);
+	PlayerSlotNumber plyrSltNum = joyData->joystick->getPlayerSlotNumber();
+	accessActiveSlots(ADD_TO_LIST, &plyrSltNum);
 	//activeSlots.push_back(playerSlots[joyData->joystick->playerSlotNumber]);
 	/*if (joyData->isXInput)
 		gamepads.push_back((GamePadJoystick*) joyData->joystick.get());*/
 
-	playerSlots[joyData->joystick->playerSlotNumber]->selectCharacter();
-	playerSlots[joyData->joystick->playerSlotNumber]->finishInit();
+	playerSlots[joyData->joystick->getPlayerSlotNumber()]->selectCharacter();
+	playerSlots[joyData->joystick->getPlayerSlotNumber()]->finishInit();
 
 	wostringstream ws;
 	ws << L"Player ";
-	ws << (playerSlots[joyData->joystick->playerSlotNumber]->getPlayerSlotNumber() + 1);
-	playerSlots[joyData->joystick->playerSlotNumber]->setDialogText(ws.str());
+	ws << (playerSlots[joyData->joystick->getPlayerSlotNumber()]->getPlayerSlotNumber() + 1);
+	playerSlots[joyData->joystick->getPlayerSlotNumber()]->setDialogText(ws.str());
 }
 
 
@@ -308,7 +334,7 @@ void PlayerSlotManager::accessWaitingSlots(size_t task, PVOID pvoid) {
 
 		case REMOVE_FROM_LIST:
 			waitingSlots.erase(remove(waitingSlots.begin(), waitingSlots.end(),
-				playerSlots[joyData->joystick->playerSlotNumber]));
+				playerSlots[joyData->joystick->getPlayerSlotNumber()]));
 			break;
 
 		case CHECK_FOR_CONFIRM:
