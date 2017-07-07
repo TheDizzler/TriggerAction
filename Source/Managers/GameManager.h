@@ -7,6 +7,9 @@
 #include "../DXTKGui/GUIFactory.h"
 #include "../Screens/LevelScreen.h"
 #include "../Screens/GUIOverlay.h"
+#include "../Screens/OptionsScreen.h"
+#include "../DXTKGui/Effects/ScreenTransitions.h"
+
 
 class GameEngine;
 
@@ -35,6 +38,7 @@ public:
 	bool reloadLevel(const pugi::char_t* levelName);
 
 	void loadMainMenu();
+	void loadOptionsScreen();
 
 	void controllerRemoved(ControllerSocketNumber controllerSocket,
 		PlayerSlotNumber slotNumber);
@@ -74,8 +78,21 @@ private:
 	Screen* currentScreen = 0;
 	Screen* lastScreen = 0;
 
+	//unique_ptr<ScreenTransitions::ScreenTransitionManager> transMan;
+	ScreenTransitions::ScreenTransitionManager transMan;
+
+	void (GameManager::*updateFunction)(double) = NULL;
+	void (GameManager::*drawFunction)(SpriteBatch*) = NULL;
+	
+	void normalUpdate(double deltaTime);
+	void transitionUpdate(double deltaTime);
+
+	void normalDraw(SpriteBatch* batch);
+	void transitionDraw(SpriteBatch* batch);
+
 	unique_ptr<TitleScreen> titleScreen;
 	unique_ptr<LevelScreen> levelScreen;
+	unique_ptr<OptionsScreen> optionsScreen;
 
 	GameEngine* gameEngine;
 	shared_ptr<MouseController> mouse;

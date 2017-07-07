@@ -16,3 +16,4 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- Push to DXTKGui project: made changes to Texturizable to allow passing of ID3D11Device for more batch drawing control
 >- updated to pugixml v1.8.2
 >- updated to DirectXTK v2017.6.21
+>- added suppport for XInput controllers

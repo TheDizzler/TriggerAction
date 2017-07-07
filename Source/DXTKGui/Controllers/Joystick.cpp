@@ -273,108 +273,109 @@ bool RawInputJoystick::isDownPressed() {
 }
 
 bool RawInputJoystick::yButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::Y]
-		&& !lastButtonStates[ControlButtons::Y];
+	bool pushed = bButtonStates[yButton]
+		&& !lastButtonStates[yButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::Y] = true;
-		lastButtonStates[ControlButtons::Y] = true;
+		bButtonStates[yButton] = true;
+		lastButtonStates[yButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::xButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::X]
-		&& !lastButtonStates[ControlButtons::X];
+	bool pushed = bButtonStates[xButton]
+		&& !lastButtonStates[xButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::X] = true;
-		lastButtonStates[ControlButtons::X] = true;
+		bButtonStates[xButton] = true;
+		lastButtonStates[xButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::aButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::A] && !lastButtonStates[ControlButtons::A];
+	bool pushed = bButtonStates[aButton]
+		&& !lastButtonStates[aButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::A] = true;
-		lastButtonStates[ControlButtons::A] = true;
+		bButtonStates[aButton] = true;
+		lastButtonStates[aButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::bButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::B]
-		&& !lastButtonStates[ControlButtons::B];
+	bool pushed = bButtonStates[bButton]
+		&& !lastButtonStates[bButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::B] = true;
-		lastButtonStates[ControlButtons::B] = true;
+		bButtonStates[bButton] = true;
+		lastButtonStates[bButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::lButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::L]
-		&& !lastButtonStates[ControlButtons::L];
+	bool pushed = bButtonStates[leftShoulderButton]
+		&& !lastButtonStates[leftShoulderButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::L] = true;
-		lastButtonStates[ControlButtons::L] = true;
+		bButtonStates[leftShoulderButton] = true;
+		lastButtonStates[leftShoulderButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::rButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::R]
-		&& !lastButtonStates[ControlButtons::R];
+	bool pushed = bButtonStates[rightShoulderButton]
+		&& !lastButtonStates[rightShoulderButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::R] = true;
-		lastButtonStates[ControlButtons::R] = true;
+		bButtonStates[rightShoulderButton] = true;
+		lastButtonStates[rightShoulderButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::startButtonPushed() {
-	bool pushed = bButtonStates[ControlButtons::START]
-		&& !lastButtonStates[ControlButtons::START];
+	bool pushed = bButtonStates[startButton]
+		&& !lastButtonStates[startButton];
 
 	if (pushed) {
-		bButtonStates[ControlButtons::START] = true;
-		lastButtonStates[ControlButtons::START] = true;
+		bButtonStates[startButton] = true;
+		lastButtonStates[startButton] = true;
 	}
 	return pushed;
 }
 
 bool RawInputJoystick::selectButtonPushed() {
-	return bButtonStates[ControlButtons::SELECT] && !lastButtonStates[ControlButtons::SELECT];
+	return bButtonStates[selectButton] && !lastButtonStates[selectButton];
 }
 
 
 bool RawInputJoystick::yButtonDown() {
-	return bButtonStates[ControlButtons::Y];
+	return bButtonStates[yButton];
 }
 
 bool RawInputJoystick::xButtonDown() {
-	return bButtonStates[ControlButtons::X];
+	return bButtonStates[xButton];
 }
 
 bool RawInputJoystick::aButtonDown() {
-	return bButtonStates[ControlButtons::A];
+	return bButtonStates[aButton];
 }
 
 bool RawInputJoystick::bButtonDown() {
-	return bButtonStates[ControlButtons::B];
+	return bButtonStates[bButton];
 }
 
 bool RawInputJoystick::lButtonDown() {
-	return bButtonStates[ControlButtons::L];
+	return bButtonStates[leftShoulderButton];
 }
 
 bool RawInputJoystick::rButtonDown() {
-	return bButtonStates[ControlButtons::R];
+	return bButtonStates[rightShoulderButton];
 }
 
 bool RawInputJoystick::startButtonDown() {
@@ -384,16 +385,25 @@ bool RawInputJoystick::startButtonDown() {
 bool RawInputJoystick::selectButtonDown() {
 	return bButtonStates[selectButton];
 }
+/** ******** RAWINPUT JOYSTICK END ******** **/
 
 
 
-
-/** ******* GamePad ******* **/
+/** ******* XINPUT GamePad ******* **/
 GamePadJoystick::GamePadJoystick(ControllerSocketNumber controllerSocket, USHORT xINum)
 	: Joystick(controllerSocket) {
 
 	xInputNum = xINum;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+	aButton = ControlButtons::GAMEPAD_A;
+	bButton = ControlButtons::GAMEPAD_B;
+	xButton = ControlButtons::GAMEPAD_X;
+	yButton = ControlButtons::GAMEPAD_Y;
+	leftShoulderButton = ControlButtons::GAMEPAD_LEFT_SHOULDER;
+	rightShoulderButton = ControlButtons::GAMEPAD_RIGHT_SHOULDER;
+	startButton = ControlButtons::GAMEPAD_START;
+	selectButton = ControlButtons::GAMEPAD_SELECT;
 }
 
 GamePadJoystick::~GamePadJoystick() {
@@ -497,67 +507,67 @@ bool GamePadJoystick::xButtonPushed() {
 }
 
 bool GamePadJoystick::aButtonPushed() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0
-		&& (lastState.Gamepad.wButtons & XINPUT_GAMEPAD_A) == 0;
+	return (state.Gamepad.wButtons & aButton) != 0
+		&& (lastState.Gamepad.wButtons & aButton) == 0;
 }
 
 bool GamePadJoystick::bButtonPushed() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0
-		&& (lastState.Gamepad.wButtons & XINPUT_GAMEPAD_B) == 0;
+	return (state.Gamepad.wButtons & bButton) != 0
+		&& (lastState.Gamepad.wButtons & bButton) == 0;
 }
 
 bool GamePadJoystick::lButtonPushed() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0
-		&& (lastState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) == 0;
+	return (state.Gamepad.wButtons & leftShoulderButton) != 0
+		&& (lastState.Gamepad.wButtons & leftShoulderButton) == 0;
 }
 
 bool GamePadJoystick::rButtonPushed() {
 
 	//float amount = state.Gamepad.bRightTrigger / 255;
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0
-		&& (lastState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) == 0;
+	return (state.Gamepad.wButtons & rightShoulderButton) != 0
+		&& (lastState.Gamepad.wButtons & rightShoulderButton) == 0;
 }
 
 bool GamePadJoystick::startButtonPushed() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0
-		&& (lastState.Gamepad.wButtons & XINPUT_GAMEPAD_START) == 0;
+	return (state.Gamepad.wButtons & startButton) != 0
+		&& (lastState.Gamepad.wButtons & startButton) == 0;
 }
 
 bool GamePadJoystick::selectButtonPushed() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0
-		&& (lastState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) == 0;
+	return (state.Gamepad.wButtons & selectButton) != 0
+		&& (lastState.Gamepad.wButtons & selectButton) == 0;
 }
 
 
 bool GamePadJoystick::yButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0;;
+	return (state.Gamepad.wButtons & yButton) != 0;
 }
 
 bool GamePadJoystick::xButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0;;
+	return (state.Gamepad.wButtons & xButton) != 0;
 }
 
 bool GamePadJoystick::aButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;;
+	return (state.Gamepad.wButtons & aButton) != 0;
 }
 
 bool GamePadJoystick::bButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0;;
+	return (state.Gamepad.wButtons & bButton) != 0;
 }
 
 bool GamePadJoystick::lButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;;
+	return (state.Gamepad.wButtons & leftShoulderButton) != 0;
 }
 
 bool GamePadJoystick::rButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;;
+	return (state.Gamepad.wButtons & rightShoulderButton) != 0;
 }
 
 bool GamePadJoystick::startButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;;
+	return (state.Gamepad.wButtons & startButton) != 0;
 }
 
 bool GamePadJoystick::selectButtonDown() {
-	return (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;;
+	return (state.Gamepad.wButtons & selectButton) != 0;
 }
 

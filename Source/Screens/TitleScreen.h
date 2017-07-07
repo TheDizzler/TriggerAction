@@ -1,12 +1,10 @@
 #pragma once
 #include "../DXTKGui/BaseGraphics/screen.h"
-//#include "../Engine/Joystick.h"
 #include "GUIOverlay.h"
 
 
 class TitleScreen : public Screen {
 public:
-	//TitleScreen();
 	virtual ~TitleScreen();
 
 

@@ -215,6 +215,7 @@
     <ClCompile Include="Source\pch.cpp" />
     <ClCompile Include="Source\Screens\GUIOverlay.cpp" />
     <ClCompile Include="Source\Screens\LevelScreen.cpp" />
+    <ClCompile Include="Source\Screens\OptionsScreen.cpp" />
     <ClCompile Include="Source\Screens\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -274,6 +275,7 @@
     <ClInclude Include="Source\pch.h" />
     <ClInclude Include="Source\Screens\GUIOverlay.h" />
     <ClInclude Include="Source\Screens\LevelScreen.h" />
+    <ClInclude Include="Source\Screens\OptionsScreen.h" />
     <ClInclude Include="Source\Screens\TitleScreen.h" />
   </ItemGroup>
   <ItemGroup>

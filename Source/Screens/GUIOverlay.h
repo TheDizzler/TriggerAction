@@ -39,6 +39,7 @@ public:
 
 /** Displayed by GUIOverlay but controlled by it's associated screen. */
 	unique_ptr<MenuDialog> menuDialog;
+
 private:
 
 	/** The order of these is important!! */

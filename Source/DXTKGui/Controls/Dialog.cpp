@@ -603,6 +603,11 @@ void PromptDialog::update(double deltaTime) {
 		control->update(deltaTime);
 
 	}
+
+	/*if (refreshTexture) {							<-- Implement!
+		texturePanel->setTexture(texturize());
+		refreshTexture = false;
+	}*/
 }
 
 /* PromptDialog checks to see if it's open before performing any logic. */
@@ -627,6 +632,7 @@ void PromptDialog::draw(SpriteBatch* batch) {
 			control->draw(batch);
 		}
 		frame->draw(batch);
+		//texturePanel->draw(batch); <-- Implement!
 	}
 }
 

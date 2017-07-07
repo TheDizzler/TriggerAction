@@ -1,16 +1,17 @@
 #include "../pch.h"
 #include "TitleScreen.h"
+#include "../Engine/GameEngine.h"
+
 
 TitleScreen::~TitleScreen() {
 }
 
 
-#include "../Engine/GameEngine.h"
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 3);
-	dialogPos = Vector2(Globals::targetResolution.x / 2, Globals::targetResolution.y / 2);
+	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
 
@@ -38,8 +39,9 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	pendulum->setLayerDepth(.9);
 
 	camera->setZoom(1);
+	camera->setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
 	camera->centerOn(Vector2(
-		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
+		Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2));
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		pcSelectDialogs[i] = guiOverlay->createPCSelectDialog(
@@ -66,6 +68,7 @@ void TitleScreen::reload() {
 	pendulum->setRotation(pendulumRotation);
 
 	camera->setZoom(1);
+	camera->setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
 	camera->centerOn(Vector2(
 		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
 
@@ -145,6 +148,11 @@ void TitleScreen::update(double deltaTime) {
 							guiOverlay->menuDialog->selectionMade = false;
 						}
 						break;
+					case TitleItems::OPTIONS:
+						guiOverlay->menuDialog->hide();
+						game->loadOptionsScreen();
+
+						break;
 					case TitleItems::CANCEL:
 						break;
 				}
@@ -153,26 +161,6 @@ void TitleScreen::update(double deltaTime) {
 
 		LeaveCriticalSection(&cs_activeSlotsAccess);
 	}
-
-	//DWORD dwResult;
-	//for (DWORD i = 0; i< XUSER_MAX_COUNT; i++) {
-	//	XINPUT_STATE state;
-	//	ZeroMemory(&state, sizeof(XINPUT_STATE));
-
-	//	// Simply get the state of the controller from XInput.
-	//	dwResult = XInputGetState(i, &state);
-
-	//	if (dwResult == ERROR_SUCCESS) {
-	//		// Controller is connected 
-	//		
-	//		if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0) {
-	//			int hi = 0;
-	//		}
-	//	} else {
-	//		// Controller is not connected 
-	//	}
-	//}
-
 }
 
 
@@ -181,6 +169,7 @@ void TitleScreen::draw(SpriteBatch * batch) {
 	pendulum->draw(batch);
 	noControllerDialog->draw(batch);
 }
+
 
 void TitleScreen::pause() {
 }

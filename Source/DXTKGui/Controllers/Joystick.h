@@ -21,7 +21,12 @@ enum ControllerSocketNumber {
 };
 
 enum ControlButtons {
-	A = 0, B, X, Y, L, R, SELECT, START
+	A = 0, B, X, Y, L, R, SELECT, START,
+	GAMEPAD_A = XINPUT_GAMEPAD_A, GAMEPAD_B = XINPUT_GAMEPAD_B,
+	GAMEPAD_X = XINPUT_GAMEPAD_X, GAMEPAD_Y = XINPUT_GAMEPAD_Y,
+	GAMEPAD_LEFT_SHOULDER = XINPUT_GAMEPAD_LEFT_SHOULDER,
+	GAMEPAD_RIGHT_SHOULDER = XINPUT_GAMEPAD_RIGHT_SHOULDER,
+	GAMEPAD_START = XINPUT_GAMEPAD_START, GAMEPAD_SELECT = XINPUT_GAMEPAD_BACK
 };
 
 /* A joystick class with huge thanks to Alexander Bocken
@@ -41,7 +46,7 @@ public:
 
 	/* The virtual controller socket this joystick is plugged in to. */
 	ControllerSocketNumber socket;
-	
+
 	void setPlayerSlotNumber(PlayerSlotNumber slotNum);
 	PlayerSlotNumber getPlayerSlotNumber();
 
@@ -52,7 +57,7 @@ public:
 	virtual bool isUpPressed() = 0;
 	virtual bool isDownPressed() = 0;
 
-	/** _ButtonPushed() is for one time check only. */
+	/** _ButtonPushed() is for one time check only (non-repeating). */
 	virtual bool yButtonPushed() = 0;
 	virtual bool xButtonPushed() = 0;
 	virtual bool aButtonPushed() = 0;
@@ -71,13 +76,14 @@ public:
 	virtual bool startButtonDown() = 0;
 	virtual bool selectButtonDown() = 0;
 
+	ControlButtons aButton = ControlButtons::A;
+	ControlButtons bButton = ControlButtons::B;
+	ControlButtons xButton = ControlButtons::X;
+	ControlButtons yButton = ControlButtons::Y;
+	ControlButtons leftShoulderButton = ControlButtons::L;
+	ControlButtons rightShoulderButton = ControlButtons::R;
 	ControlButtons startButton = ControlButtons::START;
 	ControlButtons selectButton = ControlButtons::SELECT;
-	ControlButtons attackButton = ControlButtons::Y;
-	ControlButtons jumpButton = ControlButtons::X;
-	ControlButtons runButton = ControlButtons::B;
-	ControlButtons blockButton = ControlButtons::L;
-
 
 protected:
 	HANDLE handle = NULL;

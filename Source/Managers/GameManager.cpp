@@ -1,5 +1,7 @@
 #include "../pch.h"
 #include "GameManager.h"
+#include "../Engine/GameEngine.h"
+
 
 Keyboard::KeyboardStateTracker keyTracker;
 unique_ptr<GUIOverlay> guiOverlay;
@@ -13,7 +15,7 @@ GameManager::~GameManager() {
 	mapFiles.clear();
 }
 
-#include "../Engine/GameEngine.h"
+
 bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 	shared_ptr<MouseController> ms) {
 
@@ -61,8 +63,18 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 
 
 
+	updateFunction = &GameManager::normalUpdate;
+	drawFunction = &GameManager::normalDraw;
+
+	transMan.initialize(guiFactory.get());
+	transMan.setTransition(new ScreenTransitions::SquareFlipScreenTransition());
+
+
 	guiOverlay = make_unique<GUIOverlay>();
 
+	optionsScreen = make_unique<OptionsScreen>();
+	optionsScreen->setGameManager(this);
+	optionsScreen->initialize(device, ms);
 
 	mapManifest = make_unique<xml_document>();
 	if (!mapManifest->load_file(Globals::mapManifestFile)) {
@@ -108,7 +120,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 		currentScreen = levelScreen.get();
 
 	}
-	
+
 	ShowCursor(false);
 
 	return true;
@@ -117,18 +129,43 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 
 void GameManager::update(double deltaTime) {
 
+	(this->*updateFunction)(deltaTime);
+		/*auto state = Keyboard::Get().GetState();
+		keyTracker.Update(state);
+
+		currentScreen->update(deltaTime);*/
+
+}
+
+void GameManager::normalUpdate(double deltaTime) {
+
 	auto state = Keyboard::Get().GetState();
 	keyTracker.Update(state);
 
 	currentScreen->update(deltaTime);
-
 }
 
+void GameManager::transitionUpdate(double deltaTime) {
+
+	if (transMan.runTransition(deltaTime)) {
+		currentScreen = transMan.newScreen;
+		updateFunction = &GameManager::normalUpdate;
+		drawFunction = &GameManager::normalDraw;
+	}
+}
+
+void GameManager::normalDraw(SpriteBatch* batch) {
+	currentScreen->draw(batch);
+}
+
+void GameManager::transitionDraw(SpriteBatch* batch) {
+	transMan.drawTransition(batch);
+}
 
 void GameManager::draw(SpriteBatch * batch) {
 
-	currentScreen->draw(batch);
-
+	/*currentScreen->draw(batch);*/
+	(this->*drawFunction)(batch);
 }
 
 
@@ -199,6 +236,13 @@ void GameManager::loadMainMenu() {
 	currentScreen = titleScreen.get();
 	titleScreen->reload();
 
+}
+
+void GameManager::loadOptionsScreen() {
+
+	updateFunction = &GameManager::transitionUpdate;
+	drawFunction = &GameManager::transitionDraw;
+	transMan.transitionBetween(currentScreen, optionsScreen.get());
 }
 
 void GameManager::controllerRemoved(ControllerSocketNumber controllerSocket,
@@ -292,6 +336,10 @@ size_t GameManager::getSelectedDisplayIndex() {
 size_t GameManager::getSelectedDisplayModeIndex() {
 	return gameEngine->getSelectedDisplayModeIndex();
 }
+
+
+
+
 
 
 

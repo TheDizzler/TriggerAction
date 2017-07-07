@@ -246,6 +246,9 @@
     <ClCompile Include="Source\DXTKGui\Controllers\Joystick.cpp">
       <Filter>Source Files\DXTKGui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Screens\OptionsScreen.cpp">
+      <Filter>Source Files\Screens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h">
@@ -418,6 +421,9 @@
     </ClInclude>
     <ClInclude Include="Source\DXTKGui\Controllers\Joystick.h">
       <Filter>Header Files\DXTKGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Screens\OptionsScreen.h">
+      <Filter>Header Files\Screens</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -222,6 +222,9 @@ void GameEngine::update(double deltaTime) {
 							paused = false;
 							dialogCustom = false;
 							break;
+						/*case PauseMenuItems::SETTINGS:
+							
+							break;*/
 						case PauseMenuItems::RELOAD_XML:
 							dialog->hide();
 							paused = false;
@@ -254,7 +257,7 @@ void GameEngine::update(double deltaTime) {
 #include "CommonStates.h"
 void GameEngine::render() {
 
-	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::GhostWhite);
+	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::Black);
 	batch->Begin(SpriteSortMode_FrontToBack, blendState->NonPremultiplied(),
 		NULL, NULL, NULL, NULL, camera->translationMatrix());
 	{
