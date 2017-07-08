@@ -34,16 +34,48 @@ ScreenTransitionManager::~ScreenTransitionManager() {
 }
 
 void ScreenTransitions::ScreenTransitionManager::initialize(
-	GUIFactory* factory, const char_t* bgName) {
+	GUIFactory* factory, const char_t* bgName, bool resizeBGToFit) {
+
 
 	guiFactory = factory;
 	bg = move(guiFactory->getSpriteFromAsset(bgName));
 	if (bg == NULL) {
 		bg = guiFactory->getSpriteFromAsset("Default Transition BG");
 	}
-	bg->setPosition(Vector2(bg->getWidth() / 2, bg->getHeight() / 2));
-	bg->setOrigin(bg->getPosition());
+	bg->setPosition(Vector2::Zero);
+	bg->setOrigin(Vector2::Zero);
+	bg->setLayerDepth(0);
 
+	RECT rect;
+	GetClientRect(guiFactory->getHWND(), &rect);
+
+	//int buffer = 5; // padding to give a bit of lee-way to prevent tearing
+	int screenWidth = rect.right - rect.left ;
+	int screenHeight = rect.bottom - rect.top;
+
+	if (resizeBGToFit) {
+		//scale bg image to screen
+		int horzDif = bg->getWidth() - screenWidth;
+		int vertDif = bg->getHeight() - screenHeight;
+		if (horzDif > 0 || vertDif > 0) {
+			// bg image is bigger in one or more dimensions than screen
+			if (horzDif > vertDif) {
+				float horzRatio = float(screenWidth) / bg->getWidth();
+				bg->setScale(Vector2(horzRatio, horzRatio));
+			} else {
+				float vertRatio = float(screenHeight) / bg->getHeight();
+				bg->setScale(Vector2(vertRatio, vertRatio));
+			}
+		} else {
+			if (horzDif < vertDif) {
+				float horzRatio = float(screenWidth) / bg->getWidth();
+				bg->setScale(Vector2(horzRatio, horzRatio));
+			} else {
+				float vertRatio = float(screenHeight) / bg->getHeight();
+				bg->setScale(Vector2(vertRatio, vertRatio));
+			}
+		}
+	}
 }
 
 void ScreenTransitionManager::setTransition(ScreenTransition* effect) {
@@ -56,15 +88,18 @@ void ScreenTransitionManager::setTransition(ScreenTransition* effect) {
 
 #include "../BaseGraphics/screen.h"
 void ScreenTransitionManager::transitionBetween(
-	Screen* oldScreen, Screen* newScr, float transitionTime) {
+	Screen* oldScreen, Screen* newScr, float transitionTime, bool autoBatchDraw) {
 
 	Color purple = Color(158, 0, 58);
 	Color blue = Color(0, 58, 158);
+
 	transition->setTransitionBetween(
-		guiFactory->createTextureFromScreen(oldScreen, true, purple),
-		guiFactory->createTextureFromScreen(newScr, false, blue), transitionTime);
+		guiFactory->createTextureFromScreen(oldScreen, autoBatchDraw, purple),
+		guiFactory->createTextureFromScreen(newScr, autoBatchDraw, blue), transitionTime);
 
 	newScreen = newScr;
+
+	
 }
 
 bool ScreenTransitionManager::runTransition(double deltaTime) {

@@ -41,11 +41,11 @@ namespace ScreenTransitions {
 		virtual ~ScreenTransitionManager();
 
 		void initialize(GUIFactory* guiFactory,
-			const char_t* bgName = "Default Transition BG");
+			const char_t* bgName = "Default Transition BG", bool resizeBGToFit = true);
 
 		void setTransition(ScreenTransition* effect);
 		void transitionBetween(Screen* oldScreen, Screen* newScreen,
-			float transitionTime = .5);
+			float transitionTime = .5, bool autoBatchDraw = true);
 
 		/** Return true when transition complete. */
 		bool runTransition(double deltaTime);

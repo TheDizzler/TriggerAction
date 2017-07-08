@@ -17,3 +17,4 @@ My first attempt at a real-time fighting game and creating pseudo 3D effect with
 >- updated to pugixml v1.8.2
 >- updated to DirectXTK v2017.6.21
 >- added suppport for XInput controllers
+>- updated ScreenTransitionManager for more BG customizability

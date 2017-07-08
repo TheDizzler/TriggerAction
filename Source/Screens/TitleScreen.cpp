@@ -9,6 +9,11 @@ TitleScreen::~TitleScreen() {
 
 bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
 
+	camera->setZoom(1);
+	camera->setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
+	camera->centerOn(Vector2(
+		Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2));
+
 	Vector2 dialogPos, dialogSize;
 	dialogSize = Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 3);
 	dialogPos = Vector2(Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2);
@@ -38,10 +43,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	pendulum->setRotation(pendulumRotation);
 	pendulum->setLayerDepth(.9);
 
-	camera->setZoom(1);
-	camera->setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
-	camera->centerOn(Vector2(
-		Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2));
+	
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		pcSelectDialogs[i] = guiOverlay->createPCSelectDialog(
@@ -168,6 +170,15 @@ void TitleScreen::draw(SpriteBatch * batch) {
 
 	pendulum->draw(batch);
 	noControllerDialog->draw(batch);
+}
+
+void TitleScreen::textureDraw(SpriteBatch* batch) {
+	batch->Begin(SpriteSortMode_FrontToBack, NULL,
+		NULL, NULL, NULL, NULL, camera->translationMatrix());
+	{
+		draw(batch);
+	}
+	batch->End();
 }
 
 

@@ -16,6 +16,8 @@ public:
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch * batch) override;
 
+	virtual void textureDraw(SpriteBatch* batch) override;
+
 	virtual void pause() override;
 	virtual void controllerRemoved(ControllerSocketNumber controllerSlot,
 		PlayerSlotNumber slotNumber) override;

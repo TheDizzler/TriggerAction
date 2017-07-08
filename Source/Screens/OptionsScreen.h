@@ -26,6 +26,8 @@ private:
 
 	GameManager* game;
 
+	Sprite bg;
+
 	unique_ptr<TextLabel> attackLabel;
 	unique_ptr<TextLabel> jumpLabel;
 	unique_ptr<TextLabel> runLabel;

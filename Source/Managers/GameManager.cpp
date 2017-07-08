@@ -66,7 +66,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 	updateFunction = &GameManager::normalUpdate;
 	drawFunction = &GameManager::normalDraw;
 
-	transMan.initialize(guiFactory.get());
+	transMan.initialize(guiFactory.get(), "Tranasition BG");
 	transMan.setTransition(new ScreenTransitions::SquareFlipScreenTransition());
 
 
@@ -98,7 +98,8 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 	levelScreen = make_unique<LevelScreen>();
 	levelScreen->setGameManager(this);
 	if (!levelScreen->initialize(device, mouse)) {
-		GameEngine::showErrorDialog(L"Level Screen failed to initialize", L"Error initializing level");
+		GameEngine::showErrorDialog(L"Level Screen failed to initialize",
+			L"Error initializing level");
 		return false;
 	}
 
@@ -114,7 +115,8 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 		string level = "Test Square C";
 		string mFile = mapFiles[level];
 		if (!loadLevel(mFile.c_str())) {
-			GameEngine::showErrorDialog(L"Map failed to load", L"Error in GameManager::initializeGame()");
+			GameEngine::showErrorDialog(L"Map failed to load",
+				L"Error in GameManager::initializeGame()");
 			return false;
 		}
 		currentScreen = levelScreen.get();
@@ -162,7 +164,7 @@ void GameManager::transitionDraw(SpriteBatch* batch) {
 	transMan.drawTransition(batch);
 }
 
-void GameManager::draw(SpriteBatch * batch) {
+void GameManager::draw(SpriteBatch* batch) {
 
 	/*currentScreen->draw(batch);*/
 	(this->*drawFunction)(batch);
@@ -242,7 +244,7 @@ void GameManager::loadOptionsScreen() {
 
 	updateFunction = &GameManager::transitionUpdate;
 	drawFunction = &GameManager::transitionDraw;
-	transMan.transitionBetween(currentScreen, optionsScreen.get());
+	transMan.transitionBetween(currentScreen, optionsScreen.get(), 1, false);
 }
 
 void GameManager::controllerRemoved(ControllerSocketNumber controllerSocket,

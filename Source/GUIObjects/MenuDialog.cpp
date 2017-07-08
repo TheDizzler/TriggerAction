@@ -45,7 +45,6 @@ void MenuDialog::setDimensions(const Vector2& position, const Vector2& size) {
 }
 
 
-
 void MenuDialog::clearSelections() {
 	selections.clear();
 	selectionsActive.clear();
@@ -98,9 +97,7 @@ void MenuDialog::update(double deltaTime) {
 	DynamicDialog::update(deltaTime);
 
 
-	//if (playerSlot->getStick()->lAxisY > 10
 	if (playerSlot->getStick()->isDownPressed()
-		//|| playerSlot->getStick()->bButtonStates[ControlButtons::SELECT]) {
 		|| playerSlot->getStick()->selectButtonDown()) {
 
 		repeatDelayTime += deltaTime;
@@ -110,7 +107,7 @@ void MenuDialog::update(double deltaTime) {
 				++selectedItem;
 				if (selectedItem >= selections.size()) {
 					selectedItem = 0;
-					if (circle) // we have infinite loop
+					if (circle) // we have infinite loop (selections size == 0)
 						break;
 					circle = true;
 
@@ -122,8 +119,7 @@ void MenuDialog::update(double deltaTime) {
 			pointer->setPosition(newpos);
 			repeatDelayTime = 0;
 		}
-	//} else if (playerSlot->getStick()->lAxisY < -10) {
-	} else if (playerSlot->getStick()->isUpPressed() ) {
+	} else if (playerSlot->getStick()->isUpPressed()) {
 		repeatDelayTime += deltaTime;
 		if (repeatDelayTime >= REPEAT_DELAY) {
 			bool circle = false;
@@ -148,9 +144,10 @@ void MenuDialog::update(double deltaTime) {
 	}
 
 
-	if (playerSlot->getStick()->aButtonPushed() || playerSlot->getStick()->startButtonPushed()) {
+	if (playerSlot->getStick()->aButtonPushed()
+		|| playerSlot->getStick()->startButtonPushed()) {
 
-			// option selected
+		// option selected
 		selectionMade = true;
 
 	} else if (playerSlot->getStick()->bButtonPushed()) {
