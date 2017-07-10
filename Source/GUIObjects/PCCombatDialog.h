@@ -14,7 +14,7 @@ public:
 	virtual void setDimensions(const Vector2& position, const Vector2& size) override;
 
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 private:

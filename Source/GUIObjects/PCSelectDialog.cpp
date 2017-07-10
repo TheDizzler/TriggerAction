@@ -76,15 +76,18 @@ void PCSelectDialog::loadPC(CharacterData* pcData) {
 
 
 #include "../Screens/GUIOverlay.h"
-void PCSelectDialog::update(double deltaTime) {
-
+bool PCSelectDialog::update(double deltaTime) {
 
 	if (!isShowing)
-		return;
+		return false;
 
-	DynamicDialog::update(deltaTime);
+	bool refreshed = true;
+
+	if (DynamicDialog::update(deltaTime))
+		refreshed = true;
 	pointer->update(deltaTime);
 
+	return refreshed;
 }
 
 void PCSelectDialog::draw(SpriteBatch* batch) {
@@ -102,15 +105,18 @@ void PCSelectDialog::draw(SpriteBatch* batch) {
 			readyLabel->draw(batch);
 		else
 			pointer->draw(batch);
-
-
 	}
 }
 
 
 void PCSelectDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 	DynamicDialog::textureDraw(batch);
-	//portrait->draw(batch);
+	
+	/*portrait->draw(batch);
+	magicEnglish->draw(batch);
+	weaponType->draw(batch);*/
+
+
 }
 
 void PCSelectDialog::hide() {

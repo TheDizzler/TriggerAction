@@ -44,7 +44,7 @@ public:
 	virtual void setTint(const Color& color) override;
 	virtual void setTint(const XMVECTORF32 color) override;
 
-	virtual void update();
+	virtual bool update();
 	void draw(SpriteBatch* batch);
 
 	virtual const Vector2& getPosition() const override;

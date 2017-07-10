@@ -25,7 +25,7 @@ public:
 	virtual void setText(wstring text) override;
 	virtual void setDimensions(const Vector2& position, const Vector2& size);
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 	virtual void setPosition(const Vector2& newPosition) override;
@@ -33,9 +33,6 @@ public:
 
 
 protected:
-	bool refreshTexture = true;
-	unique_ptr<TexturePanel> texturePanel;
-
 
 	shared_ptr<AssetSet> assetSet;
 	

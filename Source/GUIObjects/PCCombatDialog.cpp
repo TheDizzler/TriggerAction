@@ -26,8 +26,8 @@ void PCCombatDialog::setDimensions(const Vector2& position, const Vector2& size)
 	spriteP = guiFactory->getSpriteFromAsset("P");
 }
 
-void PCCombatDialog::update(double deltaTime) {
-	DynamicDialog::update(deltaTime);
+bool PCCombatDialog::update(double deltaTime) {
+	return DynamicDialog::update(deltaTime);
 }
 
 void PCCombatDialog::draw(SpriteBatch* batch) {

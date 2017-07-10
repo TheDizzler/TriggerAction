@@ -58,9 +58,9 @@ GUIOverlay::GUIOverlay() {
 
 	}*/
 
-	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 250, 20)));
-	fpsLabel->setTint(Colors::Black);
-	fpsLabel->setScale(Vector2(.5, .5));
+	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 350, 20)));
+	fpsLabel->setTint(Colors::White);
+	fpsLabel->setScale(Vector2(.75, .75));
 
 
 	menuDialog = make_unique<MenuDialog>(guiFactory.get());
@@ -92,7 +92,7 @@ void GUIOverlay::initializeTitleScreen(
 		slotManager->playerSlots[i]->pairWithDialog(pcSelectDialogs[i].get());
 		hudDialogs[HUDDIALOG::PLAYER1 + i] = pcSelectDialogs[i].get();
 	}
-	
+
 	menuDialog->setText(L"Hello Menu");
 	menuDialog->clearSelections();
 	menuDialog->addSelection(L"New Game", true);
@@ -277,11 +277,12 @@ void ControllerDialog::setDimensions(const Vector2& position, const Vector2& siz
 }
 
 
-void ControllerDialog::update(double deltaTime) {
+bool ControllerDialog::update(double deltaTime) {
 
 	if (!isShowing)
-		return;
+		return false;
 
+	bool refreshed = false;
 
 	dialogOpenTime += deltaTime;
 	if (dialogOpenTime > CONTROLLER_WAIT_TIME) {
@@ -295,7 +296,10 @@ void ControllerDialog::update(double deltaTime) {
 			PromptDialog::setText(text);
 		}
 	}
-	PromptDialog::update(deltaTime);
+	if (PromptDialog::update(deltaTime))
+		refreshed = true;
+
+	return refreshed;
 }
 
 void ControllerDialog::setText(wstring text) {

@@ -91,10 +91,11 @@ void MenuDialog::addSelection(wstring selection, bool enabled) {
 }
 
 
-void MenuDialog::update(double deltaTime) {
+bool MenuDialog::update(double deltaTime) {
 	if (!isShowing)
-		return;
-	DynamicDialog::update(deltaTime);
+		return false;
+
+	bool refreshed = DynamicDialog::update(deltaTime);
 
 
 	if (playerSlot->getStick()->isDownPressed()
@@ -158,9 +159,12 @@ void MenuDialog::update(double deltaTime) {
 	}
 
 	for (const auto& selection : selections)
-		selection->update(deltaTime);
+		if (selection->update(deltaTime))
+			refreshed = true;
 
 	pointer->update(deltaTime);
+
+	return refreshed;
 }
 
 

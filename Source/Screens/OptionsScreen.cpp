@@ -19,8 +19,7 @@ bool OptionsScreen::initialize(
 		}
 	}
 
-	//bg.load(gfxAssets->getAsset("Option Screen BG"));
-	bg.load(guiFactory->getAsset("Transition BG"));
+	bg.load(gfxAssets->getAsset("Option Screen BG"));
 	bg.setPosition(Vector2::Zero);
 	bg.setOrigin(Vector2::Zero);
 	bg.setLayerDepth(0);

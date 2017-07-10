@@ -3,7 +3,7 @@
 #include "ListBox.h"
 
 
-class ComboBox : public GUIControl {
+class ComboBox : public GUIControl, public Texturizable {
 public:
 	ComboBox(GUIFactory* factory, shared_ptr<MouseController> mouseController,
 		const Vector2& position, const int width,
@@ -17,8 +17,12 @@ public:
 	void setScrollBar(ScrollBarDesc& scrollBarDesc);
 	void alwaysShowScrollBar(bool alwaysShow);
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
+
+	virtual unique_ptr<GraphicsAsset> texturize() override;
+	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
+	virtual void setPosition(const Vector2& position) override;
 
 	virtual void setFont(const pugi::char_t * font = "Default Font") override;
 
@@ -129,6 +133,10 @@ private:
 	private:
 		ComboBox* comboBox;
 	};
+
+
+	bool refreshTexture = true;
+	unique_ptr<TexturePanel> texturePanel;
 };
 
 

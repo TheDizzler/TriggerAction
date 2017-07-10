@@ -105,7 +105,7 @@ public:
 		Vector2 position, wstring text, const pugi::char_t* font = "Default Font");
 	virtual ~LetterJammer();
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 	void setEffect(unique_ptr<JammerEffect> effect);

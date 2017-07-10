@@ -85,7 +85,7 @@ public:
 	void addItems(vector<ListItem*> items);
 	void clear();
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	void draw(SpriteBatch* batch);
 
 	virtual unique_ptr<GraphicsAsset> texturize() override;

@@ -44,6 +44,8 @@ bool ComboBox::initialize(shared_ptr<FontSet> fnt,
 	selectedBackgroundSprite.reset(guiFactory->createRectangle(position,
 		Vector2(width, comboListButton->getScaledHeight()), Color(.5, .5, .5, 1)));
 
+	texturePanel.reset(guiFactory->createPanel());
+
 	return true;
 }
 
@@ -51,21 +53,32 @@ void ComboBox::setScrollBar(ScrollBarDesc& scrollBarDesc) {
 	listBox->setScrollBar(scrollBarDesc);
 }
 
-void ComboBox::update(double deltaTime) {
+bool ComboBox::update(double deltaTime) {
 
 	if (frame->contains(mouse->getPosition()) && mouse->clicked()) {
 		comboListButton->onClick();
+		refreshTexture = true;
 	}
 
-	selectedLabel->update(deltaTime);
-	comboListButton->update(deltaTime);
-	frame->update();
+	if (selectedLabel->update(deltaTime))
+		refreshTexture = true;
+	if (comboListButton->update(deltaTime))
+		refreshTexture = true;
+	if (frame->update())
+		refreshTexture = true;
 
 
 	if (isOpen) {
-		listBox->update(deltaTime);
+		if (listBox->update(deltaTime))
+			refreshTexture = true;
 	}
 
+	if (refreshTexture) {
+		texturePanel->setTexture(texturize());
+		refreshTexture = false;
+		return true;
+	}
+	return false;
 }
 
 void ComboBox::draw(SpriteBatch* batch) {
@@ -74,10 +87,29 @@ void ComboBox::draw(SpriteBatch* batch) {
 		listBox->draw(batch);
 	}
 
+	texturePanel->draw(batch);
+	/*selectedBackgroundSprite->draw(batch);
+	selectedLabel->draw(batch);
+	comboListButton->draw(batch);
+	frame->draw(batch);*/
+}
+
+
+unique_ptr<GraphicsAsset> ComboBox::texturize() {
+	return move(guiFactory->createTextureFromIElement2D(this));
+}
+
+void ComboBox::textureDraw(SpriteBatch * batch, ComPtr<ID3D11Device> device) {
+
 	selectedBackgroundSprite->draw(batch);
 	selectedLabel->draw(batch);
 	comboListButton->draw(batch);
 	frame->draw(batch);
+}
+
+void ComboBox::setPosition(const Vector2& position) {
+	GUIControl::setPosition(position);
+	texturePanel->setTexturePosition(position);
 }
 
 

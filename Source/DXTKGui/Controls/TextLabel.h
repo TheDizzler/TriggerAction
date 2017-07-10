@@ -13,7 +13,7 @@ public:
 
 	virtual ~TextLabel();
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	void draw(SpriteBatch* batch);
 	/* Draw with an alternate color.
 		NOTE: This draws using the SpriteFont, which is highly inefficient. */

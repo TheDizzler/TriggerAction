@@ -57,15 +57,20 @@ void PCStatusDialog::loadPC(PlayerCharacter* pc) {
 	}
 }
 
-void PCStatusDialog::update(double deltaTime) {
+bool PCStatusDialog::update(double deltaTime) {
 
 	if (!isShowing)
-		return;
+		return false;
 
-	DynamicDialog::update(deltaTime);
-	nameLabel->update(deltaTime);
-	hpLabel->update(deltaTime);
-	mpLabel->update(deltaTime);
+	bool refreshed = DynamicDialog::update(deltaTime);
+	if (nameLabel->update(deltaTime))
+		refreshed = true;
+	if (hpLabel->update(deltaTime))
+		refreshed = true;
+	if (mpLabel->update(deltaTime))
+		refreshed = true;
+
+	return refreshed;
 }
 
 void PCStatusDialog::draw(SpriteBatch* batch) {

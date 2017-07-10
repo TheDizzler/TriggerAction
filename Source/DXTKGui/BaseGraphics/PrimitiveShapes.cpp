@@ -130,11 +130,13 @@ void RectangleFrame::refreshDimensions() {
 }
 
 
-void RectangleFrame::update() {
+bool RectangleFrame::update() {
 	if (refreshTexture) {
 		texturePanel->setTexture(texturize());
 		refreshTexture = false;
+		return true;
 	}
+	return false;
 }
 
 void RectangleFrame::draw(SpriteBatch* batch) {

@@ -66,7 +66,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 	updateFunction = &GameManager::normalUpdate;
 	drawFunction = &GameManager::normalDraw;
 
-	transMan.initialize(guiFactory.get(), "Tranasition BG");
+	transMan.initialize(guiFactory.get(), "Transition BG");
 	transMan.setTransition(new ScreenTransitions::SquareFlipScreenTransition());
 
 

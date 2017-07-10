@@ -26,7 +26,7 @@ public:
 	void addSelection(wstring selection, bool enabled);
 
 
-	virtual void update(double deltaTime) override;
+	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 	virtual void show() override;

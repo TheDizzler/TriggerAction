@@ -31,6 +31,7 @@ void DynamicDialog::initialize(shared_ptr<AssetSet> set, const pugi::char_t* fon
 	dialogText.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font));
 
 	setLayerDepth(.95);
+
 }
 
 
@@ -49,7 +50,7 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz) {
 		OutputDebugString(L"\n\t!!Critical Failure in Dynamic Dialog: asset set is NULL!!\n\n");
 		return;
 	}
-	
+
 
 	if (size.x > 0 && size.y > 0) {
 		// adjust to size of images
@@ -179,13 +180,22 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 }
 
 
-void DynamicDialog::update(double deltaTime) {
+bool DynamicDialog::update(double deltaTime) {
+
+	bool refreshed = false;
+
+	if (dialogText->update(deltaTime)) {
+		refreshTexture = true;
+		refreshed = true;
+	}
 
 	if (refreshTexture) {
 		texturePanel->setTexture(texturize());
 		refreshTexture = false;
+		refreshed = true;
 	}
-	dialogText->update(deltaTime);
+
+	return refreshed;
 }
 
 

@@ -28,8 +28,9 @@ public:
 		NEUTRAL, SELECTION_CHANGED
 	};
 
-
-	virtual void update(double deltaTime) = 0;
+	/** Return true if GUIControl has refreshed its texture and parent GUIControls
+		need to redraw themselves. */
+	virtual bool update(double deltaTime) = 0;
 
 	virtual void setFont(const pugi::char_t* font = "Default Font") = 0;
 	virtual void setText(wstring text) = 0;

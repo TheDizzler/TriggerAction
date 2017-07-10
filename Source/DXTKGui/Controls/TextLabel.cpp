@@ -30,7 +30,7 @@ TextLabel::~TextLabel() {
 }
 
 
-void TextLabel::update(double deltaTime) {
+bool TextLabel::update(double deltaTime) {
 
 	if (isHoverable) {
 		if (hitArea->contains(mouse->getPosition())) {
@@ -74,7 +74,10 @@ void TextLabel::update(double deltaTime) {
 	if (useTexture && refreshTexture) {
 		texturePanel->setTexture(texturize());
 		refreshTexture = false;
+		return true;
 	}
+
+	return false;
 }
 
 

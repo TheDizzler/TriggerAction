@@ -17,7 +17,7 @@ LetterJammer::~LetterJammer() {
 }
 
 
-void LetterJammer::update(double deltaTime) {
+bool LetterJammer::update(double deltaTime) {
 
 	if (isHoverable) {
 		if (hitArea->contains(mouse->getPosition())) {
@@ -69,7 +69,10 @@ void LetterJammer::update(double deltaTime) {
 			textTexture = gfxAsset->getTexture();
 		}
 		refreshTexture = false;
+		return true;
 	}
+
+	return false;
 }
 
 void LetterJammer::draw(SpriteBatch* batch) {
