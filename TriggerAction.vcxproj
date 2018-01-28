@@ -219,32 +219,6 @@
     <ClCompile Include="Source\Screens\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\FontSet.h" />
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\GraphicsAsset.h" />
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\IElement2D.h" />
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\PrimitiveShapes.h" />
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\screen.h" />
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\Sprite.h" />
-    <ClInclude Include="Source\DXTKGui\Controllers\Joystick.h" />
-    <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\Button.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\CheckBox.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\ComboBox.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\Dialog.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\DynamicDialog.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\ListBox.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\Panel.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\ScrollBar.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\Spinner.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\TextLabel.h" />
-    <ClInclude Include="Source\DXTKGui\Controls\TexturePanel.h" />
-    <ClInclude Include="Source\DXTKGui\Effects\LetterJammer.h" />
-    <ClInclude Include="Source\DXTKGui\Effects\ScreenTransitions.h" />
-    <ClInclude Include="Source\DXTKGui\Effects\TransitionEffects.h" />
-    <ClInclude Include="Source\DXTKGui\GuiAssets.h" />
-    <ClInclude Include="Source\DXTKGui\GUIFactory.h" />
-    <ClInclude Include="Source\DXTKGui\StringHelper.h" />
     <ClInclude Include="Source\Engine\Camera.h" />
     <ClInclude Include="Source\Engine\GameEngine.h" />
     <ClInclude Include="Source\Engine\GraphicsEngine.h" />

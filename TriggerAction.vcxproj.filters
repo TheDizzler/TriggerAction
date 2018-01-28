@@ -55,18 +55,6 @@
     <Filter Include="Source Files\GameObjects\Characters">
       <UniqueIdentifier>{31cda343-abc2-429a-88e4-05907ec49740}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\DXTKGui">
-      <UniqueIdentifier>{80554f58-43a7-4130-8e80-aa0d4ffb08b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\DXTKGui\Base">
-      <UniqueIdentifier>{e86f826d-61ca-4ecf-b679-8d7bb9da36de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\DXTKGui\Controls">
-      <UniqueIdentifier>{435654c1-52cf-4fb5-b0bd-c99d389e7f50}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\DXTKGui\Effects">
-      <UniqueIdentifier>{1e1cfee4-a981-44d7-a63e-af9a8908f408}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\DXTKGui">
       <UniqueIdentifier>{75e2a1cc-0af8-49f1-a96e-6317703cef73}</UniqueIdentifier>
     </Filter>
@@ -251,12 +239,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\DXTKGui\Controllers\MouseController.h">
-      <Filter>Header Files\DXTKGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\StringHelper.h">
-      <Filter>Header Files\DXTKGui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -317,80 +299,14 @@
     <ClInclude Include="Source\GUIObjects\PCCombatDialog.h">
       <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DXTKGui\GUIFactory.h">
-      <Filter>Header Files\DXTKGui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GUIObjects\MenuDialog.h">
       <Filter>Header Files\GUIObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\Button.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\CheckBox.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\ComboBox.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\Dialog.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\DynamicDialog.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\FontSet.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\GraphicsAsset.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\IElement2D.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\Panel.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\PrimitiveShapes.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\screen.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Effects\ScreenTransitions.h">
-      <Filter>Header Files\DXTKGui\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Effects\TransitionEffects.h">
-      <Filter>Header Files\DXTKGui\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\TexturePanel.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\TextLabel.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\Spinner.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\ScrollBar.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\ListBox.h">
-      <Filter>Header Files\DXTKGui\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\BaseGraphics\Sprite.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Baddies\Baddie.h">
       <Filter>Header Files\GameObjects\Baddies</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Creature.h">
       <Filter>Header Files\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\GuiAssets.h">
-      <Filter>Header Files\DXTKGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controls\GUIControl.h">
-      <Filter>Header Files\DXTKGui\Base</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjects\Characters\Lucca.h">
       <Filter>Header Files\GameObjects\Characters</Filter>
@@ -413,14 +329,8 @@
     <ClInclude Include="Source\GUIObjects\PCStatusDialog.h">
       <Filter>Header Files\GUIObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Effects\LetterJammer.h">
-      <Filter>Header Files\DXTKGui\Effects</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Managers\JammerManager.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DXTKGui\Controllers\Joystick.h">
-      <Filter>Header Files\DXTKGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\Screens\OptionsScreen.h">
       <Filter>Header Files\Screens</Filter>
