@@ -1,6 +1,8 @@
 #include "../pch.h"
 #include "MapManager.h"
 #include "../Engine/GameEngine.h"
+
+#include "../../DXTKGui/StringHelper.h"
 //#include "../GameObjects/Baddies/Baddie.h"
 
 double Map::depthPerTile;
@@ -249,7 +251,7 @@ void TileAsset::stepUp(string stepVal) {
 
 
 AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
-	vector<shared_ptr<Frame>> frames) :Animation(tex, frames) {
+	vector<shared_ptr<Frame>> frames, string aniName) : Animation(tex, frames, aniName) {
 }
 
 AnimationAsset::~AnimationAsset() {
@@ -282,11 +284,11 @@ void Map::Layer::draw(SpriteBatch* batch) {
 
 unique_ptr<GraphicsAsset> Map::Layer::texturize() {
 	texturized = true;
-	return move(guiFactory->createTextureFromIElement2D(this, false));
+	return move(guiFactory.createTextureFromTexturizable(this, false));
 }
 
 void Map::Layer::makeTexture(float layerDepth) {
-	texturePanel.reset(guiFactory->createPanel(true));
+	texturePanel.reset(guiFactory.createPanel(true));
 	unique_ptr<GraphicsAsset> texture = texturize();
 	texturePanel->setTexture(move(texture));
 	texturePanel->setLayerDepth(layerDepth);
@@ -350,7 +352,7 @@ unique_ptr<Map> MapParser::getMap() {
 	return move(map);
 }
 
-#include "../DXTKGui/StringHelper.h"
+
 bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 	for (xml_node tilesetNode : mapRoot.children("tileset")) {
@@ -381,7 +383,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 		const wchar_t* file = StringHelper::convertCharStarToWCharT(fileStr.c_str());
 
 		unique_ptr<GraphicsAsset> mapAsset = make_unique<GraphicsAsset>();
-		if (!mapAsset->load(device, file)) {
+		if (!mapAsset->load(device, fileStr.c_str(), file)) {
 			wstringstream wss;
 			wss << "Unable to load map texture file: " << file;
 			GameEngine::showErrorDialog(wss.str(), L"Critical error");
@@ -405,7 +407,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 				shared_ptr<TileAsset> spriteAsset;
 				spriteAsset.reset(new TileAsset());
 				spriteAsset->loadAsPartOfSheet(
-					mapAsset->getTexture(), Vector2(i, j), size, origin);
+					mapAsset->getTexture(), fileStr.c_str(), Vector2(i, j), size, origin);
 
 				map->assetMap[gid++] = move(spriteAsset);
 			}
@@ -541,7 +543,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 				shared_ptr<AnimationAsset> animationAsset;
 				animationAsset.reset(
-					new AnimationAsset(mapAsset->getTexture(), frames));
+					new AnimationAsset(mapAsset->getTexture(), frames, name));
 				animationAsset->mask = tile->mask;
 				for (auto& hb : tile->hitboxes)
 					animationAsset->hitboxes.push_back(move(hb));

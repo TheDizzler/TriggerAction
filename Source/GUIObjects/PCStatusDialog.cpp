@@ -19,8 +19,8 @@ PCStatusDialog::~PCStatusDialog() {
 
 void PCStatusDialog::setDimensions(const Vector2& pos, const Vector2& sz) {
 	DynamicDialog::setDimensions(pos, sz);
-
-	Vector2 size = dialogText->getFont()->measureString(L"Tech");
+	dialogText.get();
+	Vector2 size = dialogText->measureString(L"Tech");
 	dialogText->getFont();
 	namePosition = pos + dialogTextMargin;
 	hpPosition = namePosition;
@@ -39,21 +39,21 @@ void PCStatusDialog::loadPC(PlayerCharacter* pc) {
 		woo << player->name.c_str();
 		nameLabel.reset(
 			guiFactory->createTextLabel(
-				namePosition, woo.str(), dialogText->getFont()->fontName));
+				namePosition, woo.str(), dialogText->getFont()));
 	}
 	{
 		wostringstream woo;
 		woo << "HP: " << player->currentHP << "/" << player->maxHP;
 		hpLabel.reset(
 			guiFactory->createTextLabel(
-				hpPosition, woo.str(), dialogText->getFont()->fontName));
+				hpPosition, woo.str(), dialogText->getFont()));
 	}
 	{
 		wostringstream woo;
 		woo << "MP: " << player->currentMP << "/" << player->maxMP;
 		mpLabel.reset(
 			guiFactory->createTextLabel(
-				mpPosition, woo.str(), dialogText->getFont()->fontName));
+				mpPosition, woo.str(), dialogText->getFont()));
 	}
 }
 

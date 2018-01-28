@@ -1,6 +1,7 @@
 #include "../pch.h"
 #include "AnimatedTile.h"
 
+#include "../Managers/MapManager.h"
 
 AnimatedTile::AnimatedTile() {
 	
@@ -16,7 +17,7 @@ AnimatedTile::AnimatedTile() {
 AnimatedTile::~AnimatedTile() {
 }
 
-#include "../Managers/MapManager.h"
+
 void AnimatedTile::load(shared_ptr<AnimationAsset> animAsset) {
 
 	animation = animAsset;

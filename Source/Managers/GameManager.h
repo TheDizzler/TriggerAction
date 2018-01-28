@@ -4,16 +4,16 @@
 #include <Keyboard.h>
 
 #include "../Screens/TitleScreen.h"
-#include "../DXTKGui/GUIFactory.h"
+#include "../../DXTKGui/GUIFactory.h"
 #include "../Screens/LevelScreen.h"
 #include "../Screens/GUIOverlay.h"
 #include "../Screens/OptionsScreen.h"
-#include "../DXTKGui/Effects/ScreenTransitions.h"
+#include "../../DXTKGui/Effects/ScreenTransitions.h"
 
 
 class GameEngine;
 
-extern Keyboard::KeyboardStateTracker keyTracker;
+//extern Keyboard::KeyboardStateTracker keyTracker;
 extern unique_ptr<GUIOverlay> guiOverlay;
 
 
@@ -22,12 +22,10 @@ extern unique_ptr<GUIOverlay> guiOverlay;
 class GameManager {
 	friend class OnClickListenerDialogQuitButton;
 public:
-	GameManager(GameEngine* gameEngine);
 	~GameManager();
 
 
-	bool initializeGame(HWND hwnd, ComPtr<ID3D11Device> device,
-		shared_ptr<MouseController> mouse);
+	bool initializeGame(GameEngine* gameEngine, HWND hwnd, ComPtr<ID3D11Device> device);
 
 
 	void update(double deltaTime);
@@ -83,7 +81,7 @@ private:
 
 	void (GameManager::*updateFunction)(double) = NULL;
 	void (GameManager::*drawFunction)(SpriteBatch*) = NULL;
-	
+
 	void normalUpdate(double deltaTime);
 	void transitionUpdate(double deltaTime);
 
@@ -95,7 +93,6 @@ private:
 	unique_ptr<OptionsScreen> optionsScreen;
 
 	GameEngine* gameEngine;
-	shared_ptr<MouseController> mouse;
 	ComPtr<ID3D11Device> device;
 
 	unique_ptr<PromptDialog> exitDialog;
@@ -114,6 +111,8 @@ public:
 	};
 	virtual void onHover(Button* button) override {
 	};
+	virtual void resetState(Button * button) override {
+	};
 private:
 	GameManager* main;
 };
@@ -128,4 +127,7 @@ public:
 private:
 	GameEngine* engine;
 	Dialog* dialog;
+
+	// Inherited via ActionListener
+	virtual void resetState(Button * button) override;
 };

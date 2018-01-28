@@ -8,7 +8,7 @@
 #include "../Managers/GFXAssetManager.h"
 
 
-extern unique_ptr<GUIFactory> guiFactory;
+extern GUIFactory guiFactory;
 extern unique_ptr<GFXAssetManager> gfxAssets;
 extern bool gameInitialized;
 
@@ -23,6 +23,8 @@ public:
 
 	bool initEngine(HWND hwnd, HINSTANCE hInstance);
 	void onAudioDeviceChange();
+
+	virtual void reloadGraphicsAssets() override;
 
 	void run(double time);
 
@@ -109,7 +111,7 @@ public:
 private:
 
 	unique_ptr<AudioEngine> audioEngine;
-	unique_ptr<GameManager> game;
+	GameManager game;
 
 	void update(double time);
 	virtual void render() override;
@@ -138,14 +140,14 @@ class QuitButtonListener : public Button::ActionListener {
 public:
 	QuitButtonListener(GameEngine* eng) : engine(eng) {
 	}
-	virtual void onClick(Button * button) override {
+	virtual void onClick(Button* button) override {
 		engine->exit();
 	}
-	virtual void onPress(Button * button) override {
+	virtual void onPress(Button* button) override {
 	};
-	virtual void onHover(Button * button) override {
+	virtual void onHover(Button* button) override {
 	};
+	virtual void resetState(Button * button) override{};
 	GameEngine* engine;
-
 
 };

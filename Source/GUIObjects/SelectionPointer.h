@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DXTKGui/BaseGraphics/Sprite.h"
+#include "../../DXTKGui/BaseGraphics/Sprite.h"
 
 class Joystick;
 class SelectionPointer : public Sprite {

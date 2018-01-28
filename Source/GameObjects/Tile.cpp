@@ -123,7 +123,7 @@ void TangibleTile::takeDamage(int damage, bool showDamage) {
 void TangibleTile::calculateShadow(Map* map) {
 
 	if (position.z > 0) {
-		shadow.reset(guiFactory->createRectangle(
+		shadow.reset(guiFactory.createRectangle(
 			Vector2(position.x, position.y), Vector2(getWidth(), getHeight())));
 		shadow->setTint(Colors::Black);
 

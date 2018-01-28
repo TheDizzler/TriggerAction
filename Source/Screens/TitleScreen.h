@@ -1,5 +1,5 @@
 #pragma once
-#include "../DXTKGui/BaseGraphics/screen.h"
+#include "../../DXTKGui/BaseGraphics/screen.h"
 #include "GUIOverlay.h"
 
 
@@ -8,7 +8,7 @@ public:
 	virtual ~TitleScreen();
 
 
-	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
+	virtual bool initialize(ComPtr<ID3D11Device> device) override;
 	virtual void setGameManager(GameManager* game) override;
 
 	void reload();

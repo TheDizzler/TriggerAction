@@ -29,7 +29,7 @@
 #include <pugixml.hpp>
 
 
-#include "DXTKGui\GUIFactory.h"
+#include "../DXTKGui\GUIFactory.h"
 
 using namespace std;
 using namespace pugi;

@@ -14,11 +14,15 @@ using namespace DirectX::SimpleMath;
 https://roguesharp.wordpress.com/2014/07/13/tutorial-5-creating-a-2d-camera-with-pan-and-zoom-in-monogame/ */
 class Camera {
 public:
-	Camera(int viewportWidth, int viewportHeight);
+	Camera();
+	//Camera(int viewportWidth, int viewportHeight);
 	//Camera(const Vector2& viewport);
 	virtual ~Camera();
 
-	void updateViewport(const Vector2& viewportArea, const Vector2& viewportPosition, bool zoomToFit = false);
+	void setViewport(D3D11_VIEWPORT cameraViewport);
+	void setViewport(int viewportWidth, int viewportHeight);
+	void updateViewport(const Vector2& viewportArea,
+		const Vector2& viewportPosition, bool zoomToFit = false);
 
 
 	Viewport* viewport;
@@ -52,10 +56,10 @@ public:
 	Vector2& screenToWorld(Vector2 screenPosition);
 private:
 
-	Vector2 cameraPosition;
+	Vector2 position;
 	float zoom;
 
 
-	
+
 
 };

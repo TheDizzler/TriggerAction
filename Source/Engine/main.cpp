@@ -1,29 +1,30 @@
 #include "../pch.h"
 #pragma once
 
-#include <guiddef.h>
-//DEFINE_GUID(GUID_HID, 0x4D1E55B2L, 0xF16F, 0x11CF, 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30);
-//#define GUID_CLASS_INPUT GUID_HID
-
-#include <Mmsystem.h>
-#include <Setupapi.h>
-
-
 #include "GameEngine.h"
+
 
 
 LPCTSTR wndClassName = L"Trigger Action";
 HWND hwnd;
 
-unique_ptr<GameEngine> gameEngine;
+int Globals::WINDOW_WIDTH = 1280;
+int Globals::WINDOW_HEIGHT = 960;
+int Globals::vsync_enabled = 0;
+bool Globals::FULL_SCREEN = false;
+
+GameEngine gameEngine;
 HDEVNOTIFY newInterface = NULL;
+
+GUID guidHid;
 
 double countsPerSecond = 0.0;
 __int64 counterStart = 0;
 
-double frameTime = 0;
 
+/** If using joysticks this is required. */
 int registerControllers();
+/** Creates a list of all attached USB devices. */
 int getInputDeviceInfo(bool writeToFile, wstring filename = L"USB Devices.txt");
 int messageLoop();
 void startTimer();
@@ -34,7 +35,7 @@ bool initWindow(HINSTANCE hInstance, int showWnd);
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
-GUID guidHid;
+
 
 
 void releaseResources() {
@@ -66,15 +67,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	guidHid.Data4[6] = 0x00;
 	guidHid.Data4[7] = 0x30;
 
-	gameEngine.reset(new GameEngine());
-
 	if (!initWindow(hInstance, nShowCmd)) {
 		MessageBox(0, L"Window Initialization - Failed", L"Error", MB_OK);
 		releaseResources();
 		return 0;
 	}
 
-	if (!gameEngine->initEngine(hwnd, hInstance)) {
+	if (!gameEngine.initEngine(hwnd, hInstance)) {
 		GameEngine::errorMessage(L"Game Engine Initialization Failed", L"Error", true);
 		releaseResources();
 		return 0;
@@ -97,7 +96,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	messageLoop(); /* Main program loop */
 	releaseResources();
 
-
 	return 0;
 }
 
@@ -116,9 +114,7 @@ int messageLoop() {
 			DispatchMessage(&msg);
 		} else {	// game code
 
-			double frameTime = getFrameTime();
-
-			gameEngine->run(frameTime);
+			gameEngine.run(getFrameTime());
 
 		}
 
@@ -128,11 +124,7 @@ int messageLoop() {
 
 }
 
-int Globals::WINDOW_WIDTH = 800;
-int Globals::WINDOW_HEIGHT = 600;
-int Globals::vsync_enabled = 1;
-bool Globals::FULL_SCREEN = false;
-// SNES resolution 512x448 max (256x224 normally)
+
 
 bool initWindow(HINSTANCE hInstance, int showWnd) {
 
@@ -163,28 +155,6 @@ bool initWindow(HINSTANCE hInstance, int showWnd) {
 	int windowX, windowY;
 	windowX = windowY = 0;
 
-	//if (Globals::FULL_SCREEN) {
-
-	//	// Determine the resolution of the clients desktop screen.
-	//	windowX = GetSystemMetrics(SM_CXSCREEN);
-	//	windowY = GetSystemMetrics(SM_CYSCREEN);
-	//	Globals::WINDOW_WIDTH = windowX;
-	//	Globals::WINDOW_HEIGHT = windowY;
-
-	//	DEVMODE dmScreenSettings;
-	//	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-	//	dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-	//	dmScreenSettings.dmPelsWidth = (unsigned long) Globals::WINDOW_WIDTH;
-	//	dmScreenSettings.dmPelsHeight = (unsigned long) Globals::WINDOW_HEIGHT;
-	//	dmScreenSettings.dmBitsPerPel = 32;
-	//	dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-	//	ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
-	//	
-	//	// Set the position of the window to the top left corner.
-
-	//} else {
-	// Make client dimensions WINDOW_WIDTHxWINDOW_HEIGHT
-	// (as opposed to window dimensions)
 	RECT winRect = {0, 0, Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT};
 	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
 	windowX = winRect.right - winRect.left;
@@ -194,7 +164,6 @@ bool initWindow(HINSTANCE hInstance, int showWnd) {
 	posX = (GetSystemMetrics(SM_CXSCREEN) - Globals::WINDOW_WIDTH) / 2;
 	posY = (GetSystemMetrics(SM_CYSCREEN) - Globals::WINDOW_HEIGHT) / 2;
 
-	//}
 
 	DWORD windowStyle = (WS_OVERLAPPEDWINDOW&~WS_THICKFRAME | /*WS_CAPTION | WS_SYSMENU | */
 		WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
@@ -260,6 +229,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_INPUT:
 		{
+
+			/** If not using joysticks this can be removed  */
 			PRAWINPUT pRawInput;
 			UINT bufferSize;
 			HANDLE hHeap;
@@ -273,10 +244,10 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			GetRawInputData((HRAWINPUT) lParam, RID_INPUT,
 				pRawInput, &bufferSize, sizeof(RAWINPUTHEADER));
 			if (pRawInput->header.dwType == RIM_TYPEHID)
-				gameEngine->parseRawInput(pRawInput);
+				gameEngine.parseRawInput(pRawInput);
 
 			HeapFree(hHeap, 0, pRawInput);
-
+			/** Joystick end */
 		}
 		return 0;
 		case WM_MOUSEMOVE:
@@ -314,21 +285,20 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				PDEV_BROADCAST_DEVICEINTERFACE deviceInterface
 					= reinterpret_cast<const PDEV_BROADCAST_DEVICEINTERFACE>(pDev);
 				switch (wParam) {
+
 					case DBT_DEVICEARRIVAL:
 					{
-
-
 						if (deviceInterface->dbcc_classguid == KSCATEGORY_AUDIO) {
-							//OutputDebugString(L"Audio interface added!\n");
-							if (gameEngine)
-								gameEngine->onAudioDeviceChange();
+							OutputDebugString(L"Audio interface added!\n");
+							if (gameEngine.gameInitialized)
+								gameEngine.onAudioDeviceChange();
 							return 0;
 						}
 
 
 						if (deviceInterface->dbcc_classguid == guidHid) {
+							OutputDebugString(L"Found a controller!\n");
 							registerControllers();
-								//OutputDebugString(L"Found a controller!\n");
 							return 0;
 						}
 					}
@@ -344,7 +314,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						if (deviceInterface->dbcc_classguid == guidHid) {
 							// remove joysticks
 							registerControllers();
-							//gameEngine->controllerRemoved();
 							return 0;
 						}
 						break;
@@ -356,19 +325,19 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 
 		case WM_NCLBUTTONDOWN:
-			gameEngine->suspend();
+			gameEngine.suspend();
 			break;
 		case WM_KILLFOCUS:
-			gameEngine->suspend();
 			//OutputDebugString(L"Lost Focus\n");
+			gameEngine.suspend();
 			return 0;
 
 		case WM_ACTIVATE:
 			//OutputDebugString(L"Got Focus\n");
-			gameEngine->resume();
+			gameEngine.resume();
 			return 0;
 
-		case WM_DESTROY:	// top right x button pressed
+		case WM_DESTROY:	// top right x button pressed or DestroyWindow(HWND) called
 			PostQuitMessage(0);
 			return 0;
 
@@ -378,6 +347,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 
+/** If using joysticks this is required. */
 int registerControllers() {
 
 	UINT nDevices;
@@ -401,21 +371,21 @@ int registerControllers() {
 
 	RID_DEVICE_INFO rdi;
 	rdi.cbSize = sizeof(RID_DEVICE_INFO);
-	int numControllersFound = 0;
 
-	vector<HANDLE> controllerRawDevices;
-	bool gamePadFound = false;
+	vector<ControllerDevice> controllerDevices;
 	for (int i = 0; i < nNoOfDevices; i++) {
 		UINT size = 256;
 		TCHAR tBuffer[256] = {0};
 
-		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, tBuffer, &size) < 0) {
+		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice,
+			RIDI_DEVICENAME, tBuffer, &size) < 0) {
 			// Error in reading device name
 			continue;
 		}
 
 		UINT cbSize = rdi.cbSize;
-		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) < 0) {
+		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice,
+			RIDI_DEVICEINFO, &rdi, &cbSize) < 0) {
 			// Error in reading information
 			wostringstream wss;
 			wss << L"Device Name: " << tBuffer << "\n";
@@ -428,20 +398,22 @@ int registerControllers() {
 		if (rdi.dwType == RIM_TYPEHID) {
 			if (rdi.hid.usUsagePage == 1) {
 				if (rdi.hid.usUsage == 4) {
-					controllerRawDevices.push_back(pRawInputDeviceList[i].hDevice);
+					ControllerDevice cd;
+					cd.handle = pRawInputDeviceList[i].hDevice;
+					cd.isRawInput = true;
+					controllerDevices.push_back(cd);
 				} else if (rdi.hid.usUsage == 5) {
-					gameEngine->addGamePad(pRawInputDeviceList[i].hDevice);
-					gamePadFound = true;
+					ControllerDevice cd;
+					cd.handle = pRawInputDeviceList[i].hDevice;
+					cd.isRawInput = false;
+					controllerDevices.push_back(cd);
 				}
 
 			}
 		}
-
-
 	}
 
-	//if (!gamePadFound || controllerRawDevices.size() > 0)
-		gameEngine->addJoysticks(controllerRawDevices);
+	gameEngine.addJoysticks(controllerDevices);
 
 
 	free(pRawInputDeviceList);
@@ -535,7 +507,6 @@ void startTimer() {
 
 	LARGE_INTEGER frequencyCount;
 	/*QueryPerformanceFrequency(&frequencyCount);
-
 	countsPerSecond = double(frequencyCount.QuadPart);*/
 
 	QueryPerformanceCounter(&frequencyCount);

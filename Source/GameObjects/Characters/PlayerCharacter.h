@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../Managers/GFXAssetManager.h"
-#include "../../Managers/PlayerSlot.h"
+#include "../../Engine/PlayerSlot.h"
 #include "../Projectile.h"
 #include "../Creature.h"
 #include "CharacterData.h"

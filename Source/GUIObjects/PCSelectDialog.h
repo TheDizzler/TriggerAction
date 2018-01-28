@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DXTKGui/Controls/DynamicDialog.h"
+#include "../../DXTKGui/Controls/DynamicDialog.h"
 #include "../GameObjects/Characters/PlayerCharacter.h"
 #include "SelectionPointer.h"
 

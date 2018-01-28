@@ -31,7 +31,8 @@ public:
 class AnimationAsset : public Animation {
 public:
 
-	AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames);
+	AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
+		vector<shared_ptr<Frame>> frames, string aniName);
 	virtual ~AnimationAsset();
 
 	map<string, string> properties;
@@ -95,7 +96,7 @@ public:
 	private:
 		bool texturized = false;
 		unique_ptr<TexturePanel> texturePanel;
-		
+
 	};
 
 	Map();

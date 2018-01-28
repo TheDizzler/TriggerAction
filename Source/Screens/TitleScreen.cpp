@@ -7,11 +7,11 @@ TitleScreen::~TitleScreen() {
 }
 
 
-bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
+bool TitleScreen::initialize(ComPtr<ID3D11Device> device) {
 
-	camera->setZoom(1);
-	camera->setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
-	camera->centerOn(Vector2(
+	camera.setZoom(1);
+	camera.setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
+	camera.centerOn(Vector2(
 		Globals::WINDOW_WIDTH / 2, Globals::WINDOW_HEIGHT / 2));
 
 	Vector2 dialogPos, dialogSize;
@@ -21,12 +21,12 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 	dialogPos.y -= dialogSize.y / 2;
 
 
-	noControllerDialog = make_unique<ControllerDialog>(guiFactory.get());
+	noControllerDialog = make_unique<ControllerDialog>(&guiFactory);
 	noControllerDialog->setDimensions(dialogPos, dialogSize);
 	noControllerDialog->setLayerDepth(1);
 	noControllerDialog->setText(L"Waiting for controller");
-	noControllerDialog->setMatrixFunction([&]()->Matrix { return camera->translationMatrix(); });
-	noControllerDialog->setCameraZoom([&]()->float { return camera->getZoom(); });
+	noControllerDialog->setMatrixFunction([&]()->Matrix { return camera.translationMatrix(); });
+	noControllerDialog->setCameraZoom([&]()->float { return camera.getZoom(); });
 
 
 	if (activeSlots.size() == 0)
@@ -47,7 +47,7 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseContro
 
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		pcSelectDialogs[i] = guiOverlay->createPCSelectDialog(
-			guiFactory->getAssetSet("Menu BG 0"), i);
+			guiFactory.getAssetSet("Menu BG 0"), i);
 
 	}
 	guiOverlay->initializeTitleScreen(pcSelectDialogs);
@@ -69,9 +69,9 @@ void TitleScreen::reload() {
 	pendulumRotation = -XM_PIDIV2;
 	pendulum->setRotation(pendulumRotation);
 
-	camera->setZoom(1);
-	camera->setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
-	camera->centerOn(Vector2(
+	camera.setZoom(1);
+	camera.setZoomToResolution(Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
+	camera.centerOn(Vector2(
 		Globals::targetResolution.x / 2, Globals::targetResolution.y / 2));
 
 	guiOverlay->reloadTitleScreen(pcSelectDialogs);
@@ -86,7 +86,7 @@ bool doneSwinging = false;
 void TitleScreen::update(double deltaTime) {
 
 
-	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+	if (keys.isKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
 	}
 
@@ -174,7 +174,7 @@ void TitleScreen::draw(SpriteBatch * batch) {
 
 void TitleScreen::textureDraw(SpriteBatch* batch) {
 	batch->Begin(SpriteSortMode_FrontToBack, NULL,
-		NULL, NULL, NULL, NULL, camera->translationMatrix());
+		NULL, NULL, NULL, NULL, camera.translationMatrix());
 	{
 		draw(batch);
 	}

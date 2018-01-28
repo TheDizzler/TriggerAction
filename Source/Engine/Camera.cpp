@@ -1,21 +1,41 @@
 #include "Camera.h"
 
 
-Camera::Camera(int vwprtWdth, int vwprtHght) {
 
+Camera::Camera() {
 	zoom = 1.0f;
-
-	viewportWidth = vwprtWdth;
-	viewportHeight = vwprtHght;
-	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
-
-	
-
-	cameraPosition = Vector2::Zero;
+	position = Vector2::Zero;
 }
 
 
+//Camera::Camera(int vwprtWdth, int vwprtHght) {
+//
+//	zoom = 1.0f;
+//
+//	viewportWidth = vwprtWdth;
+//	viewportHeight = vwprtHght;
+//	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
+//
+//	
+//
+//	cameraPosition = Vector2::Zero;
+//}
+
+
+
 Camera::~Camera() {
+}
+
+void Camera::setViewport(D3D11_VIEWPORT cameraViewport) {
+	viewportWidth = cameraViewport.Width;
+	viewportHeight = cameraViewport.Height;
+	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
+}
+
+void Camera::setViewport(int vwprtWdth, int vwprtHght) {
+	viewportWidth = vwprtWdth;
+	viewportHeight = vwprtHght;
+	viewportCenter = Vector3(viewportWidth * .5, viewportHeight * .5, 0);
 }
 
 void Camera::updateViewport(const Vector2& viewport, const Vector2& viewportPos, bool zoomToFit) {
@@ -72,7 +92,7 @@ void Camera::adjustZoom(float amount) {
 
 
 void Camera::moveCamera(Vector2 cameraMovement, bool clampToArea) {
-	cameraPosition += cameraMovement;
+	position += cameraMovement;
 }
 
 
@@ -96,7 +116,7 @@ RECT* Camera::viewportWorldBoundary() {
 
 void Camera::centerOn(Vector2 pos, bool clampToArea) {
 
-	cameraPosition = pos;
+	position = pos;
 }
 
 Vector2& Camera::worldToScreen(Vector2 worldPosition) {
@@ -112,7 +132,7 @@ Vector2& Camera::screenToWorld(Vector2 screenPosition) {
 
 Matrix Camera::translationMatrix() {
 	// casting to int prevents filtering artifacts??
-	return Matrix::CreateTranslation(-(int) cameraPosition.x, -(int) cameraPosition.y, 0)
+	return Matrix::CreateTranslation(-(int) position.x, -(int) position.y, 0)
 		* Matrix::CreateRotationZ(rotation)
 		* Matrix::CreateScale(zoom, zoom, 1)
 		* Matrix::CreateTranslation(viewportCenter);

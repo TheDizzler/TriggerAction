@@ -16,7 +16,6 @@ PlayerSlot::PlayerSlot(PlayerSlotNumber slotNum) : slotNumber(slotNum) {
 
 
 PlayerSlot::~PlayerSlot() {
-	pauseDialog.reset();
 }
 
 
@@ -133,14 +132,21 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 
 	pcSelectDialog->show();
 	pcSelectDialog->setText(L"Push A\nto join!");
+
 	_threadJoystickData = joyData;
 
 	wostringstream wss;
-	wss << L"Connecting Socket " << joystick->socket << L" to Player Slot " << slotNumber << endl;
+	wss << L"Connecting Socket " << joystick->getControllerSockerNumber()
+		<< L" to Player Slot " << slotNumber << endl;
 	OutputDebugString(wss.str().c_str());
 
-	pauseDialog = make_unique<MenuDialog>(guiFactory.get());
-	pauseDialog->initialize(guiFactory->getAssetSet("Menu BG 1"));
+	// in new PlayerSlot. Not needed here?
+	/*if (!joyData->waitForInput) {
+		_threadJoystickData->finishFlag = true;
+	}*/
+
+	pauseDialog = make_unique<MenuDialog>(&guiFactory);
+	pauseDialog->initialize(guiFactory.getAssetSet("Menu BG 1"));
 	pauseDialog->setDimensions(
 		Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 2),
 		Vector2(100, 100));
@@ -160,7 +166,8 @@ bool PlayerSlot::pairWithSocket(JoyData* joyData) {
 
 void PlayerSlot::unpairSocket() {
 	wostringstream wss;
-	wss << L"Socket " << joystick->socket << L" and Player Slot " << slotNumber;
+	wss << L"Socket " << joystick->getControllerSockerNumber()
+		<< L" and Player Slot " << slotNumber;
 	wss << L" unpaired." << endl;
 	OutputDebugString(wss.str().c_str());
 
@@ -203,8 +210,6 @@ void PlayerSlot::setDialogText(wstring text) {
 
 
 /** ******** PLAYERSLOT MANAGER START ******** **/
-
-//#include "../DXTKGui/StringHelper.h"
 PlayerSlotManager::PlayerSlotManager() {
 	InitializeCriticalSection(&cs_waitingJoysticks);
 	InitializeCriticalSection(&cs_activeSlotsAccess);
@@ -215,11 +220,12 @@ PlayerSlotManager::PlayerSlotManager() {
 }
 
 PlayerSlotManager::~PlayerSlotManager() {
-	//waitingSlots.clear();
 	activeSlots.clear();
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
 		playerSlots[i].reset();
 	}
+
+	waitingSlots.clear();
 
 	DeleteCriticalSection(&cs_waitingJoysticks);
 	DeleteCriticalSection(&cs_activeSlotsAccess);
@@ -243,9 +249,7 @@ void PlayerSlotManager::updateGamePads() {
 }
 
 void PlayerSlotManager::waiting() {
-
 	accessWaitingSlots(CHECK_FOR_CONFIRM, NULL);
-
 }
 
 
@@ -256,7 +260,7 @@ void PlayerSlotManager::gamePadRemoved(shared_ptr<Joystick> gamePad) {
 	OutputDebugString(wss.str().c_str());
 
 	JoyData* joydata = playerSlots[gamePad->getPlayerSlotNumber()]->getJoyData();
-	if (joydata)
+	if (joydata && joydata->waitForInput)
 		accessWaitingSlots(REMOVE_FROM_LIST, joydata);
 
 	PlayerSlotNumber slotNum = gamePad->getPlayerSlotNumber();
@@ -276,7 +280,7 @@ void PlayerSlotManager::controllerRemoved(shared_ptr<Joystick> joystick) {
 	OutputDebugString(wss.str().c_str());
 
 	JoyData* joydata = playerSlots[joystick->getPlayerSlotNumber()]->getJoyData();
-	if (joydata)
+	if (joydata && joydata->waitForInput)
 		accessWaitingSlots(REMOVE_FROM_LIST, joydata);
 
 	PlayerSlotNumber slotNum = joystick->getPlayerSlotNumber();
@@ -291,16 +295,14 @@ void PlayerSlotManager::controllerTryingToPair(JoyData* joyData) {
 
 }
 
-
+/** Called from ControllerListener::playerAcceptedSlot(). */
 void PlayerSlotManager::finalizePair(JoyData* joyData) {
 
-	accessWaitingSlots(REMOVE_FROM_LIST, joyData);
+	if (joyData->waitForInput)
+		accessWaitingSlots(REMOVE_FROM_LIST, joyData);
 
 	PlayerSlotNumber plyrSltNum = joyData->joystick->getPlayerSlotNumber();
 	accessActiveSlots(ADD_TO_LIST, &plyrSltNum);
-	//activeSlots.push_back(playerSlots[joyData->joystick->playerSlotNumber]);
-	/*if (joyData->isXInput)
-		gamepads.push_back((GamePadJoystick*) joyData->joystick.get());*/
 
 	playerSlots[joyData->joystick->getPlayerSlotNumber()]->selectCharacter();
 	playerSlots[joyData->joystick->getPlayerSlotNumber()]->finishInit();
@@ -314,7 +316,6 @@ void PlayerSlotManager::finalizePair(JoyData* joyData) {
 
 void PlayerSlotManager::accessWaitingSlots(size_t task, PVOID pvoid) {
 
-	int* playerSlotNumber;
 	JoyData* joyData = (JoyData*) pvoid;
 
 
@@ -353,7 +354,7 @@ void PlayerSlotManager::accessActiveSlots(size_t task, PVOID pvoid) {
 	PlayerSlotNumber playerSlotNumber = *((PlayerSlotNumber*) pvoid);
 
 	EnterCriticalSection(&cs_activeSlotsAccess);
-	OutputDebugString(L"\nEntering CS -> ");
+	//OutputDebugString(L"\nEntering CS -> ");
 	switch (task) {
 		case ADD_TO_LIST:
 			activeSlots.push_back(playerSlots[playerSlotNumber]);
@@ -364,6 +365,6 @@ void PlayerSlotManager::accessActiveSlots(size_t task, PVOID pvoid) {
 			break;
 
 	}
-	OutputDebugString(L"Exiting CS\n");
+	//OutputDebugString(L"Exiting CS\n");
 	LeaveCriticalSection(&cs_activeSlotsAccess);
 }

@@ -1,6 +1,11 @@
 #include "../pch.h"
 #include "LevelScreen.h"
 
+#include "../Engine/GameEngine.h"
+#include "../GameObjects/Characters/Lucca.h"
+#include "../GameObjects/Characters/Marle.h"
+#include "../GameObjects/Characters/Chrono.h"
+
 vector<Tangible*> tangiblesAll;
 vector<unique_ptr<PlayerCharacter>> pcs;
 vector<Baddie*> baddies;
@@ -16,9 +21,8 @@ LevelScreen::~LevelScreen() {
 	jammerMan.reset();
 }
 
-#include "../Engine/GameEngine.h"
-bool LevelScreen::initialize(ComPtr<ID3D11Device> device,
-	shared_ptr<MouseController> mouse) {
+
+bool LevelScreen::initialize(ComPtr<ID3D11Device> device) {
 
 
 	return true;
@@ -29,9 +33,7 @@ void LevelScreen::setGameManager(GameManager* gm) {
 	game = gm;
 }
 
-#include "../GameObjects/Characters/Lucca.h"
-#include "../GameObjects/Characters/Marle.h"
-#include "../GameObjects/Characters/Chrono.h"
+
 void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	tangiblesAll.clear();
@@ -76,7 +78,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
-					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
+					guiFactory.getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
 			newPC->loadMap(map);
 			pcs.push_back(move(newPC));
@@ -87,7 +89,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 			newPC->setInitialPosition(startPos[i++]);
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
-					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
+					guiFactory.getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
 			newPC->loadMap(map);
 			pcs.push_back(move(newPC));
@@ -98,7 +100,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 			newPC->setInitialPosition(startPos[i++]);
 			pcStatusDialogs[slot->getPlayerSlotNumber()] =
 				guiOverlay->createPCStatusDialog(
-					guiFactory->getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
+					guiFactory.getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
 			newPC->loadMap(map);
 			pcs.push_back(move(newPC));
@@ -113,8 +115,8 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 
 	guiOverlay->initializeLevelScreen(pcStatusDialogs);
 
-	camera->setZoomToResolution();
-	camera->centerOn(Vector2(256 / 2, 224 / 2));
+	camera.setZoomToResolution();
+	camera.centerOn(Vector2(256 / 2, 224 / 2));
 }
 
 void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
@@ -163,14 +165,14 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 
 	guiOverlay->initializeLevelScreen(pcStatusDialogs);
 
-	camera->setZoomToResolution();
-	camera->centerOn(Vector2(256 / 2, 224 / 2));
+	camera.setZoomToResolution();
+	camera.centerOn(Vector2(256 / 2, 224 / 2));
 }
 
 
 void LevelScreen::update(double deltaTime) {
 
-	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+	if (keys.isKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
 	}
 

@@ -1,7 +1,9 @@
 #include "../pch.h"
 #include "GameEngine.h"
 
-unique_ptr<GUIFactory> guiFactory;
+#include "CommonStates.h"
+
+GUIFactory guiFactory;
 unique_ptr<GFXAssetManager> gfxAssets;
 bool gameInitialized = false;
 
@@ -18,15 +20,11 @@ GameEngine::GameEngine() {
 
 GameEngine::~GameEngine() {
 
-	game.reset();
 	if (audioEngine != NULL)
 		audioEngine->Suspend();
 	delete blendState;
-	mouse.reset();
 	errorDialog.reset();
 	warningDialog.reset();
-	gfxAssets.reset();
-	guiFactory.reset();
 }
 
 
@@ -80,21 +78,19 @@ void GameEngine::onAudioDeviceChange() {
 }
 
 
-#include "../DXTKGui/GuiAssets.h"
 bool GameEngine::initGFXAssets() {
 
 	// get graphical assets from xml file
 	docAssMan = make_unique<pugi::xml_document>();
-	if (!docAssMan->load_file(GUIAssets::assetManifestFile)) {
+	if (!docAssMan->load_file(Globals::assetManifestFile)) {
 		GameEngine::errorMessage(L"Could not read AssetManifest file!",
 			L"Fatal Read Error!");
 		return false;
 	}
 
 	xml_node guiAssetsNode = docAssMan->child("root").child("gui");
-	guiFactory = make_unique<GUIFactory>(hwnd, guiAssetsNode);
-	if (!guiFactory->initialize(device, deviceContext,
-		swapChain, batch.get(), mouse)) {
+	if (!guiFactory.initialize(hwnd, device, deviceContext,
+		swapChain, batch.get(), &mouse, Globals::assetManifestFile)) {
 
 		GameEngine::errorMessage(L"Failed to load GUIFactory", L"Fatal Error");
 		return false;
@@ -114,8 +110,7 @@ bool GameEngine::initGFXAssets() {
 
 bool GameEngine::initStage() {
 
-	game = make_unique<GameManager>(this);
-	if (!game->initializeGame(hwnd, device, mouse)) {
+	if (!game.initializeGame(this, hwnd, device)) {
 		GameEngine::errorMessage(L"Game Manager failed to load.", L"Critical Failure");
 		return false;
 	}
@@ -131,13 +126,13 @@ void GameEngine::initErrorDialogs() {
 	dialogPos = dialogSize;
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
-	errorDialog.reset(guiFactory->createDialog(dialogSize, dialogPos, false, true, 5));
+	errorDialog.reset(guiFactory.createDialog(dialogSize, dialogPos, false, true, 5));
 
 
 	//errorDialog->setDimensions(dialogPos, dialogSize);
 	errorDialog->setTint(Color(0, 120, 207));
 	unique_ptr<Button> quitButton;
-	quitButton.reset(guiFactory->createButton());
+	quitButton.reset(guiFactory.createButton());
 	quitButton->setText(L"Exit Program");
 	quitButton->setActionListener(new QuitButtonListener(this));
 	//quitButton->setMatrixFunction([&]()-> Matrix { return camera->translationMatrix(); });
@@ -148,7 +143,7 @@ void GameEngine::initErrorDialogs() {
 	scrollBarDesc.upPressedButtonImage = "ScrollBar Up Pressed Custom";
 	scrollBarDesc.trackImage = "ScrollBar Track Custom";
 	scrollBarDesc.scrubberImage = "Scrubber Custom";
-	warningDialog.reset(guiFactory->createDialog(dialogPos, dialogSize, false, true, 3));
+	warningDialog.reset(guiFactory.createDialog(dialogPos, dialogSize, false, true, 3));
 
 	//warningDialog->setDimensions(dialogPos, dialogSize);
 	warningDialog->setScrollBar(scrollBarDesc);
@@ -156,16 +151,21 @@ void GameEngine::initErrorDialogs() {
 	warningDialog->setTint(Color(0, 120, 207));
 	warningDialog->setCancelButton(L"Continue");
 	unique_ptr<Button> quitButton2;
-	quitButton2.reset(guiFactory->createButton());
+	quitButton2.reset(guiFactory.createButton());
 	quitButton2->setText(L"Exit Program");
 	quitButton2->setActionListener(new QuitButtonListener(this));
 	warningDialog->setConfirmButton(move(quitButton2));
 
 	showDialog = warningDialog.get();
 
-	mouse->loadMouseIcon(guiFactory.get(), "Mouse Arrow");
-	mouse->hide();
+	mouse.loadMouseIcon(&guiFactory, "Mouse Arrow");
+	mouse.hide();
 	blendState = new CommonStates(device.Get());
+}
+
+void GameEngine::reloadGraphicsAssets() {
+	//game->reloadGraphicsAssets();
+
 }
 
 bool warningCanceled = false;
@@ -197,11 +197,11 @@ void GameEngine::run(double deltaTime) {
 
 void GameEngine::update(double deltaTime) {
 
+
 	slotManager->updateGamePads();
 
 	if (paused) {
-		auto state = Keyboard::Get().GetState();
-		keyTracker.Update(state);
+		keys.saveKeyState();
 
 		if (showDialog->isOpen()) {
 			showDialog->update(deltaTime);
@@ -223,45 +223,45 @@ void GameEngine::update(double deltaTime) {
 							dialogCustom = false;
 							break;
 						/*case PauseMenuItems::SETTINGS:
-							
+
 							break;*/
 						case PauseMenuItems::RELOAD_XML:
 							dialog->hide();
 							paused = false;
 							dialogCustom = false;
 							gfxAssets->initialize(device);
-							game->reloadLevel(Globals::testLevel);
+							game.reloadLevel(Globals::testLevel);
 							break;
 
 					}
 				}
 			} else {
-				mouse->saveMouseState();
-				if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+				mouse.saveMouseState();
+				if (keys.isKeyPressed(Keyboard::Escape)) {
 					showDialog->hide();
 					paused = false;
-					mouse->hide();
+					mouse.hide();
 					return;
 				}
 			}
 
-		} else if (keyTracker.IsKeyPressed(Keyboard::Escape))
-			game->confirmExit();
+		} else if (keys.isKeyPressed(Keyboard::Escape))
+			game.confirmExit();
 	} else
-		game->update(deltaTime);
+		game.update(deltaTime);
 
 	guiOverlay->update(deltaTime);
 }
 
 
-#include "CommonStates.h"
+
 void GameEngine::render() {
 
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), Colors::Black);
 	batch->Begin(SpriteSortMode_FrontToBack, blendState->NonPremultiplied(),
-		NULL, NULL, NULL, NULL, camera->translationMatrix());
+		NULL, NULL, NULL, NULL, camera.translationMatrix());
 	{
-		game->draw(batch.get());
+		game.draw(batch.get());
 	}
 	batch->End();
 
@@ -269,7 +269,7 @@ void GameEngine::render() {
 	{
 		guiOverlay->draw(batch.get());
 		showDialog->draw(batch.get());
-		mouse->draw(batch.get());
+		mouse.draw(batch.get());
 	}
 	batch->End();
 
@@ -279,10 +279,8 @@ void GameEngine::render() {
 void GameEngine::suspend() {
 
 	stopFullScreen();
-	if (game != NULL) {
-		if (!paused)
-			game->pause();
-	}
+	if (!paused)
+		game.pause();
 	if (audioEngine != NULL)
 		audioEngine->Suspend();
 }
@@ -304,10 +302,10 @@ void GameEngine::exit() {
 void GameEngine::controllerRemoved(ControllerSocketNumber controllerSocket,
 	PlayerSlotNumber slotNumber) {
 
-	game->controllerRemoved(controllerSocket, slotNumber);
+	game.controllerRemoved(controllerSocket, slotNumber);
 }
 
 void GameEngine::newController(shared_ptr<Joystick> newStick) {
 
-	game->newController(newStick);
+	game.newController(newStick);
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "../DXTKGui/Effects/LetterJammer.h"
+#include "../../DXTKGui/Effects/LetterJammer.h"
 
 
 class JammerManager {

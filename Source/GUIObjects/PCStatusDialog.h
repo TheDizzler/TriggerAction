@@ -1,5 +1,6 @@
 #pragma once
-#include "../DXTKGui/Controls/DynamicDialog.h"
+
+#include "../../DXTKGui/Controls/DynamicDialog.h"
 #include "../GameObjects/Characters/PlayerCharacter.h"
 
 class PCStatusDialog : public DynamicDialog {

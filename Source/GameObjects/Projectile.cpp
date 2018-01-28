@@ -52,7 +52,7 @@ void Projectile::update(double deltaTime) {
 		return;
 	}
 
-	Vector2 screenpos = camera->worldToScreen(Vector2(position.x, position.y));
+	Vector2 screenpos = camera.worldToScreen(Vector2(position.x, position.y));
 	if (screenpos.x < 0 || screenpos.x > Globals::WINDOW_WIDTH
 		|| screenpos.y < 0 || screenpos.y > Globals::WINDOW_HEIGHT) {
 
@@ -168,7 +168,7 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 	ray.size = Vector3(getHeight(), getHeight() * 2, getHeight() * 2);
 	switch (direction) {
 		case Facing::LEFT:
-			ray.position.x = camera->screenToWorld(Vector2::Zero).x;
+			ray.position.x = camera.screenToWorld(Vector2::Zero).x;
 			ray.position.y -= getHeight() * 2;
 			ray.size.x = position.x - ray.position.x;
 			break;
@@ -177,7 +177,7 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 			ray.size.x = Globals::WINDOW_WIDTH;
 			break;
 		case Facing::UP:
-			ray.position.y = camera->screenToWorld(Vector2::Zero).y;
+			ray.position.y = camera.screenToWorld(Vector2::Zero).y;
 			ray.size.y = position.y - ray.position.y;
 			break;
 		case Facing::DOWN:

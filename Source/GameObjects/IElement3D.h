@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DXTKGui/BaseGraphics/IElement2D.h"
+#include "../../DXTKGui/BaseGraphics/IElement2D.h"
 
 
 class IElement3D {

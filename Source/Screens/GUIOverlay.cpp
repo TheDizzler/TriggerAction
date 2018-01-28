@@ -1,7 +1,7 @@
 #include "../pch.h"
 #include "GUIOverlay.h"
 #include "../Engine/GameEngine.h"
-#include "../DXTKGui/StringHelper.h"
+#include "../../DXTKGui/StringHelper.h"
 
 const int TEXT_MARGIN = 10;
 const int TEST_BOX_MARGIN = 16;
@@ -9,7 +9,7 @@ GUIOverlay::GUIOverlay() {
 
 
 	unique_ptr<TextLabel> textLabel;
-	textLabel.reset(guiFactory->createTextLabel(Vector2(-100, -100)));
+	textLabel.reset(guiFactory.createTextLabel(Vector2(-100, -100)));
 
 
 	Vector2 textMeasure = textLabel->measureString(L"TECH");
@@ -28,10 +28,10 @@ GUIOverlay::GUIOverlay() {
 
 	// should be wide enough to fit four letter word and the hand icon
 	dialogSize.x = textMeasure.x * 2
-		+ guiFactory->getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
+		+ guiFactory.getAsset("Cursor Hand 1")->getWidth() + TEXT_MARGIN;
 
 	pos.y = TEST_BOX_MARGIN;
-	dummyDialog = createPCSelectDialog(guiFactory->getAssetSet("Menu BG 0"), pos, dialogSize);
+	dummyDialog = createPCSelectDialog(guiFactory.getAssetSet("Menu BG 0"), pos, dialogSize);
 	hudDialogs[HUDDIALOG::PLAYERSTATS] = dummyDialog.get();
 	hudDialogs[HUDDIALOG::ENEMIES] = dummyDialog.get();
 
@@ -58,13 +58,13 @@ GUIOverlay::GUIOverlay() {
 
 	}*/
 
-	fpsLabel.reset(guiFactory->createTextLabel(Vector2(Globals::WINDOW_WIDTH - 350, 20)));
+	fpsLabel.reset(guiFactory.createTextLabel(Vector2(Globals::WINDOW_WIDTH - 350, 20)));
 	fpsLabel->setTint(Colors::White);
 	fpsLabel->setScale(Vector2(.75, .75));
 
 
-	menuDialog = make_unique<MenuDialog>(guiFactory.get());
-	menuDialog->initialize(guiFactory->getAssetSet("Menu BG 1"));
+	menuDialog = make_unique<MenuDialog>(&guiFactory);
+	menuDialog->initialize(guiFactory.getAssetSet("Menu BG 1"));
 	menuDialog->setDimensions(
 		Vector2(Globals::WINDOW_WIDTH / 3, Globals::WINDOW_HEIGHT / 2),
 		Vector2(100, 100));
@@ -220,7 +220,7 @@ void GUIOverlay::reportLostJoystick(ControllerSocketNumber socketNumber) {
 unique_ptr<PCStatusDialog> GUIOverlay::createPCStatusDialog(
 	shared_ptr<AssetSet> dialogImageSet, const USHORT playerNumber, const char_t* fontName) {
 
-	unique_ptr<PCStatusDialog> dialog = make_unique<PCStatusDialog>(guiFactory.get());
+	unique_ptr<PCStatusDialog> dialog = make_unique<PCStatusDialog>(&guiFactory);
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(dialogPositions[PLAYER1 + playerNumber], dialogSize);
 	return move(dialog);
@@ -232,7 +232,7 @@ unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
 	shared_ptr<AssetSet> dialogImageSet,
 	const USHORT playerNumber, const char_t* fontName) {
 
-	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(guiFactory.get());
+	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(&guiFactory);
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(dialogPositions[PLAYER1 + playerNumber], dialogSize);
 	return move(dialog);
@@ -253,7 +253,7 @@ unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
 	shared_ptr<AssetSet> dialogImageSet,
 	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
-	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(guiFactory.get());
+	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(&guiFactory);
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(position, size);
 	return move(dialog);

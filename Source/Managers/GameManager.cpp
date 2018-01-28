@@ -3,24 +3,19 @@
 #include "../Engine/GameEngine.h"
 
 
-Keyboard::KeyboardStateTracker keyTracker;
+//Keyboard::KeyboardStateTracker keyTracker;
 unique_ptr<GUIOverlay> guiOverlay;
-
-GameManager::GameManager(GameEngine* gmngn) {
-
-	gameEngine = gmngn;
-}
 
 GameManager::~GameManager() {
 	mapFiles.clear();
 }
 
 
-bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
-	shared_ptr<MouseController> ms) {
+bool GameManager::initializeGame(GameEngine* gmngn, HWND hwnd, ComPtr<ID3D11Device> dvc) {
+
+	gameEngine = gmngn;
 
 	device = dvc;
-	mouse = ms;
 
 	{
 		Vector2 dialogPos, dialogSize;
@@ -29,14 +24,14 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 		dialogPos.x -= dialogSize.x / 2;
 		dialogPos.y -= dialogSize.y / 2;
 
-		exitDialog.reset(guiFactory->createDialog(dialogPos, dialogSize, true, true, 10));
+		exitDialog.reset(guiFactory.createDialog(dialogPos, dialogSize, true, true, 10));
 		//exitDialog->setDimensions(dialogPos, dialogSize);
 		exitDialog->setTint(Color(0, .5, 1, 1));
 		exitDialog->setTitle(L"Exit Game?", Vector2(1, 1), "BlackCloak");
 		//exitDialog->setTitleAreaDimensions(Vector2(0, 150));
 		exitDialog->setText(L"Really End The Trigger Action?");
 		unique_ptr<Button> quitButton;
-		quitButton.reset(guiFactory->createButton());
+		quitButton.reset(guiFactory.createButton());
 		quitButton->setActionListener(new OnClickListenerDialogQuitButton(this));
 		quitButton->setText(L"Time Out");
 		exitDialog->setConfirmButton(move(quitButton));
@@ -66,7 +61,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 	updateFunction = &GameManager::normalUpdate;
 	drawFunction = &GameManager::normalDraw;
 
-	transMan.initialize(guiFactory.get(), "Transition BG");
+	transMan.initialize(&guiFactory, "Transition BG");
 	transMan.setTransition(new ScreenTransitions::SquareFlipScreenTransition());
 
 
@@ -74,7 +69,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 
 	optionsScreen = make_unique<OptionsScreen>();
 	optionsScreen->setGameManager(this);
-	optionsScreen->initialize(device, ms);
+	optionsScreen->initialize(device);
 
 	mapManifest = make_unique<xml_document>();
 	if (!mapManifest->load_file(Globals::mapManifestFile)) {
@@ -97,7 +92,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 
 	levelScreen = make_unique<LevelScreen>();
 	levelScreen->setGameManager(this);
-	if (!levelScreen->initialize(device, mouse)) {
+	if (!levelScreen->initialize(device)) {
 		GameEngine::showErrorDialog(L"Level Screen failed to initialize",
 			L"Error initializing level");
 		return false;
@@ -107,7 +102,7 @@ bool GameManager::initializeGame(HWND hwnd, ComPtr<ID3D11Device> dvc,
 
 		titleScreen = make_unique<TitleScreen>();
 		titleScreen->setGameManager(this);
-		titleScreen->initialize(device, mouse);
+		titleScreen->initialize(device);
 		currentScreen = titleScreen.get();
 	} else {
 
@@ -141,8 +136,9 @@ void GameManager::update(double deltaTime) {
 
 void GameManager::normalUpdate(double deltaTime) {
 
-	auto state = Keyboard::Get().GetState();
-	keyTracker.Update(state);
+	/*auto state = Keyboard::Get().GetState();
+	keyTracker.Update(state);*/
+	
 
 	currentScreen->update(deltaTime);
 }
@@ -173,7 +169,7 @@ void GameManager::draw(SpriteBatch* batch) {
 
 void GameManager::startGame() {
 
-	if (!levelScreen->initialize(device, mouse)) {
+	if (!levelScreen->initialize(device)) {
 		GameEngine::showErrorDialog(L"Failed to load Level Screen", L"Gaah");
 		return;
 	}
@@ -278,7 +274,6 @@ void GameManager::confirmExit() {
 	if (!exitDialog->isOpen()) {
 		GameEngine::showDialog = exitDialog.get();
 		exitDialog->show();
-		mouse->show();
 	}
 }
 
@@ -347,7 +342,7 @@ size_t GameManager::getSelectedDisplayModeIndex() {
 
 void CancelDialogButton::onClick(Button * button) {
 	dialog->hide();
-	engine->mouse->hide();
+	mouse.hide();
 	engine->paused = false;
 }
 
@@ -356,3 +351,8 @@ void CancelDialogButton::onPress(Button * button) {
 
 void CancelDialogButton::onHover(Button * button) {
 }
+
+void CancelDialogButton::resetState(Button * button) {
+}
+
+

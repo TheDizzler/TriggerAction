@@ -88,7 +88,7 @@ void Tangible::debugDraw(SpriteBatch* batch) {
 
 void Tangible::debugSetTint(const Color& color) {
 
-	testFrame->setTint(color);
+	testFrame->setTint(color, false);
 }
 
 void Tangible::setHitbox(const Hitbox box) {

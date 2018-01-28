@@ -1,13 +1,12 @@
 #pragma once
-#include "../DXTKGui/BaseGraphics/screen.h"
+#include "../../DXTKGui/BaseGraphics/screen.h"
 #include "GUIOverlay.h"
 
 class OptionsScreen : public Screen {
 public:
 	virtual ~OptionsScreen();
 
-	virtual bool initialize(
-		ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
+	virtual bool initialize(ComPtr<ID3D11Device> device) override;
 	virtual void setGameManager(GameManager* game) override;
 	
 

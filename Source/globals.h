@@ -15,6 +15,7 @@ namespace Globals {
 	extern int vsync_enabled;
 	extern bool FULL_SCREEN;
 
+	const static char* assetManifestFile = "assets/AssetManifest.xml";
 	const static char* mapManifestFile = "assets/MapManifest.xml";
 	const static pugi::char_t* testLevel = "Test Square C";
 

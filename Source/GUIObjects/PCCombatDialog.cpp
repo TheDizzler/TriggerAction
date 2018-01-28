@@ -1,4 +1,5 @@
 #include "PCCombatDialog.h"
+#include "../Engine/GameEngine.h"
 
 PCCombatDialog::PCCombatDialog(GUIFactory* factory) : DynamicDialog(factory, NULL) {
 	miniPortrait = make_unique<Sprite>();
@@ -8,7 +9,7 @@ PCCombatDialog::PCCombatDialog(GUIFactory* factory) : DynamicDialog(factory, NUL
 PCCombatDialog::~PCCombatDialog() {
 }
 
-#include "../Engine/GameEngine.h"
+
 void PCCombatDialog::loadPC(CharacterData* pcData) {
 
 	auto pcAssets = pcData->assets;

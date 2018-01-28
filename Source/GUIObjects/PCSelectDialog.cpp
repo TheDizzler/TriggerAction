@@ -2,6 +2,8 @@
 #include "PCSelectDialog.h"
 
 #include "../Engine/GameEngine.h"
+#include "../Screens/GUIOverlay.h"
+
 PCSelectDialog::PCSelectDialog(GUIFactory* guiF) : DynamicDialog(guiF, NULL) {
 
 	portrait = make_unique<Sprite>();
@@ -75,7 +77,7 @@ void PCSelectDialog::loadPC(CharacterData* pcData) {
 }
 
 
-#include "../Screens/GUIOverlay.h"
+
 bool PCSelectDialog::update(double deltaTime) {
 
 	if (!isShowing)

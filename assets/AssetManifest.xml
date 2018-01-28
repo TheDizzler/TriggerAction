@@ -29,9 +29,6 @@
 
 	<gui dir="gui/">
 		<spritefonts dir="fonts/">
-			<font name="Arial" file="Arial.spritefont" fontSize="16" />
-			<font name="Bookshelf" file="Bookshelf.spritefont" fontSize="42" />
-			<font name="BlackCloak" file="BlackCloak.spritefont" fontSize="32" />
 			<font name="ArialBlack8pt" file="ArialBlack8pt.spritefont" fontSize="8" />
 		</spritefonts>
 
@@ -105,53 +102,14 @@
 			</spriteset>
 		</spritesheet>
 
-
-		<spritesheet name="Default GUI Sprites" file ="default gui spritesheet.dds">
-			<sprite name="Spinner Up Button" x="1" y="0" width="30" height="16" />
-			<sprite name="Spinner Down Button" x="33" y="0" width="30" height="16" />
-
-			<spriteset name="Dynamic Dialog">
-				<sprite name="Top Left Corner" x="0" y="17" width="16" height="16" />
-				<sprite name="Top Center" x="20" y="17" width="16" height="16" />
-				<sprite name="Top Right Corner" x="40" y="17" width="16" height="16" />
-				<sprite name="Left Center" x="0" y="37" width="16" height="16" />
-				<sprite name="Center" x="20" y="37" width="16" height="16" />
-				<sprite name="Right Center" x="40" y="37" width="16" height="16" />
-				<sprite name="Bottom Left Corner" x="0" y="57" width="16" height="16" />
-				<sprite name="Bottom Center" x="20" y="57" width="16" height="16" />
-				<sprite name="Bottom Right Corner" x="40" y="57" width="16" height="16" />
-			</spriteset>
-		</spritesheet>
-
-		<sprite name="Mouse Arrow" file="Mouse Arrow.dds">
-			<!-- Set origin to the point you want be the clicky part. -->
-			<origin x="2" y="2" />
-		</sprite>
-
-		<sprite name="Default Transition BG" file="TestBG.dds" />
-		<sprite name="White Pixel" file="WhitePixel.dds" />
-		<sprite name="Mouse Icon" file="mouse icon.dds" />
-		<sprite name="Mouse Reticle" file="reticle (16x16).dds" />
-
 		<sprite name="Button Up" file="button up (256x64).dds" />
 		<sprite name="Button Down" file="button down (256x64).dds" />
 
-		<sprite name="CheckBox Unchecked B" file="CheckBox Unchecked.dds" />
-		<sprite name="CheckBox Checked B" file="CheckBox Checked.dds" />
-		<sprite name="CheckBox Unchecked" file="CheckBox Unchecked White.dds" />
-		<sprite name="CheckBox Checked" file="CheckBox Checked White.dds" />
-
-
+	
 		<!-- Excessive buttons are excessive -->
-		<sprite name="Combo Button Closed" file="ComboButtonClosed.dds" />
-		<sprite name="Combo Button Opened" file="ComboButtonOpen.dds" />
-		<sprite name="ScrollBar Up" file="ScrollBarUp.dds" />
-		<sprite name="ScrollBar Up Pressed" file="ScrollBarUpPressed.dds" />
-		<sprite name="ScrollBar Down" file="ScrollBarDown.dds" />
-		<sprite name="ScrollBar Down Pressed" file="ScrollBarDownPressed.dds" />
 		<sprite name="ScrollBar Up Custom" file="ScrollBarUpCustom.dds" />
 		<sprite name="ScrollBar Up Pressed Custom" file="ScrollBarUpPressedCustom.dds" />
-		<sprite name="ScrollBar Track Custom" file="ScrollBarTrack.dds" />
+		<sprite name="ScrollBar Track Custom" file="ScrollBarTrackCustom.dds" />
 		<sprite name="Scrubber Custom" file="ScrubberCustom.dds" />
 
 

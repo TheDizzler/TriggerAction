@@ -6,8 +6,7 @@ OptionsScreen::~OptionsScreen() {
 }
 
 
-bool OptionsScreen::initialize(
-	ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) {
+bool OptionsScreen::initialize(ComPtr<ID3D11Device> device) {
 
 
 	for (PlayerSlotNumber i = PlayerSlotNumber::SLOT_1;
@@ -46,7 +45,7 @@ bool OptionsScreen::initialize(
 	}
 
 
-	attackLabel.reset(guiFactory->createTextLabel(Vector2(200, 250), L"Attack:"));
+	attackLabel.reset(guiFactory.createTextLabel(Vector2(200, 250), L"Attack:"));
 
 	return true;
 }
@@ -58,7 +57,7 @@ void OptionsScreen::setGameManager(GameManager* gm) {
 
 
 void OptionsScreen::update(double deltaTime) {
-	if (keyTracker.IsKeyPressed(Keyboard::Escape)) {
+	if (keys.isKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
 	}
 	attackLabel->update(deltaTime);
@@ -73,7 +72,7 @@ void OptionsScreen::draw(SpriteBatch * batch) {
 void OptionsScreen::textureDraw(SpriteBatch* batch) {
 
 	batch->Begin(SpriteSortMode_FrontToBack, NULL,
-		NULL, NULL, NULL, NULL, camera->translationMatrix());
+		NULL, NULL, NULL, NULL, camera.translationMatrix());
 	{
 		draw(batch);
 	}

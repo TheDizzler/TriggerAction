@@ -1,6 +1,9 @@
 #include "../pch.h"
 #include "GFXAssetManager.h"
 
+#include "../Engine/GameEngine.h"
+#include "../../DXTKGui/StringHelper.h"
+
 GFXAssetManager::GFXAssetManager(xml_node assetManifestRoot) {
 
 	characterDataNode = assetManifestRoot.child("characterData");
@@ -18,7 +21,7 @@ GFXAssetManager::~GFXAssetManager() {
 	characterDataMap.clear();
 }
 
-#include "../Engine/GameEngine.h"
+
 bool GFXAssetManager::initialize(ComPtr<ID3D11Device> device) {
 
 
@@ -78,7 +81,7 @@ shared_ptr<Animation> GFXAssetManager::getAnimation(const char_t* animationName)
 		frame.reset(new Frame(rect, Vector2::Zero, frameTime));
 		frames.push_back(move(frame));
 		shared_ptr<Animation> animationAsset;
-		animationAsset.reset(new Animation(gfxAsset->getTexture(), frames));
+		animationAsset.reset(new Animation(gfxAsset->getTexture(), frames, animationName));
 		animationMap[animationName] = animationAsset;
 
 	}
@@ -115,7 +118,7 @@ shared_ptr<AssetSet> const GFXAssetManager::getAssetSet(const char_t* setName) {
 
 
 
-#include "../DXTKGui/StringHelper.h"
+
 bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 	string assetsDir =
@@ -142,10 +145,9 @@ bool GFXAssetManager::getGFXAssetsFromXML(ComPtr<ID3D11Device> device) {
 
 		unique_ptr<GraphicsAsset> gfxAsset;
 		gfxAsset.reset(new GraphicsAsset());
-		if (!gfxAsset->load(device, StringHelper::convertCharStarToWCharT(file), origin)) {
+		if (!gfxAsset->load(device, file, StringHelper::convertCharStarToWCharT(file), origin)) {
 			wstringstream wss;
 			wss << "Unable to load texture file: " << file << " in GFX Asset Manager.";
-			//MessageBox(0, wss.str().c_str(), L"Critical error", MB_OK);
 			GameEngine::errorMessage(wss.str(), L"Critical error");
 			return false;
 		}
@@ -323,20 +325,18 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
 		masterAsset = move(assetMap[masterAssetName]);
 		if (masterAsset == NULL)
 			masterAsset = make_unique<GraphicsAsset>();
-		if (!masterAsset->load(device, StringHelper::convertCharStarToWCharT(file))) {
+		if (!masterAsset->load(device, file, StringHelper::convertCharStarToWCharT(file))) {
 			return false;
 		}
 
 
 		// parse all animations from spritesheet
-		for (xml_node animationNode = spritesheetNode.child("animation");
-			animationNode; animationNode = animationNode.next_sibling("animation")) {
+		for (xml_node animationNode : spritesheetNode.children("animation")) {
 
 			const char_t* name = animationNode.attribute("name").as_string();
+			float timePerFrame = animationNode.attribute("timePerFrame").as_float();
 
 			vector<shared_ptr<Frame>> frames;
-
-			float timePerFrame = animationNode.attribute("timePerFrame").as_float();
 
 			if (animationNode.attribute("interval")) {
 				int interval = animationNode.attribute("interval").as_int();
@@ -362,15 +362,13 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
 				}
 
 			} else {
-				for (xml_node spriteNode = animationNode.child("sprite"); spriteNode;
-					spriteNode = spriteNode.next_sibling("sprite")) {
+				for (xml_node spriteNode : animationNode.children("sprite")) {
 
 					RECT rect;
 					rect.left = spriteNode.attribute("x").as_int();
 					rect.top = spriteNode.attribute("y").as_int();
 					rect.right = rect.left + spriteNode.attribute("width").as_int();
 					rect.bottom = rect.top + spriteNode.attribute("height").as_int();
-
 					Vector2 origin = Vector2(0, 0);
 					xml_node originNode = spriteNode.child("origin");
 					if (originNode) {
@@ -390,7 +388,7 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
 			}
 
 			shared_ptr<Animation> animationAsset;
-			animationAsset.reset(new Animation(masterAsset->getTexture(), frames));
+			animationAsset.reset(new Animation(masterAsset->getTexture(), frames, name));
 			if (animationNode.attribute("set")) {
 				string setName = animationNode.attribute("set").as_string();
 				if (setMap.find(setName) == setMap.end()) {
@@ -428,7 +426,8 @@ bool GFXAssetManager::getSpriteSheetData(ComPtr<ID3D11Device> device,
 			}
 
 			unique_ptr<GraphicsAsset> spriteAsset = make_unique<GraphicsAsset>();
-			spriteAsset->loadAsPartOfSheet(masterAsset->getTexture(), position, size, origin);
+			spriteAsset->loadAsPartOfSheet(masterAsset->getTexture(),
+				name, position, size, origin);
 
 			if (spriteNode.attribute("set")) {
 				string setName = spriteNode.attribute("set").as_string();

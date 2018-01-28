@@ -3,7 +3,7 @@
 #include "../GUIObjects/MenuDialog.h"
 #include "../GUIObjects/PCSelectDialog.h"
 #include "../GUIObjects//PCStatusDialog.h"
-#include "../DXTKGui/Controllers/Joystick.h"
+#include "../../DXTKGui/Controllers/Joystick.h"
 
 #include "../globals.h"
 

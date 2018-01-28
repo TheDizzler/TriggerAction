@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DXTKGui/BaseGraphics/screen.h"
+//#include "../../DXTKGui/BaseGraphics/screen.h"
 #include "../GameObjects/Characters/PlayerCharacter.h"
 #include "../GUIObjects//PCStatusDialog.h"
 #include "../Managers/MapManager.h"
@@ -19,7 +19,7 @@ public:
 	virtual ~LevelScreen();
 
 	/** Don't need to use in LevelScreen! */
-	virtual bool initialize(ComPtr<ID3D11Device> device, shared_ptr<MouseController> mouse) override;
+	virtual bool initialize(ComPtr<ID3D11Device> device) override;
 	virtual void setGameManager(GameManager* game) override;
 
 	void loadMap(unique_ptr<Map> map);
