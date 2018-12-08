@@ -26,10 +26,11 @@ GraphicsEngine::~GraphicsEngine() {
 	device.Reset();
 	swapChain.Reset();
 	renderTargetView.Reset();
-	deviceContext->Flush();
+	if (deviceContext)
+		deviceContext->Flush();
 	deviceContext.Reset();
-
-	debugDevice->ReportLiveDeviceObjects(D3D11_RLDO_FLAGS::D3D11_RLDO_DETAIL);
+	if (debugDevice)
+		debugDevice->ReportLiveDeviceObjects(D3D11_RLDO_FLAGS::D3D11_RLDO_DETAIL);
 	debugDevice.Reset();
 }
 
@@ -232,7 +233,7 @@ void GraphicsEngine::initializeViewport() {
 	mainViewport.MaxDepth = 1.0f;
 	deviceContext->RSSetViewports(1, &mainViewport);
 
-	
+
 	/*scissorRECTs[0].left = Globals::MAIN_VIEWPORT_LEFT;
 	scissorRECTs[0].right = Globals::MAIN_VIEWPORT_WIDTH;
 	scissorRECTs[0].top = Globals::MAIN_VIEWPORT_TOP;

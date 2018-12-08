@@ -2,7 +2,7 @@
 GUIDs
 ***********************
 {F18A0E88-C30C-11D0-8815-00A0C906BED8} - USB Digio2 HUB
-{A5DCBF10-6530-11D2-901F-00C04FB951ED} - most devices seem to hit this first (internal USB bus most likely)
+{A5DCBF10-6530-11D2-901F-00C04FB951ED} - most devices seem to hit this first when plugged in(internal USB bus most likely)
 {EC87F1E3-C13B-4100-B5F7-8B84D54260CB} (XBOX controller? rdi.hid.usUsage == 5)
 {4D1E55B2-F16F-11CF-88CB-001111000030} - controllers
 

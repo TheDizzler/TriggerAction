@@ -10,8 +10,8 @@ LetterJammer::LetterJammer(GUIFactory* factory,
 	setText(text);
 	tint = Colors::White;	// tint MUST Be set to white or your gonna have a bad time
 							// while trying to figure out why your tints aren't working
-	running = autoRun;
 	reset();
+	running = autoRun;
 }
 
 

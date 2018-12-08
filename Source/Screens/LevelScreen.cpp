@@ -67,6 +67,7 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 	Vector3 thirdPStart = start->getHitbox()->position;
 	thirdPStart.x += start->getHitbox()->size.y;
 
+
 	Vector3 startPos[3] = {firstPStart, secondPStart, thirdPStart};
 	int i = 0;
 	for (const auto& slot : activeSlots) {
