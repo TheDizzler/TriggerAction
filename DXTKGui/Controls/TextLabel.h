@@ -3,7 +3,7 @@
 #include "GUIControl.h"
 
 class TexturePanel;
-class TextLabel : public GUIControl, public Texturizable {
+class TextLabel : public Selectable, public Texturizable {
 public:
 	TextLabel(GUIFactory* factory, MouseController* mouseController,
 		Vector2 position, wstring text, const pugi::char_t* font, bool useTexture = true);
@@ -14,9 +14,14 @@ public:
 		wstring text, const pugi::char_t* font, bool useTexture = true);
 
 	virtual ~TextLabel();
+
+	virtual void forceRefresh() override;
 	virtual void reloadGraphicsAsset() override;
 
+	/** Used by SelectorManager */
+	virtual bool updateSelect(double deltaTime) override;
 	virtual bool update(double deltaTime) override;
+	
 	void draw(SpriteBatch* batch);
 	/* Draw with an alternate color.
 		NOTE: This draws using the SpriteFont, which is highly inefficient. */
@@ -51,11 +56,10 @@ public:
 	//virtual void setText(wstring text, bool useTexture);
 	virtual const wchar_t* getText() override;
 	/* Calculated with scaling. */
-	virtual const Vector2& XM_CALLCONV measureString() const override;
+	virtual const Vector2 XM_CALLCONV measureString() const override;
 	/* Convenience method when a FontSet is not available.
 		Scaling is not considered. */
-	const Vector2& XM_CALLCONV measureString(wstring string) const;
-
+	const Vector2 XM_CALLCONV measureString(wstring string) const;
 
 	virtual bool clicked() override;
 	virtual bool pressed() override;
@@ -74,7 +78,6 @@ public:
 		virtual void onHover(TextLabel* button) = 0;
 	};
 
-
 	void setActionListener(ActionListener* iOnC) {
 		if (actionListener != NULL)
 			delete actionListener;
@@ -92,27 +95,33 @@ public:
 			isClicked = false;
 			(actionListener->*onClickFunction)(this);
 		}
+
 		setToUnpressedState();
 		hasBeenSetUnpressed = false;
 		hasBeenSetHover = false;
 	}
+
 	virtual void onPress() override {
 		isPressed = true;
 		if (actionListener != NULL) {
 			(actionListener->*onPressFunction)(this);
 		}
+
 		setToSelectedState();
 		hasBeenSetUnpressed = false;
 		hasBeenSetHover = false;
 	}
+
 	virtual void onHover() override {
 		if (actionListener != NULL) {
 			(actionListener->*onHoverFunction)(this);
 		}
+
 		setToHoverState();
 		hasBeenSetHover = true;
 		hasBeenSetUnpressed = false;
 	}
+
 	virtual void resetState() override {
 		isPressed = false;
 		setToUnpressedState();
@@ -141,6 +150,4 @@ protected:
 	virtual void setToSelectedState();
 	bool hasBeenSetUnpressed = false;
 	bool hasBeenSetHover = false;
-
-	
 };

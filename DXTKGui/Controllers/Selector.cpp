@@ -3,7 +3,56 @@
 #include "KeyboardController.h"
 
 Selector::~Selector() {
+}
 
+GrowSelector::GrowSelector(GUIFactory* guiFactory) {
+	frame.reset(guiFactory->createRectangleFrame());
+	frame->setTint(Colors::White, false);
+
+}
+
+GrowSelector::~GrowSelector() {
+}
+
+void GrowSelector::reloadGraphicsAsset() {
+	frame->reloadGraphicsAsset();
+
+}
+
+void GrowSelector::update(double deltaTime) {
+	currentGrowTime += deltaTime;
+
+	Vector2 newSize = Vector2::Lerp(originalSize, maxSize, float(currentGrowTime / maxGrowTime));
+	frame->setSize(newSize);
+
+	if (currentGrowTime >= maxGrowTime) {
+		currentGrowTime = 0;
+		newSize = originalSize;
+		frame->setPosition(originalPos);
+		frame->setSize(originalSize);
+	} else {
+		Vector2 posAdj((currentSize - newSize) / 2);
+		frame->moveBy(posAdj);
+	}
+
+	frame->update();
+	currentSize = newSize;
+}
+
+void GrowSelector::draw(SpriteBatch* batch) {
+	frame->draw(batch);
+}
+
+void GrowSelector::setDimensions(const Vector2& pos, const Vector2& sz) {
+	originalPos = pos;
+	currentSize = originalSize = sz;
+	maxSize = sz * growFactor;
+	frame->setDimensions(pos, originalSize, frameThickness);
+	currentGrowTime = 0;
+}
+
+void GrowSelector::moveBy(const Vector2& moveVector) {
+	frame->moveBy(moveVector);
 }
 
 
@@ -23,15 +72,15 @@ void ColorFlashSelector::reloadGraphicsAsset() {
 void ColorFlashSelector::update(double deltaTime) {
 
 	currentFlashTime += deltaTime;
-	frame->setTint(Color::Lerp(color1, color2, currentFlashTime / FLASH_TIME), true);
+	frame->setTint(Color::Lerp(color1, color2, float(currentFlashTime / FLASH_TIME)), true);
 	if (currentFlashTime > FLASH_TIME) {
 		Color temp = color1;
 		color1 = color2;
 		color2 = temp;
 		currentFlashTime = 0;
 	}
-	frame->update();
 
+	frame->update();
 }
 
 void ColorFlashSelector::draw(SpriteBatch* batch) {
@@ -71,75 +120,156 @@ void SelectorManager::reloadGraphicsAssets() {
 }
 
 void SelectorManager::initialize(unique_ptr<Selector> newSelector) {
-
-		/*selector = make_unique<ColorFlashSelector>();
-		selector->initialize(guiFactory);*/
 	selector = move(newSelector);
 }
 
-void SelectorManager::setControllers(Joystick* joy, KeyboardController* key) {
+void SelectorManager::setControllers(Joystick* joy, KeyboardController* keys, MouseController* ms) {
 
-	//mouse = ms;
-	joystick = joy;
-	keyController = key;
+	mouse = ms;
+	keyController = keys;
+	if (joy == NULL || joy->getControllerSockerNumber() == ControllerSocketNumber::DUMMY_SOCKET)
+		joystick = NULL;
+	else
+		joystick = joy;
 }
 
-void SelectorManager::setJoystick(Joystick* joy) {
-	joystick = joy;
+bool SelectorManager::setJoystick(Joystick* joy) {
+	if (joy == NULL || joy->getControllerSockerNumber() == ControllerSocketNumber::DUMMY_SOCKET) {
+		joystick = NULL;
+		return false;
+	} else {
+		joystick = joy;
+		return true;
+	}
+}
+
+void SelectorManager::setMouse(MouseController* ms) {
+	mouse = ms;
+}
+
+void SelectorManager::setKeys(KeyboardController* keys) {
+	keyController = keys;
 }
 
 
-void SelectorManager::update(double deltaTime) {
+bool ignoreMouse = false;
+bool SelectorManager::update(double deltaTime) {
 
+	bool refreshNeeded = false;
+	if (ignoreMouse)
+		ignoreMouse = !mouse->hasMoved;
 
 	if (joystick) {
 		if (joystick->aButtonPushed()) {
 			controls[selected]->onClick();
 			controls[selected]->onHover();
 			timeSincePressed = DELAY_TIME;
-
+			ignoreMouse = true;
 		} else if (joystick->isUpPressed() || joystick->isLeftPressed()) {
 
 			if (timeSincePressed > DELAY_TIME) {
 				setSelected(selected - 1);
 				timeSincePressed = 0;
 			}
+
 			timeSincePressed += deltaTime;
+			ignoreMouse = true;
 		} else if (joystick->isDownPressed() || joystick->isRightPressed()) {
 
 			if (timeSincePressed > DELAY_TIME) {
 				setSelected(selected + 1);
 				timeSincePressed = 0;
 			}
+
 			timeSincePressed += deltaTime;
+			ignoreMouse = true;
 		} else
 			timeSincePressed = DELAY_TIME;
 	}
 
 
 	if (keyController) {
-		if (keyController->isKeyPressed(Keyboard::Down)
-			|| keyController->isKeyPressed(Keyboard::Right))
-			setSelected(selected + 1);
-		else if (keyController->isKeyPressed(Keyboard::Up)
-			|| keyController->isKeyPressed(Keyboard::Left))
-			setSelected(selected - 1);
-		else if (keyController->isKeyPressed(Keyboard::Enter)) {
-			controls[selected]->onClick();
-			controls[selected]->onHover();
+
+		if (!controls[selected]->isSelectLocked()) {
+			if (keyController->isKeyPressed(Keyboard::Down)
+				|| keyController->isKeyPressed(Keyboard::Right)) {
+				setSelected(selected + 1);
+				ignoreMouse = true;
+			} else if (keyController->isKeyPressed(Keyboard::Up)
+				|| keyController->isKeyPressed(Keyboard::Left)) {
+				setSelected(selected - 1);
+				ignoreMouse = true;
+			} else if (keyController->isKeyPressed(Keyboard::Enter)) {
+				//controls[selected]->onClick();
+				controls[selected]->setSelectLock(true);
+				controls[selected]->onHover();
+				ignoreMouse = true;
+			}
+		} else {
+
+			SelectableContainer* box = static_cast<SelectableContainer*>(controls[selected]);
+
+			if (keyController->isKeyPressed(Keyboard::Down)
+				|| keyController->isKeyPressed(Keyboard::Right)) {
+
+				box->setHovered(box->getHoveredIndex() + 1);
+
+			} else if (keyController->isKeyPressed(Keyboard::Up)
+				|| keyController->isKeyPressed(Keyboard::Left)) {
+
+				box->setHovered(box->getHoveredIndex() - 1);
+
+			} else if (keyController->isKeyPressed(Keyboard::Enter)) {
+
+				box->setSelected(box->getHoveredIndex());
+				box->onClick();
+
+			} else if (keyController->isKeyPressed(Keyboard::Escape)
+			|| keyController->isKeyPressed(Keyboard::Tab)) {
+
+				// un-Select Lock
+				box->setSelectLock(false);
+			}
 		}
 	}
+
+	bool mouseHovering = false;
 	for (int i = 0; i < controls.size(); ++i) {
-		controls[i]->updateSelect(deltaTime);
+
+		if (!ignoreMouse) {
+			controls[i]->updateProjectedHitArea();
+			if (controls[i]->getProjectedHitArea().contains(mouse->getPosition())) {
+				mouseHovering = true;
+				if (!selectedSetByMouse) {
+					setSelected(i);
+					selectedSetByMouse = true;
+				}
+				if (mouse->pressed()) {
+					controls[selected]->onPress();
+				} else if (mouse->clicked()) {
+					controls[selected]->onClick();
+					controls[selected]->onHover();
+				}
+			}
+		}
+
+		if (controls[i]->updateSelect(deltaTime))
+			refreshNeeded = true;
+
 		if (selected != i && controls[i]->hovering()) {
 			setSelected(i);
 		}
 	}
 
+	if (!mouseHovering)
+		selectedSetByMouse = false;
+
 	if (selected > -1)
 		selector->update(deltaTime);
 
+	return refreshNeeded;
 }
+
 
 void SelectorManager::draw(SpriteBatch* batch) {
 	for (const auto& control : controls)
@@ -149,8 +279,23 @@ void SelectorManager::draw(SpriteBatch* batch) {
 		selector->draw(batch);
 }
 
+
+void SelectorManager::drawWithoutSelector(SpriteBatch* batch) {
+	for (const auto& control : controls)
+		control->draw(batch);
+}
+
+void SelectorManager::drawSelector(SpriteBatch* batch) {
+	if (selected > -1)
+		selector->draw(batch);
+}
+
+size_t SelectorManager::size() {
+	return controls.size();
+}
+
 bool SelectorManager::hasController() {
-	return joystick;
+	return joystick != NULL;
 }
 
 void SelectorManager::addControl(Selectable* control) {
@@ -161,8 +306,9 @@ void SelectorManager::addControl(Selectable* control) {
 	}
 }
 
-void SelectorManager::addControls(vector<Selectable*> controls) {
-	for (const auto& control : controls)
+
+void SelectorManager::addControls(vector<Selectable*> cntrls) {
+	for (const auto& control : cntrls)
 		controls.push_back(control);
 
 	if (selected == -1) {
@@ -193,7 +339,7 @@ void SelectorManager::setSelected(SHORT index) {
 		controls[selected]->resetState();
 
 	if (index < 0)
-		selected = controls.size() - 1;
+		selected = short(controls.size() - 1);
 	else if (index > controls.size() - 1)
 		selected = 0;
 	else
@@ -201,7 +347,9 @@ void SelectorManager::setSelected(SHORT index) {
 
 	selector->setDimensions(
 		controls[selected]->getPosition(),
-		Vector2(controls[selected]->getWidth(), controls[selected]->getHeight()));
+		Vector2((float) controls[selected]->getWidth(), (float) controls[selected]->getHeight()));
 
 	controls[selected]->onHover();
+
+	selectedSetByMouse = false;
 }

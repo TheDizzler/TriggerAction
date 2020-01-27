@@ -7,8 +7,10 @@ class GameManager;
 
 /** An interface class for a game screen; menu screens,
 	level screens, etc. */
-interface Screen {
+class Screen {
 public:
+	virtual ~Screen() {
+	};
 	virtual bool initialize(ComPtr<ID3D11Device> device) = 0;
 	virtual void setGameManager(GameManager* game) = 0;
 	virtual void update(double deltaTime) = 0;
@@ -25,5 +27,4 @@ public:
 	virtual void textureDraw(SpriteBatch* batch) {
 		draw(batch);
 	};
-
 };

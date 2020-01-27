@@ -4,23 +4,10 @@
 #include "DDSTextureLoader.h"
 #include "GuiAssets.h"
 
+
 bool GUIFactory::initialized = false;
 
-
-//GUIFactory::GUIFactory(HWND h) {
-//
-//	hwnd = h;
-//}
-//
-//GUIFactory::GUIFactory(HWND h, pugi::xml_node guiAssets) {
-//	hwnd = h;
-//	guiAssetsNode = guiAssets;
-//}
-
-
 GUIFactory::~GUIFactory() {
-
-
 }
 
 HWND GUIFactory::getHWND() {
@@ -38,7 +25,6 @@ bool GUIFactory::initialize(HWND h, ComPtr<ID3D11Device> dev,
 
 	hwnd = h;
 
-
 	// get graphical assets from default file
 	unique_ptr<xml_document> docAssMan = make_unique<xml_document>();
 	if (!docAssMan->load_file(GUIAssets::assetManifestFile)) {
@@ -47,6 +33,7 @@ bool GUIFactory::initialize(HWND h, ComPtr<ID3D11Device> dev,
 			L"Fatal Read Error!", false);
 		return false;
 	}
+
 	guiAssetsNode.push_back(docAssMan->child("root").child("gui"));
 	docs.push_back(move(docAssMan));
 
@@ -64,7 +51,6 @@ bool GUIFactory::initialize(HWND h, ComPtr<ID3D11Device> dev,
 		docs.push_back(move(docAssManCustom));
 	}
 
-
 	device = dev;
 	deviceContext = devCon;
 	batch = sBatch;
@@ -76,6 +62,7 @@ bool GUIFactory::initialize(HWND h, ComPtr<ID3D11Device> dev,
 			return false;
 		}
 	}
+
 	mouseController = mouse;
 
 	initialized = true;
@@ -146,7 +133,7 @@ GraphicsAsset* const GUIFactory::getAsset(const char_t* assetName) {
 }
 
 
-shared_ptr<AssetSet> const GUIFactory::getAssetSet(const char_t* setName) {
+AssetSet* const GUIFactory::getAssetSet(const char_t* setName) {
 
 	if (setMap.find(setName) == setMap.end()) {
 		wostringstream ws;
@@ -155,7 +142,7 @@ shared_ptr<AssetSet> const GUIFactory::getAssetSet(const char_t* setName) {
 		return NULL;
 	}
 
-	return setMap[setName];
+	return setMap[setName].get();
 }
 
 
@@ -164,6 +151,7 @@ unique_ptr<Sprite> GUIFactory::getSpriteFromAsset(const char_t* assetName) {
 	GraphicsAsset* const asset = getAsset(assetName);
 	if (asset == NULL)
 		return NULL;
+
 	unique_ptr<Sprite> sprite;
 	sprite.reset(new Sprite());
 	sprite->load(asset);
@@ -341,15 +329,6 @@ Button* GUIFactory::createImageButton(unique_ptr<Sprite> upSprite, const char_t*
 	return button;
 }
 
-AnimatedButton* GUIFactory::createAnimatedButton(const char_t* animatedButtonName,
-	Vector2 position) {
-
-	AnimatedButton* button = new AnimatedButton(this, mouseController,
-		getAnimation(animatedButtonName), position);
-	return button;
-}
-
-
 CheckBox* GUIFactory::createCheckBox(const Vector2& position,
 	wstring text, const char_t* fontName) {
 
@@ -522,7 +501,8 @@ DynamicDialog* GUIFactory::createDynamicDialog(const char_t* imageSet,
 	return dialog;
 }
 
-DynamicDialog* GUIFactory::createDynamicDialog(shared_ptr<AssetSet> dialogImageSet,
+
+DynamicDialog* GUIFactory::createDynamicDialog(AssetSet* dialogImageSet,
 	const Vector2& position, const Vector2& size, const char_t* fontName) {
 
 	DynamicDialog* dialog = new DynamicDialog(this, mouseController);
@@ -544,22 +524,19 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	int screenWidth = rect.right - rect.left + buffer;
 	int screenHeight = rect.bottom - rect.top + buffer;
 
-	/*wostringstream wss;
-	wss << "W: " << rect.right - rect.left << " H: " << rect.bottom - rect.top << endl;
-	OutputDebugString(wss.str().c_str());*/
-
 	int width = control->getWidth();
 	int height = control->getHeight();
 	int heightPadding = 0;
 	int widthPadding = 0;
 	float ratio = (float) screenWidth / screenHeight;
 	if (width > height) {
-		heightPadding = width / ratio - height;
-		height = width / ratio;
+		heightPadding = INT(width / ratio) - height;
+		height = INT(width / ratio);
 	} else {
-		widthPadding = height*ratio - width;
-		width = height * ratio;
+		widthPadding = INT(height*ratio) - width;
+		width = INT(height * ratio);
 	}
+
 	width += buffer;
 	height += buffer;
 
@@ -577,8 +554,6 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-
-
 	if (StringHelper::reportError(device->CreateTexture2D(&textureDesc, NULL,
 		renderTargetTexture.GetAddressOf()),
 		L"Failed to create render target texture.", L"Aw shucks"))
@@ -590,14 +565,11 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-
 	if (StringHelper::reportError(
 		device->CreateRenderTargetView(renderTargetTexture.Get(),
 			NULL, textureRenderTargetView.GetAddressOf()),
 		L"Failed to create render target view for new texture.", L"Fatal Error"))
 		return NULL;
-
-
 
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
@@ -607,13 +579,11 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 
-
 	if (StringHelper::reportError(
 		device->CreateShaderResourceView(renderTargetTexture.Get(),
 			&shaderResourceViewDesc, shaderResourceView.GetAddressOf()),
 		L"Failed to create Shader Resource View for new texture.", L"Fatal error"))
 		return NULL;
-
 
 	// get normal rendertargetview and switch to temp one
 	ComPtr<ID3D11RenderTargetView> oldRenderTargetView;
@@ -623,30 +593,10 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	deviceContext->Flush();
 	deviceContext->OMSetRenderTargets(1, textureRenderTargetView.GetAddressOf(), nullptr);
 
-
-
 	Vector2 oldPos = control->getPosition();
-	//Vector2 oldSize = Vector2(control->getWidth(), control->getHeight());
 	control->setPosition(Vector2(0, 0));
 
 	deviceContext->ClearRenderTargetView(textureRenderTargetView.Get(), bgColor);
-
-
-	/** Create a new viewport incase the current one is not normal.*/
-	/*const UINT MAX_VIEWPORTS = 16;
-	UINT numViewports = MAX_VIEWPORTS;
-	D3D11_VIEWPORT oldViewports[MAX_VIEWPORTS];
-	deviceContext->RSGetViewports(&numViewports, oldViewports);
-	D3D11_VIEWPORT textureViewport;
-	ZeroMemory(&textureViewport, sizeof(D3D11_VIEWPORT));
-	textureViewport.TopLeftX = 0;
-	textureViewport.TopLeftY = 0;
-	textureViewport.Width = screenWidth;
-	textureViewport.Height = screenHeight;
-	textureViewport.MinDepth = 0.0f;
-	textureViewport.MaxDepth = 1.0f;
-	deviceContext->RSSetViewports(1, &textureViewport);
-	batch->SetViewport(textureViewport);*/
 
 	if (autoBatchDraw) {
 		/* This is supposed to be the bare minimum. If you need more you should
@@ -655,6 +605,7 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 		{
 			control->textureDraw(batch);
 		}
+
 		batch->End();
 	} else
 		control->textureDraw(batch, device);
@@ -663,8 +614,6 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	textureRenderTargetView.Reset();
 	deviceContext->Flush();
 	deviceContext->OMSetRenderTargets(1, oldRenderTargetView.GetAddressOf(), nullptr);
-	//deviceContext->RSSetViewports(numViewports, oldViewports);
-	//batch->SetViewport(oldViewports[0]);
 
 	textureRenderTargetView.Reset();
 	oldRenderTargetView.Reset();
@@ -675,7 +624,7 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromTexturizable(
 	string name = "Texturized Control #" + to_string(elementCounter++);
 
 	gfxAsset->loadAsPartOfSheet(shaderResourceView, name.c_str(), Vector2::Zero,
-		Vector2(width - widthPadding - buffer, height - heightPadding - buffer), Vector2::Zero);
+		Vector2(FLOAT(width - widthPadding - buffer), FLOAT(height - heightPadding - buffer)), Vector2::Zero);
 
 	shaderResourceView.Reset();
 	return move(gfxAsset);
@@ -708,8 +657,6 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-
-
 	if (StringHelper::reportError(device->CreateTexture2D(&textureDesc, NULL,
 		renderTargetTexture.GetAddressOf()),
 		L"Failed to create render target texture.", L"Aw shucks"))
@@ -721,14 +668,11 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-
 	if (StringHelper::reportError(
 		device->CreateRenderTargetView(renderTargetTexture.Get(),
 			NULL, textureRenderTargetView.GetAddressOf()),
 		L"Failed to create render target view for new texture.", L"Fatal Error"))
 		return NULL;
-
-
 
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
@@ -737,16 +681,11 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-
-
 	if (StringHelper::reportError(
 		device->CreateShaderResourceView(renderTargetTexture.Get(),
 			&shaderResourceViewDesc, shaderResourceView.GetAddressOf()),
 		L"Failed to create Shader Resource View for new texture.", L"Fatal error"))
 		return NULL;
-
-
-
 
 	// get normal rendertargetview and switch to temp one
 	ComPtr<ID3D11RenderTargetView> oldRenderTargetView;
@@ -755,10 +694,7 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 	deviceContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	deviceContext->Flush();
 	deviceContext->OMSetRenderTargets(1, textureRenderTargetView.GetAddressOf(), nullptr);
-
-
 	deviceContext->ClearRenderTargetView(textureRenderTargetView.Get(), bgColor);
-
 
 	/** Create a new viewport incase the current one is not normal.*/
 	const UINT MAX_VIEWPORTS = 16;
@@ -769,19 +705,19 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 	ZeroMemory(&textureViewport, sizeof(D3D11_VIEWPORT));
 	textureViewport.TopLeftX = 0;
 	textureViewport.TopLeftY = 0;
-	textureViewport.Width = screenWidth;
-	textureViewport.Height = screenHeight;
+	textureViewport.Width = (float) screenWidth;
+	textureViewport.Height = (float) screenHeight;
 	textureViewport.MinDepth = 0.0f;
 	textureViewport.MaxDepth = 1.0f;
 	deviceContext->RSSetViewports(1, &textureViewport);
 	batch->SetViewport(textureViewport);
-
 
 	if (autoBatchDraw) {
 		batch->Begin(SpriteSortMode_Deferred);
 		{
 			screen->textureDraw(batch);
 		}
+
 		batch->End();
 	} else
 		screen->textureDraw(batch);
@@ -796,12 +732,11 @@ unique_ptr<GraphicsAsset> GUIFactory::createTextureFromScreen(
 	string name = "Texturized Screen #" + to_string(screenCounter++);
 	unique_ptr<GraphicsAsset> gfxAsset = make_unique<GraphicsAsset>();
 	gfxAsset->loadAsPartOfSheet(shaderResourceView, name.c_str(), Vector2::Zero,
-		Vector2(screenWidth - buffer, screenHeight - buffer), Vector2::Zero);
+		Vector2((float) screenWidth - buffer, (float) screenHeight - buffer), Vector2::Zero);
 
 	shaderResourceView.Reset();
 	return move(gfxAsset);
 }
-
 
 
 bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
@@ -811,7 +746,6 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 
 	string guiDir =
 		assetsDir + assetNode.attribute("dir").as_string();
-
 
 	xml_node fonts = assetNode.child("spritefonts");
 	string fontDir = assetsDir + fonts.attribute("dir").as_string();
@@ -823,7 +757,6 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 		const char_t* name = fontNode.attribute("name").as_string();
 
 		fontMap[name] = file;
-
 	}
 
 	defaultFontFile = GUIAssets::defaultFontFile;
@@ -837,9 +770,10 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 		Vector2 origin = Vector2(-1000, -1000);
 		xml_node originNode = spriteNode.child("origin");
 		if (originNode) {
-			origin.x = originNode.attribute("x").as_int();
-			origin.y = originNode.attribute("y").as_int();
+			origin.x = (float) originNode.attribute("x").as_int();
+			origin.y = (float) originNode.attribute("y").as_int();
 		}
+
 		unique_ptr<GraphicsAsset> guiAsset;
 		guiAsset.reset(new GraphicsAsset());
 		if (!guiAsset->load(device, name, StringHelper::convertCharStarToWCharT(file), origin)) {
@@ -862,7 +796,6 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 		if (!masterAsset->load(device, masterAssetName,
 			StringHelper::convertCharStarToWCharT(file), Vector2::Zero))
 			return false;
-
 
 		for (xml_node spritesetNode : spritesheetNode.children("spriteset")) {
 
@@ -887,7 +820,7 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 						string subsetName(oss.str());
 						if (setMap.find(subsetName) == setMap.end()) {
 							// new set
-							setMap[subsetName] = make_shared<AssetSet>(subsetName.c_str());
+							setMap[subsetName] = make_unique<AssetSet>(subsetName.c_str());
 						}
 
 						for (xml_node spriteNode : spritesetNode.children("sprite")) {
@@ -904,7 +837,7 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 					const char_t* spriteName = spriteNode.attribute("name").as_string();
 					if (setMap.find(setName) == setMap.end()) {
 						// new set
-						setMap[setName] = make_shared<AssetSet>(setName);
+						setMap[setName] = make_unique<AssetSet>(setName);
 					}
 					setMap[setName]->addAsset(spriteNode.attribute("name").as_string(),
 						parseSprite(spriteNode, masterAsset->getTexture()));
@@ -918,7 +851,7 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 			const char_t* name = animationNode.attribute("name").as_string();
 			float timePerFrame = animationNode.attribute("timePerFrame").as_float();
 
-			vector<shared_ptr<Frame>> frames;
+			vector<unique_ptr<Frame>> frames;
 			for (xml_node spriteNode : animationNode.children("sprite")) {
 
 				RECT rect;
@@ -929,10 +862,11 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 				Vector2 origin = Vector2(0, 0);
 				xml_node originNode = spriteNode.child("origin");
 				if (originNode) {
-					origin.x = originNode.attribute("x").as_int();
-					origin.y = originNode.attribute("y").as_int();
+					origin.x = (float) originNode.attribute("x").as_int();
+					origin.y = (float) originNode.attribute("y").as_int();
 				}
-				shared_ptr<Frame> frame;
+
+				unique_ptr<Frame> frame;
 				if (spriteNode.attribute("frameTime"))
 					frame.reset(new Frame(rect, origin,
 						spriteNode.attribute("frameTime").as_float()));
@@ -943,7 +877,7 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 			}
 
 			unique_ptr<Animation> animationAsset;
-			animationAsset.reset(new Animation(masterAsset->getTexture(), frames, name));
+			animationAsset.reset(new Animation(masterAsset->getTexture(), move(frames), name));
 			animationMap[name] = move(animationAsset);
 		}
 
@@ -954,25 +888,27 @@ bool GUIFactory::getGUIAssetsFromXML(xml_node assetNode) {
 				string setName = spriteNode.attribute("set").as_string();
 				if (setMap.find(setName) == setMap.end()) {
 					// new set
-					setMap[setName] = make_shared<AssetSet>(setName.c_str());
+					setMap[setName] = make_unique<AssetSet>(setName.c_str());
 				}
+
 				setMap[setName]->addAsset(name,
 					parseSprite(spriteNode, masterAsset->getTexture()));
 			} else if (spritesheetNode.attribute("set")) {
 				string setName = spritesheetNode.attribute("set").as_string();
 				if (setMap.find(setName) == setMap.end()) {
 					// new set
-					setMap[setName] = make_shared<AssetSet>(setName.c_str());
+					setMap[setName] = make_unique<AssetSet>(setName.c_str());
 				}
+
 				setMap[setName]->addAsset(name,
 					parseSprite(spriteNode, masterAsset->getTexture()));
 			} else
 				assetMap[name] = parseSprite(spriteNode, masterAsset->getTexture());
 		}
 
-
 		assetMap[masterAssetName] = move(masterAsset);
 	}
+
 	return true;
 }
 
@@ -982,17 +918,17 @@ unique_ptr<GraphicsAsset> GUIFactory::parseSprite(xml_node spriteNode,
 	const char_t* spritename = spriteNode.attribute("name").as_string();
 
 	// pos in spritesheet
-	Vector2 position = Vector2(spriteNode.attribute("x").as_int() + xOffset,
-		spriteNode.attribute("y").as_int() + yOffset);
+	Vector2 position = Vector2(FLOAT(spriteNode.attribute("x").as_int() + xOffset),
+		FLOAT(spriteNode.attribute("y").as_int() + yOffset));
 	// dimensions in spritesheet
-	Vector2 size = Vector2(spriteNode.attribute("width").as_int(),
-		spriteNode.attribute("height").as_int());
+	Vector2 size = Vector2((float) spriteNode.attribute("width").as_int(),
+		(float) spriteNode.attribute("height").as_int());
 
-	Vector2 origin = Vector2(-1000, -1000); // this indicates to GfxAsset that origin should be center
+	Vector2 origin = Vector2(-1000.0f, -1000.0f); // this indicates to GfxAsset that origin should be center
 	xml_node originNode = spriteNode.child("origin");
 	if (originNode) {
-		origin.x = originNode.attribute("x").as_int();
-		origin.y = originNode.attribute("y").as_int();
+		origin.x = (float) originNode.attribute("x").as_int();
+		origin.y = (float) originNode.attribute("y").as_int();
 	}
 
 	unique_ptr<GraphicsAsset> spriteAsset = make_unique<GraphicsAsset>();

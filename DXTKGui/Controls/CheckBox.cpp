@@ -1,18 +1,18 @@
 #include "CheckBox.h"
 #include "../GUIFactory.h"
+#include "../StringHelper.h"
 
 CheckBox::CheckBox(GUIFactory* factory, MouseController* mouseController,
 	unique_ptr<Sprite> unchkdSprite, unique_ptr<Sprite> chckdSprite,
-	const pugi::char_t* font) : GUIControl(factory, mouseController) {
+	const pugi::char_t* font) : Selectable(factory, mouseController) {
 
 	uncheckedSprite = move(unchkdSprite);
 	checkedSprite = move(chckdSprite);
 
 	uncheckedSprite->setOrigin(Vector2(0, 0));
 	checkedSprite->setOrigin(Vector2(0, 0));
-	Vector2 size = Vector2(uncheckedSprite->getWidth(), uncheckedSprite->getHeight());
 
-	hitArea.size = size;
+	hitArea.size = Vector2((float) uncheckedSprite->getWidth(), (float) uncheckedSprite->getHeight());
 
 	label.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font));
 
@@ -41,7 +41,16 @@ void CheckBox::reloadGraphicsAsset() {
 		currentRECT = uncheckedSprite->getRect();
 	}
 }
-#include "../StringHelper.h"
+
+bool CheckBox::updateSelect(double deltaTime) {
+
+	if (label->update(deltaTime))
+		refreshed = true;
+
+	return refreshed;
+}
+
+
 bool CheckBox::update(double deltaTime) {
 
 	refreshed = false;
@@ -62,6 +71,7 @@ bool CheckBox::update(double deltaTime) {
 			onClick();
 		}
 	}
+
 	if (label->update(deltaTime))
 		refreshed = true;
 
@@ -99,8 +109,26 @@ void CheckBox::setPosition(const Vector2& pos) {
 
 
 void CheckBox::setChecked(bool checked) {
-	isClicked = checked;
+	isChecked = checked;
 }
+
+void CheckBox::onClick() {
+	
+	setChecked(!isChecked);
+
+	if (actionListener != NULL) {
+		(actionListener->*onClickFunction)(this, isChecked);
+	}
+
+	if (isChecked) {
+		texture = checkedSprite->getTexture();
+		currentRECT = checkedSprite->getRect();
+	} else {
+		texture = uncheckedSprite->getTexture();
+		currentRECT = uncheckedSprite->getRect();
+	}
+}
+
 
 void CheckBox::centerText() {
 
@@ -120,8 +148,7 @@ void CheckBox::setScale(const Vector2& scl) {
 	checkedSprite->setScale(scale);
 }
 
-
-const Vector2& XM_CALLCONV CheckBox::measureString() const {
+const Vector2 XM_CALLCONV CheckBox::measureString() const {
 	return label->measureString();
 }
 

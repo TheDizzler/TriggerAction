@@ -88,7 +88,11 @@ How to Dialog:
 
 How to extend/sub-class:
 	class ControllerDialog : public Dialog
+<<<<<<< HEAD
 		ControllerDialog(HWND hwnd, shared_ptr<MouseController> mouse);
+=======
+		ControllerDialog(HWND hwnd,MouseController* mouse);
+>>>>>>> 3e3d06059789795bb47bb2920861328f7bf28e46
 			initializeControl(guiFactory, mouse);
 			initialize(guiFactory->getAsset("White Pixel"));
 			setDimensions(position, size, frameThickness);
@@ -131,7 +135,11 @@ How to ScreenTransition:
 >- controls overlapping each other may all call their onClick functions instead of the just the topmost
 >- when a control with a scrollbar has items removed from it dynamically, the scrubber doesn't resize properly
 >- when using keyboard selector and mouse is over a selectable control, moused-over control will stay selected
+<<<<<<< HEAD
 
+=======
+>- lots of warnings to clean up (mostly possible data loss due to unchecked data type change)
+>>>>>>> 3e3d06059789795bb47bb2920861328f7bf28e46
 ##TODO:
 >- Enable 2D array of selectable controls in SelectorManager. Currently, SelectorManager only provides a single line of selectable controls. 
 >- A Panel for adding controls - this could be used to greatly reduce draw times

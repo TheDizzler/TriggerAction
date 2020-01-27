@@ -6,8 +6,6 @@
 #include <vector>
 #include "SpriteBatch.h"
 
-
-
 using namespace std;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -15,6 +13,8 @@ using namespace Microsoft::WRL;
 
 interface IElement2D {
 public:
+	virtual ~IElement2D() {
+	};
 
 	virtual const Vector2& getPosition() const = 0;
 	virtual const Vector2& getOrigin() const = 0;
@@ -25,7 +25,6 @@ public:
 	virtual const int getWidth() const = 0;
 	virtual const int getHeight() const = 0;
 	virtual const float getLayerDepth() const = 0;
-
 
 	virtual void moveBy(const Vector2& moveVector) = 0;
 	virtual void setPosition(const Vector2& position) = 0;
@@ -41,13 +40,18 @@ public:
 	virtual bool contains(const Vector2& point) = 0;
 
 	virtual void draw(SpriteBatch* batch) = 0;
-
 };
 
 class GraphicsAsset;
 interface Texturizable {
 public:
+	virtual ~Texturizable() {
+	};
 
+/* Force a refresh of the texture on the objects next update.
+	In general, this is unnecessary. If it is required, that is likely an
+	indication of a bug. */
+	virtual void forceRefresh() = 0;
 	/* Call this when you want this object to be texturized. */
 	virtual unique_ptr<GraphicsAsset> texturize() = 0;
 	/* Called by GUIFactory::createTextureFromTexturizable(). Generally should not be called otherwise. */
@@ -58,4 +62,3 @@ public:
 	virtual const int getWidth() const = 0;
 	virtual const int getHeight() const = 0;
 };
-

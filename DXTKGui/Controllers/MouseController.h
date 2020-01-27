@@ -12,8 +12,6 @@ class GUIFactory;
 		message pump. */
 class MouseController : public Sprite {
 public:
-
-	//MouseController(HWND hwnd);
 	virtual ~MouseController();
 
 	void initialize(HWND hwnd);
@@ -60,6 +58,8 @@ public:
 		Seems none functional. */
 	void resetPressed();
 
+	/** Has the mouse moved since last update? */
+	bool hasMoved = false;
 private:
 
 	HWND hwnd;

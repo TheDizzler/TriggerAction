@@ -3,13 +3,12 @@
 
 Spinner::Spinner(GUIFactory* factory, MouseController* mouseController,
 	const Vector2& pos, const size_t len, const size_t itmHght, bool autoSz)
-	: GUIControl(factory, mouseController) {
+	: Selectable (factory, mouseController) {
 
 	position = pos;
 	width = len + textBuffer * 2;
 	itemHeight = itmHght;
 	autoSize = autoSz;
-
 }
 
 Spinner::~Spinner() {
@@ -22,7 +21,7 @@ void Spinner::initialize(const pugi::char_t* fontName,
 
 	label.reset(guiFactory->createTextLabel(Vector2::Zero, L"Empty", fontName));
 	label->setTint(Vector4(0, 0, 0, 1));
-	//label->setText("Empty");
+	
 	if (label->getHeight() > itemHeight)
 		itemHeight = label->getHeight();
 	if (label->getWidth() > width)
@@ -40,9 +39,9 @@ void Spinner::initialize(const pugi::char_t* fontName,
 		Vector2(position.x + width, position.y + (itemHeight - upButton->getHeight())));
 
 	frame.reset(guiFactory->createRectangleFrame());
-	frame->setDimensions(position, Vector2(width, itemHeight));
+	frame->setDimensions(position, Vector2((float) width, (float) itemHeight));
 	rectangle.reset(guiFactory->createRectangle());
-	rectangle->setDimensions(position, Vector2(width, itemHeight));
+	rectangle->setDimensions(position, Vector2((float) width, (float) itemHeight));
 
 	Vector2 labelpos = Vector2(
 		position.x + textBuffer, position.y + (itemHeight - label->getHeight()) / 2);
@@ -54,13 +53,16 @@ void Spinner::initialize(const pugi::char_t* fontName,
 	setLayerDepth(layerDepth);
 }
 
+void Spinner::forceRefresh() {
+	refreshTexture = true;
+}
 
 void Spinner::reloadGraphicsAsset() {
 	label->reloadGraphicsAsset();
 	upButton->reloadGraphicsAsset();
 	downButton->reloadGraphicsAsset();
 	frame.reset(guiFactory->createRectangleFrame(position,
-		Vector2(width, itemHeight), frame->getThickness(), frame->getTint()));
+		Vector2((float) width, (float) itemHeight), frame->getThickness(), frame->getTint()));
 	rectangle->reloadGraphicsAsset(guiFactory);
 	texturePanel.reset(guiFactory->createPanel());
 	refreshTexture = true;
@@ -68,6 +70,10 @@ void Spinner::reloadGraphicsAsset() {
 
 unique_ptr<GraphicsAsset> Spinner::texturize() {
 	return move(guiFactory->createTextureFromTexturizable(this));
+}
+
+bool Spinner::updateSelect(double deltaTime) {
+	return update(deltaTime);
 }
 
 bool Spinner::update(double deltaTime) {
@@ -89,7 +95,6 @@ bool Spinner::update(double deltaTime) {
 	return false;
 }
 
-
 void Spinner::draw(SpriteBatch* batch) {
 	texturePanel->draw(batch);
 }
@@ -102,28 +107,29 @@ void Spinner::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 	downButton->draw(batch);
 }
 
-
 void Spinner::addItem(wstring item) {
 	if (autoSize) {
 		if (label->measureString(item).x + textBuffer * 2 > width) {
-			width = label->measureString(item).x + textBuffer * 2;
+
+			width = size_t(label->measureString(item).x + textBuffer * 2);
 			if (width == 0) {
 				OutputDebugString(L"Spinner Warning: Item received with 0 length string.");
 				return;
 			}
+
 			upButton->setPosition(Vector2(position.x + width, position.y));
 			downButton->setPosition(
 				Vector2(position.x + width,
 					position.y + (itemHeight - upButton->getHeight())));
-			frame->setSize(Vector2(width, itemHeight));
-			rectangle->setSize(Vector2(width, itemHeight));
+			frame->setSize(Vector2((float) width, (float) itemHeight));
+			rectangle->setSize(Vector2((float) width, (float) itemHeight));
 		}
 	}
 	list.push_back(item);
 
 	if (list.size() == 1) {
-		selected = 0;
-		label->setText(list[selected]);
+		selectedIndex = 0;
+		label->setText(list[selectedIndex]);
 		refreshTexture = true;
 	}
 }
@@ -138,21 +144,24 @@ void Spinner::addItems(vector<wstring> items) {
 		for (wstring item : items) {
 			if (label->measureString(item).x + textBuffer * 2 > width) {
 				changed = true;
-				width = label->measureString(item).x + textBuffer * 2;
+				width = size_t(label->measureString(item).x + textBuffer * 2);
 				if (width == 0) {
 					OutputDebugString(L"Spinner Warning: Item received with 0 length string.");
+					item = L"Empty String";
 					continue;
 				}
 			}
+
 			list.push_back(item);
 		}
+
 		if (changed) {
-			upButton->setPosition(Vector2(position.x + width, position.y));
+			upButton->setPosition(Vector2((float) position.x + width, position.y));
 			downButton->setPosition(
 				Vector2(position.x + width,
 					position.y + (itemHeight - upButton->getHeight())));
-			frame->setSize(Vector2(width, itemHeight));
-			rectangle->setSize(Vector2(width, itemHeight));
+			frame->setSize(Vector2((float) width, (float) itemHeight));
+			rectangle->setSize(Vector2((float) width, (float) itemHeight));
 		}
 	} else {
 		vector<wstring> AB;
@@ -162,8 +171,22 @@ void Spinner::addItems(vector<wstring> items) {
 		list = AB;
 	}
 
-	label->setText(list[selected]);
+	label->setText(list[selectedIndex]);
 	items.clear();
+	refreshTexture = true;
+}
+
+void Spinner::clear() {
+	selectedIndex = 0;
+	list.clear();
+	
+	label->setText(L"Empty");
+	if (autoSize) {
+		if (label->measureString().x + textBuffer * 2 > width) {
+			width = size_t(label->measureString().x + textBuffer * 2);
+		}
+	}
+
 	refreshTexture = true;
 }
 
@@ -176,11 +199,12 @@ bool Spinner::removeItem(wstring removeItem) {
 			if (list.size() == 0) {
 				label->setText("Empty");
 				refreshTexture = true;
-			} else if (selected == i) {
-				if (selected >= list.size())
-					selected = list.size() - 1;
-				label->setText(list[selected]);
+			} else if (selectedIndex == i) {
+				if (selectedIndex >= list.size())
+					selectedIndex = list.size() - 1;
+				label->setText(list[selectedIndex]);
 			}
+
 			return true;
 		}
 	}
@@ -189,38 +213,42 @@ bool Spinner::removeItem(wstring removeItem) {
 }
 
 const wstring Spinner::getSelected() const {
-	return list[selected];
+
+	return list[selectedIndex];
 }
 
 void Spinner::increase() {
 	if (list.size() == 0)
 		return;
-	if (++selected >= list.size())
-		selected = 0;
-	label->setText(list[selected]);
+
+	if (++selectedIndex >= list.size())
+		selectedIndex = 0;
+	label->setText(list[selectedIndex]);
 }
 
 void Spinner::decrease() {
 	if (list.size() == 0)
 		return;
-	if (--selected >= list.size())
-		selected = list.size() - 1;
-	label->setText(list[selected]);
+
+	if (--selectedIndex >= list.size())
+		selectedIndex = list.size() - 1;
+
+	label->setText(list[selectedIndex]);
 }
 
 void Spinner::setLayerDepth(float newDepth, bool frontToBack) {
-	layerDepth = newDepth - .00001;
+	layerDepth = newDepth - .00001f;
 	if (layerDepth < 0) {
 		if (!frontToBack)
-			layerDepth = .00001;
+			layerDepth = .00001f;
 		else
 			layerDepth = 0;
 	}
-	float nudge = .00000001;
+
+	float nudge = .00000001f;
+
 	if (!frontToBack)
 		nudge *= -1;
-
-
 
 	rectangle->setLayerDepth(layerDepth + nudge, frontToBack);
 	frame->setLayerDepth(layerDepth + nudge * 2, frontToBack);
@@ -241,8 +269,8 @@ void Spinner::setFont(const pugi::char_t* font) {
 void Spinner::setText(wstring text) {
 }
 
-const Vector2 &XM_CALLCONV Spinner::measureString() const {
-	return Vector2(longestStringLength, itemHeight);
+const Vector2 XM_CALLCONV Spinner::measureString() const {
+	return Vector2((float) longestStringLength, (float) itemHeight);
 }
 
 void Spinner::moveBy(const Vector2& moveVector) {
@@ -274,11 +302,11 @@ const Vector2& Spinner::getPosition() const {
 }
 
 const int Spinner::getWidth() const {
-	return width + upButton->getWidth();
+	return (int) width + upButton->getWidth();
 }
 
 const int Spinner::getHeight() const {
-	return itemHeight;
+	return (int) itemHeight;
 }
 
 bool Spinner::clicked() {

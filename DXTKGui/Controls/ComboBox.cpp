@@ -3,26 +3,22 @@
 
 ComboBox::ComboBox(GUIFactory* factory, MouseController* mouseController,
 	const Vector2& pos, const int len, size_t itemHeight, const int maxItemsShown)
-	: GUIControl(factory, mouseController) {
+	: SelectableContainer(factory, mouseController) {
 
 	position = pos;
 	width = len;
-
 	maxDisplayItems = maxItemsShown;
-
 }
 
 ComboBox::~ComboBox() {
 
 	if (actionListener)
 		delete actionListener;
-
 }
 
 bool ComboBox::initialize(const pugi::char_t* fontName,
 	ListBox* lstBx, const pugi::char_t* buttonName,
 	bool enumerateList, const int frameThickness) {
-
 
 	comboListButton.reset(
 		(ImageButton*) guiFactory->createImageButton(buttonName));
@@ -32,7 +28,7 @@ bool ComboBox::initialize(const pugi::char_t* fontName,
 	comboListButton->setActionListener(new ShowListBoxListener(this));
 
 	frame.reset(guiFactory->createRectangleFrame(
-		position, Vector2(width, comboListButton->getScaledHeight()),
+		position, Vector2((float) width, (float) comboListButton->getScaledHeight()),
 		frameThickness));
 
 	listBox.reset(lstBx);
@@ -40,15 +36,12 @@ bool ComboBox::initialize(const pugi::char_t* fontName,
 
 	selectedLabel.reset(guiFactory->createTextLabel(
 		Vector2(position.x + textMarginX, position.y + textMarginY), L"", fontName));
-	//selectedLabel->setActionListener(new SelectedOnClick(this));
 
 	selectedBackgroundSprite.reset(guiFactory->createRectangle(position,
-		Vector2(width, comboListButton->getScaledHeight()), Color(.5, .5, .5, 1)));
+		Vector2((float) width, (float) comboListButton->getScaledHeight()), Color(.5f, .5f, .5f, 1.0f)));
 
 	height = frame->getHeight();
-
 	texturePanel.reset(guiFactory->createPanel());
-
 	return true;
 }
 
@@ -56,7 +49,7 @@ void ComboBox::reloadGraphicsAsset() {
 
 	comboListButton->reloadGraphicsAsset();
 	frame.reset(guiFactory->createRectangleFrame(
-		position, Vector2(width, comboListButton->getScaledHeight()),
+		position, Vector2((float) width, (float) comboListButton->getScaledHeight()),
 		frameThickness, frame->getTint()));
 	listBox->reloadGraphicsAsset();
 	selectedLabel->reloadGraphicsAsset();
@@ -66,8 +59,40 @@ void ComboBox::reloadGraphicsAsset() {
 	refreshTexture = true;
 }
 
+void ComboBox::forceRefresh() {
+	refreshTexture = true;
+	selectedLabel->forceRefresh();
+	comboListButton->forceRefresh();
+	frame->forceRefresh();
+}
+
 void ComboBox::setScrollBar(ScrollBarDesc& scrollBarDesc) {
 	listBox->setScrollBar(scrollBarDesc);
+}
+
+
+bool ComboBox::updateSelect(double deltaTime) {
+
+	bool refresh = false;
+	if (isOpen) {
+		if (listBox->updateSelect(deltaTime))
+			refresh = true;
+	}
+
+	if (selectedLabel->updateSelect(deltaTime))
+		refreshTexture = true;
+	if (comboListButton->updateSelect(deltaTime))
+		refreshTexture = true;
+	if (frame->update())
+		refreshTexture = true;
+
+	if (refreshTexture) {
+		texturePanel->setTexture(texturize());
+		refreshTexture = false;
+		return true;
+	}
+
+	return refresh;
 }
 
 bool ComboBox::update(double deltaTime) {
@@ -77,6 +102,12 @@ bool ComboBox::update(double deltaTime) {
 		refreshTexture = true;
 	}
 
+	bool refresh = false;
+	if (isOpen) {
+		if (listBox->update(deltaTime))
+			refresh = true;
+	}
+
 	if (selectedLabel->update(deltaTime))
 		refreshTexture = true;
 	if (comboListButton->update(deltaTime))
@@ -84,17 +115,12 @@ bool ComboBox::update(double deltaTime) {
 	if (frame->update())
 		refreshTexture = true;
 
-	bool refresh = false;
-	if (isOpen) {
-		if (listBox->update(deltaTime))
-			refresh = true;
-	}
-
 	if (refreshTexture) {
 		texturePanel->setTexture(texturize());
 		refreshTexture = false;
 		return true;
 	}
+
 	return refresh;
 }
 
@@ -143,22 +169,35 @@ void ComboBox::moveBy(const Vector2& moveVector) {
 
 
 void ComboBox::show() {
-
 	isOpen = !isOpen;
-
 }
 
 void ComboBox::hide() {
 	isOpen = false;
 }
 
+void ComboBox::onClick() {
+	if (isOpen) {
+		if (actionListener != NULL)
+			(actionListener->*onClickFunction)(this, listBox->getSelectedIndex());
+		selectedLabel->setText(listBox->getSelected()->toString());
+		refreshTexture = true;
+	} else {
+		comboListButton->onClick();
+		refreshTexture = true;
+	}
+}
+
+void ComboBox::resetState() {
+}
+
 void ComboBox::resizeBox() {
 
 	comboListButton->setPosition(
-		Vector2(position.x + width - comboListButton->getWidth(), position.y));
-	frame->setDimensions(position, Vector2(width, comboListButton->getHeight()));
+		Vector2(FLOAT(position.x + width - comboListButton->getWidth()), position.y));
+	frame->setDimensions(position, Vector2((float) width, (float) comboListButton->getHeight()));
 	selectedBackgroundSprite->setDimensions(position,
-		Vector2(width, comboListButton->getHeight()));
+		Vector2((float) width, (float) comboListButton->getHeight()));
 }
 
 void ComboBox::alwaysShowScrollBar(bool alwaysShow) {
@@ -173,6 +212,18 @@ void ComboBox::setSelected(size_t newIndex) {
 	selectedLabel->setText(listBox->getSelected()->toString());
 }
 
+const size_t ComboBox::getSelectedIndex() const {
+	return listBox->getSelectedIndex();
+}
+
+void ComboBox::setHovered(int newIndex) {
+	listBox->setHovered(newIndex);
+}
+
+const int ComboBox::getHoveredIndex() const {
+	return listBox->getHoveredIndex();
+}
+
 ListItem* ComboBox::getSelected() {
 	return listBox->getSelected();
 }
@@ -184,7 +235,7 @@ ListItem* ComboBox::getItem(size_t index) {
 void ComboBox::setText(wstring text) {
 }
 
-const Vector2& XM_CALLCONV ComboBox::measureString() const {
+const Vector2 XM_CALLCONV ComboBox::measureString() const {
 	return Vector2::Zero;
 }
 
@@ -202,7 +253,7 @@ const int ComboBox::getHeight() const {
 
 void ComboBox::setLayerDepth(const float depth, bool frontToBack) {
 
-	float nudge = .00000001;
+	float nudge = .00000001f;
 	if (!frontToBack)
 		nudge *= -1;
 
@@ -211,7 +262,6 @@ void ComboBox::setLayerDepth(const float depth, bool frontToBack) {
 	selectedLabel->setLayerDepth(depth + nudge, frontToBack);
 	comboListButton->setLayerDepth(depth + nudge * 2, frontToBack);
 	frame->setLayerDepth(depth + nudge * 3, frontToBack);
-
 }
 
 bool ComboBox::clicked() {
@@ -257,12 +307,11 @@ void ComboBox::ShowListBoxListener::onHover(Button* button) {
 void ComboBox::ShowListBoxListener::resetState(Button * button) {
 }
 
-void ComboBox::ListBoxListener::onClick(ListBox* listbox, UINT selectedItemIndex) {
+void ComboBox::ListBoxListener::onClick(ListBox* listbox, size_t selectedItemIndex) {
 	comboBox->onClick();
 	comboBox->show();
 }
 
-void ComboBox::ListBoxListener::onHover(ListBox* listbox, short hoveredItemIndex) {
+void ComboBox::ListBoxListener::onHover(ListBox* listbox, int hoveredItemIndex) {
 	comboBox->onHover();
 }
-

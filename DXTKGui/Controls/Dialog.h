@@ -41,7 +41,7 @@ public:
 	Vector2 dialogTextMargin = Vector2(10, 10);
 
 	/** Not used in Dialog */
-	virtual const Vector2& XM_CALLCONV measureString() const override;
+	virtual const Vector2 XM_CALLCONV measureString() const override;
 
 	/* Trash? */
 	/* Add other GUIControls to dialog. Control position should be relative to Dialog.
@@ -115,8 +115,11 @@ public:
 
 	void initialize(const pugi::char_t* font = "Default Font");
 
-	void setSelectorManager(Joystick* joy, KeyboardController* keys);
+	/** Default Selector: ColorFlashSelector */
+	void setSelectorManager(Joystick* joy, KeyboardController* keys,
+		unique_ptr<Selector> selector = NULL);
 
+	virtual void forceRefresh() override;
 	virtual void reloadGraphicsAsset() override;
 
 	virtual void setScrollBar(ScrollBarDesc& scrollBarDesc);
@@ -124,7 +127,6 @@ public:
 
 	virtual void setDimensions(const Vector2& position, const Vector2& size,
 		const int frameThickness = 2);
-
 
 	void setTitle(wstring text, const Vector2& scale = Vector2(1.5, 1.5),
 		const pugi::char_t* font = "Default Font", Color color = Color(1, .5, 0, 1));
@@ -218,8 +220,6 @@ protected:
 	/** Used for dragging dialog around, if draggable set.
 		Also used for transition effects. */
 	void setDraggedPosition(Vector2& newPosition);
-	/** NOT USED. */
-	//void movePosition(const Vector2& moveVector);
 
 	unique_ptr<RectangleSprite> bgSprite;
 	unique_ptr<RectangleFrame> frame;
@@ -232,5 +232,5 @@ protected:
 	bool movable = false;
 	bool centerText = false;
 
-	unique_ptr<SelectorManager> selector = NULL;
+	unique_ptr<SelectorManager> selectorManager = NULL;
 };

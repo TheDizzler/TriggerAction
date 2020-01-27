@@ -45,10 +45,10 @@ void MouseController::saveMouseState() {
 
 	lastState = state;
 	state = mouse.GetState();
-	setPosition(Vector2(state.x, state.y));
+	hasMoved = state.x != position.x || state.y != position.y;
+	setPosition(Vector2((float) state.x, (float) state.y));
 	// This is the absolute position of the mouse relative
 	// to the upper-left corner of the window
-
 
 	isPressed = !lastState.leftButton && state.leftButton;
 	isClicked = lastState.leftButton && !state.leftButton;
@@ -108,24 +108,20 @@ bool MouseController::rightButtonLast() {
 bool MouseController::clicked() {
 
 	if (isClicked) {
-		wostringstream wss;
-		wss << "Clicked! " << endl;
-		OutputDebugString(wss.str().c_str());
 		isClicked = false;
 		return true;
 	}
+
 	return false;
 }
 
 bool MouseController::pressed() {
 
 	if (isPressed) {
-		wostringstream wss;
-		wss << "Pressed! " << endl;
-		OutputDebugString(wss.str().c_str());
 		isPressed = false;
 		return true;
 	}
+
 	return false;
 }
 
@@ -135,6 +131,7 @@ bool MouseController::rightClicked() {
 		isRightClicked = false;
 		return true;
 	}
+
 	return false;
 }
 
@@ -143,6 +140,7 @@ bool MouseController::rightPressed() {
 		isRightPressed = false;
 		return true;
 	}
+
 	return false;
 }
 
@@ -151,6 +149,7 @@ bool MouseController::middleClicked() {
 		isMiddleClicked = false;
 		return true;
 	}
+
 	return false;
 }
 
@@ -159,6 +158,7 @@ bool MouseController::middlePressed() {
 		isMiddlePressed = false;
 		return true;
 	}
+
 	return false;
 }
 
@@ -166,4 +166,3 @@ void MouseController::resetPressed() {
 	isPressed = true;
 	lastState.leftButton = true;
 }
-

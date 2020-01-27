@@ -1,9 +1,10 @@
 #include "TextLabel.h"
 #include "../GUIFactory.h"
+#include <sstream>
 
 TextLabel::TextLabel(GUIFactory* factory, MouseController* mouseController,
 	Vector2 pos, wstring text, const pugi::char_t* fontName, bool texture)
-	: GUIControl(factory, mouseController) {
+	: Selectable(factory, mouseController) {
 
 	position = pos;
 	font = guiFactory->getFont(fontName);
@@ -15,7 +16,7 @@ TextLabel::TextLabel(GUIFactory* factory, MouseController* mouseController,
 }
 
 TextLabel::TextLabel(GUIFactory* factory, MouseController* mouseController,
-	wstring text, unique_ptr<FontSet> fnt, bool texture) : GUIControl(factory, mouseController) {
+	wstring text, unique_ptr<FontSet> fnt, bool texture) : Selectable(factory, mouseController) {
 
 	position = Vector2::Zero;
 	font = move(fnt);
@@ -27,7 +28,7 @@ TextLabel::TextLabel(GUIFactory* factory, MouseController* mouseController,
 }
 
 TextLabel::TextLabel(GUIFactory* factory, MouseController* mouseController,
-	wstring text, const pugi::char_t* fontName, bool texture) : GUIControl(factory, mouseController) {
+	wstring text, const pugi::char_t* fontName, bool texture) : Selectable(factory, mouseController) {
 
 	position = Vector2::Zero;
 	font = guiFactory->getFont(fontName);
@@ -43,6 +44,10 @@ TextLabel::~TextLabel() {
 		delete actionListener;
 }
 
+void TextLabel::forceRefresh() {
+	refreshTexture = true;
+}
+
 void TextLabel::reloadGraphicsAsset() {
 	const char_t* fontName = font->fontName;
 	font.reset();
@@ -52,6 +57,9 @@ void TextLabel::reloadGraphicsAsset() {
 	refreshTexture = true;
 }
 
+bool TextLabel::updateSelect(double deltaTime) {
+	return update(deltaTime);
+}
 
 bool TextLabel::update(double deltaTime) {
 
@@ -116,7 +124,7 @@ void TextLabel::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 		rotation, origin, scale, layerDepth);
 }
 
-#include <sstream>
+
 void TextLabel::setText(string text) {
 
 	wostringstream wss;
@@ -140,13 +148,16 @@ void TextLabel::setText(wstring text) {
 	refreshTexture = true;
 }
 
-const Vector2& XM_CALLCONV TextLabel::measureString() const {
+
+const Vector2 XM_CALLCONV TextLabel::measureString() const {
 	Vector2 size = font->measureString(label.c_str());
 	Vector2 scaledSize = size*scale;
 	return scaledSize;
 }
 
-const Vector2& XM_CALLCONV TextLabel::measureString(wstring string) const {
+/* Convenience method when a FontSet is not available.
+Scaling is not considered. */
+const Vector2 XM_CALLCONV TextLabel::measureString(wstring string) const {
 	Vector2 size = font->measureString(string.c_str());
 	return size;
 }
@@ -257,11 +268,11 @@ const Vector2& TextLabel::getPosition() const {
 
 
 int const TextLabel::getWidth() const {
-	return ceil(hitArea.size.x);
+	return (int) ceil(hitArea.size.x);
 }
 
 int const TextLabel::getHeight() const {
-	return ceil(hitArea.size.y);
+	return (int) ceil(hitArea.size.y);
 }
 
 const pugi::char_t* TextLabel::getFont() const {

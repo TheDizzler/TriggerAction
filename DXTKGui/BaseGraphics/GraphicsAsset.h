@@ -11,21 +11,24 @@ struct Frame {
 	Frame(RECT srcRect, Vector2 orgn, float timeForFrame)
 		: sourceRect(srcRect), origin(orgn), frameTime(timeForFrame) {
 	}
+
 	/* Rectangle which contains sprite in spritesheet. */
 	RECT sourceRect;
 	Vector2 origin;
 	float frameTime;
 };
 
-struct Animation {
 
-	Animation(ComPtr<ID3D11ShaderResourceView> tex, vector<shared_ptr<Frame>> frames,
+class Animation {
+public:
+	Animation(ComPtr<ID3D11ShaderResourceView> tex, vector<unique_ptr<Frame>> frames,
 		string aniName)
-		: texture(tex), animationFrames(frames), animationName(aniName) {
+		: texture(tex), animationFrames(move(frames)), animationName(aniName) {
 	}
+
 	virtual ~Animation();
 
-	vector<shared_ptr<Frame>> animationFrames;
+	vector<unique_ptr<Frame>> animationFrames;
 	ComPtr<ID3D11ShaderResourceView> texture;
 	string animationName;
 };
@@ -72,8 +75,6 @@ protected:
 	Vector2 position = Vector2::Zero;
 
 	RECT sourceRect;
-
-
 };
 
 
@@ -83,14 +84,14 @@ public:
 	virtual ~AssetSet();
 
 	void addAsset(string assetName, unique_ptr<GraphicsAsset> asset);
-	void addAsset(string assetName, shared_ptr<Animation> asset);
+
+	void addAsset(string assetName, unique_ptr<Animation> asset);
 	GraphicsAsset* const getAsset(const pugi::char_t* assetName);
-	shared_ptr<Animation> getAnimation(const pugi::char_t* animationName);
+	/** Animations are stored as unique_ptrs so no need to clean up afterwards. */
+	Animation* getAnimation(const pugi::char_t* animationName);
 
 	const pugi::char_t* setName;
-
 private:
-
 	map<string, unique_ptr<GraphicsAsset> > assetMap;
-	map<string, shared_ptr<Animation>> animationMap;
+	map<string, unique_ptr<Animation>> animationMap;
 };

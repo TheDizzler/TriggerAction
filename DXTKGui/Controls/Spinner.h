@@ -3,7 +3,7 @@
 #include "Button.h"
 
 
-class Spinner : public GUIControl, public Texturizable {
+class Spinner : public Selectable, public Texturizable {
 	friend class SpinnerUpButtonListener;
 	friend class SpinnerDownButtonListener;
 public:
@@ -17,16 +17,20 @@ public:
 	void initialize(const pugi::char_t* fontName,
 		const pugi::char_t* upButtonName, const pugi::char_t* downButtonName);
 
+	virtual void forceRefresh() override;
 	virtual void reloadGraphicsAsset() override;
 
 	virtual unique_ptr<GraphicsAsset> texturize() override;
 	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
 
+	/* For use by SelectorManager */
+	virtual bool updateSelect(double deltaTime) override;
 	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 	void addItem(wstring item);
 	void addItems(const vector<wstring> items);
+	void clear();
 	/** Returns true if item found and removed from list. */
 	bool removeItem(wstring item);
 	const wstring getSelected() const;
@@ -34,14 +38,14 @@ public:
 	void increase();
 	void decrease();
 
-	virtual void setLayerDepth(float newDepth, bool frontToBack = true) override;
+	virtual void setLayerDepth(const float newDepth, bool frontToBack = true) override;
 	/** Not yet implemented. */
 	virtual void setScale(const Vector2& scale) override;
 	virtual void setFont(const pugi::char_t* font = "Default Font") override;
 	/** Not used in Spinner. */
 	virtual void setText(wstring text) override;
 	/** Returns the longest string in the list. */
-	virtual const Vector2 &XM_CALLCONV measureString() const override;
+	virtual const Vector2 XM_CALLCONV measureString() const override;
 
 	virtual void moveBy(const Vector2& moveVector) override;
 	virtual void setPosition(const Vector2& newPosition) override;
@@ -61,7 +65,6 @@ public:
 	/** Does nothing in Spinner. */
 	virtual void onHover() override {};
 	virtual void resetState() override {};
-
 private:
 	unique_ptr<TexturePanel> texturePanel;
 	bool refreshTexture = true;
@@ -79,7 +82,7 @@ private:
 	size_t itemHeight;
 	size_t longestStringLength;
 
-	size_t selected = 0;
+	size_t selectedIndex = 0;
 
 	bool autoSize;
 };

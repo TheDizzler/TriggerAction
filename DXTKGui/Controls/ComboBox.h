@@ -3,7 +3,7 @@
 #include "ListBox.h"
 
 
-class ComboBox : public GUIControl, public Texturizable {
+class ComboBox : public SelectableContainer, public Texturizable {
 public:
 	ComboBox(GUIFactory* factory, MouseController* mouseController,
 		const Vector2& position, const int width,
@@ -15,9 +15,13 @@ public:
 		bool enumerateList = false, const int frameThickness = 2);
 
 	virtual void reloadGraphicsAsset() override;
+	virtual void forceRefresh() override;
 
 	void setScrollBar(ScrollBarDesc& scrollBarDesc);
 	void alwaysShowScrollBar(bool alwaysShow);
+
+	/* For use by SelectorManager */
+	virtual bool updateSelect(double deltaTime) override;
 
 	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
@@ -28,15 +32,17 @@ public:
 	virtual void moveBy(const Vector2& moveVector) override;
 	virtual void setFont(const pugi::char_t * font = "Default Font") override;
 
-	void setSelected(size_t newIndex);
-	ListItem* getSelected();
-	ListItem* getItem(size_t index);
-
+	virtual void setSelected(size_t newIndex) override;
+	virtual const size_t getSelectedIndex() const override;
+	virtual void setHovered(int newIndex) override;
+	virtual const int getHoveredIndex() const override;
+	virtual ListItem* getSelected() override;
+	virtual ListItem* getItem(size_t index) override;
 
 	/* Not used in ComboBox. */
 	virtual void setText(wstring text) override;
 	/* Not used in ComboBox. */
-	virtual const Vector2& XM_CALLCONV measureString() const override;
+	virtual const Vector2 XM_CALLCONV measureString() const override;
 
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;
@@ -52,8 +58,9 @@ public:
 	void addItems(vector<ListItem*> items);
 	void clear();
 
-
+	/** Toggles between open and closed. */
 	void show();
+	/** Closes if open. */
 	void hide();
 	bool isOpen = false;
 
@@ -61,12 +68,12 @@ public:
 	public:
 		/** combobox: The ComboBox this ActionListener is attached to.
 		selectedItemIndex: index of item in ListBox.*/
-		virtual void onClick(ComboBox* combobox, UINT selectedItemIndex) = 0;
-		virtual void onHover(ComboBox* listbox, short hoveredItemIndex) = 0;
+		virtual void onClick(ComboBox* combobox, size_t selectedItemIndex) = 0;
+		virtual void onHover(ComboBox* listbox, int hoveredItemIndex) = 0;
 	};
 
-	typedef void (ActionListener::*OnClickFunction) (ComboBox*, UINT);
-	typedef void (ActionListener::*OnHoverFunction) (ComboBox*, short);
+	typedef void (ActionListener::*OnClickFunction) (ComboBox*, size_t);
+	typedef void (ActionListener::*OnHoverFunction) (ComboBox*, int);
 
 	void setActionListener(ActionListener* iOnC) {
 		if (actionListener != NULL)
@@ -77,12 +84,7 @@ public:
 	}
 
 	/** Called when ListBox item selected (unless overriden) */
-	virtual void onClick() override {
-		if (actionListener != NULL)
-			(actionListener->*onClickFunction)(this, listBox->getSelectedIndex());
-		selectedLabel->setText(listBox->getSelected()->toString());
-		//comboListButton->onClick();
-	}
+	virtual void onClick() override;
 
 	/** Not used in Combobox. */
 	virtual void onPress() override {
@@ -94,8 +96,17 @@ public:
 			(actionListener->*onHoverFunction)(this, listBox->getHoveredIndex());
 	}
 
-	virtual void resetState() override {
-		
+	virtual void resetState() override;
+
+	virtual bool isSelectLocked() override {
+		return selectLocked;
+	}
+
+	virtual void setSelectLock(bool lock) {
+		selectLocked = lock;
+		listBox->setSelectLock(lock);
+		comboListButton->onClick();
+		refreshTexture = true;
 	}
 
 private:
@@ -123,10 +134,12 @@ private:
 
 	void resizeBox();
 
+	/** Control is using internal selection mechanism */
+	bool selectLocked = false;
+
 	ActionListener* actionListener = NULL;
 	OnClickFunction onClickFunction;
 	OnHoverFunction onHoverFunction;
-	
 
 	class ListBoxListener : public ListBox::ActionListener {
 	public:
@@ -135,8 +148,8 @@ private:
 
 	private:
 		ComboBox* comboBox;
-		virtual void onClick(ListBox* listbox, UINT selectedItemIndex) override;
-		virtual void onHover(ListBox* listbox, short hoveredItemIndex) override;
+		virtual void onClick(ListBox* listbox, size_t selectedItemIndex) override;
+		virtual void onHover(ListBox* listbox, int hoveredItemIndex) override;
 	};
 
 	class ShowListBoxListener : public Button::ActionListener {
@@ -159,12 +172,14 @@ private:
 		virtual void onClick(TextLabel* button) override {
 			comboBox->show();
 		}
-		virtual void onPress(TextLabel* button) override{}
-		virtual void onHover(TextLabel* button) override{}
+
+		virtual void onPress(TextLabel* button) override {
+		}
+
+		virtual void onHover(TextLabel* button) override {
+		}
+
 	private:
 		ComboBox* comboBox;
 	};
-
 };
-
-

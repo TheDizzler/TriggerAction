@@ -9,13 +9,10 @@
 class GUIFactory;
 interface GUIControl : public IElement2D {
 public:
-
 	GUIControl(GUIFactory* factory,
 		MouseController* mouseController) {
 		guiFactory = factory;
 		mouse = mouseController;
-		
-
 		translationMatrix = [&]() -> Matrix { return Matrix::Identity; };
 		cameraZoom = [&]() -> float { return 1; };
 	}
@@ -31,7 +28,7 @@ public:
 	virtual void setFont(const pugi::char_t* font = "Default Font") = 0;
 	virtual void setText(wstring text) = 0;
 	virtual const wchar_t* getText();
-	virtual const Vector2& XM_CALLCONV measureString() const = 0;
+	virtual const Vector2 XM_CALLCONV measureString() const = 0;
 
 	virtual void setScale(const Vector2& scl);
 
@@ -65,17 +62,17 @@ public:
 	void setMatrixFunction(function<Matrix()> translationFunction) {
 		translationMatrix = translationFunction;
 	}
+
 	/** Usage example:
 		control->setCameraZoom([&]()->float { return camera->getZoom(); }); */
 	void setCameraZoom(function<float()> zoomFunction) {
 		cameraZoom = zoomFunction;
 	}
 
-
-
 	virtual void updateProjectedHitArea();
+	virtual HitArea& getProjectedHitArea();
 
-	virtual const Vector2& getScreenPosition(Matrix viewProjectionMatrix) const;
+	virtual const Vector2 getScreenPosition(Matrix viewProjectionMatrix) const;
 	virtual unique_ptr<HitArea> getScreenHitArea(Matrix viewProjectionMatrix) const;
 
 	virtual bool contains(const Vector2& point) override;
@@ -93,8 +90,6 @@ public:
 	/* Is Mouse Button down over control? */
 	virtual bool pressed() = 0;
 	virtual bool hovering() = 0;
-
-
 protected:
 	function<Matrix()> translationMatrix;
 	function<float()> cameraZoom;
@@ -104,8 +99,6 @@ protected:
 
 	Vector2 position = Vector2::Zero;
 	Vector2 scale = Vector2(1, 1);
-
-
 	Vector2 origin = Vector2(0, 0);
 	Color tint = DirectX::Colors::White;
 	float rotation = 0.0f;
@@ -117,16 +110,21 @@ protected:
 	/** While still hovering over control, button has been pressed and released. */
 	bool isClicked = false;
 
+	/* Flag for mouse hovering logic. */
+	bool mouseHover = false;
+	/** Flag to prevent continuous texture refresh. */
+	bool hasBeenSetUnpressed = false;
+	/** Flag to prevent continuous texture refresh. */
+	bool hasBeenSetHover = false;
 
 	GUIFactory* guiFactory;
 	MouseController* mouse;
-
 };
 
 
 
 /** A GUI control that can hold other GUI controls.
-		Not actually implemented.... */
+		Implemented, but not really used??? */
 interface GUIControlBox : public GUIControl {
 public:
 	GUIControlBox(GUIFactory* factory, MouseController* mouseController)
@@ -141,9 +139,41 @@ public:
 
 /** A GUIControl that can be used in a SelectionManager. */
 interface Selectable : public GUIControl {
+	friend class SelectorManager;
 public:
 	Selectable(GUIFactory* factory, MouseController* mouseController)
 		: GUIControl(factory, mouseController) {
 	}
+
+	virtual ~Selectable() {
+	}
+
 	virtual bool updateSelect(double deltaTime) = 0;
+	/** If this control has sub-selectable controls this is used to enable selection of those. */
+	virtual bool isSelectLocked() {
+		return false;
+	}
+
+	/** Override if this Control has sub-selectable controls. Otherwise, just call onClick(). */
+	virtual void setSelectLock(bool lock) {
+		onClick();
+	}
+};
+
+
+class ListItem;
+interface SelectableContainer : public Selectable {
+public:
+	SelectableContainer(GUIFactory* factory, MouseController* mouseController)
+		: Selectable(factory, mouseController) {
+	}
+	virtual ~SelectableContainer() {
+	}
+
+	virtual void setSelected(size_t newIndex) = 0;
+	virtual const size_t getSelectedIndex() const = 0;
+	virtual void setHovered(int newIndex) = 0;
+	virtual const int getHoveredIndex() const = 0;
+	virtual ListItem* getSelected() = 0;
+	virtual ListItem* getItem(size_t index) = 0;
 };

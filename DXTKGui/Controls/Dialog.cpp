@@ -66,16 +66,16 @@ const Vector2& Dialog::getPosition() const {
 }
 
 const int Dialog::getWidth() const {
-	return size.x;
+	return (int) size.x;
 }
 
 const int Dialog::getHeight() const {
-	return size.y;
+	return (int) size.y;
 }
 
 
 /** Not used in DialogBox */
-const Vector2& XM_CALLCONV Dialog::measureString() const {
+const Vector2 XM_CALLCONV Dialog::measureString() const {
 	return Vector2::Zero;
 }
 
@@ -113,7 +113,6 @@ void Dialog::setOpenTransition(TransitionEffects::TransitionEffect* effect) {
 
 void Dialog::setCloseTransition(TransitionEffects::TransitionEffect* effect) {
 
-
 	if (closeTransition != NULL)
 		delete closeTransition;
 	else {
@@ -123,7 +122,6 @@ void Dialog::setCloseTransition(TransitionEffects::TransitionEffect* effect) {
 	}
 
 	effect->initializeEffect(this);
-
 	closeTransition = effect;
 }
 
@@ -138,8 +136,6 @@ bool Dialog::pressed() {
 bool Dialog::hovering() {
 	return isHover;
 }
-
-
 
 void Dialog::OnClickListenerCancelButton::onClick(Button* button) {
 	dialog->hide();
@@ -164,8 +160,6 @@ PromptDialog::PromptDialog(GUIFactory* factory,
 	hwnd = h;
 	movable = canMove;
 	centerText = centerTxt;
-
-
 }
 
 PromptDialog::~PromptDialog() {
@@ -193,31 +187,39 @@ void PromptDialog::initialize(const pugi::char_t* font) {
 	dialogText.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font, false));
 	dialogText->setTint(Color(0, 0, 0, 1));
 
-	setLayerDepth(.99);
+	setLayerDepth(.99f);
 
 	texturePanel.reset(guiFactory->createPanel());
 }
 
-void PromptDialog::setSelectorManager(Joystick* joy, KeyboardController* keys) {
 
-	if (!selector) {
-		selector = make_unique<SelectorManager>();
-		selector->initialize(make_unique<ColorFlashSelector>(guiFactory));
+void PromptDialog::setSelectorManager(Joystick* joy, KeyboardController* keys, unique_ptr<Selector> selector) {
+
+	if (!selectorManager) {
+		selectorManager = make_unique<SelectorManager>();
+		if (selector)
+			selectorManager->initialize(move(selector));
+		else
+			selectorManager->initialize(make_unique<ColorFlashSelector>(guiFactory));
 
 		if (controls[ButtonOK]) {
-			selector->addControl((Selectable*) controls[ButtonOK].release());
+			selectorManager->addControl((Selectable*) controls[ButtonOK].release());
 		}
 		if (controls[ButtonNeutral]) {
-			selector->addControl((Selectable*) controls[ButtonNeutral].release());
+			selectorManager->addControl((Selectable*) controls[ButtonNeutral].release());
 		}
 		if (controls[ButtonCancel]) {
-			selector->addControl((Selectable*) controls[ButtonCancel].release());
+			selectorManager->addControl((Selectable*) controls[ButtonCancel].release());
 		}
 	}
 
-	selector->setControllers(joy, keys);
+	selectorManager->setControllers(joy, keys, mouse);
 }
 
+
+void PromptDialog::forceRefresh() {
+	refreshTexture = true;
+}
 
 void PromptDialog::reloadGraphicsAsset() {
 	panel.reset(guiFactory->createPanel(false));
@@ -232,8 +234,9 @@ void PromptDialog::reloadGraphicsAsset() {
 			continue;
 		control->reloadGraphicsAsset();
 	}
-	if (selector)
-		selector->reloadGraphicsAssets();
+
+	if (selectorManager)
+		selectorManager->reloadGraphicsAssets();
 
 	if (closeTransition != NULL)
 		closeTransition->initializeEffect(this);
@@ -244,8 +247,6 @@ void PromptDialog::reloadGraphicsAsset() {
 	refreshTexture = true;
 
 	calculateDialogTextPos();
-
-
 }
 
 void PromptDialog::setDimensions(const Vector2& pos, const Vector2& sz,
@@ -253,7 +254,6 @@ void PromptDialog::setDimensions(const Vector2& pos, const Vector2& sz,
 
 	frameThickness = frmThcknss;
 	size = sz;
-
 
 	GUIControl::setPosition(pos);
 
@@ -283,12 +283,9 @@ void PromptDialog::setDimensions(const Vector2& pos, const Vector2& sz,
 	}
 
 	testMinimumSize();
-
 	calculateDialogTextPos();
-
 	refreshTexture = true;
 }
-
 
 
 /* PromptDialog checks to see if it's open before performing any logic. */
@@ -336,11 +333,10 @@ bool PromptDialog::update(double deltaTime) {
 			continue;
 		if (control->update(deltaTime))
 			refreshTexture = true;
-
 	}
 
-	if (selector)
-		selector->update(deltaTime);
+	if (selectorManager)
+		selectorManager->update(deltaTime);
 
 	if (refreshTexture) {
 		texturePanel->setTexture(texturize());
@@ -363,8 +359,8 @@ void PromptDialog::draw(SpriteBatch* batch) {
 		//OutputDebugString(L"Closing\n");
 	} else {
 		texturePanel->draw(batch);
-		if (selector)
-			selector->draw(batch);
+		if (selectorManager)
+			selectorManager->draw(batch);
 	}
 }
 
@@ -395,12 +391,11 @@ wstring PromptDialog::reformatText(size_t* scrollBarBuffer) {
 	//		break the text down into multiple lines
 	wstring newText = L"";
 
-
 	// how long line length?
-	int maxLineLength = textFrameSize.x - *scrollBarBuffer - (dialogTextMargin.x * 2);
+	int maxLineLength = INT(textFrameSize.x - *scrollBarBuffer - (dialogTextMargin.x * 2));
 
-	int i = 0;
-	int textLength = wcslen(dialogText->getText());
+	size_t i = 0;
+	size_t textLength = wcslen(dialogText->getText());
 	bool scrollbarAdded = false;
 	bool done = false;
 	while (i < textLength) {
@@ -415,35 +410,40 @@ wstring PromptDialog::reformatText(size_t* scrollBarBuffer) {
 		}
 
 		// how long is currentLine?
-		int currentLength = dialogText->measureString(currentLine).x;
+		int currentLength = (int) dialogText->measureString(currentLine).x;
 
 		if (!done) {
 			// go through currentLine until a whitespace is found and add a newline char before it
 			wchar_t ch = currentLine[currentLine.length() - 1];
-			int back = 0;
+			size_t back = 0;
+
 			while (!isspace(ch)) {
 
 				++back;
 				--i;
 				// check to see if word is too long for line
-				int nextChar = currentLine.length() - back - 1;
+				int nextChar = INT(currentLine.length() - back - 1);
+
 				if (nextChar < 0) {
 					/* this means current word is too long for line
 					(i.e. stupidly narrow dialog box or ridiculously long word) */
 					// TODO: hyphenate word and put rest on next line
 					int excessLength = currentLength - maxLineLength;
-					int o = currentLine.length();
+					size_t o = currentLine.length();
 					while (excessLength > 0) {
 						wstring choppedWord = currentLine.substr(0, --o);
-						excessLength = dialogText->measureString(choppedWord).x - maxLineLength;
+						excessLength = (int) dialogText->measureString(choppedWord).x - maxLineLength;
 					}
+
 					// should have a nicely fiting word chunk now (no hypen)
 					i += o;
 					back -= o;
 					break;
 				}
+
 				ch = currentLine[nextChar];
 			}
+
 			currentLine.erase(currentLine.end() - back, currentLine.end());
 		}
 
@@ -453,9 +453,8 @@ wstring PromptDialog::reformatText(size_t* scrollBarBuffer) {
 		if (!scrollbarAdded
 			&& dialogText->measureString(newText).y + dialogTextMargin.y * 2
 		> textFrameSize.y) {
-
-			*scrollBarBuffer = panel->getScrollBarSize().x;
-			maxLineLength = textFrameSize.x - *scrollBarBuffer - (dialogTextMargin.x * 2);
+			*scrollBarBuffer = (size_t) panel->getScrollBarSize().x;
+			maxLineLength = INT(textFrameSize.x - *scrollBarBuffer - (dialogTextMargin.x * 2));
 			i = 0;
 			newText = L"";
 			scrollbarAdded = true;
@@ -469,7 +468,8 @@ wstring PromptDialog::reformatText(size_t* scrollBarBuffer) {
 void PromptDialog::testMinimumSize() {
 
 	Vector2 mindialogtextSize = dialogText->measureString(L"Min accept");
-	int maxLineLength = textFrameSize.x - (dialogTextMargin.x * 2);
+	int maxLineLength = INT(textFrameSize.x - (dialogTextMargin.x * 2));
+
 	Vector2 newSize = size;
 	bool changed = false;
 	if (maxLineLength < mindialogtextSize.x) {
@@ -545,7 +545,7 @@ void PromptDialog::calculateDialogTextPos() {
 	} else if (dialogtextsize.y /*+ dialogTextMargin.y * 2*/ > textFrameSize.y) {
 
 		// width is fine but text is getting long
-		scrollBarBuffer = panel->getScrollBarSize().x;
+		scrollBarBuffer = (size_t) panel->getScrollBarSize().x;
 		formattedText.setText(reformatText(&scrollBarBuffer));
 		dialogtextsize = formattedText.measureString();
 	}
@@ -562,6 +562,7 @@ void PromptDialog::calculateDialogTextPos() {
 		textpanelpos.y = textFramePosition.y + (textFrameSize.y - dialogtextsize.y) / 2;
 	else
 		textpanelpos.y = textFramePosition.y;
+
 	textpanelpos.y += 5; // offset so first line isn't covered by TitleBar
 	dialogText->setPosition(textpanelpos);
 	Color tint = dialogText->getTint();
@@ -574,20 +575,17 @@ void PromptDialog::calculateDialogTextPos() {
 }
 
 void PromptDialog::setText(wstring text) {
-
 	dialogText->setText(text);
 	calculateDialogTextPos();
 }
 
 void PromptDialog::setTitleAreaDimensions(const Vector2& newSize) {
-
 	titleFrameSize = newSize;
 	titleSprite->setDimensions(titleFramePosition, titleFrameSize);
 }
 
 void PromptDialog::setConfirmButton(unique_ptr<Button> okButton,
 	bool autoPosition, bool autoSize) {
-
 
 	if (autoSize)
 		okButton->setDimensions(okButtonPosition, standardButtonSize, 3);
@@ -603,10 +601,7 @@ void PromptDialog::setConfirmButton(unique_ptr<Button> okButton,
 		okButtonPosition = controls[ButtonOK]->getPosition();
 	}
 
-
 	controls[ButtonOK]->setPosition(okButtonPosition);
-
-
 }
 
 void PromptDialog::setConfirmButton(wstring text, const pugi::char_t* font) {
@@ -653,7 +648,6 @@ void PromptDialog::setCancelButton(unique_ptr<Button> cancelButton,
 	}
 
 	controls[ButtonCancel]->setPosition(cancelButtonPosition);
-
 }
 
 void PromptDialog::setCancelButton(wstring text, const pugi::char_t * font) {
@@ -686,7 +680,7 @@ bool PromptDialog::calculateButtonPosition(Vector2& buttonPos) {
 	int buttonheight = getMaxButtonHeight();
 	if (buttonheight + buttonMargin * 2 > buttonFrameSize.y) {
 		// this will shrink the dialog text
-		buttonFrameSize.y = buttonheight + buttonMargin * 2 + frameThickness;
+		buttonFrameSize.y = (float) buttonheight + buttonMargin * 2 + frameThickness;
 		setDimensions(position, size, frameThickness);
 
 		// recalculate all button y positions
@@ -695,17 +689,20 @@ bool PromptDialog::calculateButtonPosition(Vector2& buttonPos) {
 				+ (buttonFrameSize.y - controls[ButtonOK]->getHeight() - frameThickness) / 2;
 			controls[ButtonOK]->setPosition(okButtonPosition);
 		}
+
 		if (controls[ButtonCancel] != NULL) {
 			cancelButtonPosition.y = buttonFramePosition.y
 				+ (buttonFrameSize.y - controls[ButtonCancel]->getHeight() - frameThickness) / 2;
 			controls[ButtonCancel]->setPosition(cancelButtonPosition);
 
 		}
+
 		if (controls[ButtonNeutral] != NULL) {
 			neutralButtonPosition.y = buttonFramePosition.y
 				+ (buttonFrameSize.y - controls[ButtonNeutral]->getHeight() - frameThickness) / 2;
 			controls[ButtonNeutral]->setPosition(neutralButtonPosition);
 		}
+
 		return false;
 	} else
 		buttonPos.y = buttonFramePosition.y + (buttonFrameSize.y - frameThickness) / 2;
@@ -733,13 +730,11 @@ GUIControl* PromptDialog::getControl(size_t controlPosition) const {
 
 
 void PromptDialog::setFont(const pugi::char_t* fontName) {
-
 	dialogText->setFont(fontName);
 	calculateDialogTextPos();
 }
 
 void PromptDialog::setTextTint(const XMFLOAT4 color) {
-
 	dialogText->setTint(color);
 	calculateDialogTextPos();
 }
@@ -778,8 +773,8 @@ void PromptDialog::setPosition(const Vector2& newPosition) {
 	buttonFrameSprite->moveBy(moveVector);
 	panel->moveBy(moveVector);
 
-	if (selector)
-		selector->moveBy(moveVector);
+	if (selectorManager)
+		selectorManager->moveBy(moveVector);
 
 	for (auto const& control : controls) {
 		if (control == NULL)
@@ -793,17 +788,19 @@ void PromptDialog::setPosition(const Vector2& newPosition) {
 
 void PromptDialog::setLayerDepth(const float newDepth, bool frontToBack) {
 
-	layerDepth = newDepth - .00001;
+	layerDepth = newDepth - .00001f;
 	if (layerDepth < 0) {
 		if (!frontToBack)
-			layerDepth = .00001;
+			layerDepth = .00001f;
 		else
-			layerDepth = 0;
+			layerDepth = 0.0f;
 	}
-	float nudge = .00000001;
+
+	float nudge = .00000001f;
+
 	if (!frontToBack)
 		nudge *= -1;
-	//float ld = layerDepth + nudge;
+
 	bgSprite->setLayerDepth(layerDepth + nudge, frontToBack);
 	panel->setLayerDepth(layerDepth + nudge * 2, frontToBack);
 	titleSprite->setLayerDepth(layerDepth + nudge * 3, frontToBack);
@@ -816,6 +813,7 @@ void PromptDialog::setLayerDepth(const float newDepth, bool frontToBack) {
 		nudge += nudge;
 		control->setLayerDepth(layerDepth + nudge, frontToBack);
 	}
+
 	nudge += nudge;
 
 	frame->setLayerDepth(layerDepth + nudge, frontToBack);
@@ -825,8 +823,6 @@ void PromptDialog::setLayerDepth(const float newDepth, bool frontToBack) {
 const Color& PromptDialog::getPanelTint() const {
 	return panel->getTint();
 }
-
-
 
 
 const vector<IElement2D*> PromptDialog::getElements() const {
@@ -843,9 +839,9 @@ const vector<IElement2D*> PromptDialog::getElements() const {
 			continue;
 		elements.push_back(control.get());
 	}
+
 	return elements;
 }
-
 
 
 int PromptDialog::getMaxButtonHeight() {
@@ -873,7 +869,6 @@ void PromptDialog::setDraggedPosition(Vector2& newPosition) {
 	int screenWidth = rect.right - rect.left;
 	int screenHeight = rect.bottom - rect.top;
 
-
 	if (newPosition.x < 0) {
 		pressedPosition.x += newPosition.x;
 		newPosition.x = 0;
@@ -881,6 +876,7 @@ void PromptDialog::setDraggedPosition(Vector2& newPosition) {
 		pressedPosition.x += newPosition.x + size.x - screenWidth;
 		newPosition.x = screenWidth - size.x;
 	}
+
 	if (newPosition.y < 0) {
 		pressedPosition.y += newPosition.y;
 		newPosition.y = 0;
@@ -901,8 +897,8 @@ void PromptDialog::setDraggedPosition(Vector2& newPosition) {
 	buttonFrameSprite->moveBy(moveVector);
 	panel->moveBy(moveVector);
 
-	if (selector)
-		selector->moveBy(moveVector);
+	if (selectorManager)
+		selectorManager->moveBy(moveVector);
 
 	for (auto const& control : controls) {
 		if (control == NULL)
@@ -921,5 +917,3 @@ void PromptDialog::setScrollBar(ScrollBarDesc& scrollBarDesc) {
 void PromptDialog::alwaysShowScrollBar(bool alwaysShow) {
 	panel->alwaysShowScrollBar(alwaysShow);
 }
-
-

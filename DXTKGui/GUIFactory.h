@@ -24,7 +24,8 @@ public:
 	MouseController* getMouseController();
 
 	/** DeviceContext and SpriteBatch references are required
-		to create textures from a GUIControl (will probably refactor this). */
+		to create textures from a GUIControl.
+		If an optional gui asset file is used it MUST have a node called 'gui'. */
 	bool initialize(HWND hwnd, ComPtr<ID3D11Device> device,
 		ComPtr<ID3D11DeviceContext> devCon, ComPtr<IDXGISwapChain> swapChain,
 		SpriteBatch* batch, MouseController* mouse,
@@ -37,7 +38,7 @@ public:
 	unique_ptr<Sprite> getSpriteFromAsset(const char_t* assetName);
 	Animation* getAnimation(const char_t* animationName);
 	GraphicsAsset* const getAsset(const char_t* assetName);
-	shared_ptr<AssetSet> const getAssetSet(const char_t* setName);
+	AssetSet* const getAssetSet(const char_t* setName);
 
 	Line* createLine(const Vector2& position, const Vector2& size, Color lineColor = Color(0, 0, 0, 1));
 	Line* createLineBetween(const Vector2 pointA, const Vector2 pointB, Color lineColor = Color(0, 0, 0, 1));
@@ -73,16 +74,12 @@ public:
 		wstring text = L"", const char_t* fontName = "Default Font",
 		const int frameThickness = 2);
 
-
 	Button* createImageButton(const char_t* upImage, const char_t* downImage = NULL,
 		const char_t* fontName = "Default Font");
 	Button* createImageButton(const Vector2& position,
 		const char_t* upImage, const char_t* downImage,
 		const char_t* fontName = "Default Font");
 	Button* createImageButton(unique_ptr<Sprite> upSprite, const char_t* fontName = "Default Font");
-
-	AnimatedButton* createAnimatedButton(const char_t* animatedButtonName,
-		Vector2 position = Vector2::Zero);
 
 	/** Created a checkbox using default images. */
 	CheckBox* createCheckBox(const Vector2& position, wstring text = L"",
@@ -94,7 +91,6 @@ public:
 	Spinner* createSpinner(const Vector2& position, const size_t width,
 		const size_t itemHeight = 32, bool autoSize = true, const char_t* upButtonAsset = "Spinner Up Button",
 		const char_t* downButtonAsset = "Spinner Down Button", const char_t* fontName = "Default Font");
-
 
 	ListBox* createListBox(const Vector2& position, const int width,
 		const int itemHeight = 32, const int maxItemsShown = 7,
@@ -114,7 +110,8 @@ public:
 	DynamicDialog* createDynamicDialog(const char_t* imageSet,
 		const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
 		const char_t* fontName = "Default Font");
-	DynamicDialog* createDynamicDialog(shared_ptr<AssetSet> dialogImageSet,
+
+	DynamicDialog* createDynamicDialog(AssetSet* dialogImageSet,
 		const Vector2& position = Vector2::Zero, const Vector2& size = Vector2::Zero,
 		const char_t* fontName = "Default Font");
 
@@ -160,6 +157,5 @@ private:
 	map<string, string> fontMap;
 	map<string, unique_ptr<GraphicsAsset> > assetMap;
 	map<string, unique_ptr<Animation> > animationMap;
-	map<string, shared_ptr<AssetSet> > setMap;
-
+	map<string, unique_ptr<AssetSet> > setMap;
 };

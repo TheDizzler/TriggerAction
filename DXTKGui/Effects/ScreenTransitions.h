@@ -108,16 +108,17 @@ namespace ScreenTransitions {
 			Vector2 origin;
 			ComPtr<ID3D11ShaderResourceView> texture;
 
-			float timer = 0;
+			double timer = 0;
 		};
+
 		vector<vector<Square*>> squares;
-		vector<int> numInRowActive;
+		vector<size_t> numInRowActive;
 
 		Vector2 startScale;
 		Color tint = Color(1, 1, 1, 1);
 		float rotation = 0.0f;
 
-		int maxJ = 1;
+		size_t maxJ = 1;
 		double delay;
 	};
 
@@ -139,6 +140,7 @@ namespace ScreenTransitions {
 			Vector2 start;
 			Vector2 end;
 		};
+
 		double timer = 0;
 		double delay;
 		vector<Line*> lines;
@@ -150,6 +152,4 @@ namespace ScreenTransitions {
 		Color tint = Color(1, 1, 1, 1);
 		float rotation = 0.0f;
 	};
-
-
 };

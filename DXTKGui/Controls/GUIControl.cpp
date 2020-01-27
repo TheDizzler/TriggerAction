@@ -69,14 +69,17 @@ void GUIControl::updateProjectedHitArea() {
 	projectedHitArea.size = hitArea.size * cameraZoom();
 }
 
-const Vector2& GUIControl::getScreenPosition(Matrix viewProjectionMatrix) const {
+HitArea& GUIControl::getProjectedHitArea() {
 
+	return projectedHitArea;
+}
+
+const Vector2 GUIControl::getScreenPosition(Matrix viewProjectionMatrix) const {
 	Vector2 screenCords = XMVector2Transform(hitArea.position, viewProjectionMatrix);
 	return screenCords;
 }
 
 unique_ptr<HitArea> GUIControl::getScreenHitArea(Matrix viewProjectionMatrix) const {
-
 	Vector2 screenCords = getScreenPosition(viewProjectionMatrix);
 	return make_unique<HitArea>(screenCords, hitArea.size*scale);
 }
@@ -113,4 +116,3 @@ void GUIControl::setHitArea(HitArea* newHitArea) {
 	hitArea.position = newHitArea->position;
 	hitArea.size = newHitArea->size;
 }
-

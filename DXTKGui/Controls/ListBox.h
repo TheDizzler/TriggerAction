@@ -7,8 +7,8 @@ class ListItem {
 public:
 	virtual ~ListItem();
 
-	void initialize(const int width, const int height,
-		TextLabel* label, ComPtr<ID3D11ShaderResourceView> pixelTexture,
+	void initialize(const int width, const int height, TextLabel* label,
+		ComPtr<ID3D11ShaderResourceView> pixelTexture,
 		size_t listPosition = 0, float layerDepth = .925, bool enumerateList = false);
 
 	virtual void reloadGraphicsAsset(GUIFactory* guiFactory);
@@ -18,6 +18,7 @@ public:
 	Vector2 measureString() const;
 	const wchar_t* toString();
 
+	bool updateSelect(double deltaTime);
 	bool update(double deltaTime, MouseController* mouse);
 	void updatePosition(const Vector2& position);
 	virtual void draw(SpriteBatch* batch);
@@ -28,7 +29,6 @@ public:
 	bool isSelected = false;
 	bool isHovered = false;
 protected:
-
 	Color selectedFontColor = Color(0, 0, 0, 1);
 	Color normalFontColor = Color(1, 1, 1, 1);
 
@@ -53,28 +53,24 @@ protected:
 	size_t textMarginX = 10;
 	size_t textMarginY = 5;
 
-	
 	bool buttonDownLast = false;
 
 	ComPtr<ID3D11ShaderResourceView> pixel;
 
 	bool isEnumerated;
 	size_t listPosition = 0;
-
-	GUIFactory* guiFactory;
 };
 
 class EmptyListItem : public ListItem {
 public:
 	virtual void setText() override {
-
 		textLabel->setText("Empty...");
 	}
 };
 
 
 /** A simple control to display various (text) items. */
-class ListBox : public GUIControl, public Texturizable {
+class ListBox : public SelectableContainer, public Texturizable {
 public:
 	ListBox(GUIFactory* factory, MouseController* mouseController,
 		const Vector2& position, const int width,
@@ -85,14 +81,16 @@ public:
 		GraphicsAsset* pixelAsset, ScrollBar* scrollBar,
 		bool enumerateList = false, const int frameThickness = 2);
 
+	virtual void forceRefresh() override;
 	virtual void reloadGraphicsAsset() override;
 
+	/* For use by SelectorManager */
+	virtual bool updateSelect(double deltaTime) override;
 	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
 	virtual unique_ptr<GraphicsAsset> texturize() override;
 	virtual void textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device = NULL) override;
-
 
 	void setScrollBar(ScrollBarDesc& scrollBarDesc);
 	void alwaysShowScrollBar(bool alwaysShow);
@@ -101,24 +99,22 @@ public:
 	void addItems(vector<ListItem*> items);
 	void clear();
 
-
-	void setSelected(size_t newIndex);
-	const UINT getSelectedIndex() const;
-	const UINT getHoveredIndex() const;
-	ListItem* getSelected();
-	ListItem* getItem(size_t index);
-
+	virtual void setSelected(size_t newIndex) override;
+	virtual const size_t getSelectedIndex() const override;
+	virtual void setHovered(int newIndex) override;
+	virtual const int getHoveredIndex() const override;
+	virtual ListItem* getSelected() override;
+	virtual ListItem* getItem(size_t index) override;
 
 	/* Not used in ListBox. */
 	virtual void setText(wstring text);
 	/* Not used in ListBox. */
-	virtual const Vector2& XM_CALLCONV measureString() const;
+	virtual const Vector2 XM_CALLCONV measureString() const;
 
 	bool multiSelect = false;
 
 	/* Max items to display before showing scroll bar. */
 	size_t maxDisplayItems = 7;
-
 
 	virtual void moveBy(const Vector2& moveVector) override;
 	virtual void setPosition(const Vector2& position) override;
@@ -138,10 +134,9 @@ public:
 	public:
 		/** listbox: The ListBox this ActionListener is attached to.
 		selectedItemIndex: index of item in ListBox.*/
-		virtual void onClick(ListBox* listbox, UINT selectedItemIndex) = 0;
-		virtual void onHover(ListBox* listbox, short hoveredItemIndex) = 0;
+		virtual void onClick(ListBox* listbox, size_t selectedItemIndex) = 0;
+		virtual void onHover(ListBox* listbox, int hoveredItemIndex) = 0;
 	};
-
 
 	void setActionListener(ActionListener* iOnC) {
 		if (actionListener != NULL)
@@ -151,10 +146,8 @@ public:
 		actionListener = iOnC;
 	}
 
-	void onClick() {
-		if (actionListener != NULL)
-			(actionListener->*onClickFunction)(this, selectedIndex);
-	}
+	virtual void onClick() override;
+
 	/** Not used in ListBox. */
 	virtual void onPress() override {
 	};
@@ -163,13 +156,23 @@ public:
 		if (actionListener != NULL)
 			(actionListener->*onHoverFunction)(this, hoveredIndex);
 	};
-	
+
 	virtual void resetState() override {
+		selectLocked = false;
 	};
 
+	virtual bool isSelectLocked() override {
+		return selectLocked;
+	}
+
+	virtual void setSelectLock(bool lock) {
+		hoveredIndex = selectedIndex;
+		selectLocked = lock;
+	}
+
 private:
-	typedef void (ActionListener::*OnClickFunction) (ListBox*, UINT);
-	typedef void (ActionListener::*OnHoverFunction) (ListBox*, short);
+	typedef void (ActionListener::*OnClickFunction) (ListBox*, size_t);
+	typedef void (ActionListener::*OnHoverFunction) (ListBox*, int);
 	OnClickFunction onClickFunction;
 	OnHoverFunction onHoverFunction;
 
@@ -177,28 +180,31 @@ private:
 	/* width of listbox */
 	int width;
 	/* Always smaller or equal to maxDisplayItems. */
-	UINT itemsToDisplay = 0;
+	size_t itemsToDisplay = 0;
 
-	boolean isEnumerated = false;
+	bool isEnumerated = false;
 	bool alwaysDisplayScrollBar = false;
 
 	const pugi::char_t* fontName;
 	vector<ListItem*> listItems;
-	UINT selectedIndex = 0;
-	short hoveredIndex = -1;
 
-	UINT itemHeight = 32;
+	size_t selectedIndex = 0;
+	int hoveredIndex = -1;
+	size_t itemHeight = 32;
+
 	Vector2 firstItemPos;
 	int longestLabelLength = 0;
 
 	unique_ptr<ScrollBar> scrollBar;
 	unique_ptr<RectangleFrame> frame;
-	int firstItemToDisplay = 0;
+
+	size_t firstItemToDisplay = 0;
 
 	/** ID3D11ShaderResourceView is a ComPtr! */
 	ComPtr<ID3D11ShaderResourceView> pixel;
 	unique_ptr<TexturePanel> texturePanel;
-	bool refreshPanel = false;
+
+	bool refreshTexture = false;
 
 	int frameThickness = 2;
 
@@ -207,5 +213,6 @@ private:
 	void setWidth(int newWidth);
 	void resizeBox();
 
-
+	/** Control is using internal selection mechanism */
+	bool selectLocked = false;
 };

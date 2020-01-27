@@ -13,6 +13,7 @@ public:
 		const pugi::char_t* font);
 	virtual ~Button();
 
+	virtual void forceRefresh() override;
 	virtual void reloadGraphicsAsset() override;
 
 	/* position is topleft of button. */
@@ -32,7 +33,8 @@ public:
 
 	virtual void setText(wstring text) override;
 	virtual const wchar_t* getText() override;
-	virtual const Vector2& XM_CALLCONV measureString() const override;
+
+	virtual const Vector2 XM_CALLCONV measureString() const override;
 
 	virtual void setFont(const pugi::char_t* font = "Default Font") override;
 
@@ -44,7 +46,7 @@ public:
 	virtual void setRotation(const float rotation) override;
 	virtual const Vector2& getPosition() const override;
 
-	virtual void setLayerDepth(float newDepth, bool frontToBack = true) override;
+	virtual void setLayerDepth(const float newDepth, bool frontToBack = true) override;
 	virtual void setScale(const Vector2& scale) override;
 	/** NOTE: This DOES NOT return scaled width!
 	Use getScaledWidth(). */
@@ -77,7 +79,6 @@ public:
 		virtual void resetState(Button* button) = 0;
 	};
 
-
 	void setActionListener(ActionListener* iOnC);
 
 	virtual void onClick() override;
@@ -108,8 +109,9 @@ protected:
 
 	/** Colors for imageless button. */
 	Color normalColor = Color(1, 1, 1, 1);
-	Color hoverColor = Color(1, .75, 0, 1);
-	Color selectedColor = Color(1, 0, .4, 1);
+
+	Color hoverColor = Color(1, .75f, 0, 1);
+	Color selectedColor = Color(1, 0, .4f, 1);
 
 	/* Offsets textlabel position.*/
 	Vector2 unpressedTextOffset = Vector2(-2, 0);
@@ -121,13 +123,9 @@ protected:
 	unique_ptr<RectangleFrame> frame;
 	int frameThickness = 2;
 
+	const int textMargin = 10;
+
 	bool isLetterJammer = false;
-	bool mouseHover = false;
-	//bool lastWasHover = false;
-	/** Flag to prevent continuous texture refresh. */
-	bool hasBeenSetUnpressed = false;
-	/** Flag to prevent continuous texture refresh. */
-	bool hasBeenSetHover = false;
 	bool hasBeenReset = true;
 };
 
@@ -160,8 +158,7 @@ public:
 	virtual void setScale(const Vector2& scale) override;
 	/** Remember: Rotation is around the origin! */
 	virtual void setRotation(const float rotation) override;
-	virtual void setLayerDepth(float newDepth, bool frontToBack = true) override;
-
+	virtual void setLayerDepth(const float newDepth, bool frontToBack = true) override;
 protected:
 	virtual void setToUnpressedState() override;
 	virtual void setToHoverState() override;
@@ -172,79 +169,4 @@ private:
 
 	ID3D11ShaderResourceView* texture;
 	RECT sourceRect;
-};
-
-
-class AnimatedButton : public Selectable {
-public:
-	AnimatedButton(GUIFactory* factory, MouseController* mouseController,
-		Animation* animation, Vector2 position);
-	virtual ~AnimatedButton();
-
-	virtual void reloadGraphicsAsset() override;
-
-	/* For use in SelectionManager only. */
-	virtual bool updateSelect(double deltaTime) override;
-	virtual bool update(double deltaTime) override;
-	virtual void draw(SpriteBatch* batch) override;
-
-	/* Not used in Animated Button. */
-	virtual void setFont(const pugi::char_t * font = "Default Font") override;
-	/* Not used in Animated Button. */
-	virtual void setText(wstring text) override;
-
-	virtual const Vector2& XM_CALLCONV measureString() const override;
-	virtual const Vector2& getPosition() const override;
-	virtual const int getWidth() const override;
-	virtual const int getHeight() const override;
-
-	virtual void setLayerDepth(float newDepth, bool frontToBack = true) override;
-
-	virtual bool clicked() override;
-	virtual bool pressed() override;
-	virtual bool hovering() override;
-
-	virtual void setToUnpressedState();
-	virtual void setToHoverState();
-	virtual void setToSelectedState();
-
-	class ActionListener {
-	public:
-		virtual void onClick(AnimatedButton* button) = 0;
-		virtual void onPress(AnimatedButton* button) = 0;
-		virtual void onHover(AnimatedButton* button) = 0;
-		virtual void afterHover(AnimatedButton* button) {
-		};
-	};
-
-
-	void setActionListener(ActionListener* iOnC);
-
-	virtual void onClick() override;
-	virtual void onPress() override;
-	virtual void onHover() override;
-	virtual void resetState() override;
-
-	double timeHovering = 0;
-	double timePerFrame = .167;
-	bool isOpen = false;
-	int currentFrameIndex = -1;
-
-	Animation* animation;
-	void adjustPosition(int lastFrame);
-private:
-	typedef void (ActionListener::*OnClickFunction) (AnimatedButton*);
-	ActionListener* actionListener = NULL;
-	OnClickFunction onClickFunction;
-	OnClickFunction onPressFunction;
-	OnClickFunction onHoverFunction;
-
-
-
-	/** The origin point for adjusting position of animated frames. */
-	/** Because frames of animation aren't always the same size... */
-	Vector2 center;
-
-	bool lastWasHover = false;
-
 };

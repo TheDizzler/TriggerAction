@@ -15,9 +15,9 @@ public:
 		MouseController* mouseController);
 	virtual ~DynamicDialog();
 
-	void initialize(shared_ptr<AssetSet> assetSet,
-		const pugi::char_t* font = "Default Font");
+	void initialize(AssetSet* assetSet, const pugi::char_t* font = "Default Font");
 
+	virtual void forceRefresh() override;
 	virtual void reloadGraphicsAsset() override;
 
 	virtual bool update(double deltaTime) override;
@@ -31,11 +31,8 @@ public:
 
 	virtual void setPosition(const Vector2& newPosition) override;
 	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
-
-
 protected:
-
-	shared_ptr<AssetSet> assetSet;
+	AssetSet* assetSet;
 	
 	GraphicsAsset* topLeftCorner;
 	GraphicsAsset* topCenter;
@@ -48,7 +45,4 @@ protected:
 	GraphicsAsset* bottomLeftCorner;
 	GraphicsAsset* bottomCenter;
 	GraphicsAsset* bottomRightCorner;
-
-
-
 };

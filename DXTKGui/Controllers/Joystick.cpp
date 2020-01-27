@@ -203,7 +203,8 @@ Vector2 RawInputJoystick::getDirection() {
 		x = lAxisX;
 	if (lAxisY < -DEAD_ZONE || lAxisY > DEAD_ZONE)
 		y = lAxisY;
-	auto dir = Vector2(x, y);
+
+	auto dir = Vector2((float) x, (float) y);
 	dir.Normalize();
 	return dir;
 }
@@ -232,6 +233,7 @@ bool RawInputJoystick::yButtonPushed() {
 		bButtonStates[yButton] = true;
 		lastButtonStates[yButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -243,6 +245,7 @@ bool RawInputJoystick::xButtonPushed() {
 		bButtonStates[xButton] = true;
 		lastButtonStates[xButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -254,6 +257,7 @@ bool RawInputJoystick::aButtonPushed() {
 		bButtonStates[aButton] = true;
 		lastButtonStates[aButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -265,6 +269,7 @@ bool RawInputJoystick::bButtonPushed() {
 		bButtonStates[bButton] = true;
 		lastButtonStates[bButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -276,6 +281,7 @@ bool RawInputJoystick::lButtonPushed() {
 		bButtonStates[leftShoulderButton] = true;
 		lastButtonStates[leftShoulderButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -287,6 +293,7 @@ bool RawInputJoystick::rButtonPushed() {
 		bButtonStates[rightShoulderButton] = true;
 		lastButtonStates[rightShoulderButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -298,6 +305,7 @@ bool RawInputJoystick::startButtonPushed() {
 		bButtonStates[startButton] = true;
 		lastButtonStates[startButton] = true;
 	}
+
 	return pushed;
 }
 
@@ -370,9 +378,7 @@ void GamePadJoystick::update() {
 
 	lastState = state;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
-	/*DWORD dwResult = */XInputGetState(xInputNum, &state);
-
-	//if (dwResult == ERROR_SUCCESS) {
+	XInputGetState(xInputNum, &state);
 }
 
 /** DO NOTHING */
@@ -386,12 +392,11 @@ Vector2 GamePadJoystick::getDirection() {
 	float x = 0, y = 0;
 	if (lAxisX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
 		|| lAxisX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-		x = lAxisX / 32768.0;
+		x = lAxisX / 32768.0f;
 	if (lAxisY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE
 		|| lAxisY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-		y = lAxisY / 32768.0;
+		y = lAxisY / 32768.0f;
 	auto dir = Vector2(x, -y);
-	//dir.Normalize();
 	return dir;
 }
 
@@ -469,8 +474,6 @@ bool GamePadJoystick::lButtonPushed() {
 }
 
 bool GamePadJoystick::rButtonPushed() {
-
-	//float amount = state.Gamepad.bRightTrigger / 255;
 	return (state.Gamepad.wButtons & rightShoulderButton) != 0
 		&& (lastState.Gamepad.wButtons & rightShoulderButton) == 0;
 }
@@ -516,4 +519,101 @@ bool GamePadJoystick::startButtonDown() {
 
 bool GamePadJoystick::selectButtonDown() {
 	return (state.Gamepad.wButtons & selectButton) != 0;
+}
+
+DummyStick::DummyStick() : Joystick(ControllerSocketNumber(DUMMY_SOCKET)){
+}
+
+DummyStick::~DummyStick() {
+}
+
+SHORT DummyStick::getXInputSlot() {
+	return SHORT();
+}
+
+void DummyStick::parseRawInput(PRAWINPUT pRawInput) {
+}
+
+Vector2 DummyStick::getDirection() {
+	return Vector2();
+}
+
+bool DummyStick::isLeftPressed() {
+	return false;
+}
+
+bool DummyStick::isRightPressed() {
+	return false;
+}
+
+bool DummyStick::isUpPressed() {
+	return false;
+}
+
+bool DummyStick::isDownPressed() {
+	return false;
+}
+
+bool DummyStick::yButtonPushed() {
+	return false;
+}
+
+bool DummyStick::xButtonPushed() {
+	return false;
+}
+
+bool DummyStick::aButtonPushed() {
+	return false;
+}
+
+bool DummyStick::bButtonPushed() {
+	return false;
+}
+
+bool DummyStick::lButtonPushed() {
+	return false;
+}
+
+bool DummyStick::rButtonPushed() {
+	return false;
+}
+
+bool DummyStick::startButtonPushed() {
+	return false;
+}
+
+bool DummyStick::selectButtonPushed() {
+	return false;
+}
+
+bool DummyStick::yButtonDown() {
+	return false;
+}
+
+bool DummyStick::xButtonDown() {
+	return false;
+}
+
+bool DummyStick::aButtonDown() {
+	return false;
+}
+
+bool DummyStick::bButtonDown() {
+	return false;
+}
+
+bool DummyStick::lButtonDown() {
+	return false;
+}
+
+bool DummyStick::rButtonDown() {
+	return false;
+}
+
+bool DummyStick::startButtonDown() {
+	return false;
+}
+
+bool DummyStick::selectButtonDown() {
+	return false;
 }

@@ -9,7 +9,6 @@ public:
 	Scrubber(GraphicsAsset* const graphicsAsset, bool assetIsPixel = true);
 	virtual ~Scrubber();
 
-
 	void setDimensions(const Sprite* scrollBarTrack,
 		double percentShowing, double maxPercent);
 
@@ -18,14 +17,13 @@ public:
 	virtual void setPosition(const Vector2& position) override;
 	virtual void moveBy(const Vector2& moveVector) override;
 
-	void setScrollPositionByCoord(int newCoordinatePosition);
+	void setScrollPositionByCoord(float newCoordinatePosition);
 	void setScrollPositionByPercent(double newPositionPercentage);
 
 	void scroll(double itemIncrement, double scrubberIncrement);
 
 	bool hovering();
 	bool pressed();
-
 
 	Color normalColor = Color(1, 1, 1);
 	Color hoverColor = Color(.5, .75, 1);
@@ -82,26 +80,27 @@ public:
 
 	virtual void reloadGraphicsAsset() override;
 
-	void setScrollBar(int totalItems, int itemHeight, int maxDisplayItems);
+	void setScrollBar(size_t totalItems, size_t itemHeight, size_t maxDisplayItems);
 
 	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
+	double getPercentScroll();
+
 	void setScrollPositionByPercent(double newPositionPercentage);
 	virtual void moveBy(const Vector2& moveVector) override;
 	virtual void setPosition(const Vector2& newPosition) override;
-	void resetPositionTo(const Vector2& newPosition);
+	//void resetPositionTo(const Vector2& newPosition);
 
-	void setBarHeight(int barHeight);
+	void setBarHeight(size_t barHeight);
 	/** Call this from parent control on mouse scroll. */
 	void scrollByIncrement(int scrollIncrement);
+	void scrollByOne(bool increase);
 
 	virtual const Vector2& getPosition() const override;
-	const Vector2& getSize() const;
+	const Vector2 getSize() const;
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
-
-	double percentScroll = 0;
 
 	virtual void setLayerDepth(const float depth, bool frontToBack = true) override;
 	virtual void setScale(const Vector2& newScale) override;
@@ -110,7 +109,7 @@ public:
 	/* Unused in ScrollBar. */
 	virtual void setText(wstring text) override;
 	/* Unused in ScrollBar. */
-	virtual const Vector2& XM_CALLCONV measureString() const override;
+	virtual const Vector2 XM_CALLCONV measureString() const override;
 
 	virtual bool clicked() override;
 	virtual bool pressed() override;
@@ -128,7 +127,6 @@ public:
 	/** Not used in Scrollbar. */
 	virtual void resetState() override {
 	};
-
 private:
 
 	unique_ptr<Sprite> scrollBarTrack;
@@ -136,15 +134,14 @@ private:
 	unique_ptr<ImageButton> scrollBarUpButton;
 	unique_ptr<ImageButton> scrollBarDownButton;
 
-	int barHeight;
+	size_t barHeight;
 
 	/* What percent of scroll is equivalent to one item. */
 	double percentForOneItem;
 	/* Percentage of scubber movement is equivalent to item. */
 	double scrubberPercentForOneItem;
-
+	double percentScroll = 0;
 	double firstClickTimer = 0; // time since button clicked
 	double autoScrollStartDelay = .25; // time in seconds before scrollbar starts scrolling
 	double autoScrollDelay = autoScrollStartDelay * .75; // time between increments while autoscrolling
-
 };

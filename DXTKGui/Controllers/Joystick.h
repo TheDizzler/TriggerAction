@@ -17,7 +17,7 @@ enum PlayerSlotNumber {
 /* Virtual Sockets for controllers. */
 enum ControllerSocketNumber {
 	CONTROLLER_SOCKET_ERROR = -1, SOCKET_1, SOCKET_2, SOCKET_3,
-	SOCKET_4, SOCKET_5, SOCKET_6, SOCKET_7, SOCKET_8
+	SOCKET_4, SOCKET_5, SOCKET_6, SOCKET_7, SOCKET_8, DUMMY_SOCKET = 1234
 };
 
 enum ControlButtons {
@@ -32,7 +32,6 @@ enum ControlButtons {
 
 class Joystick {
 public:
-
 	Joystick(ControllerSocketNumber controllerSocket);
 	virtual ~Joystick();
 
@@ -83,7 +82,6 @@ public:
 	ControlButtons rightShoulderButton = ControlButtons::R;
 	ControlButtons startButton = ControlButtons::START;
 	ControlButtons selectButton = ControlButtons::SELECT;
-
 protected:
 	HANDLE handle = NULL;
 	PlayerSlotNumber playerSlotNumber = PlayerSlotNumber::NONE;
@@ -93,7 +91,6 @@ protected:
 
 /* A raw input joystick class with huge thanks to Alexander Bocken
 https://www.codeproject.com/Articles/185522/Using-the-Raw-Input-API-to-Process-Joystick-Input */
-
 class RawInputJoystick : public Joystick {
 public:
 	RawInputJoystick(ControllerSocketNumber controllerSocket);
@@ -127,10 +124,8 @@ public:
 	virtual bool rButtonDown() override;
 	virtual bool startButtonDown() override;
 	virtual bool selectButtonDown() override;
-
-
 private:
-	BOOL bButtonStates[MAX_BUTTONS];
+	bool bButtonStates[MAX_BUTTONS];
 	BOOL lastButtonStates[MAX_BUTTONS];
 	LONG lAxisX = 0;
 	LONG lAxisY = 0;
@@ -140,7 +135,6 @@ private:
 	INT  g_NumberOfButtons;
 
 	USHORT DEAD_ZONE = 10;
-
 };
 
 
@@ -164,7 +158,6 @@ public:
 	virtual bool isUpPressed() override;
 	virtual bool isDownPressed() override;
 
-
 	virtual bool yButtonPushed() override;
 	virtual bool xButtonPushed() override;
 	virtual bool aButtonPushed() override;
@@ -174,7 +167,6 @@ public:
 	virtual bool startButtonPushed() override;
 	virtual bool selectButtonPushed() override;
 
-
 	virtual bool yButtonDown() override;
 	virtual bool xButtonDown() override;
 	virtual bool aButtonDown() override;
@@ -183,9 +175,39 @@ public:
 	virtual bool rButtonDown() override;
 	virtual bool startButtonDown() override;
 	virtual bool selectButtonDown() override;
-
 private:
 	USHORT xInputNum = 0;
 	XINPUT_STATE state;
 	XINPUT_STATE lastState;
+};
+
+
+class DummyStick : public Joystick {
+public:
+	DummyStick();
+	virtual ~DummyStick();
+
+	virtual SHORT getXInputSlot() override;
+	virtual void parseRawInput(PRAWINPUT pRawInput) override;
+	virtual Vector2 getDirection() override;
+	virtual bool isLeftPressed() override;
+	virtual bool isRightPressed() override;
+	virtual bool isUpPressed() override;
+	virtual bool isDownPressed() override;
+	virtual bool yButtonPushed() override;
+	virtual bool xButtonPushed() override;
+	virtual bool aButtonPushed() override;
+	virtual bool bButtonPushed() override;
+	virtual bool lButtonPushed() override;
+	virtual bool rButtonPushed() override;
+	virtual bool startButtonPushed() override;
+	virtual bool selectButtonPushed() override;
+	virtual bool yButtonDown() override;
+	virtual bool xButtonDown() override;
+	virtual bool aButtonDown() override;
+	virtual bool bButtonDown() override;
+	virtual bool lButtonDown() override;
+	virtual bool rButtonDown() override;
+	virtual bool startButtonDown() override;
+	virtual bool selectButtonDown() override;
 };

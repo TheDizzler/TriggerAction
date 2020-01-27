@@ -10,11 +10,9 @@ DynamicDialog::DynamicDialog(GUIFactory* factory,
 }
 
 DynamicDialog::~DynamicDialog() {
-	assetSet.reset();
 }
 
-
-void DynamicDialog::initialize(shared_ptr<AssetSet> set, const pugi::char_t* font) {
+void DynamicDialog::initialize(AssetSet* set, const pugi::char_t* font) {
 
 	assetSet = set;
 	topLeftCorner = assetSet->getAsset("Top Left Corner");
@@ -31,13 +29,16 @@ void DynamicDialog::initialize(shared_ptr<AssetSet> set, const pugi::char_t* fon
 
 	dialogText.reset(guiFactory->createTextLabel(Vector2::Zero, L"", font));
 
-	setLayerDepth(.95);
+	setLayerDepth(.95f);
+}
 
+void DynamicDialog::forceRefresh() {
+	refreshTexture = true;
 }
 
 void DynamicDialog::reloadGraphicsAsset() {
+
 	const pugi::char_t* assetSetName = assetSet->setName;
-	assetSet.reset();
 	assetSet = guiFactory->getAssetSet(assetSetName);
 
 	topLeftCorner = assetSet->getAsset("Top Left Corner");
@@ -94,9 +95,7 @@ void DynamicDialog::setDimensions(const Vector2& posit, const Vector2& sz) {
 				size.y += middle->getHeight() - leftOver;
 			}
 		}
-
 	}
-
 
 	Vector2 textPos = position + dialogTextMargin;
 	dialogText->setPosition(textPos);
@@ -155,10 +154,11 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 
 	// draw middle
 	int widthAdd = topLeftCorner->getWidth();
-	Vector2 cornerSize(widthAdd, topLeftCorner->getHeight());
+	Vector2 cornerSize((float) widthAdd, (float) topLeftCorner->getHeight());
 	topPos = position + cornerSize;
-	int maxLength = topPos.x + size.x - cornerSize.x * 2;
-	int maxHeight = topPos.y + size.y - cornerSize.y * 2;
+	int maxLength = INT(topPos.x + size.x - cornerSize.x * 2);
+	int maxHeight = INT(topPos.y + size.y - cornerSize.y * 2);
+
 	while (topPos.y <= maxHeight) {
 		topPos.x = position.x + cornerSize.x;
 		while (topPos.x <= maxLength) {
@@ -172,7 +172,7 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 	}
 
 	topPos = position;
-	maxLength = position.x + size.x - widthAdd;
+	maxLength = INT(position.x + size.x - widthAdd);
 	topPos.x += widthAdd;
 	bottomPos.x += widthAdd;
 	widthAdd = topCenter->getWidth();
@@ -187,7 +187,6 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 			&bottomCenter->getSourceRect(), tint, rotation, origin,
 			scale, SpriteEffects_None, layerDepth);
 
-
 		topPos.x += widthAdd;
 		bottomPos.x += widthAdd;
 	}
@@ -201,7 +200,6 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 		&bottomRightCorner->getSourceRect(), tint, rotation, origin,
 		scale, SpriteEffects_None, layerDepth);
 
-
 	// draw verticals
 	Vector2 leftPos = position;
 	Vector2 rightPos = position;
@@ -209,7 +207,7 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 	rightPos.x = bottomPos.x;
 
 	int heightAdd = topLeftCorner->getHeight();
-	maxHeight = position.y + size.y - heightAdd;
+	maxHeight = INT(position.y + size.y - heightAdd);
 	leftPos.y += heightAdd;
 	rightPos.y += heightAdd;
 	heightAdd = centerLeft->getHeight();
@@ -222,7 +220,6 @@ void DynamicDialog::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device)
 		batch->Draw(centerRight->getTexture().Get(), rightPos,
 			&centerRight->getSourceRect(), tint, rotation, origin,
 			scale, SpriteEffects_None, layerDepth);
-
 
 		leftPos.y += heightAdd;
 		rightPos.y += heightAdd;
@@ -241,16 +238,17 @@ void DynamicDialog::setPosition(const Vector2& newPosition) {
 
 void DynamicDialog::setLayerDepth(const float depth, bool frontToBack) {
 
-	layerDepth = depth - .00001;
+	layerDepth = depth - .00001f;
 	if (layerDepth < 0) {
 		if (!frontToBack)
-			layerDepth = .00001;
+			layerDepth = .00001f;
 		else
-			layerDepth = 0;
+			layerDepth = 0.0f;
 	}
-	float nudge = .00000001;
+
+	float nudge = .00000001f;
+
 	if (!frontToBack)
 		nudge *= -1;
 	dialogText->setLayerDepth(layerDepth + nudge, frontToBack);
 }
-

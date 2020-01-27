@@ -8,6 +8,7 @@ struct HitArea {
 	HitArea(Vector2 pos = Vector2::Zero, Vector2 sz = Vector2::Zero)
 		: position(pos), size(sz) {
 	}
+
 	HitArea(const HitArea* toCopy) {
 		position = toCopy->position;
 		size = toCopy->size;
@@ -15,14 +16,25 @@ struct HitArea {
 
 	bool collision(_In_ const HitArea* other) const {
 
-
 		if (position.x < other->position.x + other->size.x
 			&& position.x + size.x > other->position.x
 			&& position.y < other->position.y + other->size.y
 			&& position.y + size.y > other->position.y) {
 
 			return true;
+		}
 
+		return false;
+	}
+
+	bool collision(_In_ const HitArea& other) const {
+
+		if (position.x < other.position.x + other.size.x
+			&& position.x + size.x > other.position.x
+			&& position.y < other.position.y + other.size.y
+			&& position.y + size.y > other.position.y) {
+
+			return true;
 		}
 
 		return false;
@@ -52,6 +64,9 @@ public:
 	const HitArea& getHitArea() const;
 	virtual const Vector2& getPosition() const override;
 	virtual const Vector2& getOrigin() const override;
+
+	/* For situations where the sprite's origin is not the center and you absolutely must have it! */
+	virtual const Vector2 getCenter() const;
 	virtual const Vector2& getScale() const override;
 	virtual const float getRotation() const override;
 	virtual const Color& getTint() const override;
@@ -87,28 +102,20 @@ public:
 	ComPtr<ID3D11ShaderResourceView> getTexture();
 
 	bool isAlive = true;
-
-
 protected:
 	string assetName;
 	ComPtr<ID3D11ShaderResourceView> texture;
 	bool isPixel = false;
 
 	RECT sourceRect;
-
 	Vector2 origin;
-	Color tint;
-	float rotation;
-	float layerDepth;
-
+	Color tint = DirectX::Colors::White;
+	float rotation = 0.0f;
+	float layerDepth = 0.1f;
 	UINT width;
 	UINT height;
-	Vector2 position;
-	Vector2 scale;
+	Vector2 position = Vector2::Zero;
+	Vector2 scale = Vector2(1, 1);
 	SpriteEffects spriteEffect = SpriteEffects_None;
 	HitArea hitArea;
 };
-
-
-
-

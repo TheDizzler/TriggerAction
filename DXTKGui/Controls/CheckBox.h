@@ -3,7 +3,7 @@
 #include "TextLabel.h"
 
 
-class CheckBox : public GUIControl {
+class CheckBox : public Selectable {
 public:
 
 	CheckBox(GUIFactory* factory, MouseController* mouseController,
@@ -13,6 +13,8 @@ public:
 
 	virtual void reloadGraphicsAsset() override;
 
+	/* For use by SelectorManager */
+	virtual bool updateSelect(double deltaTime) override;
 	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
 
@@ -22,7 +24,9 @@ public:
 	virtual void setPosition(const Vector2& position) override;
 	virtual void setScale(const Vector2& scale) override;
 
-	virtual const Vector2& XM_CALLCONV measureString() const override;
+
+	virtual const Vector2 XM_CALLCONV measureString() const override;
+
 	virtual const Vector2& getPosition() const override;
 	virtual const int getWidth() const override;
 	virtual const int getHeight() const override;
@@ -59,19 +63,7 @@ public:
 		actionListener = iOnC;
 	}
 
-	virtual void onClick() override {
-		if (actionListener != NULL)
-			(actionListener->*onClickFunction)(this, isClicked);
-
-		if (isClicked) {
-			texture = checkedSprite->getTexture();
-			currentRECT = checkedSprite->getRect();
-		} else {
-			texture = uncheckedSprite->getTexture();
-			currentRECT = uncheckedSprite->getRect();
-		}
-		refreshed = true;
-	}
+	virtual void onClick() override;
 
 	/** Not used in CheckBox. */
 	virtual void onPress() override {
@@ -109,4 +101,5 @@ private:
 	unique_ptr<Sprite> checkedSprite;
 
 	bool refreshed = false;
+	bool isChecked = false;
 };
