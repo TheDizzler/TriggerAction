@@ -10,8 +10,7 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 private:
 	virtual void initializeAssets() override;
-	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
-		Vector3 weaponPositions[4]) override;
+	virtual void loadWeapon(AssetSet* weaponSet, Vector3 weaponPositions[4]) override;
 	vector<unique_ptr<Projectile>> projectiles;
 
 	virtual void startMainAttack() override;
@@ -19,9 +18,8 @@ private:
 
 	USHORT nextBullet = 0;
 
-
-	shared_ptr<Animation> shootLeft;
-	shared_ptr<Animation> shootDown;
-	shared_ptr<Animation> shootRight;
-	shared_ptr<Animation> shootUp;
+	Animation* shootLeft;
+	Animation* shootDown;
+	Animation* shootRight;
+	Animation* shootUp;
 };

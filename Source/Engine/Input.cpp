@@ -391,7 +391,6 @@ DWORD WINAPI slotManagerThread(PVOID pVoid) {
 			slotManagerThreadRunning = false;
 			return 0;
 		}
-		//Sleep(100);
 	}
 
 	wss.clear();
@@ -425,9 +424,7 @@ DWORD WINAPI waitForPlayerThread(PVOID pVoid) {
 	}
 
 	joyData->listener->playerAcceptedSlot(joyData);
-
 	return 0;
-
 }
 
 /** PlayerSlots need to pair with HUD dialog boxes. */
@@ -436,15 +433,11 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 	JoyData* joyData = (JoyData*) pVoid;
 	
 	while (Input::gameInitialized == false) { // Jus hol up
-		//wostringstream wss;
-		//wss << L"Test Thread #" << GetCurrentThreadId() << endl;
-		//wss << data->joystick->socket << " waiting for HUD." << endl;
-		//OutputDebugString(wss.str().c_str());
-
 		if (endAllThreadsNow) {
 			delete joyData;
 			return 0;
 		}
+
 		Sleep(500);
 	}
 
@@ -453,6 +446,7 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 		joyData->listener->playerAcceptedSlot(joyData);
 		return 0;
 	}
+
 	switch (joyData->joystick->getPlayerSlotNumber()) {
 		case PlayerSlotNumber::NONE:
 			// Too many players? Shouldn't come up?
@@ -463,23 +457,6 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 			// first player auto-select
 			break;
 		default:
-			//while (!joyData->finishFlag) {
-			//	// thread is now waiting for the player to confirm their Player Slot
-			//	if (endAllThreadsNow) {
-			//		delete joyData;
-			//		return 0;
-			//	}
-
-			//	if (joyData->joystick->getPlayerSlotNumber() == PlayerSlotNumber::NONE) {
-			//		joyData->listener->unpairedJoystickRemoved(joyData);
-			//		delete joyData;
-			//		return 0;
-			//	}
-
-			//	Sleep(500);
-			//}
-			//break;
-
 			DWORD id;
 			CreateThread(NULL, 0, waitForPlayerThread, (PVOID) joyData, 0, &id);
 
@@ -488,7 +465,3 @@ DWORD WINAPI waitForHUDThread(PVOID pVoid) {
 
 	return 0;
 }
-
-
-
-

@@ -31,11 +31,11 @@ private:
 
 };
 
-/** Don't really need this. Just made implementatino easier. */
+/** Don't really need this. Just made implementation easier. */
 class HitEffectManager {
 public:
 
-	void loadHitEffects(shared_ptr<AssetSet> weaponSet);
+	void loadHitEffects(AssetSet* weaponSet);
 
 	void update(double deltaTime);
 	void draw(SpriteBatch* bacth);
@@ -57,8 +57,7 @@ public:
 	virtual void draw(SpriteBatch* batch) override;
 private:
 	virtual void initializeAssets() override;
-	virtual void loadWeapon(shared_ptr<AssetSet> weaponSet,
-		Vector3 weaponPositions[4]) override;
+	virtual void loadWeapon(AssetSet* weaponSet, Vector3 weaponPositions[4]) override;
 
 	virtual void startMainAttack() override;
 	virtual void attackUpdate(double deltaTime) override;

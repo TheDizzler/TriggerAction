@@ -7,11 +7,10 @@ class AnimationAsset;
 /** Animated Tiles have no hitbox.  */
 class AnimatedTile : public TileBase {
 public:
-	
 	AnimatedTile();
-	~AnimatedTile();
+	virtual ~AnimatedTile();
 
-	void load(shared_ptr<AnimationAsset> animation);
+	void load(AnimationAsset* animation);
 
 	virtual void update(double deltaTime) override;
 	virtual void draw(SpriteBatch * batch) override;
@@ -20,18 +19,12 @@ public:
 	virtual const int getHeight() const override;
 	const RECT getRect() const;
 
-
-	
-
 	void reset();
 	bool repeats = true;
 	bool isAlive = true;
-	
 protected:
-	shared_ptr<Animation> animation;
+	Animation* animation;
 	int currentFrameIndex = -1;
 	float currentFrameDuration = 0;
 	double currentFrameTime = 0;
-
-
 };

@@ -30,9 +30,8 @@ public:
 
 class AnimationAsset : public Animation {
 public:
-
 	AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
-		vector<shared_ptr<Frame>> frames, string aniName);
+		vector<unique_ptr<Frame>> frames, string aniName);
 	virtual ~AnimationAsset();
 
 	map<string, string> properties;
@@ -40,7 +39,6 @@ public:
 
 	/* Sets where the layer depth should be calculated from. */
 	Vector2 mask;
-
 };
 
 class EventTrigger : public Trigger {
@@ -50,7 +48,6 @@ public:
 	virtual ~EventTrigger();
 
 	virtual bool activateTrigger(Creature * creature) override;
-
 };
 
 /** Depth ranges from 0.0f to 1.0f. The entire depth between .1 and .9 (inclusive) is where the
@@ -68,8 +65,6 @@ public:
 class Map {
 	friend class MapParser;
 public:
-
-
 	class Layer : public Texturizable {
 	public:
 		Layer(string layerName) : name(layerName) {
@@ -77,8 +72,6 @@ public:
 		virtual ~Layer();
 
 		string name;
-
-		//vector<unique_ptr<TileBase> > tiles;
 		// not taking advantage of this so might want to revert to single in-line vector
 		vector<vector<unique_ptr<TileBase>>> tiles;
 
@@ -92,11 +85,12 @@ public:
 		virtual const Vector2& getPosition() const override;
 		virtual const int getWidth() const override;
 		virtual const int getHeight() const override;
-
 	private:
 		bool texturized = false;
 		unique_ptr<TexturePanel> texturePanel;
-
+		
+		/* Not doing anything. */
+		virtual void forceRefresh() override;
 	};
 
 	Map();
@@ -104,7 +98,6 @@ public:
 
 	void update(double deltaTime);
 	void draw(SpriteBatch* batch);
-
 
 	void loadMapDescription(xml_node mapRoot);
 	void loadBaddieType(USHORT tileId, unique_ptr<BaddieData> baddie);
@@ -119,11 +112,9 @@ public:
 	unique_ptr<EventTrigger> start;
 
 	map<USHORT, unique_ptr<BaddieData>> baddieDataMap;
-	map<USHORT, shared_ptr<AnimationAsset>> animationMap;
-	map<USHORT, shared_ptr<TileAsset>> assetMap;
+	map<USHORT, unique_ptr<AnimationAsset>> animationMap;
+	map<USHORT, unique_ptr<TileAsset>> assetMap;
 
-
-	//map<string, unique_ptr<Map::Layer>> layerMap;
 	vector<unique_ptr<Map::Layer>> layers;
 	vector<unique_ptr<Baddie>> baddies;
 	vector<unique_ptr<Trigger>> triggers;
@@ -136,35 +127,29 @@ public:
 
 	/* If use depthPerPixel we could skip a division. Use bottom left ypos of sprite. */
 	static float getLayerDepth(float ypos) {
-
-		//return (ypos / tileHeight) * depthPerTile + FURTHEST_DEPTH;
 		return ypos * depthPerPixel + FURTHEST_DEPTH;
 	}
 
 	/** Currently not used (you should probably be using hitboxes!).
 			Returns stack of tiles occupying position. */
 	vector<TileBase*> getTilesAt(Vector3 position);
-
 	vector<TileBase*> getTilesBetween(Vector3 topLeft, Vector3 bottomRight);
 
 	void calculateShadows();
 };
 
-
+/* Creates a unique_ptr to a Map but does not keep the reference. */
 class MapParser {
 	friend class Hitbox;
 public:
 	MapParser(ComPtr<ID3D11Device> device);
 	virtual ~MapParser();
 
-
 	bool parseMap(xml_node mapRoot, string mapsDir);
 
 	unique_ptr<Map> getMap();
 private:
-
 	unique_ptr<Map> map;
-
 
 	bool loadTileset(xml_node mapRoot, string mapsDir);
 	// Currently only parses CSV encoded tmx files

@@ -60,13 +60,12 @@ void Marle::initializeAssets() {
 	jumpUp = assetSet->getAnimation("walk up");
 }
 
-void Marle::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
+void Marle::loadWeapon(AssetSet* weaponSet, Vector3 weaponPositions[4]) {
 
 	projectiles.clear();
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		unique_ptr<BronzeBow> proj = make_unique<BronzeBow>
-			(this, weaponSet, weaponPositions);
+		unique_ptr<BronzeBow> proj = make_unique<BronzeBow>(this, weaponSet, weaponPositions);
 		projectiles.push_back(move(proj));
 	}
 }
@@ -75,19 +74,6 @@ void Marle::startMainAttack() {
 
 	moveVelocity.x = 0;
 	moveVelocity.y = 0;
-
-	/*int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-	}*/
 
 	if (joystick->isRightPressed()) {
 		facing = Facing::RIGHT;
@@ -113,6 +99,7 @@ void Marle::startMainAttack() {
 			loadAnimation(shootUp);
 			break;
 	}
+
 	currentFrameIndex = -1;
 	currentFrameTime = currentFrameDuration;
 	action = CreatureAction::ATTACKING_ACTION;
@@ -153,10 +140,11 @@ void Marle::attackUpdate(double deltaTime) {
 						loadAnimation(combatStanceUp);
 						break;
 				}
+
 				action = CreatureAction::WAITING_ACTION;
 				return;
-
 		}
+
 		currentFrameTime = 0;
 		currentFrameDuration
 			= currentAnimation->animationFrames[currentFrameIndex]->frameTime;

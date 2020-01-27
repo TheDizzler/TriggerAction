@@ -11,12 +11,15 @@ public:
 	bool initialize(ComPtr<ID3D11Device> device);
 
 	unique_ptr<Sprite> getSpriteFromAsset(const char_t* assetName);
-	shared_ptr<Animation> getAnimation(const char_t* animationName);
+	/* Animations stored as unique_ptrs so no need to clean up. */
+	Animation* getAnimation(const char_t* animationName);
 	GraphicsAsset* const getAsset(const char_t* assetName);
-	shared_ptr<AssetSet> const getAssetSet(const char_t* setName);
+	/* AssetSets stored as unique_ptrs so no need to clean up. */
+	AssetSet* const getAssetSet(const char_t* setName);
 
 	CharacterData* getNextCharacter(int* currentPCNum);
 	CharacterData* getPreviousCharacter(int* currentPCNum);
+	/* Currently only returns NULL. */
 	CharacterData* getNextAvailabelCharacter();
 	CharacterData* getCharacterData(string characterName);
 
@@ -32,20 +35,15 @@ private:
 
 	int numPCsAvailable;
 	vector<bool> pcSelected;
-	//size_t nextAvaiablePC = 0;
+
 	CRITICAL_SECTION cs_selectingPC;
 	map<string, unique_ptr<CharacterData>> characterDataMap;
 
-	//map<string, xml_document> baddieDocs
-
 	map<string, unique_ptr<GraphicsAsset> > assetMap;
-	map<string, shared_ptr<Animation> > animationMap;
-	map<string, shared_ptr<AssetSet> > setMap;
-
+	map<string, unique_ptr<Animation>> animationMap;
+	map<string, unique_ptr<AssetSet> > setMap;
 
 	bool getGFXAssetsFromXML(ComPtr<ID3D11Device> device);
 	bool getCharacterDataFromXML(ComPtr<ID3D11Device> device);
 	bool getSpriteSheetData(ComPtr<ID3D11Device> device, xml_node gfxNode, string assetDir);
-
-
 };

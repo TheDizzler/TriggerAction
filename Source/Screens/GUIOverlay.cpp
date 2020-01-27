@@ -218,19 +218,17 @@ void GUIOverlay::reportLostJoystick(ControllerSocketNumber socketNumber) {
 }
 
 unique_ptr<PCStatusDialog> GUIOverlay::createPCStatusDialog(
-	shared_ptr<AssetSet> dialogImageSet, const USHORT playerNumber, const char_t* fontName) {
+	AssetSet* dialogImageSet, const USHORT playerNumber, const char_t* fontName) {
 
 	unique_ptr<PCStatusDialog> dialog = make_unique<PCStatusDialog>(&guiFactory);
 	dialog->initialize(dialogImageSet, fontName);
 	dialog->setDimensions(dialogPositions[PLAYER1 + playerNumber], dialogSize);
 	return move(dialog);
-
 }
 
 
 unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
-	shared_ptr<AssetSet> dialogImageSet,
-	const USHORT playerNumber, const char_t* fontName) {
+	AssetSet* dialogImageSet, const USHORT playerNumber, const char_t* fontName) {
 
 	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(&guiFactory);
 	dialog->initialize(dialogImageSet, fontName);
@@ -250,8 +248,7 @@ void GUIOverlay::openCharacterSelectDialog(PlayerSlot* playerSlot) {
 
 
 unique_ptr<PCSelectDialog> GUIOverlay::createPCSelectDialog(
-	shared_ptr<AssetSet> dialogImageSet,
-	const Vector2& position, const Vector2& size, const char_t* fontName) {
+	AssetSet* dialogImageSet, const Vector2& position, const Vector2& size, const char_t* fontName) {
 
 	unique_ptr<PCSelectDialog> dialog = make_unique<PCSelectDialog>(&guiFactory);
 	dialog->initialize(dialogImageSet, fontName);

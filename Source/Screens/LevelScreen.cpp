@@ -81,10 +81,11 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 				guiOverlay->createPCStatusDialog(
 					guiFactory.getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
-			newPC->loadMap(map);
+			newPC->loadMap(map.get());
 			pcs.push_back(move(newPC));
 
 		} else if (slot->characterData->name == "Marle") {
+
 			unique_ptr<Marle> newPC = make_unique<Marle>(slot);
 			tangiblesAll.push_back(newPC.get());
 			newPC->setInitialPosition(startPos[i++]);
@@ -92,10 +93,11 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 				guiOverlay->createPCStatusDialog(
 					guiFactory.getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
-			newPC->loadMap(map);
+			newPC->loadMap(map.get());
 			pcs.push_back(move(newPC));
 
 		} else if (slot->characterData->name == "Chrono") {
+
 			unique_ptr<Chrono> newPC = make_unique<Chrono>(slot);
 			tangiblesAll.push_back(newPC.get());
 			newPC->setInitialPosition(startPos[i++]);
@@ -103,9 +105,8 @@ void LevelScreen::loadMap(unique_ptr<Map> newMap) {
 				guiOverlay->createPCStatusDialog(
 					guiFactory.getAssetSet("Menu BG 0"), slot->getPlayerSlotNumber());
 			pcStatusDialogs[slot->getPlayerSlotNumber()]->loadPC(newPC.get());
-			newPC->loadMap(map);
+			newPC->loadMap(map.get());
 			pcs.push_back(move(newPC));
-
 		}
 	}
 
@@ -158,10 +159,9 @@ void LevelScreen::reloadMap(unique_ptr<Map> newMap) {
 
 	for (auto& pc : pcs) {
 		pc->reloadData(gfxAssets->getCharacterData(pc->name));
-		pc->loadMap(map);
+		pc->loadMap(map.get());
 		pc->setInitialPosition(startPos[i++]);
 		tangiblesAll.push_back(pc.get());
-
 	}
 
 	guiOverlay->initializeLevelScreen(pcStatusDialogs);
@@ -187,7 +187,6 @@ void LevelScreen::update(double deltaTime) {
 	}
 
 	if (gameOver) {
-		//game->loadMainMenu();
 		GameEngine::showCustomDialog(activeSlots[0]->pauseDialog.get());
 	}
 
@@ -205,7 +204,6 @@ void LevelScreen::draw(SpriteBatch * batch) {
 }
 
 void LevelScreen::pause() {
-
 	game->confirmExit();
 }
 
@@ -213,11 +211,8 @@ void LevelScreen::pause() {
 void LevelScreen::controllerRemoved(ControllerSocketNumber controllerSlot,
 	PlayerSlotNumber slotNumber) {
 
-
 	game->setPaused(true);
-
 	guiOverlay->reportLostJoystick(controllerSlot);
-
 }
 
 void LevelScreen::newController(shared_ptr<Joystick> newStick) {

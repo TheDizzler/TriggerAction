@@ -106,7 +106,6 @@ void PlayerCharacter::setInitialPosition(const Vector3& startingPosition) {
 
 void PlayerCharacter::update(double deltaTime) {
 
-
 	switch (action) {
 		case CreatureAction::ATTACKING_ACTION:
 			attackUpdate(deltaTime);
@@ -115,7 +114,6 @@ void PlayerCharacter::update(double deltaTime) {
 					startJump();
 					position -= GRAVITY * (deltaTime + .0000001);
 					position.z += LANDING_TOLERANCE;
-				//} else if (joystick->bButtonStates[ControlButtons::L]) {
 				} else if (joystick->lButtonDown()) {
 					startBlock();
 				} else {
@@ -129,18 +127,17 @@ void PlayerCharacter::update(double deltaTime) {
 					}
 				}
 			}
+
 			break;
 		case CreatureAction::WAITING_ACTION:
 		default:
 			waitUpdate(deltaTime);
 			if (joystick->yButtonPushed()) {
 				startMainAttack();
-				//startDrawWeapon();
 			} else if (joystick->xButtonPushed()) {
 				startJump();
 				position -= GRAVITY * (deltaTime + .0000001);
 				position.z += LANDING_TOLERANCE;
-			//} else if (joystick->bButtonStates[ControlButtons::L]) {
 			} else if (joystick->lButtonDown()) {
 				startBlock();
 			} else {
@@ -152,6 +149,7 @@ void PlayerCharacter::update(double deltaTime) {
 					movement(deltaTime);
 				}
 			}
+
 			break;
 		case CreatureAction::MOVING_ACTION:
 			if (joystick->yButtonPushed()) {
@@ -160,7 +158,6 @@ void PlayerCharacter::update(double deltaTime) {
 				startJump();
 				position -= GRAVITY * (deltaTime + .0000001);
 				position.z += LANDING_TOLERANCE;
-			//} else if (joystick->bButtonStates[ControlButtons::L]) {
 			} else if (joystick->lButtonDown()) {
 				startBlock();
 			} else {
@@ -194,11 +191,9 @@ void PlayerCharacter::update(double deltaTime) {
 						isAlive = false;
 					}
 				}
-			}/* else {
-				playerSlot->characterSelect(deltaTime);
-			}*/
-			break;
+			}
 
+			break;
 	}
 
 	if (falling) {

@@ -5,29 +5,23 @@
 
 Creature::Creature() {
 	layerDepth = 0.1f;
-
-	
 }
 
 Creature::~Creature() {
 }
 
-void Creature::loadMap(shared_ptr<Map> mp) {
+void Creature::loadMap(Map* mp) {
 	map = mp;
 }
 
 
-
-
-
-void Creature::loadAnimation(shared_ptr<Animation> animation) {
+void Creature::loadAnimation(Animation* animation) {
 	currentAnimation = animation;
 	currentFrameIndex = 0;
 	currentFrameTime = 0;
 	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
 	currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
 	currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
-
 }
 
 void Creature::loadAnimation(const pugi::char_t* name) {
@@ -38,22 +32,20 @@ void Creature::loadAnimation(const pugi::char_t* name) {
 	currentFrameDuration = currentAnimation->animationFrames[currentFrameIndex]->frameTime;
 	currentFrameRect = currentAnimation->animationFrames[currentFrameIndex]->sourceRect;
 	currentFrameOrigin = currentAnimation->animationFrames[currentFrameIndex]->origin;
-	//currentFrameTexture = currentAnimation->texture.Get(); // shouldn't change
 }
 
 
 void Creature::knockBack(Vector3 velocityOfHit, USHORT weightOfHit) {
 	moveVelocity = velocityOfHit * weightOfHit / weight;
 	falling = true;
-	position -= GRAVITY * .00005;
+	position -= GRAVITY * .00005f;
 }
 
 void Creature::knockBack(Vector3 hitVelocity) {
 	moveVelocity = hitVelocity;
 	falling = true;
-	position -= GRAVITY * .00005;
+	position -= GRAVITY * .00005f;
 }
-
 
 bool Creature::checkCollisionWith(Tangible* other) {
 
@@ -65,6 +57,7 @@ bool Creature::checkCollisionWith(Tangible* other) {
 				return true;
 		}
 	}
+
 	return false;
 }
 
@@ -77,6 +70,7 @@ bool Creature::checkCollision2DWith(const Tangible* other) const {
 			if (otherSubHB->collision2d(&radarBox))
 				return true;
 	}
+
 	return false;
 }
 
@@ -125,7 +119,6 @@ void Creature::setPosition(const Vector3& newpos) {
 	if (position.z < 0)
 		scalefactor = 1; // just in case...
 	else {
-		//scalefactor = 1 / (sqrt(position.z) + 1);
 		scalefactor = (MAX_SHADOW_HEIGHT - position.z) / MAX_SHADOW_HEIGHT; // z > MAX_SHADOW_HEIGHT will create problems...
 	}
 	shadow.setScale(Vector2(scalefactor, scalefactor));
@@ -137,11 +130,9 @@ bool Creature::isDescending() {
 }
 
 void Creature::stopFall() {
-	//if (action != CreatureAction::JUMP_ACTION) {
 		falling = false;
 		fallVelocity.z = 0;
 		moveVelocity.z = 0;
-	//}
 }
 
 void Creature::stopMovement() {
@@ -168,11 +159,7 @@ void Creature::moveUpdate(double deltaTime) {
 
 void Creature::hitUpdate(double deltaTime) {
 
-	//moveBy(moveVelocity * deltaTime);
 	if (!falling) {
-		//moveVelocity = moveVelocity * GROUND_FRICTION;
-		//if (abs(moveVelocity.x) <= 1 && abs(moveVelocity.y) <= 1) {
-			//moveVelocity = Vector3::Zero;
 		if (moveVelocity == Vector3::Zero) {
 			currentFrameTime += deltaTime;
 			if (currentFrameTime >= currentFrameDuration) {
@@ -197,6 +184,7 @@ void Creature::hitUpdate(double deltaTime) {
 					action = CreatureAction::WAITING_ACTION;
 					return;
 				}
+
 				currentFrameTime = 0;
 				currentFrameDuration
 					= currentAnimation->animationFrames[currentFrameIndex]->frameTime;

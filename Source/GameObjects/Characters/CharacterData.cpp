@@ -8,7 +8,6 @@ CharacterData::CharacterData(string nm) {
 
 	name = nm;
 	assets = gfxAssets->getAssetSet(name.c_str());
-
 }
 
 CharacterData::~CharacterData() {
@@ -16,7 +15,7 @@ CharacterData::~CharacterData() {
 
 
 void CharacterData::loadData(xml_node characterDataNode,
-	shared_ptr<AssetSet> assetSet, shared_ptr<AssetSet> weaponSet) {
+	AssetSet* assetSet, AssetSet* weaponSet) {
 
 	xml_node hitboxNode = characterDataNode.child("hitbox");
 
@@ -56,7 +55,6 @@ void CharacterData::loadData(xml_node characterDataNode,
 		up.attribute("y").as_int(), up.attribute("z").as_int());
 	attackBoxSizes[Facing::RIGHT] = Vector3(right.attribute("x").as_int(),
 		right.attribute("y").as_int(), right.attribute("z").as_int());
-
 
 	assets = assetSet;
 	weaponAssets = weaponSet;

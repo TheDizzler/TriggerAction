@@ -7,7 +7,6 @@ class TitleScreen : public Screen {
 public:
 	virtual ~TitleScreen();
 
-
 	virtual bool initialize(ComPtr<ID3D11Device> device) override;
 	virtual void setGameManager(GameManager* game) override;
 
@@ -22,12 +21,11 @@ public:
 	virtual void controllerRemoved(ControllerSocketNumber controllerSlot,
 		PlayerSlotNumber slotNumber) override;
 	virtual void newController(shared_ptr<Joystick> newStick) override;
-
 private:
-
 	enum ScreenState {
 		START_MENU, CHARACTER_SELECT
 	};
+
 	ScreenState state = START_MENU;
 
 	GameManager* game;
@@ -41,5 +39,4 @@ private:
 	float angularVelocity = 0;
 
 	unique_ptr<PCSelectDialog> pcSelectDialogs[MAX_PLAYERS];
-
 };

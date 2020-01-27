@@ -20,7 +20,6 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device) {
 	dialogPos.x -= dialogSize.x / 2;
 	dialogPos.y -= dialogSize.y / 2;
 
-
 	noControllerDialog = make_unique<ControllerDialog>(&guiFactory);
 	noControllerDialog->setDimensions(dialogPos, dialogSize);
 	noControllerDialog->setLayerDepth(1);
@@ -28,28 +27,27 @@ bool TitleScreen::initialize(ComPtr<ID3D11Device> device) {
 	noControllerDialog->setMatrixFunction([&]()->Matrix { return camera.translationMatrix(); });
 	noControllerDialog->setCameraZoom([&]()->float { return camera.getZoom(); });
 
-
 	if (activeSlots.size() == 0)
 		noControllerDialog->show();
 
-	pendulum = gfxAssets->getSpriteFromAsset("Pendulum");
+	pendulum = move(gfxAssets->getSpriteFromAsset("Pendulum"));
 	if (!pendulum) {
 		GameEngine::errorMessage(L"Could not find pendulum asset");
 		return false;
 	}
-	pendulum->setPosition(Vector2(Globals::WINDOW_WIDTH * .6666, 100));
+
+	pendulum->setPosition(Vector2(Globals::WINDOW_WIDTH * .6666f, 100));
 	pendulum->setOrigin(Vector2(pendulum->getWidth() / 2, 0));
 	pendulumRotation = -XM_PIDIV2;
 	pendulum->setRotation(pendulumRotation);
 	pendulum->setLayerDepth(.9);
 
 	
-
 	for (int i = 0; i < MAX_PLAYERS; ++i) {
-		pcSelectDialogs[i] = guiOverlay->createPCSelectDialog(
-			guiFactory.getAssetSet("Menu BG 0"), i);
-
+		pcSelectDialogs[i] = move(guiOverlay->createPCSelectDialog(
+			guiFactory.getAssetSet("Menu BG 0"), i));
 	}
+
 	guiOverlay->initializeTitleScreen(pcSelectDialogs);
 
 	return true;
@@ -62,7 +60,6 @@ void TitleScreen::setGameManager(GameManager* gm) {
 
 
 void TitleScreen::reload() {
-
 
 	pendulum->setPosition(Vector2(Globals::WINDOW_WIDTH * .6666, 100));
 	pendulum->setOrigin(Vector2(pendulum->getWidth() / 2, 0));
@@ -84,7 +81,6 @@ float angularAcceleration = 0;
 float damping = .99989;
 bool doneSwinging = false;
 void TitleScreen::update(double deltaTime) {
-
 
 	if (keys.isKeyPressed(Keyboard::Escape)) {
 		game->confirmExit();
@@ -178,6 +174,7 @@ void TitleScreen::textureDraw(SpriteBatch* batch) {
 	{
 		draw(batch);
 	}
+
 	batch->End();
 }
 
@@ -215,16 +212,13 @@ void TitleScreen::controllerRemoved(ControllerSocketNumber controllerSocket,
 				break;
 			}
 		}
-
 	}
 
 	LeaveCriticalSection(&cs_activeSlotsAccess);
-
 }
 
 
 void TitleScreen::newController(shared_ptr<Joystick> newStick) {
-
 
 	if (newStick.get()) {
 		if (noControllerDialog->isOpen()) {

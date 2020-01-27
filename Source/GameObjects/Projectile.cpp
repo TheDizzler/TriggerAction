@@ -14,20 +14,8 @@ Projectile::Projectile(Creature* ownr, Vector3 wPos[4]) {
 Projectile::~Projectile() {
 }
 
-//void Projectile::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
-//	projectileLeft = bullet;
-//	currentFrameTexture = projectileLeft->texture.Get();
-//	shadow = shd;
-//	shadow->getOrigin();
-//	shadowOrigin = Vector2((float) shadow->getWidth() / 2, (float) shadow->getHeight() / 2);
-//
-//	damage = 5;
-//
-//	projectileSpeed = 250;
-//	distanceDeltaPerFrame = projectileSpeed / 60;
-//}
 
-void Projectile::loadHitEffect(shared_ptr<Animation> hitFx) {
+void Projectile::loadHitEffect(Animation* hitFx) {
 	hitEffect = hitFx;
 }
 
@@ -185,13 +173,13 @@ void Projectile::fire(Facing dir, const Vector3& pos) {
 			ray.size.y = Globals::WINDOW_HEIGHT;
 			break;
 	}
+
 	moveInOneFrame = Vector2(-cos(rotation) * distanceDeltaPerFrame,
 		sin(-rotation) * distanceDeltaPerFrame);
 	layerDepth = Map::getLayerDepth(position.y);
 }
 
 bool Projectile::fineHitDetection(const Hitbox* hb) {
-
 
 	int xDist, yDist;
 	switch (direction) {
@@ -201,12 +189,14 @@ bool Projectile::fineHitDetection(const Hitbox* hb) {
 
 				return true;
 			}
+
 			break;
 		case Facing::RIGHT:
 			xDist = position.x - hb->position.x;
 			if (xDist > moveInOneFrame.x - hb->size.x) {
 				return true;
 			}
+
 			break;
 
 		case Facing::DOWN:
@@ -214,14 +204,17 @@ bool Projectile::fineHitDetection(const Hitbox* hb) {
 			if (yDist > moveInOneFrame.y - hb->size.y / 2) {
 				return true;
 			}
+
 			break;
 		case Facing::UP:
 			yDist = hb->position.y - position.y;
 			if (yDist > moveInOneFrame.y - hb->size.z / 2) {
 				return true;
 			}
+
 			break;
 	}
+
 	return false;
 }
 
@@ -234,9 +227,7 @@ void Projectile::hit(Tangible* liveObject) {
 	isExploding = true;
 	currentFrameTime = 0;
 	currentFrameIndex = 0;
-	currentFrameDuration
-		= hitEffect->animationFrames[currentFrameIndex].get()->frameTime;
-
+	currentFrameDuration = hitEffect->animationFrames[currentFrameIndex]->frameTime;
 }
 
 
@@ -251,23 +242,18 @@ void Projectile::moveBy(const Vector3& moveVector) {
 
 
 const int Projectile::getWidth() const {
-
 	return projectileLeft->animationFrames[currentFrameIndex]->sourceRect.right
 		- projectileLeft->animationFrames[currentFrameIndex]->sourceRect.left;
-
 }
 
 const int Projectile::getHeight() const {
-
 	return projectileLeft->animationFrames[currentFrameIndex]->sourceRect.bottom
 		- projectileLeft->animationFrames[currentFrameIndex]->sourceRect.top;
-
 }
 
 
 
-BronzeBow::BronzeBow(Creature* ownr,
-	shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4])
+BronzeBow::BronzeBow(Creature* ownr, AssetSet* weaponSet, Vector3 weaponPositions[4])
 	: Projectile(ownr, weaponPositions) {
 
 	loadBullet(weaponSet->getAnimation("Bronze Bow Left"),
@@ -278,7 +264,7 @@ BronzeBow::BronzeBow(Creature* ownr,
 BronzeBow::~BronzeBow() {
 }
 
-void BronzeBow::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
+void BronzeBow::loadBullet(Animation* bullet, GraphicsAsset* shd) {
 
 	projectileLeft = bullet;
 	currentFrameTexture = projectileLeft->texture.Get();
@@ -292,8 +278,7 @@ void BronzeBow::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
 
 
 
-AirGun::AirGun(Creature* ownr,
-	shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4])
+AirGun::AirGun(Creature* ownr, AssetSet* weaponSet, Vector3 weaponPositions[4])
 	: Projectile(ownr, weaponPositions) {
 
 	loadBullet(weaponSet->getAnimation("AirGun Bullet Left"),
@@ -304,7 +289,7 @@ AirGun::AirGun(Creature* ownr,
 AirGun::~AirGun() {
 }
 
-void AirGun::loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shd) {
+void AirGun::loadBullet(Animation* bullet, GraphicsAsset* shd) {
 
 	projectileLeft = bullet;
 	currentFrameTexture = projectileLeft->texture.Get();

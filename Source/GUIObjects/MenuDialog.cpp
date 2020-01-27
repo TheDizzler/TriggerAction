@@ -16,7 +16,7 @@ void MenuDialog::pairPlayerSlot(PlayerSlot* slot) {
 }
 
 void MenuDialog::reset() {
-	//playerSlot = NULL;
+	playerSlot = NULL;
 	selectionMade = false;
 }
 
@@ -41,7 +41,6 @@ void MenuDialog::setDimensions(const Vector2& position, const Vector2& size) {
 
 	pointerPos = firstSelectionPosition;
 	pointerPos.y += dialogText->getHeight() / 2;
-
 }
 
 
@@ -69,6 +68,7 @@ void MenuDialog::addSelection(wstring selection, bool enabled) {
 				newSize.x = selection->getWidth() + dialogTextMargin.x * 2;
 		}
 	}
+
 	unique_ptr<TextLabel> newLabel;
 	newLabel.reset(guiFactory->createTextLabel(pos, selection));
 
@@ -96,7 +96,6 @@ bool MenuDialog::update(double deltaTime) {
 		return false;
 
 	bool refreshed = DynamicDialog::update(deltaTime);
-
 
 	if (playerSlot->getStick()->isDownPressed()
 		|| playerSlot->getStick()->selectButtonDown()) {
@@ -189,7 +188,6 @@ void MenuDialog::show() {
 
 void MenuDialog::hide() {
 	DynamicDialog::hide();
-
 }
 
 USHORT MenuDialog::getSelected() {

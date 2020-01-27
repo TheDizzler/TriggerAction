@@ -855,7 +855,6 @@ void Chrono::fourthAttack(double deltaTime) {
 	Vector3 moveVector = moveVelocity * deltaTime;
 	if (abs(fallVelocity.z) < moveVector.z) { // raising
 
-		//moveBy(moveVector);
 		attackBox.position += moveVector;
 		// NOTE: attackbox pos could get out-of-sync with actual position
 
@@ -968,7 +967,7 @@ void Chrono::initializeAssets() {
 	PlayerCharacter::initializeAssets();
 }
 
-void Chrono::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
+void Chrono::loadWeapon(AssetSet* weaponSet, Vector3 weaponPositions[4]) {
 	hitEffectManager.loadHitEffects(weaponSet);
 }
 
@@ -1000,14 +999,12 @@ bool HitEffect::update(double deltaTime) {
 	tint = Color::Lerp(Color(1, 1, 1, 1), Color(.5, .1, .1, 0), timeLive / MAX_LIVE_TIME);
 	if (timeLive >= MAX_LIVE_TIME) {
 		// die die die
-
 		return false;
 	}
 	return true;
 }
 
 void HitEffect::draw(SpriteBatch* batch) {
-
 
 	batch->Draw(texture.Get(), position,
 		&sourceRect, tint, rotation,
@@ -1024,7 +1021,7 @@ const int HitEffect::getHeight() const {
 
 
 
-void HitEffectManager::loadHitEffects(shared_ptr<AssetSet> weaponSet) {
+void HitEffectManager::loadHitEffects(AssetSet* weaponSet) {
 
 	hitEffects[Facing::DOWN].clear();
 	hitEffects[Facing::DOWN].push_back(weaponSet->getAsset("Wooden Sword Down 1"));
@@ -1048,13 +1045,12 @@ void HitEffectManager::loadHitEffects(shared_ptr<AssetSet> weaponSet) {
 }
 
 void HitEffectManager::update(double deltaTime) {
-	for (int i = 0; i < liveEffects.size(); ) {
+	for (int i = 0; i < liveEffects.size(); ++i) {
 		if (!liveEffects[i].update(deltaTime)) {
 			swap(liveEffects[i], liveEffects.back());
 			liveEffects.pop_back();
 			continue;
 		}
-		++i;
 	}
 }
 

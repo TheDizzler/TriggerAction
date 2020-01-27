@@ -7,11 +7,10 @@ public:
 	BaddieData();
 	virtual ~BaddieData();
 
-
-	void loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet);
+	void loadData(xml_node baddieDataNode, AssetSet* assetSet);
 
 	string type;
-	shared_ptr<AssetSet> assets;
+	AssetSet* assets;
 	unique_ptr<Hitbox> hitbox;
 	Vector3 weaponPositions[4];
 	Vector3 attackBoxSizes[4];
@@ -27,13 +26,10 @@ public:
 	virtual bool update(double deltaTime);
 	virtual void draw(SpriteBatch* batch) override;
 
-
 	virtual void takeDamage(int damage, bool showDamage = true);
-
 
 	USHORT GOLD = 0;
 protected:
-
 	Creature* target = NULL;
 	virtual void startMainAttack(Vector3 direction) = 0;
 	virtual void attackUpdate(double deltaTime) = 0;
@@ -64,9 +60,7 @@ protected:
 	Color startTint;
 
 	Vector3 weaponPositions[4];
-
 protected: // creature unique stuff
-
 	/** Range at which baddie will take an opportunity action. */
 	Vector3 threatRange;
 	float jumpSpeed;
@@ -82,7 +76,6 @@ public:
 
 	virtual bool update(double deltaTime) override;
 	virtual void draw(SpriteBatch* batch) override;
-
 protected:
 	virtual void startMainAttack(Vector3 direction) override;
 	virtual void attackUpdate(double deltaTime) override;

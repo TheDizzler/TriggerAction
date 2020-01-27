@@ -26,7 +26,6 @@ public:
 	/* !! Does not account for z height !! */
 	bool contains(const Vector2& point) const;
 
-//private:
 	/* Position relative to bottom-left of sprite containing this hotbox.
 		position(x, y, height above y)*/
 	Vector3 position;
@@ -42,7 +41,6 @@ class Creature;
 class Tangible {
 public:
 	virtual ~Tangible();
-
 
 	void debugUpdate();
 	void debugDraw(SpriteBatch* batch);
@@ -67,7 +65,6 @@ public:
 	checking any other hitboxes. */
 	vector<unique_ptr<Hitbox> > subHitboxes;
 protected:
-
 	Hitbox hitbox;
 
 	unique_ptr<RectangleFrame> testFrame;
@@ -77,7 +74,6 @@ protected:
 	USHORT weight = 1;
 	/* use this whenever gravity is doing its business. */
 	bool falling = false;
-
 private:
 	Vector3 hitboxOffset;
 };
@@ -85,12 +81,10 @@ private:
 
 class Maskable {
 public:
-
+	virtual ~Maskable();
 	virtual void moveBy(const Vector3& moveVector) = 0;
 	virtual void setPosition(const Vector3& position) = 0;
-
 protected:
 /** Position of mask relative to bottom-left of containing IElement. */
 	Vector2 maskPosition = Vector2::Zero;
-
 };

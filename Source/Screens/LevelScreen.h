@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../../DXTKGui/BaseGraphics/screen.h"
 #include "../GameObjects/Characters/PlayerCharacter.h"
 #include "../GUIObjects//PCStatusDialog.h"
 #include "../Managers/MapManager.h"
@@ -15,7 +14,6 @@ extern vector<Trigger*> triggersAll;
 
 class LevelScreen : public Screen {
 public:
-
 	virtual ~LevelScreen();
 
 	/** Don't need to use in LevelScreen! */
@@ -34,15 +32,10 @@ public:
 	virtual void newController(shared_ptr<Joystick> newStick) override;
 
 	static JammerManager jammerMan;
-	
 private:
 	GameManager* game;
 
-	shared_ptr<Map> map;
+	unique_ptr<Map> map;
 
 	unique_ptr<PCStatusDialog> pcStatusDialogs[MAX_PLAYERS];
-	//unique_ptr<PCTechDialog> pcTechDialogs[MAX_PLAYERS];
-
-	
-
 };

@@ -6,7 +6,6 @@ public:
 	Projectile(Creature* owner, Vector3 weaponPositions[4]);
 	virtual ~Projectile();
 
-
 	/** Returns immediately if not active. */
 	virtual void update(double deltaTime);
 	/** Returns immediately if not active. */
@@ -23,13 +22,13 @@ protected:
 	const Hitbox* ownerBox;
 
 	Vector3 weaponPositions[4];
-	shared_ptr<Animation> projectileLeft;
+	Animation* projectileLeft;
 	GraphicsAsset* shadow;
 	Vector3 shadowPosition;
 
 	Facing direction = Facing::LEFT;
 
-	shared_ptr<Animation> hitEffect;
+	Animation* hitEffect;
 
 	ID3D11ShaderResourceView* currentFrameTexture;
 	RECT currentFrameRect;
@@ -48,8 +47,8 @@ protected:
 	Vector2 moveInOneFrame;
 
 
-	virtual void loadBullet(shared_ptr<Animation> bullet, GraphicsAsset* shadow) = 0;
-	void loadHitEffect(shared_ptr<Animation> hitEffect);
+	virtual void loadBullet(Animation* bullet, GraphicsAsset* shadow) = 0;
+	void loadHitEffect(Animation* hitEffect);
 
 	bool fineHitDetection(const Hitbox* hb);
 
@@ -60,24 +59,20 @@ protected:
 /** ***** Marle's Bows ***** **/
 class BronzeBow : public Projectile {
 public:
-	BronzeBow(Creature* owner,
-		shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
+	BronzeBow(Creature* owner, AssetSet* weaponSet, Vector3 weaponPositions[4]);
 	virtual ~BronzeBow();
 
 private:
-	virtual void loadBullet(shared_ptr<Animation> bullet,
-		GraphicsAsset* shadow) override;
+	virtual void loadBullet(Animation* bullet, GraphicsAsset* shadow) override;
 };
 
 
 /** ***** Lucca's Guns. ***** **/
 class AirGun : public Projectile {
 public:
-	AirGun(Creature* owner,
-		shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]);
+	AirGun(Creature* owner, AssetSet* weaponSet, Vector3 weaponPositions[4]);
 	virtual ~AirGun();
 
 private:
-	virtual void loadBullet(shared_ptr<Animation> bullet,
-		GraphicsAsset* shadow) override;
+	virtual void loadBullet(Animation* bullet, GraphicsAsset* shadow) override;
 };

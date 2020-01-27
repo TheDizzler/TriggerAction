@@ -2,6 +2,7 @@
 #include "Baddie.h"
 #include "../../Managers/GameManager.h"
 #include "../../Engine/GameEngine.h"
+#include "../../Screens/LevelScreen.h"
 
 
 BaddieData::BaddieData() {
@@ -10,7 +11,7 @@ BaddieData::BaddieData() {
 BaddieData::~BaddieData() {
 }
 
-void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet) {
+void BaddieData::loadData(xml_node baddieDataNode, AssetSet* assetSet) {
 
 	type = baddieDataNode.attribute("name").as_string();
 	xml_node hitboxNode = baddieDataNode.child("hitbox");
@@ -51,12 +52,10 @@ void BaddieData::loadData(xml_node baddieDataNode, shared_ptr<AssetSet> assetSet
 	attackBoxSizes[Facing::RIGHT] = Vector3(right.attribute("x").as_int(),
 		right.attribute("y").as_int(), right.attribute("z").as_int());
 
-
 	assets = assetSet;
 }
 
 
-#include "../../Screens/LevelScreen.h"
 Baddie::Baddie(BaddieData* data) {
 
 	setHitbox(data->hitbox.get());

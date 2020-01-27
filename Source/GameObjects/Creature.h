@@ -9,9 +9,8 @@ public:
 	Creature();
 	virtual ~Creature();
 
-	void loadMap(shared_ptr<Map> map);
+	void loadMap(Map* map);
 
-	//virtual void update(double deltaTime) = 0;
 	virtual void draw(SpriteBatch* batch) = 0;
 
 	/** This assumes zero defender initial velocity.
@@ -21,10 +20,8 @@ public:
 		Note: knockback should be called before takeDamage.*/
 	virtual void knockBack(Vector3 moveVelocity) override;
 
-
 	virtual bool checkCollisionWith(Tangible* tangible) override;
 	virtual bool checkCollision2DWith(const Tangible* tangible) const;
-
 
 	virtual const int getHeight() const;
 	virtual const int getWidth() const;
@@ -51,13 +48,13 @@ public:
 	void stopFall();
 	void stopMovement();
 protected:
-
-	shared_ptr<Map> map;
+	Map* map;
 
 	enum CreatureAction {
 		WAITING_ACTION, MOVING_ACTION, ATTACKING_ACTION, HIT_ACTION, JUMP_ACTION,
 		BLOCK_ACTION, DRAWING_ACTION, FOLLOWING_TARGET, DEAD_ACTION
 	};
+
 	CreatureAction action = CreatureAction::WAITING_ACTION;
 	bool canCancelAction = true;
 
@@ -76,30 +73,28 @@ protected:
 	/** The update for when creature has been hit with an attack. */
 	virtual void hitUpdate(double deltaTime);
 
+	AssetSet* assetSet;
+	Animation* currentAnimation;
 
-	shared_ptr<AssetSet> assetSet;
-	shared_ptr<Animation> currentAnimation;
+	Animation* walkDown;
+	Animation* walkLeft;
+	Animation* walkUp;
+	Animation* walkRight;
 
-	shared_ptr<Animation> walkDown;
-	shared_ptr<Animation> walkLeft;
-	shared_ptr<Animation> walkUp;
-	shared_ptr<Animation> walkRight;
+	Animation* attackDown;
+	Animation* attackLeft;
+	Animation* attackUp;
+	Animation* attackRight;
 
-	shared_ptr<Animation> attackDown;
-	shared_ptr<Animation> attackLeft;
-	shared_ptr<Animation> attackUp;
-	shared_ptr<Animation> attackRight;
-
-	shared_ptr<Animation> provoke;
-	shared_ptr<Animation> surprise;
-	shared_ptr<Animation> hit;
+	Animation* provoke;
+	Animation* surprise;
+	Animation* hit;
 
 	Sprite shadow;
 
-	void loadAnimation(shared_ptr<Animation> animation);
+	void loadAnimation(Animation* animation);
 	/** Finds animation in a map, therefore not efficient. */
 	void loadAnimation(const pugi::char_t* name);
-
 
 	Facing facing = RIGHT;
 

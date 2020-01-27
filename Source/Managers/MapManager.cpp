@@ -249,9 +249,8 @@ void TileAsset::stepUp(string stepVal) {
 }
 
 
-
 AnimationAsset::AnimationAsset(ComPtr<ID3D11ShaderResourceView> tex,
-	vector<shared_ptr<Frame>> frames, string aniName) : Animation(tex, frames, aniName) {
+	vector<unique_ptr<Frame>> frames, string aniName) : Animation(tex, move(frames), aniName) {
 }
 
 AnimationAsset::~AnimationAsset() {
@@ -302,6 +301,7 @@ void Map::Layer::textureDraw(SpriteBatch* batch, ComPtr<ID3D11Device> device) {
 				if (tile.get())
 					tile->draw(batch);
 	}
+
 	batch->End();
 }
 
@@ -320,12 +320,14 @@ const int Map::Layer::getHeight() const {
 	return Globals::WINDOW_HEIGHT;
 }
 
+void Map::Layer::forceRefresh() {
+}
+
 
 
 
 
 MapParser::MapParser(ComPtr<ID3D11Device> dev) {
-
 	device = dev;
 }
 
@@ -340,6 +342,7 @@ bool MapParser::parseMap(xml_node mapRoot, string mapsDir) {
 		GameEngine::errorMessage(L"Loading Tileset Failed");
 		return false;
 	}
+
 	if (!loadLayerData(mapRoot)) {
 		GameEngine::errorMessage(L"Loading LayerData Failed");
 		return false;
@@ -364,14 +367,15 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 		if (name.compare("Baddies") == 0) {
 			for (xml_node tileNode : tilesetNode.children("tile")) {
 
-				string baddieType
-					= tileNode.child("properties").child("property")
+				string baddieType = tileNode.child("properties").child("property")
 					.attribute("value").as_string();
 				gid = tileNode.attribute("id").as_int() + firstGid;
 				map->loadBaddieType(gid, gfxAssets->getBaddieData(device, baddieType));
 			}
+
 			continue;
 		}
+
 		string fileStr = mapsDir
 			+ tilesetNode.child("image").attribute("source").as_string();
 		size_t loc = fileStr.find(".png");
@@ -390,8 +394,6 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 			return false;
 		}
 
-
-
 		USHORT columns = tilesetNode.attribute("columns").as_int();
 
 		Vector2 size = Vector2(tileWidth, tileHeight);
@@ -399,12 +401,10 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 		size_t rows = tilesetNode.attribute("tilecount").as_int() / columns;
 
-
 		for (size_t j = 0; j < rows * tileHeight; j += tileHeight) {
 			for (size_t i = 0; i < columns * tileWidth; i += tileWidth) {
 
-
-				shared_ptr<TileAsset> spriteAsset;
+				unique_ptr<TileAsset> spriteAsset;
 				spriteAsset.reset(new TileAsset());
 				spriteAsset->loadAsPartOfSheet(
 					mapAsset->getTexture(), fileStr.c_str(), Vector2(i, j), size, origin);
@@ -416,10 +416,10 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 		for (xml_node tileNode : tilesetNode.children("tile")) {
 
 			gid = tileNode.attribute("id").as_int() + firstGid;
-			shared_ptr<TileAsset> tile = map->assetMap[gid];
+			TileAsset* tile = map->assetMap[gid].get();
 			xml_node propertiesNode = tileNode.child("properties");
-			if (propertiesNode) {
 
+			if (propertiesNode) {
 				for (xml_node propertyNode : propertiesNode.children("property")) {
 					string propertyname = propertyNode.attribute("name").as_string();
 
@@ -433,6 +433,7 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 						istringstream datastream(str);
 						string line;
 						vector<vector<int>> data;
+
 						while (getline(datastream, line)) {
 							line.erase(remove_if(
 								line.begin(), line.end(), isspace), line.end());
@@ -461,21 +462,16 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 							substr = line.substr(zheightloc);
 							istringstream(substr) >> rowdata[5];
 
-							unique_ptr<Hitbox> hitbox = make_unique<Hitbox>(rowdata);
-							tile->hitboxes.push_back(move(hitbox));
-
+							tile->hitboxes.push_back(make_unique<Hitbox>(rowdata));
 						}
-
 					} else if (propertyname.compare("mask") == 0) {
 
 						Vector2 mask;
-
-
 						string str = propertyNode.attribute("value").as_string();
-
 						istringstream datastream(str);
 						string line;
 						vector<vector<int>> data;
+
 						while (getline(datastream, line)) {
 							line.erase(remove_if(
 								line.begin(), line.end(), isspace), line.end());
@@ -492,7 +488,6 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 							mask.y *= -1;
 							tile->mask = mask;
-
 						}
 					} else if (propertyname.compare("stepUp") == 0) {
 						tile->stepUp(propertyNode.attribute("value").as_string());
@@ -514,12 +509,12 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 
 			xml_node animNode = tileNode.child("animation");
 			if (animNode) {
-				vector<shared_ptr<Frame>> frames;
+				vector<unique_ptr<Frame>> frames;
 
 				for (xml_node frameNode : animNode.children("frame")) {
 
 					USHORT frameID = frameNode.attribute("tileid").as_int() + firstGid;
-					shared_ptr<TileAsset> frameTile = map->assetMap[frameID];
+					unique_ptr<TileAsset> frameTile = move(map->assetMap[frameID]);
 					RECT rect;
 					rect.left = frameTile->getPosition().x;
 					rect.top = frameTile->getPosition().y;
@@ -531,36 +526,36 @@ bool MapParser::loadTileset(xml_node mapRoot, string mapsDir) {
 						origin.x = originNode.attribute("x").as_int();
 						origin.y = originNode.attribute("y").as_int();
 					}
-					shared_ptr<Frame> frame;
+
+					unique_ptr<Frame> frame;
 					float frameTime = frameNode.attribute("duration").as_float() / 1000;
 					frame.reset(new Frame(rect, origin, frameTime));
 					frames.push_back(move(frame));
 
-					// remove from assets (?)
-					map->assetMap.erase(frameID); // (???) if there are any properties they will be lost!
+					// Remove from assets. Since it was a unique_ptr this may be unnecessary.
+					map->assetMap.erase(frameID); // if there are any properties they will be lost!
 				}
 
-
-				shared_ptr<AnimationAsset> animationAsset;
+				unique_ptr<AnimationAsset> animationAsset;
 				animationAsset.reset(
-					new AnimationAsset(mapAsset->getTexture(), frames, name));
+					new AnimationAsset(mapAsset->getTexture(), move(frames), name));
 				animationAsset->mask = tile->mask;
 				for (auto& hb : tile->hitboxes)
 					animationAsset->hitboxes.push_back(move(hb));
 				animationAsset->properties = tile->properties;
 
 				// store animation in map then remove from assets
-				map->animationMap[gid] = animationAsset;
+				map->animationMap[gid] = move(animationAsset);
 				map->assetMap.erase(gid);  // no point in keeping it since the hitboxes are gone
 			}
 		}
 	}
+
 	return true;
 }
 
 
 bool MapParser::loadLayerData(xml_node mapRoot) {
-
 
 	float layerDepthNudge = .01 * Map::depthPerPixel;
 
@@ -570,11 +565,9 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 		xml_node dataNode = layerNode.child("data");
 		string layerName = layerNode.attribute("name").as_string();
 
-
 		unique_ptr<Map::Layer> layer = make_unique<Map::Layer>(layerName);
 		bool texturize = false;
 		float layerDepth = 0;
-
 
 		string str = dataNode.text().as_string();
 
@@ -604,7 +597,6 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 
 				int zPlus = 0;
 
-
 				if (layerName.compare("ground") == 0) {
 					layerDepth = 0.06;
 					texturize = true;
@@ -626,8 +618,6 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 					texturize = false;
 				}
 
-
-
 				// look in animation map first for ID
 				if (!map->animationMap[gid]) {
 					if (!map->assetMap[gid]) {
@@ -647,7 +637,6 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						tile->setLayerDepth(layerDepth);
 						tile->setPosition(position);
 						layer->tiles[row][col] = move(tile);
-
 					} else {
 						if (tileAsset->stepUpValue.size() > 0) {
 							map->placeTileTrigger(tileAsset, position);
@@ -668,15 +657,13 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 						}
 					}
 				} else {
-
 					unique_ptr<AnimatedTile> anim = make_unique<AnimatedTile>();
-					anim->load(map->animationMap[gid]);
+					anim->load(map->animationMap[gid].get());
 					anim->setLayerDepth(layerDepth, layerDepthNudge);
 					anim->setOrigin(Vector2(0, anim->getHeight()));
 					anim->setPosition(position);
 					layer->tiles[row][col] = move(anim);
 				}
-
 			}
 		}
 
@@ -699,6 +686,7 @@ bool MapParser::loadLayerData(xml_node mapRoot) {
 			}
 		}
 	}
+
 	return true;
 }
 
@@ -716,10 +704,7 @@ vector<int> MapParser::split(string line) {
 	}
 
 	return rowdata;
-
 }
-
-
 
 EventTrigger::EventTrigger(int rowdata[6]) : Trigger(rowdata) {
 }

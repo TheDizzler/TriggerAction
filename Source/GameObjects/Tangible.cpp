@@ -11,7 +11,6 @@ Hitbox::Hitbox(int rowdata[6]) {
 
 	position = Vector3(rowdata[0], -rowdata[1], rowdata[2]);
 	size = Vector3(rowdata[3], rowdata[4], rowdata[5]);
-
 }
 
 Hitbox::Hitbox(const Hitbox* copybox) {
@@ -150,8 +149,6 @@ void Tangible::setHitboxPosition(const Vector3& newPosition) {
 
 	Vector3 oldPos = hitbox.position;
 	hitbox.position = newPosition + hitboxOffset;
-	//hitbox.position.x -= hitbox.size.x / 2;
-	//hitbox.position.y -= hitbox.size.y;
 
 	Vector3 moveVector = hitbox.position - oldPos;
 	for (const auto& subHB : subHitboxes)
@@ -172,6 +169,5 @@ void Tangible::knockBack(Vector3 moveVelocity) {
 
 }
 
-
-
-
+Maskable::~Maskable() {
+}

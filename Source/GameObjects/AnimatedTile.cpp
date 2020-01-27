@@ -3,22 +3,21 @@
 
 #include "../Managers/MapManager.h"
 
+
 AnimatedTile::AnimatedTile() {
 	
 	rotation = 0.0f;
 	scale = Vector2(1, 1);
 	tint = DirectX::Colors::White;
 	layerDepth = 0.0f;
-
 }
-
 
 
 AnimatedTile::~AnimatedTile() {
 }
 
 
-void AnimatedTile::load(shared_ptr<AnimationAsset> animAsset) {
+void AnimatedTile::load(AnimationAsset* animAsset) {
 
 	animation = animAsset;
 
@@ -27,7 +26,7 @@ void AnimatedTile::load(shared_ptr<AnimationAsset> animAsset) {
 
 	position = Vector3(0, 0, 0);
 	drawPosition.x = position.x;
-	drawPosition.y = position.y/* - getHeight()*/;
+	drawPosition.y = position.y;
 	maskPosition = animAsset->mask;
 }
 
@@ -53,7 +52,6 @@ void AnimatedTile::draw(SpriteBatch* batch) {
 }
 
 
-
 const RECT AnimatedTile::getRect() const {
 	return animation->animationFrames[currentFrameIndex]->sourceRect;
 }
@@ -68,10 +66,7 @@ const int AnimatedTile::getHeight() const {
 		- animation->animationFrames[currentFrameIndex]->sourceRect.top;
 }
 
-
-
 void AnimatedTile::reset() {
 	isAlive = true;
 	currentFrameIndex = 0;
 }
-

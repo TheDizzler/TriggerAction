@@ -29,7 +29,6 @@ Lucca::Lucca(shared_ptr<PlayerSlot> slot) : PlayerCharacter(slot) {
 	// Fire 2
 	// Mega Bomb
 	// Flare
-
 }
 
 Lucca::~Lucca() {
@@ -57,13 +56,12 @@ void Lucca::initializeAssets() {
 	shootUp = assetSet->getAnimation("shoot up");
 }
 
-void Lucca::loadWeapon(shared_ptr<AssetSet> weaponSet, Vector3 weaponPositions[4]) {
+void Lucca::loadWeapon(AssetSet* weaponSet, Vector3 weaponPositions[4]) {
 
 	projectiles.clear();
 
 	for (int i = 0; i < MAX_PROJECTILES; ++i) {
-		unique_ptr<AirGun> proj = make_unique<AirGun>
-			(this, weaponSet, weaponPositions);
+		unique_ptr<AirGun> proj = make_unique<AirGun>(this, weaponSet, weaponPositions);
 		projectiles.push_back(move(proj));
 	}
 }
@@ -73,19 +71,6 @@ void Lucca::startMainAttack() {
 
 	moveVelocity.x = 0;
 	moveVelocity.y = 0;
-
-	/*int horzDirection = joystick->lAxisX;
-	int vertDirection = joystick->lAxisY;
-
-	if (horzDirection > 10) {
-		facing = Facing::RIGHT;
-	} else if (horzDirection < -10) {
-		facing = Facing::LEFT;
-	} else if (vertDirection < -10) {
-		facing = Facing::UP;
-	} else if (vertDirection > 10) {
-		facing = Facing::DOWN;
-	}*/
 
 	if (joystick->isRightPressed()) {
 		facing = Facing::RIGHT;
@@ -111,6 +96,7 @@ void Lucca::startMainAttack() {
 			loadAnimation(shootUp);
 			break;
 	}
+
 	currentFrameIndex = -1;
 	currentFrameTime = currentFrameDuration;
 	action = CreatureAction::ATTACKING_ACTION;
@@ -170,7 +156,6 @@ void Lucca::attackUpdate(double deltaTime) {
 				}
 				action = CreatureAction::WAITING_ACTION;
 				return;
-
 		}
 		currentFrameTime = 0;
 		currentFrameDuration
